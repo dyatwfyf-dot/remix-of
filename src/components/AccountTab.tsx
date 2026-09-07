@@ -878,7 +878,7 @@ export default function AccountsTab() {
         icon={<Calendar className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
         v={form.date}
         on={(v) => setForm({ ...form, date: v })}
-        className="bg-[#f5f5dc] text-[#1a2a3a] font-bold border-black focus:border-[#c5a059]"
+        className="bg-[#f5f5dc] text-[#f5f5dc] font-bold border-black focus:border-[#c5a059]"
       />
       <Field
         label="رقم الحافظة"
