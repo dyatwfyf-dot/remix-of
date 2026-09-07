@@ -924,7 +924,7 @@ className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full fo
 
       {/* السطر الرابع: البيان والشرح (يأخذ عمودين) */}
       <div className="sm:col-span-2">
-        <label className="block text-[16px] font-black mb-1.5 mr-0.5 tracking-wide text-[#1a2a3a]">
+        <label className="block text-[16px] font-white mb-1.5 mr-0.5 tracking-wide text-white ">
           البيان والشرح
         </label>
         <div className="relative flex items-center">
@@ -977,7 +977,7 @@ className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full fo
       <Field
         label="الإيرادات"
         type="number"
-        icon={<span className="text-xs text-[#c5a059] font-black">ر.ي</span>}
+        icon={<span className="text-xs text-white font-white">ر.ي</span>}
         v={form.income}
         on={(v) => setForm({ ...form, income: v })}
         placeholder="0.00"
@@ -988,21 +988,21 @@ className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full fo
       <Field
         label="المصروفات"
         type="number"
-        icon={<span className="text-xs text-[#722f37] font-black">ر.ي</span>}
+        icon={<span className="text-xs text-white font-white">ر.ي</span>}
         v={form.expense}
         on={(v) => setForm({ ...form, expense: v })}
         placeholder="0.00"
-        className="text-[#722f37] font-black font-mono tabular-nums numeric-cell bg-[#e6d7c3] border-black focus:border-[#722f37]"
+        className="text-white font-white font-mono tabular-nums numeric-cell bg-[#e6d7c3] border-black focus:border-[#722f37]"
       />
       {/* حقل ربط الدليل (يأخذ عمودين لأنه طويل) */}
       <div className="sm:col-span-2">
-        <label className="flex items-center gap-1.5 text-[16px] font-black mb-1.5 mr-0.5 tracking-wide text-[#1a2a3a]">
+        <label className="flex items-center gap-1 text-[16px] font-white mb-1.5 mr-0.5 tracking-wide text-white ">
           <Link className={`${ICON_MOBILE} text-[#c5a059]`} /> ربط بدليل هيكل الإيرادات
         </label>
         <select
           value={form.revenueKey}
           onChange={(e) => setForm({ ...form, revenueKey: e.target.value })}
-          className="w-full px-3 py-2 text-[15px] border border-black rounded-xl outline-none shadow-sm bg-[#f5f5dc] text-[#1a2a3a] font-bold focus:border-[#c5a059]"
+          className="w-full px-2 py-2 text-[15px] border border-black rounded-xl outline-none shadow-sm bg-[#f5f5dc] text-blue font-bold focus:border-[#c5a059]"
         >
           <option value="">-- بدون ربط --</option>
           {revenueTypes.map((t) => (
