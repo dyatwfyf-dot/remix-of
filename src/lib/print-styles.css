@@ -1,0 +1,273 @@
+/**
+ * Print and PDF Styles - Optimized & Centered Version
+ * تنسيقات طباعة وتصدير PDF محسّنة مع التوسيط التام والاحتواء التلقائي
+ */
+
+@media print {
+  /* إزالة الهوامش العامة مع الحفاظ على حشوة العناصر */
+  html, body {
+    width: 100%;
+    height: auto;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-family: 'Cairo';
+    direction: rtl;
+    line-height: 1.35;
+    font-size: 15px;
+    font-weight: 900 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* إعدادات الصفحة */
+  @page {
+    size: A4 portrait;
+    margin: 8mm;
+  }
+
+  @page :first {
+    margin-top: 8mm;
+  }
+
+  /* العناوين */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    break-after: avoid;
+    font-weight: 900;
+    margin: 4px 0 !important;
+    color: #000000 !important;
+    text-align: center;
+  }
+
+  h1 { font-size: 16px; }
+  h2 { font-size: 14px; }
+
+  /* الفقرات والعناصر الحاوية */
+  p, div {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin: 2px 0;
+  }
+
+  /* الجداول: احتواء تلقائي حقيقي */
+  table {
+    width: 100% !important;
+    min-width: 100% !important;
+    border: solid 1px black!important;
+    table-layout: auto !important;
+    margin-top: 6px !important;
+    margin-bottom: 6px !important;
+    page-break-inside: auto;
+  }
+
+  table thead {
+    display: table-header-group;
+    break-after: avoid;
+  }
+
+  table tbody {
+    display: table-row-group;
+  }
+
+  table tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* رؤوس وخلايا الجداول - التوسيط التام عمودياً وأفقياً ومنع الالتفاف */
+  th, td {
+    border: 1px solid #000 !important;
+    padding: 6px 8px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    font-size: clamp(14px, 1.1vw, 16px);
+    line-height: 1.4 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    width: 1%;
+    word-wrap: normal;
+    overflow-wrap: normal;
+  }
+
+  /* خلايا النص العادي المستثناة لتسمح بالالتفاف عند الحاجة */
+  td:not(.num):not(.numeric-cell):not(.date-cell):not(.currency):not(.number):not(.amount) {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    hyphens: auto;
+    width: auto !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+  }
+
+  th {
+    background-color: #1f7fb8 !important;
+    color: #000000 !important;
+    font-weight: 900 !important;
+    font-size: clamp(14px, 1.15vw, 15px);
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    width: auto !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    color: #FFFFFF;
+  }
+
+  /* الأرقام والتواريخ والمبالغ - محاذاة في المنتصف، بدون التفاف مطلقاً */
+  .num,
+  .numeric-cell,
+  .date-cell,
+  .currency,
+  .number,
+  .amount {
+    font-family: 'Times New Roman' !important;
+    font-size: clamp(14px, vw, 16px) !important;
+    color: #000000 !important;
+    font-weight: 900 !important;
+    direction: ltr !important;
+    unicode-bidi: embed !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+    hyphens: none !important;
+    width: 1% !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+  }
+
+  /* صفوف التمييز والإجماليات */
+  tr:nth-child(even) td { background-color: #5DABF8 !important; }
+  tr:nth-child(odd) td { background-color: #FFAAAA !important; }
+
+  .total-row td, tr.total-row td {
+    background-color: #D6E94D !important;
+    color: #000000 !important;
+    font-weight: 900 !important;
+    vertical-align: middle !important;
+  }
+
+  .subtotal-row td, tr.subtotal-row td {
+    background-color: #cbd5e1 !important;
+    color: #000000 !important;
+    font-weight: 800 !important;
+    vertical-align: middle !important;
+  }
+
+  .group-row td, tr.group-row td {
+    background-color: #fef3c7 !important;
+    color: #000000 !important;
+    font-weight: 900 !important;
+    vertical-align: middle !important;
+  }
+
+  /* الخلايا النصية المحاذاة */
+  td.acc, td.align-right {
+    text-align: center !important;
+    padding-right: 6px !important;
+    font-weight: 800 !important;
+    vertical-align: middle !important;
+  }
+
+  /* الروابط والعناصر التفاعلية المخفية */
+  a { text-decoration: none; color: #000000 !important; }
+  a[href]:after { content: none !important; }
+
+  button, .btn, .button, input, select, .no-print,
+  header, footer, nav, aside, .sidebar, .navigation,
+  .comment, .note, .annotation, .hidden, [hidden] {
+    display: none !important;
+  }
+
+  /* الصور والترويسة الرسمية */
+  img {
+    max-width: 100%;
+    page-break-inside: avoid;
+  }
+
+  .report-letterhead-row {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .report-letterhead-cell {
+    border: 0 !important;
+    background: #ffffff !important;
+    padding: 0 0 2mm !important;
+    height: auto !important;
+  }
+
+  .report-letterhead-image {
+    display: block;
+    width: 100%;
+    max-height: 20mm;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto;
+    position:top;
+  }
+
+  /* أدوات التحكم بالفواصل */
+  .page-break { page-break-before: always; break-before: always; }
+  .avoid-break { page-break-inside: avoid; break-inside: avoid; }
+}
+
+/* تنسيقات الشاشة قبل الطباعة */
+@media screen {
+  .print-only { display: none !important; }
+  .print-button {
+    margin: 10px 0;
+    padding: 8px 16px;
+    background: #1f7fb8;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 900;
+    font-size: 16px;
+  }
+  .print-button:hover {
+    background: #1a6a94;
+  }
+}
+
+/* طباعة الملون */
+@media print and (color) {
+  th, .total-row td, tr.total-row td {
+    background-color: #1f7fb8 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .group-row td, tr.group-row td {
+    background-color: #fef3c7 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .subtotal-row td, tr.subtotal-row td {
+    background-color: #cbd5e1 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+/* طباعة أحادية اللون (أبيض وأسود) */
+@media print and (monochrome) {
+  th, .total-row td, tr.total-row td {
+    background-color: #333333 !important;
+    color: #ffffff !important;
+  }
+  .group-row td, tr.group-row td {
+    background-color: #cccccc !important;
+    color: #000000 !important;
+  }
+  .subtotal-row td, tr.subtotal-row td {
+    background-color: #eeeeee !important;
+    color: #000000 !important;
+  }
+}
