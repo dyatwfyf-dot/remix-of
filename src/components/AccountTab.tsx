@@ -245,7 +245,7 @@ function Field({
 }) {
   return (
     <div className="w-full">
-      <label className="block text-sm font-black text-[#0f2f44]/70 mb-1.5 mr-0.5 tracking-wide">
+      <label className="block text-sm font-white text-white mb-1.5 mr-0.5 tracking-wide">
         {label}
       </label>
       <div className="relative flex items-center">
