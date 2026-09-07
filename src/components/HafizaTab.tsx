@@ -238,45 +238,46 @@ export default function HafizaTab() {
           boxShadow: "0 6px 18px rgba(0,0,0,0.12)",
         }}
       >
-        <div className="flex items-center gap-3">
-          <span
-            className="p-2 rounded-lg flex items-center justify-center"
-            style={{ background: "#fff", border: "1px solid #000" }}
-          >
-            <Wallet className="w-5 h-5 text-black" />
-          </span>
-          <div>
-            <h1 className="text-lg font-bold text-black">لوحة الحوافظ التوريد</h1>
-            <p className="text-xs text-slate-700 mt-1">عرض سريع متوافق مع شاشات الهواتف</p>
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3">
+            <span
+              className="p-2 rounded-lg flex items-center justify-center"
+              style={{ background: "#fff", border: "1px solid #000" }}
+            >
+              <Wallet className="w-5 h-5 text-black" />
+            </span>
+            <div>
+              <h1 className="text-lg font-bold text-black">لوحة الحوافظ التوريد</h1>
+              <p className="text-xs text-slate-700 mt-1">عرض سريع متوافق مع شاشات الهواتف</p>
+            </div>
+          </div>
+
+          {/* الأزرار المباشرة السريعة في رأس التبويب */}
+          <div className="grid grid-cols-2 gap-2 w-full sm:w-auto">
+            <Button
+              size="sm"
+              onClick={handleCopyAmountsToNotify}
+              className="px-3 py-2 h-9 rounded-lg font-bold text-black border border-black shadow-sm hover:brightness-95 transition-all text-xs"
+              style={{ background: PALETTE[3] }}
+            >
+              <CheckSquare className="w-4 h-4 ml-1 inline-block" />
+              نسخ مبالغ للحوالة
+            </Button>
+
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={handleClearHafiza}
+              disabled={hafiza.length === 0}
+              className="px-3 py-2 h-9 rounded-lg font-bold border border-black shadow-sm disabled:opacity-50 text-xs"
+              style={{ background: PALETTE[4] }}
+            >
+              <Trash2 className="w-4 h-4 ml-1 inline-block" />
+              مسح الكل
+            </Button>
           </div>
         </div>
       </div>
-
-  
-        {/* الأزرار المباشرة السريعة */}
-        <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
-          <Button
-            onClick={handleCopyAmountsToNotify}
-            className="flex-1 sm:flex-none px-2 py-2 rounded-lg font-bold text-black border border-black shadow-sm hover:brightness-95 transition-all"
-            style={{ background: PALETTE[3] }}
-          >
-<CheckSquare className="w-1 h-1 ml-1 inline-block" />
-  نسخ مبالغ للحوالة
-          </Button>
-
-          <Button
-            variant="destructive"
-            onClick={handleClearHafiza}
-            disabled={hafiza.length === 0}
-            className="flex-1 sm:flex-none px-2 py- rounded-lg font-bold border border-black shadow-sm disabled:opacity-50"
-            style={{ background: PALETTE[4] }}
-          >
-            <Trash2 className="w-4 h-4 ml-1.5 inline-block" />
-            مسح الكل
-          </Button>
-        </div>
-
-
 
       {/* نموذج إضافة حافظة */}
       <div className={`transition-all duration-300 ${showForm ? "max-h-[1400px]" : "max-h-0 overflow-hidden"}`}>
@@ -380,7 +381,7 @@ export default function HafizaTab() {
             </div>
 
             <div className="mt-4 flex items-center gap-3 justify-end pt-2" style={{ borderTop: "1px solid rgba(0,0,0,0.12)" }}>
-  <Button onClick={submit} className="px-4 py-2 rounded-full font-bold" style={{ background: PALETTE[2], color: "#000", border: "1px solid #000" }}>
+              <Button onClick={submit} className="px-4 py-2 rounded-full font-bold" style={{ background: PALETTE[2], color: "#000", border: "1px solid #000" }}>
                 <Save className="w-4 h-4 ml-1" /> حفظ
               </Button>
               <Button
@@ -401,139 +402,147 @@ export default function HafizaTab() {
 
       {/* جدول كشف القيود */}
       <Card style={{ border: "1px solid #000", borderRadius: 14, background: "rgba(255,255,255,0.94)", boxShadow: "0 8px 20px rgba(0,0,0,0.12)" }}>
+        <CardHeader style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+          <div className="flex items-center gap-2">
+            <div style={{ width: 44, height: 44, borderRadius: 10, background: PALETTE[1], display: "grid", placeItems: "center" }}>
+              <FileText className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <CardTitle className="text-lg font-bold text-slate-900">كشف القيود</CardTitle>
+              <CardDescription className="text-xs text-slate-700">عرض وتدقيق كافة حوافظ التوريد</CardDescription>
+            </div>
+            <div style={{ marginLeft: 12 }}>
+              <Badge style={{ background: PALETTE[0], color: "#fff", border: "1px solid #000" }}>{filtered.length} سجل</Badge>
+            </div>
+          </div>
 
-<CardHeader style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-  <div className="flex items-center gap-2">
-    <div style={{ width: 44, height: 44, borderRadius: 10, background: PALETTE[1], display: "grid", placeItems: "center" }}>
-      <FileText className="w-5 h-5 text-white" />
-    </div>
-    <div>
-      <CardTitle className="text-lg font-bold text-white">كشف القيود</CardTitle>
-      <CardDescription className="text-xs text-slate-700">عرض وتدقيق كافة حوافظ التوريد</CardDescription>
-    </div>
-    <div style={{ marginLeft: 12 }}>
-      <Badge style={{ background: PALETTE[0], color: "#fff", border: "1px solid #000" }}>{filtered.length} سجل</Badge>
-    </div>
-  </div>
+          {/* أزرار وعناصر التحكم في كشف القيود على صفين منتظمين وبحجم مناسب */}
+          <div style={{ marginTop: 12 }} className="grid grid-cols-2 gap-2 items-center">
+            <input
+              value={filters.name || ""}
+              onChange={(e) => setFilter("name", e.target.value)}
+              placeholder="بحث بالاسم..."
+              className="w-full px-3 py-1.5 rounded-full text-xs"
+              style={{ border: "1px solid #000" }}
+            />
 
-  <div style={{ marginTop: 8 }} className="grid grid-cols-2 gap-2 items-center">
-    <input
-      value={filters.name || ""}
-      onChange={(e) => setFilter("name", e.target.value)}
-      placeholder="بحث بالاسم..."
-      className="px-2 py-2 rounded-full"
-      style={{ border: "1px solid #000" }}
-    />
-    <Button size="sm" onClick={handleCopyAmountsToNotify} style={{ background: PALETTE[3], color: "#000", border: "1px solid #000" }}>
-      <CheckSquare className="w-4 h-4" />
-    </Button>
-    {Object.values(filters).some(Boolean) && (
-      <Button variant="ghost" size="sm" onClick={clearFilters} style={{ border: "1px solid #000" }}>
-        <X className="w-4 h-4" />
-      </Button>
-    )}
-    <div style={{ marginLeft: "auto" }}>
-      <TabActions title="حوافظ التوريد" rows={hafiza} columns={COLS} fileName="حوافظ-التوريد" pdfLayout="wide-centered" />
-    </div>
-  </div>
-</CardHeader>
+            <Button size="sm" onClick={handleCopyAmountsToNotify} className="w-full h-8 text-xs font-bold" style={{ background: PALETTE[3], color: "#000", border: "1px solid #000" }}>
+              <CheckSquare className="w-3.5 h-3.5 ml-1" />
+              نسخ المبالغ
+            </Button>
 
-<CardContent>
-        <div className="w-full overflow-auto max-h-[72vh] rounded-lg">
-          <Table>
-            <TableHeader style={{ background: PALETTE[0], color: "#fff" }}>
-              <TableRow>
-                <TableHead>#</TableHead>
-                {COLS.map((c) => (
-                  <TableHead key={c.key}>
-                    <div className="flex flex-col items-center">
-                      <button onClick={() => toggleSort(c.key)} className="flex items-center gap-1 text-xs">
-                        <span className="font-semibold">{c.label}</span>
-                        {sortIndicator(sortKey === c.key, sortDir)}
-                      </button>
-                      <div style={{ marginTop: 6 }}>
-                        <input
-                          value={filters[c.key] || ""}
-                          onChange={(e) => setFilter(c.key, e.target.value)}
-                          placeholder="فلتر..."
-                          className="px-1 py-1 rounded-full"
-                          style={{ width: 92, border: "1px solid rgba(0,0,0,0.12)" }}
-                        />
-                      </div>
-                    </div>
-                  </TableHead>
-                ))}
-                <TableHead>إجراءات</TableHead>
-              </TableRow>
-            </TableHeader>
-
-            <TableBody>
-              {filtered.map((row, idx) => (
-                <TableRow key={row.id} style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-                  <TableCell>{idx + 1}</TableCell>
-                  {COLS.map((c) => {
-                    const isEditing = activeCell?.rowId === row.id && activeCell?.colKey === c.key;
-                    const val = (row as any)[c.key];
-                    const isMoney = c.key === "hafizaAmount" || c.key === "notifyAmount";
-
-                    return (
-                      <TableCell key={c.key} onClick={() => !isEditing && handleCellClick(row.id, c.key, val)}>
-                        {isEditing ? (
-                          <Input
-                            autoFocus
-                            value={cellValue}
-                            onChange={(e) => setCellValue(e.target.value)}
-                            onBlur={() => handleCellSave(row as Record<string, unknown> & { id: string })}
-                            onKeyDown={(e) => e.key === "Enter" && handleCellSave(row as Record<string, unknown> & { id: string })}
-                            className="h-8 text-sm bg-white"
-                            style={{ border: "2px solid rgba(0,0,0,0.12)", textAlign: "center" }}
-                          />
-                        ) : (
-                          <span style={{ display: "inline-block", minWidth: 64 }}>
-                            {isMoney ? fmt(Number(val) || 0) : String(val ?? "")}
-                          </span>
-                        )}
-                      </TableCell>
-                    );
-                  })}
-                  <TableCell>
-                    <div className="flex items-center justify-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          if (confirm("هل أنت متأكد من حذف هذا السجل؟")) deleteHafiza(row.id);
-                        }}
-                        style={{ border: "1px solid #000" }}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-
-            {filtered.length > 0 && (
-              <TableFooter>
-                <TableRow>
-                  <TableCell>∑</TableCell>
-                  <TableCell>إجمالي الصفحة</TableCell>
-                  <TableCell colSpan={5}></TableCell>
-                  <TableCell style={{ textAlign: "center", fontFamily: "monospace", fontWeight: 700 }}>{fmt(totalHafizaAmount)}</TableCell>
-                  <TableCell colSpan={4}></TableCell>
-                  <TableCell style={{ textAlign: "center", fontFamily: "monospace", fontWeight: 700 }}>{fmt(totalNotifyAmount)}</TableCell>
-                  <TableCell></TableCell>
-                </TableRow>
-              </TableFooter>
+            {Object.values(filters).some(Boolean) ? (
+              <Button variant="ghost" size="sm" onClick={clearFilters} className="w-full h-8 text-xs font-bold" style={{ border: "1px solid #000" }}>
+                <X className="w-3.5 h-3.5 ml-1" />
+                تفريغ الفلتر
+              </Button>
+            ) : (
+              <div />
             )}
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
-  </div>
-);
-} 
+
+            <div className="w-full flex justify-end">
+              <TabActions title="حوافظ التوريد" rows={hafiza} columns={COLS} fileName="حوافظ-التوريد" pdfLayout="wide-centered" />
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent>
+          <div className="w-full overflow-auto max-h-[72vh] rounded-lg">
+            <Table>
+              <TableHeader style={{ background: PALETTE[0] }}>
+                <TableRow>
+                  <TableHead className="text-white font-bold text-xs text-center">#</TableHead>
+                  {COLS.map((c) => (
+                    <TableHead key={c.key} className="text-white font-bold text-xs">
+                      <div className="flex flex-col items-center">
+                        <button onClick={() => toggleSort(c.key)} className="flex items-center gap-1 text-xs text-white">
+                          <span className="font-bold text-white">{c.label}</span>
+                          {sortIndicator(sortKey === c.key, sortDir)}
+                        </button>
+                        <div style={{ marginTop: 6 }}>
+                          <input
+                            value={filters[c.key] || ""}
+                            onChange={(e) => setFilter(c.key, e.target.value)}
+                            placeholder="فلتر..."
+                            className="px-1 py-1 rounded-full text-black"
+                            style={{ width: 92, border: "1px solid rgba(0,0,0,0.12)" }}
+                          />
+                        </div>
+                      </div>
+                    </TableHead>
+                  ))}
+                  <TableHead className="text-white font-bold text-xs text-center">إجراءات</TableHead>
+                </TableRow>
+              </TableHeader>
+
+              <TableBody>
+                {filtered.map((row, idx) => (
+                  <TableRow key={row.id} style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                    <TableCell>{idx + 1}</TableCell>
+                    {COLS.map((c) => {
+                      const isEditing = activeCell?.rowId === row.id && activeCell?.colKey === c.key;
+                      const val = (row as any)[c.key];
+                      const isMoney = c.key === "hafizaAmount" || c.key === "notifyAmount";
+
+                      return (
+                        <TableCell key={c.key} onClick={() => !isEditing && handleCellClick(row.id, c.key, val)}>
+                          {isEditing ? (
+                            <Input
+                              autoFocus
+                              value={cellValue}
+                              onChange={(e) => setCellValue(e.target.value)}
+                              onBlur={() => handleCellSave(row as Record<string, unknown> & { id: string })}
+                              onKeyDown={(e) => e.key === "Enter" && handleCellSave(row as Record<string, unknown> & { id: string })}
+                              className="h-8 text-sm bg-white"
+                              style={{ border: "2px solid rgba(0,0,0,0.12)", textAlign: "center" }}
+                            />
+                          ) : (
+                            <span style={{ display: "inline-block", minWidth: 64 }}>
+                              {isMoney ? fmt(Number(val) || 0) : String(val ?? "")}
+                            </span>
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                    <TableCell>
+                      <div className="flex items-center justify-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            if (confirm("هل أنت متأكد من حذف هذا السجل؟")) deleteHafiza(row.id);
+                          }}
+                          style={{ border: "1px solid #000" }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+
+              {filtered.length > 0 && (
+                <TableFooter>
+                  <TableRow>
+                    <TableCell>∑</TableCell>
+                    <TableCell>إجمالي الصفحة</TableCell>
+                    <TableCell colSpan={5}></TableCell>
+                    <TableCell style={{ textAlign: "center", fontFamily: "monospace", fontWeight: 700 }}>{fmt(totalHafizaAmount)}</TableCell>
+                    <TableCell colSpan={4}></TableCell>
+                    <TableCell style={{ textAlign: "center", fontFamily: "monospace", fontWeight: 700 }}>{fmt(totalNotifyAmount)}</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                </TableFooter>
+              )}
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 function FieldDark({
   label,
   v,
@@ -551,7 +560,7 @@ function FieldDark({
 }) {
   return (
     <div className="w-full">
-      <label className="text-xl font-bold text-white mb-1 block">{label}</label>
+      <label className="text-xs font-semibold text-black mb-1 block">{label}</label>
       <div className="relative">
         {icon && (
           <div style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", zIndex: 10, background: "#fff", padding: 6, border: "1px solid #000", borderRadius: 8 }}>
