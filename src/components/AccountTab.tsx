@@ -133,8 +133,8 @@ const PRINT_STYLES = `
     color: #000 !important;
     font-weight: 800 !important;
   }
-  label{
-   color:while;
+ Field,label {
+    text-white;
    }
   
   .accounts-print-area th,
@@ -832,7 +832,7 @@ export default function AccountsTab() {
       >
         <Plus className={ICON_MOBILE} />
       </div>
-      <h2 className="text-sm sm:text-base font-black tracking-wide text-[#1a2a3a]">
+      <h2 className="text-xl sm:text-base font-black tracking-wide text-[#1a2a3a]">
         قيد جديد أو ترحيل مطابقة من الحوافظ
       </h2>
     </div>
@@ -847,7 +847,7 @@ export default function AccountsTab() {
     <div className="apk-only-actions flex items-center gap-2.5 flex-wrap">
       <button
         onClick={handleSyncFromHafiza}
-        className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full font-white border border-black shadow-sm transition-all bg-gradient-to-r from-[#1a2a3a] to-[#2a6b6a] text-white`}
+className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full font-white border border-black shadow-sm transition-all bg-gradient-to-r from-[#1a2a3a] to-[#2a6b6a] text-white`}
       >
         <Zap className={`${ICON_MOBILE} text-white`} />
         <span className="text-sm">مطابقة شاملة ٢٠٢٦</span>
@@ -870,7 +870,7 @@ export default function AccountsTab() {
 
   <div className="p-2 sm:p-5">
     {/* شبكة الحقول - حقلين في كل سطر */}
-    <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-3 items-end  text-white">
+    <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-3 items-end">
       {/* السطر الأول */}
       <Field
         label="التاريخ"
@@ -878,7 +878,7 @@ export default function AccountsTab() {
         icon={<Calendar className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
         v={form.date}
         on={(v) => setForm({ ...form, date: v })}
-        className="bg-[#f5f5dc] text-[#f5f5dc] font-bold border-black focus:border-[#c5a059]"
+        className="bg-[#f5f5dc] text-white font-bold border-black focus:border-[#c5a059]"
       />
       <Field
         label="رقم الحافظة"
