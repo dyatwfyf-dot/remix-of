@@ -133,15 +133,13 @@ const PRINT_STYLES = `
     color: #000 !important;
     font-weight: 800 !important;
   }
- Field,label {
-    text-white;
-   }
+ 
   
   .accounts-print-area th,
   .accounts-print-area td {
     border: 1px solid #000 !important;
     white-space: nowrap!important;
-    text-overflow: clip !important;
+    text-overflow:clip !important;
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
     hyphens: auto !important;
@@ -150,7 +148,7 @@ const PRINT_STYLES = `
     line-height: 1.1 !important;
     font-size: 16px !important;
     height: auto !important;
-    max-width: none !important;
+    max-width:auto!important;
     color: #000 !important;
   }
   .accounts-print-area td.numeric-cell,
@@ -1015,7 +1013,7 @@ className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full fo
     </div>
 
     {/* أزرار الإجراءات في سطر منفصل */}
-    <div className="flex gap-2 pt-4 mt-2 border-t border-black">
+    <div className="flex gap-2 pt- mt-2 border-t border-black">
       <button
         onClick={submit}
         className={`${BTN_MOBILE} flex-1 flex items-center justify-center gap-2 rounded-xl font-black border border-black shadow-sm transition-all bg-gradient-to-r from-[#1a2a3a] to-[#2a6b6a] text-white`}
@@ -1033,7 +1031,7 @@ className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full fo
 </div>
       {/* ===== جدول القيود ===== */}
       <div className="accounts-print-area w-full rounded-2xl overflow-hidden border shadow-sm" style={{ background: "#fff", borderColor: "rgba(0,0,0,0.08)" }}>
-        <div className="accounts-print-hide px-2 py-2 sm:px-5 sm:py-3.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2 border-b" style={{ background: THEME.cream, borderColor: "rgba(0,0,0,0.06)" }}>
+        <div className="accounts-print-hide px-2 py-2 sm:px-5 sm:py-3.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2 border-b" style={{ background: THEME.cream, borderColor: "#000" }}>
           <div className="flex items-center gap-2.5">
             <div className="w-2 h-2 rounded-full bg-[#1E8E5A] animate-pulse"></div>
             <h2 className="text-xs sm:text-sm font-black text-[#0f2f44] tracking-wide">
@@ -1064,7 +1062,7 @@ className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full fo
 
         <div className="p-1.5 sm:p-3">
           <div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-xl">
-            <table className="min-w-max table-auto text-xm xm:text-base text-center font-semibold border-collapse border-2 border-black">
+            <table className="w-full table-auto text-xm xm:text-base text-center font-semibold border-collapse border-2 border-black">
               <thead className="sticky top-0 z-20 text-[#0f2f44] font-black text-[16px]" style={{ background: THEME.warmCream }}>
                 <tr>
                   <th className="border border-black text-center w-10 sticky top-0 z-20 px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">م</th>
@@ -1134,10 +1132,11 @@ className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full fo
                       <td className="border border-black font-mono tabular-nums numeric-cell text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                         {acc.checkDate || "—"}
                       </td>
-                      <td className="border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+<td className="border border-black px-2 py-2 sm:px-2 sm:py-2 text-xl whitespace-normal
+ break-word max-w-[220px] text-center">
                         {acc.description || "—"}
                       </td>
-                      <td className="border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black px-2 py-2 sm:px-2 sm:py-2 text-xl whitespace-normal">
                         {acc.specialty || "—"}
                       </td>
                       <td className="border border-black font-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
