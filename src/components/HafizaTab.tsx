@@ -254,41 +254,23 @@ export default function HafizaTab() {
 
       {/* شريط الإجراءات والأزرار المفككة */}
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2.5 bg-white/90 p-2.5 rounded-xl border border-black shadow-sm">
-        
-        {/* القائمة المنسدلة والاستيراد */}
-        <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
-          <WebActionMenu label="إجراءات الحوافظ" actions={hafizaWebActions} />
-          
-          <div className="flex items-center rounded-lg overflow-hidden border border-black bg-white hover:bg-slate-50 transition-colors">
-            <ImportButton kind="hafiza" />
-          </div>
-        </div>
-
+  
         {/* الأزرار المباشرة السريعة */}
         <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
           <Button
             onClick={handleCopyAmountsToNotify}
-            className="flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg font-bold text-black border border-black shadow-sm hover:brightness-95 transition-all"
+            className="flex-1 sm:flex-none px-2 py-2 rounded-lg font-bold text-black border border-black shadow-sm hover:brightness-95 transition-all"
             style={{ background: PALETTE[3] }}
           >
-            <CheckSquare className="w-4 h-4 ml-1.5 inline-block" />
-            نسخ مبالغ للحوالة
-          </Button>
-
-          <Button
-            onClick={() => setShowForm((s) => !s)}
-            className="flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg font-bold text-white border border-black shadow-sm hover:brightness-95 transition-all"
-            style={{ background: PALETTE[2] }}
-          >
-            <Plus className="w-4 h-4 ml-1.5 inline-block" />
-            {showForm ? "إخفاء النموذج" : "إضافة / إظهار النموذج"}
+<CheckSquare className="w-1 h-1 ml-1 inline-block" />
+  نسخ مبالغ للحوالة
           </Button>
 
           <Button
             variant="destructive"
             onClick={handleClearHafiza}
             disabled={hafiza.length === 0}
-            className="flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg font-bold border border-black shadow-sm disabled:opacity-50"
+            className="flex-1 sm:flex-none px-2 py- rounded-lg font-bold border border-black shadow-sm disabled:opacity-50"
             style={{ background: PALETTE[4] }}
           >
             <Trash2 className="w-4 h-4 ml-1.5 inline-block" />
@@ -400,7 +382,7 @@ export default function HafizaTab() {
             </div>
 
             <div className="mt-4 flex items-center gap-3 justify-end pt-2" style={{ borderTop: "1px solid rgba(0,0,0,0.12)" }}>
-              <Button onClick={submit} className="px-4 py-2 rounded-full font-bold" style={{ background: PALETTE[2], color: "#fff", border: "1px solid #000" }}>
+  <Button onClick={submit} className="px-4 py-2 rounded-full font-bold" style={{ background: PALETTE[2], color: "#000", border: "1px solid #000" }}>
                 <Save className="w-4 h-4 ml-1" /> حفظ
               </Button>
               <Button
@@ -421,46 +403,47 @@ export default function HafizaTab() {
 
       {/* جدول كشف القيود */}
       <Card style={{ border: "1px solid #000", borderRadius: 14, background: "rgba(255,255,255,0.94)", boxShadow: "0 8px 20px rgba(0,0,0,0.12)" }}>
-        <CardHeader style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-          <div className="flex items-center gap-3">
-            <div style={{ width: 44, height: 44, borderRadius: 10, background: PALETTE[1], display: "grid", placeItems: "center" }}>
-              <FileText className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <CardTitle className="text-lg font-bold text-black">كشف القيود</CardTitle>
-              <CardDescription className="text-xs text-slate-700">عرض وتدقيق كافة حوافظ التوريد</CardDescription>
-            </div>
-            <div style={{ marginLeft: 12 }}>
-              <Badge style={{ background: PALETTE[0], color: "#fff", border: "1px solid #000" }}>{filtered.length} سجل</Badge>
-            </div>
-          </div>
 
-          <div style={{ marginTop: 8 }} className="flex gap-2 items-center">
-            <input
-              value={filters.name || ""}
-              onChange={(e) => setFilter("name", e.target.value)}
-              placeholder="بحث بالاسم..."
-              className="px-2 py-1 rounded-full"
-              style={{ border: "1px solid #000", width: 180 }}
-            />
-            <Button size="sm" onClick={handleCopyAmountsToNotify} style={{ background: PALETTE[3], color: "#000", border: "1px solid #000" }}>
-              <CheckSquare className="w-4 h-4" />
-            </Button>
-            {Object.values(filters).some(Boolean) && (
-              <Button variant="ghost" size="sm" onClick={clearFilters} style={{ border: "1px solid #000" }}>
-                <X className="w-4 h-4" />
-              </Button>
-            )}
-            <div style={{ marginLeft: "auto" }}>
-              <TabActions title="حوافظ التوريد" rows={hafiza} columns={COLS} fileName="حوافظ-التوريد" pdfLayout="wide-centered" />
-            </div>
-          </div>
-        </CardHeader>
+<CardHeader style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+  <div className="flex items-center gap-2">
+    <div style={{ width: 44, height: 44, borderRadius: 10, background: PALETTE[1], display: "grid", placeItems: "center" }}>
+      <FileText className="w-5 h-5 text-white" />
+    </div>
+    <div>
+      <CardTitle className="text-lg font-bold text-white">كشف القيود</CardTitle>
+      <CardDescription className="text-xs text-slate-700">عرض وتدقيق كافة حوافظ التوريد</CardDescription>
+    </div>
+    <div style={{ marginLeft: 12 }}>
+      <Badge style={{ background: PALETTE[0], color: "#fff", border: "1px solid #000" }}>{filtered.length} سجل</Badge>
+    </div>
+  </div>
+
+  <div style={{ marginTop: 8 }} className="grid grid-cols-2 gap-2 items-center">
+    <input
+      value={filters.name || ""}
+      onChange={(e) => setFilter("name", e.target.value)}
+      placeholder="بحث بالاسم..."
+      className="px-2 py-2 rounded-full"
+      style={{ border: "1px solid #000" }}
+    />
+    <Button size="sm" onClick={handleCopyAmountsToNotify} style={{ background: PALETTE[3], color: "#000", border: "1px solid #000" }}>
+      <CheckSquare className="w-4 h-4" />
+    </Button>
+    {Object.values(filters).some(Boolean) && (
+      <Button variant="ghost" size="sm" onClick={clearFilters} style={{ border: "1px solid #000" }}>
+        <X className="w-4 h-4" />
+      </Button>
+    )}
+    <div style={{ marginLeft: "auto" }}>
+      <TabActions title="حوافظ التوريد" rows={hafiza} columns={COLS} fileName="حوافظ-التوريد" pdfLayout="wide-centered" />
+    </div>
+  </div>
+</CardHeader>
 
         <CardContent>
           <div className="w-full overflow-auto max-h-[72vh] rounded-lg">
             <Table>
-              <TableHeader style={{ background: PALETTE[0], color: "#fff" }}>
+              <TableHeader style={{ background: PALETTE[0], color:white }}>
                 <TableRow>
                   <TableHead>#</TableHead>
                   {COLS.map((c) => (
@@ -571,7 +554,7 @@ function FieldDark({
 }) {
   return (
     <div className="w-full">
-      <label className="text-sm font-bold text-black mb-1 block">{label}</label>
+      <label className="text-xl font-bold text-white mb-1 block">{label}</label>
       <div className="relative">
         {icon && (
           <div style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", zIndex: 10, background: "#fff", padding: 6, border: "1px solid #000", borderRadius: 8 }}>
