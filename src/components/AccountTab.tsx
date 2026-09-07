@@ -125,7 +125,7 @@ const PRINT_STYLES = `
     table-layout:auto!important;
   }
   .accounts-print-area thead th {
-    color: white !important;
+  color: white!important;
     font-weight: 1000 !important;
   }
   .accounts-print-area tbody td,
@@ -133,6 +133,10 @@ const PRINT_STYLES = `
     color: #000 !important;
     font-weight: 800 !important;
   }
+  label{
+   color:while;
+   }
+  
   .accounts-print-area th,
   .accounts-print-area td {
     border: 1px solid #000 !important;
