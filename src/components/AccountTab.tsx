@@ -847,14 +847,14 @@ export default function AccountsTab() {
     <div className="apk-only-actions flex items-center gap-2.5 flex-wrap">
       <button
         onClick={handleSyncFromHafiza}
-        className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full font-black border border-black shadow-sm transition-all bg-gradient-to-r from-[#1a2a3a] to-[#2a6b6a] text-white`}
+        className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full font-white border border-black shadow-sm transition-all bg-gradient-to-r from-[#1a2a3a] to-[#2a6b6a] text-white`}
       >
         <Zap className={`${ICON_MOBILE} text-white`} />
         <span className="text-sm">مطابقة شاملة ٢٠٢٦</span>
       </button>
 
       <label
-        className={`${BTN_MOBILE} relative flex items-center justify-center gap-2 rounded-full border border-black px-3 py-2 cursor-pointer font-bold shadow-sm bg-gradient-to-r from-[#d2b48c] to-[#e6d7c3] text-[#1a2a3a]`}
+        className={`${BTN_MOBILE} relative flex items-center justify-center gap-2 rounded-full border border-black px-3 py-2 cursor-pointer font-bold shadow-sm bg-gradient-to-r from-[#d2b48c] to-[#e6d7c3] text-white`}
       >
         <FileSpreadsheet className={`${ICON_MOBILE} text-[#1a2a3a]`} />
         <span>استيراد إكسل</span>
