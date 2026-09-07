@@ -870,7 +870,7 @@ export default function AccountsTab() {
 
   <div className="p-2 sm:p-5">
     {/* شبكة الحقول - حقلين في كل سطر */}
-    <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-3 items-end">
+    <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-3 items-end  text-white">
       {/* السطر الأول */}
       <Field
         label="التاريخ"
