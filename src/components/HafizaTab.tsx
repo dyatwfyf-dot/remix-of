@@ -187,20 +187,20 @@ export default function HafizaTab() {
       }}
     >
       {/* الهيدر الرئيسي */}
-      <div className="rounded-xl p-4 mb-4 bg-white border border-slate-200 shadow-sm">
+      <div className="rounded-xl p-4 mb-4 bg-from-[#2A6B6A] to-[#D2B48C] border border-black shadow-xm">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 w-full md:w-auto">
             <span className="p-2.5 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
               <Wallet className="w-6 h-6 text-blue-600" />
             </span>
             <div>
-              <h1 className="text-lg font-bold text-slate-800">لوحة الحوافظ والتوريد</h1>
-              <p className="text-xs text-slate-500 mt-0.5">إدارة سريعة ومتوافقة مع الهواتف</p>
+ <h1 className="text-lg font-bold text-black">لوحة الحوافظ والتوريد</h1>
+<p className="text-xs text-slate-500 mt-0.5">إدارة سريعة ومتوافقة مع الهواتف</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 w-full sm:w-64">
-            <div className="flex items-center justify-center w-full h-9 rounded-md bg-white border border-slate-300 hover:bg-slate-50 transition-colors overflow-hidden">
+<div className="grid grid-cols-2 gap-2 w-full sm:w-auto">
+ <div className="flex items-center justify-center w-full h-9 rounded-md bg-sky border border-black hover:bg-slate-50 transition-colors overflow-hidden">
               <ImportButton kind="hafiza" />
             </div>
 
@@ -209,7 +209,7 @@ export default function HafizaTab() {
               variant="destructive"
               onClick={handleClearHafiza}
               disabled={hafiza.length === 0}
-              className="w-full h-9 rounded-md font-bold text-xs"
+              className="w-full h-9 rounded-md font-bold text-xm"
             >
               <Trash2 className="w-4 h-4 ml-1 inline-block" />
               مسح الكل
@@ -220,7 +220,7 @@ export default function HafizaTab() {
 
       {/* نموذج إضافة حافظة */}
       <div className={`transition-all duration-300 ${showForm ? "max-h-[1400px]" : "max-h-0 overflow-hidden"}`}>
-        <Card className="mb-4 bg-white border-slate-200 shadow-sm rounded-xl">
+        <Card className="mb-4 bg-#E6D7C3 border border-black shadow-xm rounded-xl">
           <div className="flex items-center gap-3 p-4 border-b border-slate-100">
             <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center">
               <Plus className="w-5 h-5 text-indigo-600" />
