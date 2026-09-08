@@ -605,9 +605,10 @@ export default function AccountsTab() {
           <span className="font-mono text-base tabular-nums font-black text-[#f3e5ab]">{accounts.length}</span>
         </div>
       </div>
-
-      {/* ===== بطاقات الإجماليات (كرت 2, 3, 4 بألوان مختلفة كلياً وبدون تكرار وبحدود سوداء) ===== */}
-      <div className="accounts-print-hide grid grid-cols-1 sm:grid-cols-3 gap-3">
+{/* ===== بطاقا
+ت الإجماليا
+(كرت 2, 3, 4 بألوان مختلفة كلياً وبدونتكرار وبحدود سوداء) ===== */}
+      <div className="accounts-print-hide grid grid-cols-2 sm:grid-cols-2 gap-2">
         {/* إجمالي الإيرادات (أخضر زمردي داكن) */}
         <LedgerStat
           label="إجمالي الإيرادات"
@@ -769,7 +770,7 @@ export default function AccountsTab() {
         </div>
 
         <div className="p-3 sm:p-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+          <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 items-end">
             <Field
               label="التاريخ"
               type="date"
@@ -899,7 +900,7 @@ export default function AccountsTab() {
           <div className="flex gap-2 pt-3 mt-3 border-t-2 border-black">
             <button
               onClick={submit}
-              className={`${BTN_MOBILE} flex-1 flex items-center justify-center gap-2 rounded-xl font-black border-2 border-black shadow-sm transition-all bg-[#2a9d8f] text-white hover:bg-[#21867a]`}
+              className={`${BTN_MOBILE} flex-0 flex items-center justify-center gap-2 rounded-xl font-black border-2 border-black shadow-sm transition-all bg-[#2a9d8f] text-white hover:bg-[#21867a]`}
             >
               <Save className={`${ICON_MOBILE} text-white`} /> <span>ترحيل القيد</span>
             </button>
