@@ -381,32 +381,36 @@ export default function HafizaTab() {
                 {filtered.length} سجل
               </Badge>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-0">
               <TabActions title="حوافظ التوريد" rows={hafiza} columns={COLS} fileName="حوافظ-التوريد" pdfLayout="wide-centered" />
             </div>
           </div>
 
-          <div className="flex items-center gap-1 mb-2">
+          <div className="flex items-center gap-1 mb-0">
             <input
               value={filters.name || ""}
               onChange={(e) => setFilter("name", e.target.value)}
               placeholder="بحث سريع بالاسم..."
-              className="flex-1 px-2 py-2 h-9 rounded-lg text-sm border border-violet-300 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="flex-0 px-2 py-2 h-9 rounded-lg text-sm border border-blackt bg-white focus:outline-none focus:ring-2 focus:ring-violet-500"
             />
             {Object.values(filters).some(Boolean) && (
-              <Button variant="outline" size="sm" onClick={clearFilters} className="h-9 px-3 text-xs font-bold text-slate-600 bg-white">
-                <X className="w-3.5 h-3.5 ml-1" />
-                إلغاء الفلترة
+<Button variant="outline" size="sm" onClick={clearFilters} className="h-9 px-1 text-xs font-bold text-slate-600 bg-white">
+
+ <X className="w-3 h-3.5 ml-1" />
+  إلغاء الفلترة
               </Button>
             )}
           </div>
 
           {/* الجدول مع منع الالتفاف للأرقام والتاريخ وضبط العرض تلقائياً */}
-          <div className="overflow-x-auto border border-violet-200 rounded-xl bg-white">
-            <Table className="w-full table-auto border-collapse text-center">
-              <TableHeader>
-                <tr className="border-b bg-violet-100/70 text-violet-900">
-                  <th className="px-2 py-2 text-lg font-bold text-center whitespace-nowrap w-auto">#</th>
+          <div className="overflow-x-auto border border-black rounded-xl bg-white">
+  
+<Table className="w-auto table-auto border-collapse text-center">
+
+<TableHeader>
+<tr className="border-b bg #E6D7C3 text-violet-900">
+
+ <th className="px-2 py-2 text-lg font-bold text-center whitespace-nowrap">#</th>
                   {COLS.map((c) => {
                     const isNumOrDate = ["date", "hafizaNo", "hafizaAmount", "notifyDate", "notifyNo", "notifyAmount"].includes(c.key);
                     return (
@@ -420,7 +424,7 @@ export default function HafizaTab() {
                             value={filters[c.key] || ""}
                             onChange={(e) => setFilter(c.key, e.target.value)}
                             placeholder="فلتر..."
-                            className="w-auto px-2 py-1 rounded text-xs border border-black text-gray-800 focus:outline-none focus:border-violet-500 bg-white"
+                            className="w-20px px-2 py-2 rounded text-xs border border-black text-gray-800 focus:outline-none focus:border-violet-500 bg-white"
                           />
                         </div>
                       </th>
@@ -430,7 +434,7 @@ export default function HafizaTab() {
                 </tr>
               </TableHeader>
 
-              <TableBody className="divide-y divide-violet-100 bg-white">
+ <TableBody className="divide-y divide-violet-100 bg-white">
                 {filtered.map((row, idx) => (
                   <TableRow key={row.id} className="hover:bg-violet-50/40 transition-colors">
                     <TableCell className="text-center text-gray-500 whitespace-nowrap">{idx + 1}</TableCell>
@@ -444,7 +448,7 @@ export default function HafizaTab() {
                         <TableCell 
                           key={c.key} 
                           onClick={() => !isEditing && handleCellClick(row.id, c.key, val)} 
-                          className={`cursor-pointer ${isNumOrDate ? "whitespace-nowrap w-auto" : ""}`}
+                          className={`cursor-pointer ${isNumOrDate ? "whitespace-nowrap" : ""}`}
                         >
                           {isEditing ? (
                             <Input
@@ -456,7 +460,7 @@ export default function HafizaTab() {
                               className="h-8 text-lg bg-white text-center border-violet-500 ring-2 ring-violet-100"
                             />
                           ) : (
-                            <span className={`block min-w-auto ${isMoney ? "font-bold font-medium text-gray-800" : "text-gray-700"}`}>
+                            <span className={`block w-auto ${isMoney ? "font-bold font-medium text-gray-800" : "text-gray-700"}`}>
                               {isMoney ? fmt(Number(val) || 0) : String(val ?? "—")}
                             </span>
                           )}
