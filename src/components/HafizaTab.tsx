@@ -187,7 +187,7 @@ export default function HafizaTab() {
       }}
     >
       {/* الهيدر الرئيسي */}
-      <div className="rounded-xl p-4 mb-4 bg-from-[#2A6B6A] to-[#D2B48C] border border-black shadow-xm">
+      <div className="rounded-xl p-4 mb-4 bg-#D2B48C border border-black shadow-xm">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 w-full md:w-auto">
             <span className="p-2.5 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
@@ -221,8 +221,8 @@ export default function HafizaTab() {
       {/* نموذج إضافة حافظة */}
       <div className={`transition-all duration-300 ${showForm ? "max-h-[1400px]" : "max-h-0 overflow-hidden"}`}>
         <Card className="mb-4 bg-#E6D7C3 border border-black shadow-xm rounded-xl">
-          <div className="flex items-center gap-3 p-4 border-b border-slate-100">
-            <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center">
+          <div className="flex items-center gap-3 p-4 border border-black">
+            <div className="w-10 h-10 rounded-lg bg-#7EC8E3 flex items-center justify-center">
               <Plus className="w-5 h-5 text-indigo-600" />
             </div>
             <div>
