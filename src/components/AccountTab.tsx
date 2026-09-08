@@ -915,15 +915,15 @@ export default function AccountsTab() {
       </div>
 
       {/* ===== جدول القيود (كرت 7 بلون أبيض ناصع مع حدود سوداء وتنسيق الالتفاف التلقائي للخلايا) ===== */}
-      <div className="accounts-print-area w-full rounded-2xl overflow-hidden border-2 border-black shadow-md bg-white">
-        <div className="accounts-print-hide px-3 py-3 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2 border-b-2 border-black bg-[#f4f1ea]">
+      <div className="accounts-print-area w-auto rounded-2xl overflow-hidden border-2 border-black shadow-md bg-white">
+        <div className="accounts-print-hide px-3 py-3 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2 border border-1-black bg-[#f4f1ea]">
           <div className="flex items-center gap-2.5">
-            <div className="w-3 h-3 rounded-full bg-[#2a9d8f] animate-pulse border border-black"></div>
-            <h2 className="text-xs sm:text-sm font-black text-[#0f2f44] tracking-wide">
+            <div className="w-3 h-3 rounded-full bg-[#2a9d8f] animate-pulse border border-1-black"></div>
+            <h2 className="text-lg sm:text-sm font-black text-[#0f2f44] tracking-wide">
               سجل حركات الحساب الجاري ({accounts.length})
             </h2>
           </div>
-          <div className="grid grid-cols-2 sm:flex gap-1 sm:gap-2 w-full sm:w-auto">
+          <div className="grid grid-cols-2 sm:flex gap-1 sm:gap-2 w-auto">
             {Object.values(filters).some(Boolean) && (
               <button
                 onClick={clearFilters}
@@ -947,7 +947,7 @@ export default function AccountsTab() {
 
         <div className="p-1.5 sm:p-3">
           <div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-xl border border-black">
-            <table className="w-full table-auto text-sm text-center font-semibold border-collapse border-2 border-black">
+            <table className="w-auto table-auto text-sm text-center font-semibold border-collapse border border-1-black">
               <thead className="sticky top-0 z-20 text-white font-black text-[15px] bg-[#343a40]">
                 <tr>
                   <th className="border-2 border-black text-center w-auto sticky top-0 z-20 px-2 py-2 whitespace-nowrap">م</th>
@@ -975,7 +975,7 @@ export default function AccountsTab() {
                         value={filters[c.key] || ""}
                         onChange={(e) => setFilter(c.key, e.target.value)}
                         placeholder="تصفية..."
-                        className="w-full min-w-[70px] px-2 py-1 text-xs border-2 border-black rounded bg-white text-[#0f2f44] outline-none font-bold"
+                        className="w-auto px-2 py-1 text-xs border-2 border-black rounded bg-white text-[#0f2f44] outline-none font-bold"
                       />
                     </th>
                   ))}
@@ -996,37 +996,37 @@ export default function AccountsTab() {
                 ) : (
                   filteredWithBalance.map((acc, index) => (
                     <tr key={acc.id} className="odd:bg-white even:bg-[#f8f9fa] hover:bg-[#e2ece9] transition-colors group">
-                      <td className="border border-black text-center font-mono tabular-nums px-2 py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black text-center font-bold tabular-nums px-2 py-2 text-lg whitespace-nowrap">
                         {index + 1}
                       </td>
-                      <td className="border border-black font-mono tabular-nums text-center px-2 py-2 text-sm whitespace-nowrap">
+                      <td className="border border-1-black font-bold tabular-nums text-center px-2 py-2 text-lg whitespace-nowrap">
                         {acc.date}
                       </td>
-                      <td className="border border-black font-mono tabular-nums font-black text-center px-2 py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-bold tabular-nums font-black text-center px-2 py-2 text-lg whitespace-nowrap">
                         {acc.hafizaNo || "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums text-center px-2 py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-bold tabular-nums text-center px-2 py-2 text-lg whitespace-nowrap">
                         {acc.notifyNo || "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums text-center px-2 py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-bold tabular-nums text-center px-2 py-2 text-lg whitespace-nowrap">
                         {acc.notifyDate || "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums text-center px-2 py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-mono tabular-nums text-center px-2 py-2 text-lg whitespace-nowrap">
                         {acc.checkNo || "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums text-center px-2 py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-mono tabular-nums text-center px-2 py-2 text-lg whitespace-nowrap">
                         {acc.checkDate || "—"}
                       </td>
-                      <td className="border border-black px-3 py-2 text-sm text-right whitespace-normal break-words max-w-[220px]">
+                      <td className="border border-black px-3 py-2 text-lg text-center whitespace-nowrap break-words w-auto ">
                         {acc.description || "—"}
                       </td>
-                      <td className="border border-black px-3 py-2 text-sm text-right whitespace-normal break-words max-w-[150px]">
+                      <td className="border border-black px-3 py-2 text-lg text-center whitespace-nowrap break-words max-w-auto">
                         {acc.specialty || "—"}
                       </td>
-                      <td className="border border-black px-3 py-2 text-sm font-black text-right whitespace-normal break-words max-w-[150px]">
+                      <td className="border border-black px-3 py-2 text-sm font-black text-center whitespace-nowrap break-words max-w-auto">
                         {acc.name || "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums text-center px-2 py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-mono tabular-nums text-center px-2 py-2 text-lg whitespace-nowrap">
                         {Number(acc.hafizaAmount) > 0 ? fmt(Number(acc.hafizaAmount)) : "—"}
                       </td>
                       <td className="border border-black font-mono tabular-nums font-black text-center bg-[#d8f3dc] text-[#1b4332] px-2 py-2 text-sm whitespace-nowrap">
@@ -1060,7 +1060,7 @@ export default function AccountsTab() {
                         <div className="flex justify-center gap-1.5">
                           <button
                             onClick={() => setEditingRow(acc)}
-                            className="p-1.5 bg-[#2a9d8f]/20 text-[#2a9d8f] hover:bg-[#2a9d8f]/30 rounded-lg transition-colors border border-black"
+                            className="p-1.5 bg-[#2a9d8f]/20 text-[#2a9d8f] hover:bg-[#2a9d8f]/30 rounded-lg transition-colors border border-1-black"
                             aria-label="تعديل"
                           >
                             <Edit className={ICON_MOBILE} />
@@ -1069,7 +1069,7 @@ export default function AccountsTab() {
                             onClick={() => {
                               if (confirm("هل أنت متأكد من الحذف؟")) deleteAccount(acc.id);
                             }}
-                            className="p-1.5 bg-[#e76f51]/20 text-[#e76f51] hover:bg-[#e76f51]/30 rounded-lg transition-colors border border-black"
+                            className="p-2 bg-[#e76f51] text-[#e76f51] hover:bg-[#e76f51]/30 rounded-lg transition-colors border border-1-black"
                             aria-label="حذف"
                           >
                             <Trash2 className={ICON_MOBILE} />
@@ -1083,7 +1083,7 @@ export default function AccountsTab() {
               {filteredWithBalance.length > 0 && (
                 <tfoot>
                   <tr className="bg-[#e9ecef] font-black">
-                    <td colSpan={10} className="border-2 border-black text-left px-3 py-2 text-sm whitespace-nowrap">
+                    <td colSpan={10} className="border-2 border-black text-center px-3 py-2 text-sm whitespace-nowrap">
                       رصيد الإقفال الإجمالي
                     </td>
                     <td className="border-2 border-black font-mono tabular-nums text-center px-2 py-2 text-sm whitespace-nowrap">
@@ -1113,14 +1113,14 @@ export default function AccountsTab() {
       >
         {editingRow && (
           <form onSubmit={handleEditSave} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-2 gap-2">
               <div>
-                <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide">التاريخ</label>
+                <label className="block text-sm font-black text-black mb-1 tracking-wide">التاريخ</label>
                 <input
                   type="date"
                   value={editingRow.date}
                   onChange={(e) => setEditingRow({ ...editingRow, date: e.target.value })}
-                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-white text-[#0f2f44] font-bold"
+className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-creme text-[#0f2f44] font-bold"
                   required
                 />
               </div>

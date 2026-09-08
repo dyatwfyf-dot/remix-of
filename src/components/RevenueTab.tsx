@@ -226,7 +226,7 @@ export default function RevenueTab() {
 
         {/* صندوق الحماية من الضيق: الجدول والحدود كلها سوداء واحتواء الخلايا تلقائي */}
         <div className="w-full overflow-auto max-h-[72vh] [-ms-overflow-style:none] [scrollbar-width:thin] relative">
-          <table className="min-w-max table-auto text-right border-collapse text-sm sm:text-base font-semibold border border-black">
+          <table className="min-w-auto table-auto text-center border-collapse text-lg :sm:text-base font-bold border border-black">
             <thead className="sticky top-0 z-20 shadow-sm">
               <tr className="bg-slate-100 text-slate-700 font-bold border-b-2 border-black">
                 <th rowSpan={2} className="border border-black text-right whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">

@@ -551,7 +551,7 @@ export default function JournalTab() {
           {/* جدول أسطر القيد (مدين + دائن) */}
           <div className="overflow-hidden rounded-2xl border border-slate-200">
             <div className="overflow-auto max-h-[72vh]">
-              <table className=" table-auto border-collapse text-center text-xl sm:text-base font-semibold">
+              <table className=" table-auto border-collapse text-center text-lg sm:text-base font-bold">
                 <thead className="bg-[#2e6b8a] text-white">
                   <tr>
                     <th className="!whitespace-nowrap text-center font-bold !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
@@ -702,7 +702,7 @@ export default function JournalTab() {
         ) : (
           <>
             <div className="overflow-auto max-h-[72vh]">
-              <table className="w-full min-w-0 table-auto border-collapse text-center text-sm sm:text-base font-semibold">
+              <table className="w-full min-w-auto table-auto border-collapse text-center text-sm sm:text-base font-semibold">
                 <thead className="sticky top-0 z-20 bg-[#2e6b8a] text-white shadow-md">
                   <tr>
                     {JOURNAL_COLS.map((c) => (
