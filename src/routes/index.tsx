@@ -39,6 +39,13 @@ export const Route = createFileRoute("/")({
         content:
           "تطبيق إدارة قيود اليومية وحوافظ التوريد للمجلس اليمني للاختصاصات الطبية - يعمل بدون إنترنت",
       },
+      { property: "og:title", content: "قيادة النظام المالي - المجلس اليمني للاختصاصات الطبية" },
+      {
+        property: "og:description",
+        content: "تطبيق إدارة قيود اليومية وحوافظ التوريد للمجلس اليمني للاختصاصات الطبية - يعمل بدون إنترنت",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "theme-color", content: "#2e6b8a" },
     ],
     links: [
@@ -270,7 +277,7 @@ function Index() {
       </div>
 
       {/* محتوى التبويب النشط */}
-      <div className="w-full bg-[#f4f9fd] p-2.5 pb-28 sm:p-4 sm:pb-24 md:p-6 min-h-[calc(100vh-140px)]">
+      <div className="tab-content w-full min-w-0 bg-[#f4f9fd] pb-28 sm:pb-24 min-h-[calc(100vh-140px)]">
         <Suspense
           fallback={
             <div

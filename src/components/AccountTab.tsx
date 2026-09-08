@@ -638,8 +638,6 @@ export default function AccountsTab() {
     label: "مطابقة شاملة ٢٠٢٦",
     icon: Zap,
     onSelect: handleSyncFromHafiza,
-    // تم تعديل className ليصبح بتدرج كحلي - بترولي
-    className: "flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white bg-gradient-to-r from-[#1a2a3a] via-[#2a4a5a] to-[#2a6b6a] border border-black shadow-sm hover:from-[#2a4a5a] hover:to-[#1a3a4a] transition-all duration-200",
   },
   {
     label: "استيراد Excel",
