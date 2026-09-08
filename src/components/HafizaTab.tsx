@@ -211,10 +211,10 @@ export default function HafizaTab() {
 
         {/* الكرت الثاني: نموذج الإضافة (خلفية لون Sky هادئ، كل حقلين في صف واحد، وزرين في صف واحد) */}
         <div className="bg-sky-50/70 p-6 rounded-2xl shadow-sm border border-sky-200">
-          <h3 className="text-sm font-bold text-sky-900 mb-4 pb-2 border-b border-sky-200">إضافة حافظة جديدة</h3>
+          <h3 className="text-sm font-bold text-sky-900 mb-4 pb-2 border-b border-black">إضافة حافظة جديدة</h3>
           
           {/* كل حقلين في صف واحد باستخدام grid-cols-1 sm:grid-cols-2 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
             
             {/* الحقل 1: الاسم الكامل */}
             <div className="relative">
@@ -373,7 +373,7 @@ export default function HafizaTab() {
         </div>
 
         {/* الكرت الثالث: جدول كشف القيود (خلفية لون Violet هادئ) */}
-        <div className="bg-violet-50/50 p-6 rounded-2xl shadow-sm border border-violet-200">
+        <div className="bg-violet-50/50 p-6 rounded-2xl shadow-sm border border-black">
           <div className="flex items-center justify-between mb-4 pb-2 border-b border-violet-200">
             <div className="flex items-center gap-3">
               <h2 className="text-lg font-bold text-violet-900">كشف القيود الحالية</h2>
@@ -386,12 +386,12 @@ export default function HafizaTab() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-1 mb-2">
             <input
               value={filters.name || ""}
               onChange={(e) => setFilter("name", e.target.value)}
               placeholder="بحث سريع بالاسم..."
-              className="flex-1 px-3 py-2 h-9 rounded-lg text-sm border border-violet-300 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="flex-1 px-2 py-2 h-9 rounded-lg text-sm border border-violet-300 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500"
             />
             {Object.values(filters).some(Boolean) && (
               <Button variant="outline" size="sm" onClick={clearFilters} className="h-9 px-3 text-xs font-bold text-slate-600 bg-white">
@@ -403,14 +403,14 @@ export default function HafizaTab() {
 
           {/* الجدول مع منع الالتفاف للأرقام والتاريخ وضبط العرض تلقائياً */}
           <div className="overflow-x-auto border border-violet-200 rounded-xl bg-white">
-            <Table className="w-full table-auto border-collapse text-right">
+            <Table className="w-full table-auto border-collapse text-center">
               <TableHeader>
                 <tr className="border-b bg-violet-100/70 text-violet-900">
-                  <th className="px-4 py-3 text-sm font-semibold text-center whitespace-nowrap w-auto">#</th>
+                  <th className="px-2 py-2 text-lg font-bold text-center whitespace-nowrap w-auto">#</th>
                   {COLS.map((c) => {
                     const isNumOrDate = ["date", "hafizaNo", "hafizaAmount", "notifyDate", "notifyNo", "notifyAmount"].includes(c.key);
                     return (
-                      <th key={c.key} className={`px-4 py-3 text-sm font-semibold ${isNumOrDate ? "whitespace-nowrap w-auto" : ""}`}>
+                      <th key={c.key} className={`px-2 py-2 text-lg font-bold ${isNumOrDate ? "whitespace-nowrap w-auto" : ""}`}>
                         <div className="flex flex-col gap-1.5 py-1">
                           <button onClick={() => toggleSort(c.key)} className="flex items-center gap-1 hover:text-violet-700 transition-colors">
                             <span>{c.label}</span>
@@ -420,13 +420,13 @@ export default function HafizaTab() {
                             value={filters[c.key] || ""}
                             onChange={(e) => setFilter(c.key, e.target.value)}
                             placeholder="فلتر..."
-                            className="w-full px-2 py-1 rounded text-xs border border-violet-200 text-gray-800 focus:outline-none focus:border-violet-500 bg-white"
+                            className="w-auto px-2 py-1 rounded text-xs border border-black text-gray-800 focus:outline-none focus:border-violet-500 bg-white"
                           />
                         </div>
                       </th>
                     );
                   })}
-                  <th className="px-4 py-3 text-sm font-semibold text-center whitespace-nowrap w-auto">إجراءات</th>
+                  <th className="px-2 py-2 text-lg font-bold text-center whitespace-nowrap w-auto">إجراءات</th>
                 </tr>
               </TableHeader>
 
@@ -453,10 +453,10 @@ export default function HafizaTab() {
                               onChange={(e) => setCellValue(e.target.value)}
                               onBlur={() => handleCellSave(row as Record<string, unknown> & { id: string })}
                               onKeyDown={(e) => e.key === "Enter" && handleCellSave(row as Record<string, unknown> & { id: string })}
-                              className="h-8 text-sm bg-white text-center border-violet-500 ring-2 ring-violet-100"
+                              className="h-8 text-lg bg-white text-center border-violet-500 ring-2 ring-violet-100"
                             />
                           ) : (
-                            <span className={`block min-w-[4rum] ${isMoney ? "font-mono font-medium text-gray-800" : "text-gray-700"}`}>
+                            <span className={`block min-w-auto ${isMoney ? "font-bold font-medium text-gray-800" : "text-gray-700"}`}>
                               {isMoney ? fmt(Number(val) || 0) : String(val ?? "—")}
                             </span>
                           )}
@@ -470,7 +470,7 @@ export default function HafizaTab() {
                         onClick={() => {
                           if (confirm("هل أنت متأكد من حذف هذا السجل؟")) deleteHafiza(row.id);
                         }}
-                        className="h-8 w-8 text-red-500 hover:bg-red-50 hover:text-red-600"
+                        className="h-8 w-8 text-red-500 hover:bg-silver hover:text-black"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
