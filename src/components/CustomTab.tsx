@@ -101,7 +101,7 @@ export default function CustomTab({ tabId }: { tabId: string }) {
       </div>
 
       <div className="bg-card rounded-xl border p-4 overflow-x-auto">
-        <table className="w-max w-max table-auto text-sm sm:text-base">
+        <table className="w-max w-max t-auto text-sm sm:text-base">
           <thead className="bg-secondary text-secondary-foreground">
             <tr>
               <th className="text-right !px-0.5 !py-1 sm:!px-1 sm:!py-1 !text-[10px] sm:!text-xs whitespace-nowrap">م</th>
