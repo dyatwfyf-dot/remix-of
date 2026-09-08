@@ -148,7 +148,7 @@ const PRINT_STYLES = `
     line-height: 1.1 !important;
     font-size: 16px !important;
     height: auto !important;
-    max-width:auto!important;
+    max-width:100%!important;
     color: #000 !important;
   }
   .accounts-print-area td.numeric-cell,
@@ -243,7 +243,7 @@ function Field({
 }) {
   return (
     <div className="w-full">
-      <label className="block text-sm font-white text-white mb-1.5 mr-0.5 tracking-wide">
+      <label className="block text-lg font-white text-white mb-1.5 mr-0.5 tracking-wide">
         {label}
       </label>
       <div className="relative flex items-center">
@@ -644,7 +644,7 @@ export default function AccountsTab() {
     icon: FileSpreadsheet,
     onSelect: () => undefined,
     content: (
-      <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#f5f0e6] bg-gradient-to-r from-[#9e3a2a] via-[#7a2a1a] to-[#5c2a1a] border border-black shadow-sm hover:from-[#7a2a1a] hover:to-[#4a1a0a] transition-all duration-200">
+      <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white bg-gradient-to-r from-[#9e3a2a] via-[#7a2a1a] to-[#5c2a1a] border border-black shadow-sm hover:from-[#7a2a1a] hover:to-[#4a1a0a] transition-all duration-200">
         <FileSpreadsheet className={`${ICON_MOBILE} text-[#f5f0e6]`} />
         <span>استيراد Excel</span>
         <input
@@ -850,7 +850,7 @@ className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full fo
       </button>
 
       <label
-        className={`${BTN_MOBILE} relative flex items-center justify-center gap-2 rounded-full border border-black px-3 py-2 cursor-pointer font-bold shadow-sm bg-gradient-to-r from-[#d2b48c] to-[#e6d7c3] text-white`}
+        className={`${BTN_MOBILE} relative flex items-cent+er justify-center gap-2 rounded-full border border-black px-3 py-2 cursor-pointer font-bold shadow-sm bg-gradient-to-r from-[#d2b48c] to-[#e6d7c3] text-white`}
       >
         <FileSpreadsheet className={`${ICON_MOBILE} text-[#1a2a3a]`} />
         <span>استيراد إكسل</span>
@@ -1012,11 +1012,12 @@ className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full fo
 
     {/* أزرار الإجراءات في سطر منفصل */}
     <div className="flex gap-2 pt- mt-2 border-t border-black">
-      <button
-        onClick={submit}
-        className={`${BTN_MOBILE} flex-1 flex items-center justify-center gap-2 rounded-xl font-black border border-black shadow-sm transition-all bg-gradient-to-r from-[#1a2a3a] to-[#2a6b6a] text-white`}
+     
+  <button
+onClick={submit}
+ className={`${BTN_MOBILE} flex-3 flex items-center justify-center gap-2 rounded-xl font-black border border-black shadow-sm transition-all bg-gradient-to-r from-[#1a2a3a] to-[#2a6b6a] text-white`}
       >
-        <Save className={`${ICON_MOBILE} text-white`} /> <span>ترحيل القيد</span>
+        <Save className={`${ICON_MOBILE} text.gold`} /> <span>ترحيل القيد</span>
       </button>
       <button
         onClick={() => setForm(emptyForm)}
@@ -1029,10 +1030,11 @@ className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full fo
 </div>
       {/* ===== جدول القيود ===== */}
       <div className="accounts-print-area w-full rounded-2xl overflow-hidden border shadow-sm" style={{ background: "#fff", borderColor: "rgba(0,0,0,0.08)" }}>
-        <div className="accounts-print-hide px-2 py-2 sm:px-5 sm:py-3.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2 border-b" style={{ background: THEME.cream, borderColor: "#000" }}>
-          <div className="flex items-center gap-2.5">
-            <div className="w-2 h-2 rounded-full bg-[#1E8E5A] animate-pulse"></div>
-            <h2 className="text-xs sm:text-sm font-black text-[#0f2f44] tracking-wide">
+        <div className="accounts-print-hide px-2 py-2 sm:px-2 sm:py-2 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2 border-b" style={{ background: THEME.cream, borderColor: "#000" }}>
+<div className="flex items-center gap-2.5">
+
+<div className="w-2 h-2 rounded-full bg-[#1E8E5A] animate-pulse"></div>
+<h2 className="text-xs sm:text-sm font-black text-[#0f2f44] tracking-wide">
               سجل حركات الحساب الجاري ({accounts.length})
             </h2>
           </div>
@@ -1053,7 +1055,7 @@ className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full fo
               numericKeys={["hafizaAmount", "income", "expense", "balance"]}
               pdfLayout="wide-centered"
               onClear={clearAccounts}
-              className="col-span-2 w-full"
+              className="col-span-2 w-auto"
             />
           </div>
         </div>
@@ -1063,7 +1065,7 @@ className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full fo
             <table className="w-full table-auto text-xm xm:text-base text-center font-semibold border-collapse border-2 border-black">
               <thead className="sticky top-0 z-20 text-[#0f2f44] font-black text-[16px]" style={{ background: THEME.warmCream }}>
                 <tr>
-                  <th className="border border-black text-center w-10 sticky top-0 z-20 px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">م</th>
+                  <th className="border border-black text-center w-auto sticky top-0 z-20 px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">م</th>
                   {COLS.map((c) => (
                     <th
                       key={c.key}
@@ -1088,7 +1090,7 @@ className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full fo
                         value={filters[c.key] || ""}
                         onChange={(e) => setFilter(c.key, e.target.value)}
                         placeholder="تصفية..."
-                        className="w-16 min-w-0 max-w-[50px] px-1 py-1 text-xs border rounded bg-white text-[#0f2f44] outline-none focus:border-[#0f2f44] font-bold transition-colors"
+                        className="w-16 min-w-0  px-2 py-2 text-xs border rounded bg-white text-[#0f2f44] outline-none focus:border-[#0f2f44] font-bold transition-colors"
                       />
                     </th>
                   ))}
@@ -1124,29 +1126,29 @@ className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full fo
                       <td className="border border-black font-mono tabular-nums numeric-cell text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                         {acc.notifyDate || "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums numeric-cell text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-bold tabular-nums numeric-cell text-center px-2 py-2 sm:px-2 sm:py-2 text-xm whitespace-nowrap">
                         {acc.checkNo || "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums numeric-cell text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-bold tabular-nums numeric-cell text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                         {acc.checkDate || "—"}
                       </td>
-<td className="border border-black px-2 py-2 sm:px-2 sm:py-2 text-xl whitespace-normal
- break-word max-w-[220px] text-center">
+<td className="border border-black px-2 py-2 sm:px-2 sm:py-2 text-xl whitespace-nowrap
+ break-word w-auto text-center">
                         {acc.description || "—"}
                       </td>
-                      <td className="border border-black px-2 py-2 sm:px-2 sm:py-2 text-xl whitespace-normal">
+                      <td className="border border-black px-2 py-2 sm:px-2 sm:py-2 text-lg whitespace-normal">
                         {acc.specialty || "—"}
                       </td>
                       <td className="border border-black font-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                         {acc.name || "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums numeric-cell text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-bold tabular-nums numeric-cell text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                         {Number(acc.hafizaAmount) > 0 ? fmt(Number(acc.hafizaAmount)) : "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#1E8E5A]/[0.06] px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#1E8E5A] px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                         {Number(acc.income) > 0 ? fmt(Number(acc.income)) : "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#D14343]/[0.06] px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-bold tabular-nums numeric-cell font-black text-center bg-[#D14343] px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                         {Number(acc.expense) > 0 ? fmt(Number(acc.expense)) : "—"}
                       </td>
 
@@ -1236,7 +1238,7 @@ className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full fo
                   type="date"
                   value={editingRow.date}
                   onChange={(e) => setEditingRow({ ...editingRow, date: e.target.value })}
-                  className="w-full p-2 text-[15px] border rounded-xl outline-none bg-white text-[#0f2f44] font-bold focus:border-[#0f2f44]"
+                  className="w-full p-2 text-[15px] border rounded-xl outline-none bg-#E6D7C3 text-black font-bold focus:border-[#0f2f44]"
                   required
                 />
               </div>
