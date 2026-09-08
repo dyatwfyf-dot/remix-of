@@ -535,14 +535,40 @@ table td > * {
   flex-wrap: wrap;
 }
 
-@layer utilities {
-  .web-only-actions {
-    display: none !important;
-  }
+/* محتوى التبويبات يمتد بعرض الشاشة كاملاً دون هوامش جانبية. */
+.tab-content {
+  margin-inline: 0 !important;
+  padding-inline: 0 !important;
+  overflow-x: hidden;
+}
 
-  .apk-only-actions {
-    display: flex !important;
-  }
+.tab-content > * {
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: 0 !important;
+  padding-inline: 0 !important;
+}
+
+/* كل جدول يوسّع أعمدته تلقائياً بقدر النص، مع تمرير الحاوية عند زيادة العرض. */
+.tab-content :where(.overflow-x-auto, .overflow-auto) {
+  max-width: 100%;
+}
+
+.tab-content table {
+  width: max-content !important;
+  min-width: 100% !important;
+  max-width: none !important;
+  table-layout: auto !important;
+}
+
+.tab-content table :where(th, td),
+.tab-content table :where(th, td) > * {
+  width: auto !important;
+  max-width: none !important;
+  white-space: nowrap !important;
+  overflow-wrap: normal !important;
+  word-break: keep-all !important;
+  hyphens: none !important;
 }
 
 /* ===== تبويبات الكشوف (الإيرادات، الحساب الشهري، المصروفات، سجل الاستخدامات) ===== */
