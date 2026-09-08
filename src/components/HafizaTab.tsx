@@ -182,7 +182,7 @@ export default function HafizaTab() {
       className="w-full min-h-screen p-2 sm:p-4"
       dir="rtl"
       style={{
-        background: `linear-gradient(180deg, ${PALETTE[0]}15 0%, ${PALETTE[1]}10 100%)`, // خلفية أكثر هدوءاً
+        background: `linear-gradient(180deg, ${PALETTE[0]}15 0%, ${PALETTE[1]}10 100%)`, 
         WebkitFontSmoothing: "antialiased",
       }}
     >
@@ -199,7 +199,6 @@ export default function HafizaTab() {
             </div>
           </div>
 
-          {/* الأزرار العلوية: زرين في صف واحد */}
           <div className="grid grid-cols-2 gap-2 w-full sm:w-64">
             <div className="flex items-center justify-center w-full h-9 rounded-md bg-white border border-slate-300 hover:bg-slate-50 transition-colors overflow-hidden">
               <ImportButton kind="hafiza" />
@@ -309,7 +308,6 @@ export default function HafizaTab() {
               <FieldDark label="مبلغ التوريد" type="number" icon={<CreditCard className="w-4 h-4" />} v={form.notifyAmount} on={(v) => setForm({ ...form, notifyAmount: v })} />
             </div>
 
-            {/* أزرار الحفظ والمسح: زرين في صف واحد */}
             <div className="mt-5 pt-4 border-t border-slate-100 grid grid-cols-2 gap-3">
               <Button onClick={submit} className="w-full h-10 font-bold bg-green-600 hover:bg-green-700 text-white rounded-lg">
                 <Save className="w-4 h-4 ml-1.5" /> حفظ السجل
@@ -345,29 +343,31 @@ export default function HafizaTab() {
             </div>
           </div>
 
-          {/* عناصر التحكم في الجدول: كل عنصرين في صف */}
-          <div className="grid grid-cols-2 gap-2">
-            <input
-              value={filters.name || ""}
-              onChange={(e) => setFilter("name", e.target.value)}
-              placeholder="بحث بالاسم..."
-              className="w-full px-3 py-2 rounded-md text-sm border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
+          {/* تم ترتيب عناصر التحكم بحيث تصبح أزرار التصدير (TabActions) في صف واحد ومستقل */}
+          <div className="flex flex-col gap-3">
+            {/* الصف الأول: شريط البحث، الاستيراد، وتفريغ الفلتر */}
+            <div className="flex items-center gap-2">
+              <input
+                value={filters.name || ""}
+                onChange={(e) => setFilter("name", e.target.value)}
+                placeholder="بحث بالاسم..."
+                className="flex-1 px-3 py-2 h-9 rounded-md text-sm border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
 
-            <div className="w-full flex items-center justify-center h-9 mt-0.5 rounded-md bg-white border border-slate-300 hover:bg-slate-50 transition-colors overflow-hidden">
-               <ImportButton kind="hafiza" />
+              <div className="w-28 h-9 flex items-center justify-center rounded-md bg-white border border-slate-300 hover:bg-slate-50 transition-colors overflow-hidden shrink-0">
+                 <ImportButton kind="hafiza" />
+              </div>
+
+              {Object.values(filters).some(Boolean) && (
+                <Button variant="outline" size="sm" onClick={clearFilters} className="h-9 px-3 text-xs font-bold text-slate-600 shrink-0">
+                  <X className="w-3.5 h-3.5 ml-1" />
+                  تفريغ
+                </Button>
+              )}
             </div>
 
-            {Object.values(filters).some(Boolean) ? (
-              <Button variant="outline" size="sm" onClick={clearFilters} className="w-full h-9 text-xs font-bold text-slate-600">
-                <X className="w-3.5 h-3.5 ml-1" />
-                تفريغ الفلتر
-              </Button>
-            ) : (
-              <div />
-            )}
-
-            <div className="w-full">
+            {/* الصف الثاني: أزرار التصدير (الطباعة، PDF، Excel) بجانب بعضها */}
+            <div className="flex items-center w-full bg-slate-50 p-1.5 rounded-md border border-slate-100 overflow-x-auto">
               <TabActions title="حوافظ التوريد" rows={hafiza} columns={COLS} fileName="حوافظ-التوريد" pdfLayout="wide-centered" />
             </div>
           </div>
