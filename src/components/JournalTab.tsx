@@ -101,7 +101,7 @@ function Field({
 }) {
   return (
     <label className={`group relative block min-w-0 ${className}`}>
-      <span className="mb-1 flex items-center gap-1.5 text-xs font-black text-slate-900 sm:mb-1.5 sm:text-xs">
+      <span className="mb-1 flex items-center gap-1.5 text-xs font-black text-slate-200 sm:mb-1.5 sm:text-xs">
         {icon}
         {label}
       </span>
@@ -111,7 +111,7 @@ function Field({
 }
 
 const inputCls =
-  "w-full min-w-0 rounded-xl border-2 border-slate-900 bg-slate-900 text-slate-100 px-3 py-2.5 text-[13px] font-bold outline-none transition-all placeholder:text-slate-400 focus:border-amber-400 focus:bg-slate-950 focus:ring-4 focus:ring-amber-400/20 sm:px-3 sm:py-3 sm:text-sm shadow-inner";
+  "w-full min-w-0 rounded-xl border-2 border-[#1a1530] bg-[#1a1530] text-slate-100 px-3 py-2.5 text-[13px] font-bold outline-none transition-all placeholder:text-slate-400 focus:border-amber-400 focus:bg-[#0f0a1e] focus:ring-4 focus:ring-amber-400/20 sm:px-3 sm:py-3 sm:text-sm shadow-inner";
 
 const journalClampCls =
   "block max-w-[90px] overflow-hidden text-ellipsis whitespace-nowrap leading-snug sm:max-w-[180px]";
@@ -166,13 +166,13 @@ function AccountDropdownCell({
       <button
         type="button"
         onClick={handleOpen}
-        className={`flex min-h-[40px] w-full items-center justify-between gap-1.5 rounded-xl border-2 border-slate-900 px-2.5 py-2 text-right text-sm font-black transition-all active:scale-[0.98] shadow-md sm:min-h-[42px] sm:gap-2 sm:px-3 sm:text-[13px]
+        className={`flex min-h-[40px] w-full items-center justify-between gap-1.5 rounded-xl border-2 border-[#1a1530] px-2.5 py-2 text-right text-sm font-black transition-all active:scale-[0.98] shadow-md sm:min-h-[42px] sm:gap-2 sm:px-3 sm:text-[13px]
           ${
             value
               ? isDebit
                 ? "bg-emerald-950 text-emerald-200 border-emerald-500 shadow-emerald-900/30"
                 : "bg-rose-950 text-rose-200 border-rose-500 shadow-rose-900/30"
-              : "border-dashed border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500"
+              : "border-dashed border-[#2a2140] bg-[#1a1530] text-slate-400 hover:border-[#3b2d55]"
           }`}
       >
         <span className="min-w-0 flex-1 truncate text-right leading-snug">
@@ -183,15 +183,15 @@ function AccountDropdownCell({
 
       {open && (
         <>
-          <div className="fixed inset-0 z-[998] bg-slate-950/70 backdrop-blur-sm md:hidden" />
+          <div className="fixed inset-0 z-[998] bg-[#0f0a1e]/70 backdrop-blur-sm md:hidden" />
           <div
-            className="fixed inset-x-0 bottom-0 z-[999] max-h-[72vh] overflow-hidden rounded-t-3xl border-2 border-slate-900 bg-slate-900 text-slate-100 shadow-2xl
+            className="fixed inset-x-0 bottom-0 z-[999] max-h-[72vh] overflow-hidden rounded-t-3xl border-2 border-[#1a1530] bg-[#1a1530] text-slate-100 shadow-2xl
               md:absolute md:inset-x-auto md:bottom-auto md:right-0 md:left-0 md:top-full md:mt-1 md:max-h-[60vh] md:w-[360px] md:rounded-2xl"
             dir="rtl"
           >
-            <div className="mx-auto mt-2 h-1.5 w-12 rounded-full bg-slate-700 md:hidden" />
+            <div className="mx-auto mt-2 h-1.5 w-12 rounded-full bg-[#2a2140] md:hidden" />
             <div
-              className={`mt-2 flex items-center gap-1.5 px-3 py-3 border-b-2 border-slate-950 md:mt-0 md:gap-2
+              className={`mt-2 flex items-center gap-1.5 px-3 py-3 border-b-2 border-[#0f0a1e] md:mt-0 md:gap-2
               ${isDebit ? "bg-gradient-to-r from-emerald-900 via-teal-900 to-emerald-950" : "bg-gradient-to-r from-rose-900 via-pink-950 to-rose-950"}`}
             >
               <Search className="h-4 w-4 shrink-0 text-amber-400" />
@@ -211,7 +211,7 @@ function AccountDropdownCell({
               </button>
             </div>
 
-            <div className="border-b border-slate-800 bg-slate-950 px-3 py-2 text-right text-xs font-black text-amber-400">
+            <div className="border-b border-[#2a2140] bg-[#0f0a1e] px-3 py-2 text-right text-xs font-black text-amber-400">
               {filtered.length} حساب متاح
             </div>
 
@@ -224,13 +224,13 @@ function AccountDropdownCell({
                     key={acc}
                     type="button"
                     onClick={() => pick(acc)}
-                    className={`w-full break-words border-b border-slate-800/60 px-3 py-3 text-right text-[13px] font-bold leading-relaxed transition-all last:border-0 sm:px-4 sm:py-3.5 sm:text-sm
+                    className={`w-full break-words border-b border-[#2a2140]/60 px-3 py-3 text-right text-[13px] font-bold leading-relaxed transition-all last:border-0 sm:px-4 sm:py-3.5 sm:text-sm
                       ${
                         value === acc
                           ? isDebit
                             ? "bg-emerald-900/80 font-black text-emerald-200 border-l-4 border-l-emerald-400"
                             : "bg-rose-900/80 font-black text-rose-200 border-l-4 border-l-rose-400"
-                          : "text-slate-200 hover:bg-slate-800 active:bg-slate-700"
+                          : "text-slate-200 hover:bg-[#2a2140] active:bg-[#3b2d55]"
                       }`}
                   >
                     <span
@@ -383,7 +383,7 @@ export default function JournalTab() {
     return (
       <tr
         key={l.id}
-        className={`border-b-2 border-slate-900 transition-colors ${
+        className={`border-b-2 border-[#1a1530] transition-colors ${
           isDebit ? "bg-emerald-950/40 hover:bg-emerald-900/60" : "bg-rose-950/40 hover:bg-rose-900/60"
         }`}
       >
@@ -408,7 +408,7 @@ export default function JournalTab() {
             value={l.description || ""}
             onChange={(e) => updateLine(l.id, "description", e.target.value)}
             placeholder="بيان السطر (اختياري)"
-            className={`min-w-0 w-full rounded-xl border-2 border-slate-900 bg-slate-900 text-slate-100 px-3 py-2 text-xs font-bold outline-none transition-all sm:px-3 sm:py-2.5 sm:text-xs shadow-inner placeholder:text-slate-500
+            className={`min-w-0 w-full rounded-xl border-2 border-[#1a1530] bg-[#1a1530] text-slate-100 px-3 py-2 text-xs font-bold outline-none transition-all sm:px-3 sm:py-2.5 sm:text-xs shadow-inner placeholder:text-slate-500
               ${
                 isDebit
                   ? "focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20"
@@ -424,7 +424,7 @@ export default function JournalTab() {
             value={l.amount || ""}
             onChange={(e) => updateLine(l.id, "amount", e.target.value)}
             placeholder="0.00"
-            className={`min-w-0 w-full rounded-xl border-2 border-slate-900 bg-slate-950 px-2 py-2 text-center font-mono text-sm font-black outline-none transition-all sm:px-2 sm:py-2.5 sm:text-base shadow-inner
+            className={`min-w-0 w-full rounded-xl border-2 border-[#1a1530] bg-[#0f0a1e] px-2 py-2 text-center font-mono text-sm font-black outline-none transition-all sm:px-2 sm:py-2.5 sm:text-base shadow-inner
               ${
                 isDebit
                   ? "text-emerald-300 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20"
@@ -436,7 +436,7 @@ export default function JournalTab() {
           {total > 1 && (
             <button
               onClick={() => removeLine(l.id)}
-              className="grid h-9 w-9 place-items-center rounded-xl bg-slate-900 text-slate-400 border border-slate-800 transition-all hover:bg-rose-600 hover:text-white hover:border-rose-900 shadow-md"
+              className="grid h-9 w-9 place-items-center rounded-xl bg-[#1a1530] text-slate-400 border border-[#2a2140] transition-all hover:bg-rose-600 hover:text-white hover:border-rose-900 shadow-md"
               title="حذف السطر"
             >
               <X className="h-4 w-4" />
@@ -452,7 +452,7 @@ export default function JournalTab() {
       label: "استيراد Excel",
       onSelect: () => undefined,
       content: (
-        <div className="flex w-full items-center rounded-lg hover:bg-slate-800">
+        <div className="flex w-full items-center rounded-lg hover:bg-[#2a2140]">
           <ImportButton kind="journal" />
         </div>
       ),
@@ -482,21 +482,21 @@ export default function JournalTab() {
   );
 
   return (
-    <div className="w-full space-y-4 overflow-x-hidden p-1.5 sm:p-3 bg-slate-950 text-slate-100 min-h-screen" dir="rtl">
+    <div className="w-full space-y-4 overflow-x-hidden p-1.5 sm:p-3 bg-[#0f0a1e] text-slate-200 min-h-screen" dir="rtl">
       {/* ══ بطاقة إدخال القيد ══ */}
-      <section className="overflow-hidden rounded-2xl border-2 border-slate-900 bg-slate-900/90 shadow-2xl shadow-black">
-        <div className="relative bg-gradient-to-r from-slate-950 via-cyan-950 to-slate-950 border-b-2 border-slate-900 px-3 py-3 sm:px-5 sm:py-4">
-          <div className="absolute inset-x-0 top-0 h-[3px] bg-[repeating-linear-gradient(90deg,#38bdf8_0_10px,transparent_10px_20px)] opacity-80" />
+      <section className="overflow-hidden rounded-2xl border-2 border-[#1a1530] bg-[#1a1530]/90 shadow-2xl shadow-black">
+        <div className="relative bg-gradient-to-r from-[#0f0a1e] via-[#2a2140] to-[#0f0a1e] border-b-2 border-[#1a1530] px-3 py-3 sm:px-5 sm:py-4">
+          <div className="absolute inset-x-0 top-0 h-[3px] bg-[repeating-linear-gradient(90deg,#8b5cf6_0_10px,transparent_10px_20px)] opacity-80" />
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:gap-3">
             <div className="flex min-w-0 items-center gap-3">
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border-2 border-cyan-500/40 bg-gradient-to-br from-cyan-600 to-slate-900 text-cyan-300 shadow-lg shadow-cyan-950">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border-2 border-violet-500/40 bg-gradient-to-br from-violet-600 to-[#1a1530] text-violet-300 shadow-lg shadow-violet-950">
                 <BookOpenText className="h-6 w-6" />
               </span>
               <div className="min-w-0">
                 <h3 className="truncate text-base font-black text-white sm:text-lg">
                   {editingId ? "تعديل القيد المركب" : "قيد يومية مركب"}
                 </h3>
-                <p className="truncate text-xs font-bold text-cyan-200/80">
+                <p className="truncate text-xs font-bold text-violet-200/80">
                   إدخال أطراف متعددة مع توزيع تلقائي للمبالغ
                 </p>
               </div>
@@ -505,10 +505,10 @@ export default function JournalTab() {
               <ImportButton kind="journal" />
             </div>
           </div>
-          <div className="mt-3 border-t border-slate-800 pt-2.5 sm:mt-3 sm:pt-3">{tabActions}</div>
+          <div className="mt-3 border-t border-[#2a2140] pt-2.5 sm:mt-3 sm:pt-3">{tabActions}</div>
         </div>
 
-        <div className="space-y-4 p-3 sm:p-5 bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950">
+        <div className="space-y-4 p-3 sm:p-5 bg-gradient-to-b from-[#1a1530] via-[#1a1530]/90 to-[#0f0a1e]">
           {/* رأس القيد */}
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 sm:gap-3">
             <Field label="رقم الاستمارة" icon={<Hash className="h-3.5 w-3.5 text-amber-400" />}>
@@ -550,10 +550,10 @@ export default function JournalTab() {
           </div>
 
           {/* جدول أسطر القيد (مدين + دائن) */}
-          <div className="overflow-hidden rounded-2xl border-2 border-slate-900 bg-slate-950 shadow-xl">
+          <div className="overflow-hidden rounded-2xl border-2 border-[#1a1530] bg-[#0f0a1e] shadow-xl">
             <div className="overflow-auto max-h-[72vh]">
               <table className="table-auto border-collapse text-center text-lg sm:text-base font-black w-full">
-                <thead className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-amber-400 border-b-2 border-slate-900">
+                <thead className="bg-gradient-to-r from-[#0f0a1e] via-[#1a1530] to-[#0f0a1e] text-amber-400 border-b-2 border-[#1a1530]">
                   <tr>
                     <th className="!whitespace-nowrap text-center font-black !px-2 !py-2.5 sm:!px-3 sm:!py-3 !text-xs sm:!text-sm">
                       #
@@ -575,7 +575,7 @@ export default function JournalTab() {
                   {creditLinesArr.map((l, i) => renderEntryRow(l, i, creditLinesArr.length))}
                 </tbody>
                 <tfoot>
-                  <tr className="border-t-2 border-slate-900 bg-slate-950">
+                  <tr className="border-t-2 border-[#1a1530] bg-[#0f0a1e]">
                     <td colSpan={5} className="!px-2 !py-2.5 sm:!px-3 sm:!py-3 !text-sm sm:!text-base whitespace-nowrap">
                       <div className="grid grid-cols-2 sm:flex items-center gap-2">
                         <button
@@ -609,7 +609,7 @@ export default function JournalTab() {
           {/* شريط التوازن + الحفظ */}
           <div
             className={`sticky bottom-2 z-30 rounded-2xl border-2 p-3 sm:p-4 shadow-2xl backdrop-blur-md transition-all
-              ${isBalanced ? "border-emerald-500 bg-emerald-950/90 shadow-emerald-950/50" : "border-amber-500 bg-slate-900/90 shadow-amber-950/50"}`}
+              ${isBalanced ? "border-emerald-500 bg-emerald-950/90 shadow-emerald-950/50" : "border-amber-500 bg-[#1a1530]/90 shadow-amber-950/50"}`}
           >
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:gap-3">
               <div className="min-w-0">
@@ -617,10 +617,10 @@ export default function JournalTab() {
                   <span className="text-emerald-400">
                     مدين {totalDebit.toLocaleString("en-US")}
                   </span>
-                  <span className="text-slate-600">|</span>
+                  <span className="text-[#4a3a6b]">|</span>
                   <span className="text-rose-400">دائن {totalCredit.toLocaleString("en-US")}</span>
                 </div>
-                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-950 border border-slate-800">
+                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#0f0a1e] border border-[#2a2140]">
                   <div
                     className={`h-full rounded-full transition-all duration-300 ${isBalanced ? "bg-gradient-to-r from-emerald-500 to-teal-400" : "bg-gradient-to-r from-amber-500 to-yellow-400"}`}
                     style={{ width: `${Math.round(balanceRatio * 100)}%` }}
@@ -651,8 +651,8 @@ export default function JournalTab() {
               <button
                 onClick={handleSave}
                 title={isBalanced ? "" : "يجب تساوي إجمالي المدين والدائن"}
-                className={`min-w-0 flex min-h-[42px] flex-1 items-center justify-center gap-2 rounded-xl border-2 border-slate-900 px-3 sm:min-h-[48px] sm:gap-2 sm:px-5 text-xs sm:text-sm font-black text-white shadow-lg transition-all active:scale-[0.98]
-                  ${isBalanced ? "bg-gradient-to-r from-cyan-600 via-sky-600 to-blue-700 hover:brightness-125 shadow-cyan-950" : "bg-slate-800 text-slate-500 border-slate-900 cursor-not-allowed"}`}
+                className={`min-w-0 flex min-h-[42px] flex-1 items-center justify-center gap-2 rounded-xl border-2 border-[#0f0a1e] px-3 sm:min-h-[48px] sm:gap-2 sm:px-5 text-xs sm:text-sm font-black text-white shadow-lg transition-all active:scale-[0.98]
+                  ${isBalanced ? "bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-700 hover:brightness-125 shadow-violet-950" : "bg-[#2a2140] text-slate-500 border-[#1a1530] cursor-not-allowed"}`}
               >
                 <Save className="h-4 w-4" />
                 {editingId ? "تحديث القيد" : "حفظ القيد المركب"}
@@ -660,7 +660,7 @@ export default function JournalTab() {
               {editingId && (
                 <button
                   onClick={resetForm}
-                  className="min-h-[42px] rounded-xl border-2 border-slate-900 bg-slate-800 px-3 text-xs sm:min-h-[48px] sm:px-5 sm:text-sm font-black text-slate-200 transition-colors hover:bg-slate-700 shadow-md"
+                  className="min-h-[42px] rounded-xl border-2 border-[#1a1530] bg-[#2a2140] px-3 text-xs sm:min-h-[48px] sm:px-5 sm:text-sm font-black text-slate-200 transition-colors hover:bg-[#3b2d55] shadow-md"
                 >
                   إلغاء
                 </button>
@@ -671,8 +671,8 @@ export default function JournalTab() {
       </section>
 
       {/* ══ سجل القيود (جدول واحد لكل الأحجام) ══ */}
-      <section className="overflow-hidden rounded-2xl border-2 border-slate-900 bg-slate-900/90 shadow-2xl shadow-black">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:gap-3 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b-2 border-slate-900 px-3 py-3 sm:px-5 sm:py-3.5">
+      <section className="overflow-hidden rounded-2xl border-2 border-[#1a1530] bg-[#1a1530]/90 shadow-2xl shadow-black">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:gap-3 bg-gradient-to-r from-[#0f0a1e] via-[#1a1530] to-[#0f0a1e] border-b-2 border-[#1a1530] px-3 py-3 sm:px-5 sm:py-3.5">
           <h3 className="truncate text-base font-black text-amber-400">سجل القيود اليومية</h3>
           <div className="flex min-w-0 items-center justify-end gap-2">
             {Object.values(journalFilters).some(Boolean) && (
@@ -683,15 +683,15 @@ export default function JournalTab() {
                 مسح التصفية
               </button>
             )}
-            <span className="shrink-0 rounded-full border border-slate-700 bg-slate-950 px-3 py-1 text-xs font-black text-cyan-300 shadow-inner">
+            <span className="shrink-0 rounded-full border border-[#2a2140] bg-[#0f0a1e] px-3 py-1 text-xs font-black text-violet-300 shadow-inner">
               {filteredJournal.length} قيد
             </span>
           </div>
         </div>
 
         {journal.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 p-12 text-center bg-slate-950">
-            <span className="grid h-16 w-16 place-items-center rounded-2xl border-2 border-slate-800 bg-slate-900 text-slate-500 shadow-inner">
+          <div className="flex flex-col items-center gap-3 p-12 text-center bg-[#0f0a1e]">
+            <span className="grid h-16 w-16 place-items-center rounded-2xl border-2 border-[#2a2140] bg-[#1a1530] text-slate-500 shadow-inner">
               <Inbox className="h-8 w-8" />
             </span>
             <p className="text-base font-black text-slate-300">لا توجد قيود يومية بعد</p>
@@ -702,41 +702,41 @@ export default function JournalTab() {
           </div>
         ) : (
           <>
-            <div className="overflow-auto max-h-[72vh] bg-slate-950">
+            <div className="overflow-auto max-h-[72vh] bg-[#0f0a1e]">
               <table className="w-full min-w-auto table-auto border-collapse text-center text-sm sm:text-base font-bold">
-                <thead className="sticky top-0 z-20 bg-slate-950 text-amber-400 shadow-xl border-b-2 border-slate-900">
+                <thead className="sticky top-0 z-20 bg-[#0f0a1e] text-amber-400 shadow-xl border-b-2 border-[#1a1530]">
                   <tr>
                     {JOURNAL_COLS.map((c) => (
                       <th
                         key={c.key}
-                        className="min-w-0 max-w-[120px] whitespace-nowrap border-b-2 border-slate-900 text-center font-black leading-tight !px-2 !py-2.5 sm:!px-3 sm:!py-3 !text-xs sm:!text-sm"
+                        className="min-w-0 max-w-[120px] whitespace-nowrap border-b-2 border-[#1a1530] text-center font-black leading-tight !px-2 !py-2.5 sm:!px-3 sm:!py-3 !text-xs sm:!text-sm"
                       >
                         {c.label}
                       </th>
                     ))}
-                    <th className="min-w-0 max-w-[120px] whitespace-nowrap border-b-2 border-slate-900 text-center font-black leading-tight !px-2 !py-2.5 sm:!px-3 sm:!py-3 !text-xs sm:!text-sm">
+                    <th className="min-w-0 max-w-[120px] whitespace-nowrap border-b-2 border-[#1a1530] text-center font-black leading-tight !px-2 !py-2.5 sm:!px-3 sm:!py-3 !text-xs sm:!text-sm">
                       الإجراءات
                     </th>
                   </tr>
-                  <tr className="bg-slate-900 text-slate-300 border-b-2 border-slate-900">
+                  <tr className="bg-[#1a1530] text-slate-300 border-b-2 border-[#1a1530]">
                     {JOURNAL_COLS.map((c) => (
-                      <th key={c.key} className="border-b border-slate-800 !px-1.5 !py-2">
+                      <th key={c.key} className="border-b border-[#2a2140] !px-1.5 !py-2">
                         <input
                           value={journalFilters[c.key] || ""}
                           onChange={(e) => setJournalFilter(c.key, e.target.value)}
                           placeholder="تصفية..."
                           aria-label={`تصفية ${c.label}`}
-                          className="w-full min-w-[58px] rounded-lg border-2 border-slate-950 bg-slate-950 px-2 py-1 text-xs font-bold text-slate-200 outline-none transition-colors placeholder:text-slate-600 focus:border-amber-400 sm:text-xs shadow-inner"
+                          className="w-full min-w-[58px] rounded-lg border-2 border-[#0f0a1e] bg-[#0f0a1e] px-2 py-1 text-xs font-bold text-slate-200 outline-none transition-colors placeholder:text-slate-600 focus:border-amber-400 sm:text-xs shadow-inner"
                         />
                       </th>
                     ))}
-                    <th className="border-b border-slate-800 !px-1.5 !py-2" />
+                    <th className="border-b border-[#2a2140] !px-1.5 !py-2" />
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-900">
+                <tbody className="divide-y divide-[#1a1530]">
                   {filteredJournal.length === 0 ? (
                     <tr>
-                      <td colSpan={JOURNAL_COLS.length + 1} className="bg-slate-950 px-2 py-8 text-center text-sm font-black text-slate-400 sm:text-base">
+                      <td colSpan={JOURNAL_COLS.length + 1} className="bg-[#0f0a1e] px-2 py-8 text-center text-sm font-black text-slate-400 sm:text-base">
                         لا توجد قيود تطابق حقول التصفية.
                       </td>
                     </tr>
@@ -744,7 +744,7 @@ export default function JournalTab() {
                     filteredJournal.map((j) => (
                       <tr
                         key={j.id}
-                        className="odd:bg-slate-900/60 even:bg-slate-950 transition-colors hover:bg-slate-800/80"
+                        className="odd:bg-[#1a1530]/60 even:bg-[#0f0a1e] transition-colors hover:bg-[#2a2140]/80"
                       >
                         <td className="min-w-0 max-w-[90px] numeric-cell font-mono text-slate-300 !px-2 !py-2.5 sm:!px-3 sm:!py-3 !text-xs sm:!text-sm whitespace-nowrap">
                           <span className={journalClampCls}>{j.formNo || "—"}</span>
@@ -781,13 +781,13 @@ export default function JournalTab() {
                           <div className="flex justify-center gap-1.5">
                             <button
                               onClick={() => startEdit(j)}
-                              className="grid h-8 w-8 place-items-center rounded-xl border border-slate-800 bg-slate-900 text-cyan-400 transition-all hover:bg-cyan-600 hover:text-white hover:border-cyan-500 shadow-md"
+                              className="grid h-8 w-8 place-items-center rounded-xl border border-[#2a2140] bg-[#1a1530] text-violet-400 transition-all hover:bg-violet-600 hover:text-white hover:border-violet-500 shadow-md"
                             >
                               <Edit className="h-4 w-4" />
                             </button>
                             <button
                               onClick={() => deleteJournal(j.id)}
-                              className="grid h-8 w-8 place-items-center rounded-xl border border-slate-800 bg-slate-900 text-rose-400 transition-all hover:bg-rose-600 hover:text-white hover:border-rose-500 shadow-md"
+                              className="grid h-8 w-8 place-items-center rounded-xl border border-[#2a2140] bg-[#1a1530] text-rose-400 transition-all hover:bg-rose-600 hover:text-white hover:border-rose-500 shadow-md"
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -797,8 +797,8 @@ export default function JournalTab() {
                     ))
                   )}
                 </tbody>
-                <tfoot className="sticky bottom-0 bg-slate-950 border-t-2 border-slate-900 shadow-2xl">
-                  <tr className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950">
+                <tfoot className="sticky bottom-0 bg-[#0f0a1e] border-t-2 border-[#1a1530] shadow-2xl">
+                  <tr className="bg-gradient-to-r from-[#0f0a1e] via-[#1a1530] to-[#0f0a1e]">
                     <td colSpan={6} className="text-right font-black text-amber-400 !px-3 !py-3 sm:!px-4 sm:!py-3.5 !text-xs sm:!text-sm whitespace-nowrap">
                       الإجمالي
                     </td>
