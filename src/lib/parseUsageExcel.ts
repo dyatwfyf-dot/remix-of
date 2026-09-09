@@ -48,6 +48,19 @@ const dataColumnsOrder = [
 const allCols = [...mainHeaders, ...dataColumnsOrder];
 const numericColumns = new Set(dataColumnsOrder);
 
+// الأعمدة التي يحسبها النظام تلقائياً (مجاميع/فصول) ولا يُفترض أن يوفرها
+// المحاسب يدوياً — لا تُحتسب ضمن "الحد الأدنى من الأعمدة" المطلوب لقبول الملف.
+const COMPUTED_COLUMNS = new Set([
+  "اجمالي عام الاستخدامات",
+  "اجمالي الباب الاول",
+  "الفصل الاول_باب1",
+  "الفصل الثاني_باب1",
+  "اجمالي الباب الثاني",
+  "الفصل الاول_باب2",
+  "الفصل الثاني_باب2",
+  "اجمالي الباب الرابع",
+]);
+
 const MONTH_ALIASES = [
   ["يناير", "jan", "january"],
   ["فبراير", "فبر", "feb", "february"],
@@ -86,10 +99,11 @@ const normalizeDigits = (value: string) =>
     .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)));
 
 /**
- * Excel files produced by different versions of the application may contain
- * harmless differences in Arabic hamzas, separators, or hidden characters.
- * Keeping one canonical form lets the importer accept those files without
- * changing the names used by the table itself.
+ * Excel files produced by different versions of the application — or typed
+ * up manually by an accountant — may contain harmless differences in Arabic
+ * hamzas, separators, plural/singular forms, or hidden characters. Keeping
+ * one canonical form lets the importer accept those files without changing
+ * the names used by the table itself.
  */
 const headerKey = (value: unknown) =>
   normalizeDigits(norm(value))
@@ -97,6 +111,8 @@ const headerKey = (value: unknown) =>
     .replace(/[\u064B-\u065F\u0670]/g, "")
     .replace(/[إأآٱ]/g, "ا")
     .replace(/[ى]/g, "ي")
+    .replace(/ة/g, "ه")
+    .replace(/ال/g, "")
     .replace(/[\u200B-\u200D\uFEFF]/g, "")
     .replace(/[\s_\-./\\:()]+/g, "");
 
@@ -295,11 +311,14 @@ allCols.forEach((column) => headerTargets.set(headerKey(column), column));
   ["formnumber", "رقم الاستمارة"],
   ["رقم الاستماره", "رقم الاستمارة"],
   ["الاستمارة", "رقم الاستمارة"],
+  ["م", "رقم الاستمارة"],
   ["settlement", "كشف التسوية"],
   ["التسوية", "كشف التسوية"],
+  ["رقم كشف التسوية", "كشف التسوية"],
   ["description", "البيان"],
   ["statement", "البيان"],
   ["الوصف", "البيان"],
+  ["ملاحظات", "البيان"],
   ["date", "التاريخ"],
   ["monthid", "monthId"],
   ["monthname", "monthId"],
@@ -309,22 +328,71 @@ allCols.forEach((column) => headerTargets.set(headerKey(column), column));
   ["اسم الشهر", "monthId"],
   ["رقم الشهر", "monthId"],
   ["الفترة", "monthId"],
+  // ===== مرادفات إضافية شائعة لدى الملفات المُعدّة يدوياً =====
   ["الرواتب", "المرتبات الاساسية"],
   ["المرتبات", "المرتبات الاساسية"],
+  ["المرتب الاساسي", "المرتبات الاساسية"],
+  ["الراتب الاساسي", "المرتبات الاساسية"],
+  ["مرتبات", "المرتبات الاساسية"],
   ["الاجور التعاقدية", "اجور تعاقدية"],
+  ["اجور العقود", "اجور تعاقدية"],
   ["العمل الاضافي", "اجور عمل اضافي"],
+  ["اجور اضافية", "اجور عمل اضافي"],
+  ["الاضافي", "اجور عمل اضافي"],
   ["المكافات", "مكافات"],
+  ["مكافاة", "مكافات"],
+  ["مكافأت", "مكافات"],
+  ["طبيعة العمل", "طبيعة عمل"],
+  ["بدل الريف", "بدل ريف"],
+  ["بدل السكن", "بدل سكن"],
+  ["بدل التحديث", "بدل تحديث"],
+  ["حساب الحكومة", "ح/حكومة"],
+  ["ح حكومة", "ح/حكومة"],
+  ["حكومة", "ح/حكومة"],
+  ["اصابات العمل", "اصابة عمل"],
   ["الماء", "مياه"],
+  ["مياة", "مياه"],
   ["الكهرباء", "انارة"],
   ["الانارة", "انارة"],
+  ["كهرباء", "انارة"],
   ["القرطاسية", "ادوات كتابية"],
+  ["ادوات مكتبية", "ادوات كتابية"],
+  ["قرطاسية", "ادوات كتابية"],
+  ["النشر والاعلان", "نشر واعلان"],
+  ["اعلانات", "نشر واعلان"],
   ["الاتصالات", "اتصالات"],
+  ["هاتف", "اتصالات"],
+  ["المؤتمرات", "مؤتمرات واحتفالات"],
+  ["احتفالات", "مؤتمرات واحتفالات"],
   ["النظافة", "نفقات النظافة"],
+  ["مصاريف نظافة", "نفقات النظافة"],
+  ["نظافة", "نفقات النظافة"],
+  ["نقل المهام", "نقل مهام"],
+  ["الانتقالات الداخلية", "انتقالات داخلية"],
+  ["انتقالات", "انتقالات داخلية"],
   ["الايجار", "ايجار مباني"],
+  ["ايجار", "ايجار مباني"],
   ["الادوية", "ادوية ومستلزمات طبية"],
+  ["ادوية طبية", "ادوية ومستلزمات طبية"],
+  ["مستلزمات طبية", "ادوية ومستلزمات طبية"],
   ["الاغذية", "اغذية وملبوسات"],
+  ["اغذية", "اغذية وملبوسات"],
+  ["ملبوسات", "اغذية وملبوسات"],
+  ["صيانة المباني", "صيانة مباني"],
   ["الوقود", "وقود وزيوت"],
-  ["الامانات", "الامانات"],
+  ["وقود", "وقود وزيوت"],
+  ["زيوت", "وقود وزيوت"],
+  ["قطع غيار النقل", "قطع غيار وصيانة وسائل النقل"],
+  ["صيانة وسائل النقل", "قطع غيار وصيانة وسائل النقل"],
+  ["قطع غيار المعدات", "قطع غيار وصيانة الالات والمعدات والاثاث"],
+  ["صيانة الالات", "قطع غيار وصيانة الالات والمعدات والاثاث"],
+  ["مركز قحزة", "مركز صحي قحزة"],
+  ["الغسيل الكلوي", "وحدة الغسيل الكلوي"],
+  ["دعم الكلى", "مشروع دعم الكلى"],
+  ["الصالة", "الصالة والمطبخ"],
+  ["المطبخ", "الصالة والمطبخ"],
+  ["الامانة", "الامانات"],
+  ["امانات", "الامانات"],
 ].forEach(([alias, target]) => headerTargets.set(headerKey(alias), target));
 
 /**
@@ -369,7 +437,9 @@ const resolveHeader = (rawHeader: unknown): string | null => {
     } else {
       score = similarity(key, candidateKey);
     }
-    if (score >= 0.62 && (!best || score > best.score)) best = { target, score };
+    // خُفّضت العتبة من 0.62 إلى 0.55 لتقبل اختلافات الصياغة الشائعة في
+    // الملفات المُعدّة يدوياً (جمع/مفرد، "ال" التعريف، ترتيب كلمات مختلف).
+    if (score >= 0.55 && (!best || score > best.score)) best = { target, score };
   }
   return best ? best.target : null;
 };
@@ -381,13 +451,22 @@ const importedValue = (column: string, value: unknown) => {
   return typeof value === "string" ? norm(value) : value;
 };
 
+/**
+ * يبحث عن أسماء الأعمدة ضمن نافذة أوسع حول صف الترشيح (5 صفوف بدل 3)
+ * لأن ملفات المحاسبين اليدوية أحياناً تضع عنوان الجدول أو الشعار في
+ * الصفوف الأولى قبل صف العناوين الفعلي.
+ */
 const headerMapFromRows = (rows: unknown[][], index: number) => {
   const map = new Map<number, string>();
   const used = new Set<string>();
-  const width = Math.max(...[index - 1, index, index + 1].map((i) => rows[i]?.length ?? 0), 0);
+  const offsets = [0, 1, -1, 2, -2];
+  const width = Math.max(
+    ...offsets.map((o) => rows[index + o]?.length ?? 0),
+    0,
+  );
   for (let column = 0; column < width; column += 1) {
-    const candidates = [rows[index]?.[column], rows[index + 1]?.[column], rows[index - 1]?.[column]];
-    for (const candidate of candidates) {
+    for (const offset of offsets) {
+      const candidate = rows[index + offset]?.[column];
       const target = resolveHeader(candidate);
       if (target && !used.has(target)) {
         used.add(target);
@@ -410,7 +489,9 @@ function parseUsageSheet(matrix: unknown[][], importMonthId: number, sheetIndex:
       headerRowIndex = index;
     }
   }
-  if (headerRowIndex < 0 || headerMap.size < 2) return [];
+  // الحد الأدنى صار عمود واحد فقط (بدل عمودين)، لأن ملف قد يحتوي عمود
+  // "البيان" فقط بشكل صريح مع بقية الأعمدة كأرقام تُكتشف بالقرب منها.
+  if (headerRowIndex < 0 || headerMap.size < 1) return [];
 
   let activeMonthId =
     Number.isInteger(importMonthId) && importMonthId >= 1 && importMonthId <= 12
@@ -469,12 +550,41 @@ function parseUsageSheet(matrix: unknown[][], importMonthId: number, sheetIndex:
   return imported;
 }
 
+/**
+ * يحسب أسماء الأعمدة التي تعذّر التعرّف عليها في أفضل ورقة تمّت معالجتها،
+ * لعرضها في رسالة الخطأ حتى يعرف المستخدم بالضبط أي عمود يحتاج تصحيح
+ * الصياغة بدل رسالة عامة لا تفيد.
+ */
+function diagnoseSheet(matrix: unknown[][]): string[] {
+  let headerRowIndex = -1;
+  let headerMap = new Map<number, string>();
+  for (let index = 0; index < Math.min(matrix.length, 40); index += 1) {
+    const map = headerMapFromRows(matrix, index);
+    if (map.size > headerMap.size) {
+      headerMap = map;
+      headerRowIndex = index;
+    }
+  }
+  if (headerRowIndex < 0) return [];
+  const row = matrix[headerRowIndex] ?? [];
+  const matchedColumns = new Set(headerMap.values());
+  const unresolved: string[] = [];
+  row.forEach((cell) => {
+    const text = norm(cell);
+    if (!text) return;
+    const target = resolveHeader(cell);
+    if (!target) unresolved.push(text);
+  });
+  return unresolved;
+}
+
 export function parseUsageExcel(buffer: ArrayBuffer, importMonthId: number) {
   const workbook = XLSX.read(new Uint8Array(buffer), { type: "array", cellDates: true });
 
   // نفحص كل أوراق الملف ونأخذ الورقة التي تحتوي أكبر عدد من الصفوف الصالحة،
   // فلا يهم اسم الورقة ولا ترتيبها ولا تشابه أسماء الأعمدة.
   let best: Record<string, unknown>[] = [];
+  let bestUnresolved: string[] = [];
   workbook.SheetNames.forEach((sheetName, sheetIndex) => {
     const worksheet = workbook.Sheets[sheetName];
     if (!worksheet) return;
@@ -484,8 +594,25 @@ export function parseUsageExcel(buffer: ArrayBuffer, importMonthId: number) {
       blankrows: false,
     });
     const rows = parseUsageSheet(matrix, importMonthId, sheetIndex);
-    if (rows.length > best.length) best = rows;
+    if (rows.length > best.length) {
+      best = rows;
+      bestUnresolved = [];
+    }
+    if (!best.length) {
+      const unresolved = diagnoseSheet(matrix);
+      if (unresolved.length) bestUnresolved = unresolved;
+    }
   });
+
+  if (!best.length && bestUnresolved.length) {
+    // نرفق أسماء الأعمدة غير المتعرّف عليها ضمن رسالة الخطأ حتى تظهر
+    // للمستخدم في واجهة الاستيراد بدل رسالة "لم يتم العثور" العامة.
+    const preview = bestUnresolved.slice(0, 6).join("، ");
+    throw new Error(
+      `تعذّر التعرف على أعمدة الملف. الأعمدة التالية غير معروفة: ${preview}` +
+        (bestUnresolved.length > 6 ? " ..." : ""),
+    );
+  }
 
   return best;
 }
