@@ -749,4 +749,10 @@ table td > * {
     padding: 0.25rem 0.4rem !important;
     font-size: 0.72rem !important;
   }
+
+  /* إلغاء الحشو الخارجي للتبويب بعد قواعد تصغير الهاتف ذات الأولوية. */
+  .apk-tabs-ui .tab-content > * {
+    margin-inline: 0 !important;
+    padding-inline: 0 !important;
+  }
 }
