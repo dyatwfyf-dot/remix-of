@@ -137,7 +137,7 @@ const PRINT_STYLES = `
   .accounts-print-area td {
     border: 1px solid #000 !important;
     white-space: nowrap!important;
-    text-overflow: clip !important;
+    text-overflow:clip !important;
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
     hyphens: auto !important;
@@ -724,14 +724,14 @@ export default function AccountsTab() {
 </div>
       {/* ===== التقارير الدورية ===== */}
 <div
-  className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-black shadow-sm"
+  className="accounts-print-hide grid grid-cols-3 sm:grid-cols-3 gap-1 sm:items-end"
   style={{
     background: "linear-gradient(135deg, #5c6b4a 0%, #1a2a3a 45%, #ffe985 100%)",
     borderColor: "#000",
   }}
 >
   <div
-    className="px-2 py-2 flex flex-wrap justify-between items-center gap-3 border-b border-black"
+    className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm: items-end border border  -1-black"
     style={{ background: "#f5ffdc" }} // عاجي
   >
     <div>
@@ -743,8 +743,8 @@ export default function AccountsTab() {
       </p>
     </div>
 
-    <div className="grid grid-cols-3 sm:grid-cols-3 gap-1 sm:gap-1 items-end">
-      <label className="text-xs font-black text-[#1a2a3a]">
+    <div className="grid grid-cols-2 sm:grid-cols-2 gap-1 sm">
+      <label className="text-xm font-black text-black ">
         نوع التقرير
         <select
           value={accountReportMode}
@@ -753,7 +753,7 @@ export default function AccountsTab() {
             setAccountReportMode(nextMode);
             setAccountReportPeriod(1);
           }}
-          className="block mt-1 px-2 py-2 border border-black bg-[#1a2a3a] text-blue text-xn font-bold rounded-lg outline-none focus:border-[#c5a059]"
+          className="block mt-1 px-2 py-2 border border-black bg-[#1a2a3a] text-# text-xm font-bold rounded-lg outline-none focus:border-[#c5a059]"
         >
           <option value="quarter">ربع سنوي</option>
           <option value="halfYear">نصف سنوي</option>
@@ -767,7 +767,7 @@ export default function AccountsTab() {
           <select
             value={accountReportPeriod}
             onChange={(e) => setAccountReportPeriod(Number(e.target.value))}
-            className="block mt-1 px-3 py-2 border border-black bg-[#1a2a3a] text-[#d2b48c] text-xs font-bold rounded-lg outline-none focus:border-[#c5a059]"
+            className="block mt-1 px-2 py-2 border border-black bg-[#1a2a3a] text-[#d2b48c] text-xm font-bold rounded-lg outline-none focus:border-[#c5a059]"
           >
             {accountReportMode === "quarter" ? (
               <>
@@ -786,7 +786,7 @@ export default function AccountsTab() {
         </label>
       )}
 
-      <label className="text-xs font-black text-[#1a2a3a]">
+      <label className="text-xm font-black text-[#1a2a3a]">
         السنة
         <input
           type="number"
@@ -821,7 +821,7 @@ export default function AccountsTab() {
   }}
 >
   <div
-    className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b border-black"
+    className="px-2 py-2 flex flex-wrap justify-between items-center gap-2 border-b border-black"
     style={{ background: "#f5f5dc" }}
   >
     <div className="flex items-center gap-2.5">
