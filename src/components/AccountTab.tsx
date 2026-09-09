@@ -712,13 +712,13 @@ export default function AccountsTab() {
 
       {/* ===== التقارير الدورية (حقول مرتبة 2 في سطر) ===== */}
       <div
-        className="accounts-print-hide rounded-xl p-2.5 sm:p-3 border border-black text-[#1a2a3a]"
+        className="accounts-print-hide rounded-xl p-2.5 sm:p-3 border border-1-black text-[#1a2a3a]"
         style={{
-          background: "linear-gradient(135deg, #f0f7f4 0%, #e2ece9 100%)",
+          background: "linear-gradient(135deg, #f4f7f4 0%, #e2ecc9 100%)",
         }}
       >
         <div className="mb-2">
-          <h2 className="text-xs sm:text-sm font-black text-[#1a2a3a]">
+          <h2 className="text-xm sm:text-sm font-black text-[#1a2a3a]">
             تقارير الحساب الدورية
           </h2>
           <p className="text-[10px] text-[#5c2a1a] font-bold">
@@ -729,7 +729,7 @@ export default function AccountsTab() {
         {/* شبكة حقول التقارير: 2 حقل لكل سطر */}
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-[11px] font-black text-black mb-1">
+            <label className="block text-[13px] font-black text-black mb-1">
               نوع التقرير
             </label>
             <select
@@ -739,7 +739,7 @@ export default function AccountsTab() {
                 setAccountReportMode(nextMode);
                 setAccountReportPeriod(1);
               }}
-              className="w-full px-2 py-1.5 border border-black bg-[#1a2a3a] text-[#ffe985] text-xs font-bold rounded-lg outline-none"
+              className="w-full px-2 py-2 border border-black bg-[#1a2a3a] text-[#ffe985] text-xm font-bold rounded-lg outline-none"
             >
               <option value="quarter">ربع سنوي</option>
               <option value="halfYear">نصف سنوي</option>
@@ -823,14 +823,15 @@ export default function AccountsTab() {
 
       {/* ===== لوحة القيد اليدوي والمطابقة (خلفية فاتحة، واضحة وأنيقة) ===== */}
       <div
-        className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-[#1f5f7a]/30 shadow-md bg-white"
+        className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-1-black shadow-md bg-Sky"
       >
         <div
-          className="px-3 py-2.5 flex items-center justify-between border-b border-black/15"
-          style={{ background: "linear-gradient(135deg, #eef6fb 0%, #d7e7f0 100%)" }}
+          className="px-3 py-2.5 flex items-center justify-between border-b border-black"
+          style={{ background: "linear-gradient(135deg, #eefffb 0%, #d777f0 100%)" }}
         >
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg border border-[#1f5f7a]/30 bg-[#1f5f7a] text-white">
+            <div className="p-1.5 rounded-lg border border-1-black 
+            bg-[#1f5ffa] text-white">
               <Plus className={ICON_MOBILE} />
             </div>
             <h2 className="text-xs sm:text-sm font-black text-[#0f2f44]">
