@@ -28,7 +28,7 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
   font-family: "Mohammad Bold Art";
   src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
   font-style: normal;
-  font-weight: 500;
+  font-weight: bold;
   font-display: swap;
 }
 
@@ -36,7 +36,7 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
   font-family: "Mohammad Bold Art";
 src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
   font-style: normal;
-  font-weight: 800 900;
+  font-weight: bold;
   font-display: swap;
 }
 
@@ -44,7 +44,7 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
   font-family: "Mohammad Bold Art";
 src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
   font-style: normal;
-  font-weight: 400 900;
+  font-weight: bold;
   font-display: swap;
 }
 
@@ -143,7 +143,7 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
   --success-foreground: oklch(0.99 0.01 175);
 
   /* الحدود وحقول الإدخال وحلقة التركيز */
-  --border: oklch(0.75 0.04 235);
+  --border: 1px solid black; 
   --input: oklch(0.985 0.010 235);
   --ring: var(--ice-600);
   }
@@ -257,7 +257,7 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
     border: 1px solid #000 !important;
   }
 
-  .font-mono { font-family: var(--font-data); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .font-mono { font-family: var(--font-data); font-weight: 1000; font-variant-numeric: tabular-nums; }
   button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
   
   /* منع الزوم التلقائي في الشاشات الصغيرة عند التركيز */
@@ -311,7 +311,7 @@ table input[type="number"] {
   font-size: clamp(14px, 2vw, 16px) !important;
   line-height: 1.5 !important;
   color: #000 !important;
-  font-weight: 1000 !important;
+  font-weight: bolder !important;
   white-space: nowrap !important; /* حماية الأرقام والتواريخ من الانقسام */
   overflow: visible !important;
   overflow-wrap: normal !important;
@@ -362,7 +362,7 @@ table td textarea,
 table th button,
 table td button {
   color: #000 !important;
-  font-weight: 900 !important;
+  font-weight: bolder !important;
 }
 
 /* منع الحقول الداخلية من تجاوز عرض الخلية */
