@@ -665,24 +665,24 @@ export default function AccountsTab() {
       <style>{PRINT_STYLES}</style>
 
  {/*شريط العنوان */}
-<div className="accounts-print-hide flex items-center justify-between border border-black p-3 rounded-xl bg-linear-gradient(135deg, #fffdf5 0%, #fff3c4 45%, #ffe985 100%)">
+<div className="accounts-print-hide flex items-center justify-between border border-black p-3 rounded-xl bg-linear-gradient(135deg, #fffdd5 0%, #fff3b4 45%, #ffe986 100%)">
   <div>
-    <h1 className={`${HEADING_MOBILE} text-[#f5f5dc] text-sm font-bold tracking-tight`}>
+    <h1 className={`${HEADING_MOBILE} text-black text-lg font-bold tracking-tight`}>
       الحساب الجاري
     </h1>
-    <p className="text-xs text-[#d2b48c] font-bold tracking-wide mt-0.5">
+    <p className="text-xm text-[#d2b48c] font-bold tracking-wide mt-0.5">
       سجل الحركات المالية المُرحّلة
     </p>
   </div>
 
-  <div className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#f5f5dc] border border-black shadow-sm">
+  <div className="hidden sm:flex items-center gap-2 px-2 py-2 rounded-xl bg-[#f5f5dc] border border-black shadow-xm">
     <Landmark className={`${ICON_MOBILE} text-[#1a2a3a]`} />
     <span className="text-sm text-[#1a2a3a] font-bold">عدد القيود</span>
     <span className="text-[#2c3e50] font-mono text-base tabular-nums font-black">{accounts.length}</span>
   </div>
 </div>
       {/* ===== بطاقات الإجماليات — تدرجات فاتحة ولامعة ===== */}
-<div className="accounts-print-hide grid grid-cols-2 gap-2">
+<div className="accounts-print-hide grid grid-cols-3 gap-1">
   <LedgerStat
     label="إجمالي الإيرادات"
     style={{
@@ -693,7 +693,7 @@ export default function AccountsTab() {
     }}
     value={totalIncome}
     tone="income"
-    icon={<ArrowUpRight className="text-[#7a5c00]" />}
+    icon={<ArrowUpRight className="text-[#7a5c00] font-bold " />}
   />
 
   <LedgerStat
@@ -706,7 +706,7 @@ export default function AccountsTab() {
     }}
     value={totalExpense}
     tone="expense"
-    icon={<ArrowDownLeft className="text-[#7a2a1a]" />}
+    icon={<ArrowDownLeft className="text-[#7a2a1a] font-bold " />}
   />
 
   <LedgerStat
@@ -719,31 +719,31 @@ export default function AccountsTab() {
     }}
     value={currentBalance}
     tone="balance"
-    icon={<Wallet className="text-[#0f4a5c]" />}
+    icon={<Wallet className="text-[#0f4a5c] font-bold " />}
   />
 </div>
       {/* ===== التقارير الدورية ===== */}
 <div
   className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-black shadow-sm"
   style={{
-    background: "linear-gradient(135deg, #5c6b4a, #1a2a3a)", // زيتي → كحلي
+    background: "linear-gradient(135deg, #5c6b4a 0%, #1a2a3a 45%, #ffe985 100%)",
     borderColor: "#000",
   }}
 >
   <div
-    className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b border-black"
-    style={{ background: "#f5f5dc" }} // عاجي
+    className="px-2 py-2 flex flex-wrap justify-between items-center gap-3 border-b border-black"
+    style={{ background: "#f5ffdc" }} // عاجي
   >
     <div>
       <h2 className="text-base font-black text-[#1a2a3a] tracking-wide">
         تقارير الحساب الدورية
       </h2>
-      <p className="text-xs text-[#5c2a1a] font-bold mt-1">
+      <p className="text-xm text-[#5c2a1a] font-bold mt-1">
         اختر الربع أو النصف أو السنة ثم صدّر التقرير
       </p>
     </div>
 
-    <div className="flex flex-wrap items-end gap-2 text-center">
+    <div className="grid grid-cols-3 sm:grid-cols-3 gap-1 sm:gap-1 items-end">
       <label className="text-xs font-black text-[#1a2a3a]">
         نوع التقرير
         <select
@@ -753,7 +753,7 @@ export default function AccountsTab() {
             setAccountReportMode(nextMode);
             setAccountReportPeriod(1);
           }}
-          className="block mt-1 px-2 py-2 border border-black bg-[#1a2a3a] text-[#d2b48c] text-xs font-bold rounded-lg outline-none focus:border-[#c5a059]"
+          className="block mt-1 px-2 py-2 border border-black bg-[#1a2a3a] text-blue text-xn font-bold rounded-lg outline-none focus:border-[#c5a059]"
         >
           <option value="quarter">ربع سنوي</option>
           <option value="halfYear">نصف سنوي</option>
@@ -869,7 +869,7 @@ export default function AccountsTab() {
 
   <div className="p-2 sm:p-5">
     {/* شبكة الحقول - حقلين في كل سطر */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 items-end">
+    <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-3 items-end">
       {/* السطر الأول */}
       <Field
         label="التاريخ"
