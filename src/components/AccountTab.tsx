@@ -228,7 +228,7 @@ function Field({
 }) {
   return (
     <div className="w-full">
-      <label className="block text-xs font-black text-[#1a2a3a] mb-1 truncate">
+      <label className="block text-xs font-black text-[#0f2f44] mb-1 truncate">
         {label}
       </label>
       <div className="relative flex items-center">
@@ -238,7 +238,7 @@ function Field({
           value={v}
           onChange={(e) => on(e.target.value)}
           placeholder={placeholder}
-          className={`w-full ${icon ? "pr-8" : "px-2.5"} pl-2 py-1.5 text-xs sm:text-sm border border-black/30 rounded-lg outline-none focus:border-[#1a2a3a] focus:ring-1 focus:ring-[#1a2a3a] text-[#0f2f44] ${className}`}
+          className={`w-full ${icon ? "pr-8" : "px-2.5"} pl-2 py-1.5 text-xs sm:text-sm border border-black/30 rounded-lg outline-none focus:border-[#1f5f7a] focus:ring-1 focus:ring-[#1f5f7a] text-[#0f2f44] bg-white ${className}`}
         />
       </div>
     </div>
@@ -620,15 +620,15 @@ export default function AccountsTab() {
       icon: Zap,
       onSelect: handleSyncFromHafiza,
       className:
-        "flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white bg-gradient-to-r from-[#1a2a3a] via-[#2a4a5a] to-[#2a6b6a] border border-black shadow-sm hover:from-[#2a4a5a] hover:to-[#1a3a4a] transition-all duration-200",
+        "flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white bg-gradient-to-r from-[#1f5f7a] to-[#2e6b8a] border border-black/20 shadow-xs hover:brightness-105 transition-all duration-200",
     },
     {
       label: "استيراد Excel",
       icon: FileSpreadsheet,
       onSelect: () => undefined,
       content: (
-        <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#f5f0e6] bg-gradient-to-r from-[#9e3a2a] via-[#7a2a1a] to-[#5c2a1a] border border-black shadow-sm hover:from-[#7a2a1a] hover:to-[#4a1a0a] transition-all duration-200">
-          <FileSpreadsheet className={`${ICON_MOBILE} text-[#f5f0e6]`} />
+        <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white bg-gradient-to-r from-[#c98a3c] to-[#d89b4c] border border-black/20 shadow-xs hover:brightness-105 transition-all duration-200">
+          <FileSpreadsheet className={`${ICON_MOBILE} text-white`} />
           <span>استيراد Excel</span>
           <input
             type="file"
@@ -821,19 +821,19 @@ export default function AccountsTab() {
         </div>
       </div>
 
-      {/* ===== لوحة القيد اليدوي والمطابقة (كل حقلين وزرين في سطر) ===== */}
+      {/* ===== لوحة القيد اليدوي والمطابقة (خلفية فاتحة، واضحة وأنيقة) ===== */}
       <div
-        className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-black shadow-sm"
-        style={{
-          background: "linear-gradient(135deg, #1f3144 0%, #152230 100%)",
-        }}
+        className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-[#1f5f7a]/30 shadow-md bg-white"
       >
-        <div className="px-3 py-2 flex items-center justify-between border-b border-black bg-[#f5f5dc]">
+        <div
+          className="px-3 py-2.5 flex items-center justify-between border-b border-black/15"
+          style={{ background: "linear-gradient(135deg, #eef6fb 0%, #d7e7f0 100%)" }}
+        >
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg border border-black bg-[#1a2a3a] text-white">
+            <div className="p-1.5 rounded-lg border border-[#1f5f7a]/30 bg-[#1f5f7a] text-white">
               <Plus className={ICON_MOBILE} />
             </div>
-            <h2 className="text-xs sm:text-sm font-black text-[#1a2a3a]">
+            <h2 className="text-xs sm:text-sm font-black text-[#0f2f44]">
               قيد جديد / مطابقة الحوافظ
             </h2>
           </div>
@@ -847,17 +847,17 @@ export default function AccountsTab() {
         </div>
 
         {/* شبكة زرين في سطر واحد للهواتف */}
-        <div className="apk-only-actions p-2 bg-[#101923] border-b border-black grid grid-cols-2 gap-2">
+        <div className="apk-only-actions p-2 bg-[#f0f6fa] border-b border-black/10 grid grid-cols-2 gap-2">
           <button
             onClick={handleSyncFromHafiza}
-            className={`${BTN_MOBILE} flex items-center justify-center gap-1.5 rounded-xl border border-black shadow-sm bg-gradient-to-r from-[#1a2a3a] to-[#2a6b6a] text-white`}
+            className={`${BTN_MOBILE} flex items-center justify-center gap-1.5 rounded-xl border border-[#1f5f7a]/40 shadow-xs bg-gradient-to-r from-[#1f5f7a] to-[#2e6b8a] text-white hover:brightness-105 active:scale-98 transition-all`}
           >
             <Zap className={ICON_MOBILE} />
             <span className="truncate">مطابقة ٢٠٢٦</span>
           </button>
 
           <label
-            className={`${BTN_MOBILE} relative flex items-center justify-center gap-1.5 rounded-xl border border-black cursor-pointer shadow-sm bg-gradient-to-r from-[#d2b48c] to-[#e6d7c3] text-[#1a2a3a]`}
+            className={`${BTN_MOBILE} relative flex items-center justify-center gap-1.5 rounded-xl border border-amber-600/40 cursor-pointer shadow-xs bg-gradient-to-r from-[#c98a3c] to-[#d89b4c] text-white hover:brightness-105 active:scale-98 transition-all`}
           >
             <FileSpreadsheet className={ICON_MOBILE} />
             <span className="truncate">استيراد إكسل</span>
@@ -870,75 +870,75 @@ export default function AccountsTab() {
           </label>
         </div>
 
-        <div className="p-2.5 sm:p-4">
+        <div className="p-2.5 sm:p-4 bg-gradient-to-b from-[#f8fafc] to-[#eef6fb]">
           {/* شبكة الحقول - حقلين في كل سطر دائماً */}
           <div className="grid grid-cols-2 gap-2">
             {/* السطر 1 */}
             <Field
               label="التاريخ"
               type="date"
-              icon={<Calendar className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
+              icon={<Calendar className={`${ICON_MOBILE} text-[#1f5f7a]`} />}
               v={form.date}
               on={(v) => setForm({ ...form, date: v })}
-              className="bg-[#f5f5dc] text-[#1a2a3a] font-bold border-black"
+              className="bg-white text-[#0f2f44] font-bold border-black/30 focus:border-[#1f5f7a]"
             />
             <Field
               label="رقم الحافظة"
-              icon={<Hash className={`${ICON_MOBILE} text-[#722f37]`} />}
+              icon={<Hash className={`${ICON_MOBILE} text-[#1f5f7a]`} />}
               v={form.hafizaNo}
               on={(v) => setForm({ ...form, hafizaNo: v })}
-              className="bg-[#e6d7c3] text-[#1a2a3a] font-bold border-black"
+              className="bg-white text-[#0f2f44] font-bold border-black/30 focus:border-[#1f5f7a]"
             />
 
             {/* السطر 2 */}
             <Field
               label="رقم الإشعار"
-              icon={<Hash className={`${ICON_MOBILE} text-[#c5a059]`} />}
+              icon={<Hash className={`${ICON_MOBILE} text-[#1f5f7a]`} />}
               v={form.notifyNo}
               on={(v) => setForm({ ...form, notifyNo: v })}
-              className="bg-[#f5f5dc] text-[#1a2a3a] font-bold border-black"
+              className="bg-white text-[#0f2f44] font-bold border-black/30 focus:border-[#1f5f7a]"
             />
             <Field
               label="تاريخ التوريد"
               type="date"
-              icon={<Calendar className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
+              icon={<Calendar className={`${ICON_MOBILE} text-[#1f5f7a]`} />}
               v={form.notifyDate}
               on={(v) => setForm({ ...form, notifyDate: v })}
-              className="bg-[#e6d7c3] text-[#1a2a3a] font-bold border-black"
+              className="bg-white text-[#0f2f44] font-bold border-black/30 focus:border-[#1f5f7a]"
             />
 
             {/* السطر 3 */}
             <Field
               label="رقم الشيك"
-              icon={<Ticket className={`${ICON_MOBILE} text-[#722f37]`} />}
+              icon={<Ticket className={`${ICON_MOBILE} text-[#1f5f7a]`} />}
               v={form.checkNo}
               on={(v) => setForm({ ...form, checkNo: v })}
-              className="bg-[#f5f5dc] text-[#1a2a3a] font-bold border-black"
+              className="bg-white text-[#0f2f44] font-bold border-black/30 focus:border-[#1f5f7a]"
             />
             <Field
               label="تاريخ الشيك"
               type="date"
-              icon={<Calendar className={`${ICON_MOBILE} text-[#c5a059]`} />}
+              icon={<Calendar className={`${ICON_MOBILE} text-[#1f5f7a]`} />}
               v={form.checkDate}
               on={(v) => setForm({ ...form, checkDate: v })}
-              className="bg-[#e6d7c3] text-[#1a2a3a] font-bold border-black"
+              className="bg-white text-[#0f2f44] font-bold border-black/30 focus:border-[#1f5f7a]"
             />
 
             {/* السطر 4 */}
             <div className="w-full">
-              <label className="block text-xs font-black mb-1 text-[#f5f5dc] truncate">
+              <label className="block text-xs font-black mb-1 text-[#0f2f44] truncate">
                 البيان والشرح
               </label>
               <div className="relative flex items-center">
                 <span className="absolute right-2.5 z-10">
-                  <FileText className={`${ICON_MOBILE} text-[#722f37]`} />
+                  <FileText className={`${ICON_MOBILE} text-[#1f5f7a]`} />
                 </span>
                 <input
                   list="account-descriptions"
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   placeholder="البيان..."
-                  className="w-full pr-8 pl-2 py-1.5 text-xs sm:text-sm border border-black rounded-lg outline-none shadow-sm bg-[#f5f5dc] text-[#1a2a3a] font-bold"
+                  className="w-full pr-8 pl-2 py-1.5 text-xs sm:text-sm border border-black/30 rounded-lg outline-none shadow-xs bg-white text-[#0f2f44] font-bold focus:border-[#1f5f7a]"
                 />
               </div>
               <datalist id="account-descriptions">
@@ -955,59 +955,59 @@ export default function AccountsTab() {
 
             <Field
               label="التخصص الطبي"
-              icon={<Stethoscope className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
+              icon={<Stethoscope className={`${ICON_MOBILE} text-[#1f5f7a]`} />}
               v={form.specialty}
               on={(v) => setForm({ ...form, specialty: v })}
-              className="bg-[#e6d7c3] text-[#1a2a3a] font-bold border-black"
+              className="bg-white text-[#0f2f44] font-bold border-black/30 focus:border-[#1f5f7a]"
             />
 
             {/* السطر 5 */}
             <Field
               label="الاسم الكامل"
-              icon={<User className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
+              icon={<User className={`${ICON_MOBILE} text-[#1f5f7a]`} />}
               v={form.name}
               on={(v) => setForm({ ...form, name: v })}
               placeholder="الاسم..."
-              className="bg-[#f5f5dc] text-[#1a2a3a] font-bold border-black"
+              className="bg-white text-[#0f2f44] font-bold border-black/30 focus:border-[#1f5f7a]"
             />
             <Field
               label="مبلغ الحافظة"
               type="number"
-              icon={<span className="text-[10px] text-[#1a2a3a] font-black">ر.ي</span>}
+              icon={<span className="text-[10px] text-[#1f5f7a] font-black">ر.ي</span>}
               v={form.hafizaAmount}
               on={(v) => setForm({ ...form, hafizaAmount: v })}
-              className="font-mono tabular-nums numeric-cell bg-[#e6d7c3] text-[#1a2a3a] font-black border-black"
+              className="font-mono tabular-nums numeric-cell bg-white text-[#0f2f44] font-black border-black/30 focus:border-[#1f5f7a]"
             />
 
             {/* السطر 6 */}
             <Field
               label="الإيرادات"
               type="number"
-              icon={<span className="text-[10px] text-[#c5a059] font-black">ر.ي</span>}
+              icon={<span className="text-[10px] text-[#1E8E5A] font-black">ر.ي</span>}
               v={form.income}
               on={(v) => setForm({ ...form, income: v })}
               placeholder="0.00"
-              className="text-[#c5a059] font-black font-mono tabular-nums numeric-cell bg-[#f5f5dc] border-black"
+              className="text-[#1E8E5A] font-black font-mono tabular-nums numeric-cell bg-white border-emerald-300 focus:border-emerald-500"
             />
             <Field
               label="المصروفات"
               type="number"
-              icon={<span className="text-[10px] text-[#722f37] font-black">ر.ي</span>}
+              icon={<span className="text-[10px] text-[#D14343] font-black">ر.ي</span>}
               v={form.expense}
               on={(v) => setForm({ ...form, expense: v })}
               placeholder="0.00"
-              className="text-[#722f37] font-black font-mono tabular-nums numeric-cell bg-[#e6d7c3] border-black"
+              className="text-[#D14343] font-black font-mono tabular-nums numeric-cell bg-white border-rose-300 focus:border-rose-500"
             />
 
-            {/* السطر 7: ربط الدليل (يغطي السطر بأسلوب متناسق) */}
+            {/* السطر 7: ربط الدليل */}
             <div className="col-span-2">
-              <label className="flex items-center gap-1 text-xs font-black mb-1 text-[#f5f5dc]">
-                <Link className={`${ICON_MOBILE} text-[#c5a059]`} /> ربط بدليل هيكل الإيرادات
+              <label className="flex items-center gap-1 text-xs font-black mb-1 text-[#0f2f44]">
+                <Link className={`${ICON_MOBILE} text-[#1f5f7a]`} /> ربط بدليل هيكل الإيرادات
               </label>
               <select
                 value={form.revenueKey}
                 onChange={(e) => setForm({ ...form, revenueKey: e.target.value })}
-                className="w-full px-2 py-1.5 text-xs border border-black rounded-lg outline-none shadow-sm bg-[#f5f5dc] text-[#1a2a3a] font-bold"
+                className="w-full px-2 py-1.5 text-xs border border-black/30 rounded-lg outline-none shadow-xs bg-white text-[#0f2f44] font-bold focus:border-[#1f5f7a]"
               >
                 <option value="">-- بدون ربط --</option>
                 {revenueTypes.map((t) => (
@@ -1020,17 +1020,17 @@ export default function AccountsTab() {
           </div>
 
           {/* شبكة زرين في سطر واحد للإجراءات (ترحيل / مسح) */}
-          <div className="grid grid-cols-2 gap-2 pt-3 mt-2 border-t border-black/40">
+          <div className="grid grid-cols-2 gap-2 pt-3 mt-2 border-t border-black/10">
             <button
               onClick={submit}
-              className={`${BTN_MOBILE} flex items-center justify-center gap-1.5 rounded-xl border border-black shadow-sm bg-gradient-to-r from-[#1a2a3a] to-[#2a6b6a] text-white`}
+              className={`${BTN_MOBILE} flex items-center justify-center gap-1.5 rounded-xl border border-[#1f5f7a]/30 shadow-sm bg-gradient-to-r from-[#1f5f7a] to-[#2e6b8a] text-white hover:brightness-105 active:scale-98 transition-all`}
             >
               <Save className={ICON_MOBILE} />
               <span className="truncate">ترحيل القيد</span>
             </button>
             <button
               onClick={() => setForm(emptyForm)}
-              className={`${BTN_MOBILE} flex items-center justify-center gap-1.5 rounded-xl border border-black shadow-sm bg-[#f5f5dc] text-[#722f37]`}
+              className={`${BTN_MOBILE} flex items-center justify-center gap-1.5 rounded-xl border border-rose-200 shadow-sm bg-[#fff0f0] text-[#a82525] hover:bg-rose-100 transition-all`}
             >
               <Eraser className={ICON_MOBILE} />
               <span className="truncate">مسح</span>
@@ -1243,7 +1243,7 @@ export default function AccountsTab() {
         </div>
       </div>
 
-      {/* مودال التعديل (مرتب بحقول متناسقة) */}
+      {/* مودال التعديل */}
       <Modal
         title="تعديل وتدقيق السجل المالي"
         isOpen={!!editingRow}
@@ -1350,7 +1350,6 @@ export default function AccountsTab() {
               </div>
             </div>
 
-            {/* زرين في سطر واحد داخل المودال */}
             <div className="grid grid-cols-2 gap-2 pt-3 border-t border-black/20">
               <button
                 type="button"
