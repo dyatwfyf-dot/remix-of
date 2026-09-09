@@ -12,7 +12,6 @@ import {
   Hash,
   FileText,
   CalendarDays,
-  Scale,
   CheckCircle2,
   AlertTriangle,
   Inbox,
@@ -87,7 +86,7 @@ interface EntryLine {
   description?: string;
 }
 
-// ── حقل مع تسمية (رأس النموذج) بشكل عصري ───────────────────────────────────
+// ── حقل مع تسمية (رأس النموذج) ───────────────────────────────────
 function Field({
   label,
   icon,
@@ -101,8 +100,8 @@ function Field({
 }) {
   return (
     <label className={`group relative flex flex-col gap-1.5 ${className}`}>
-      <span className="flex items-center gap-1.5 text-[13px] font-bold text-slate-600">
-        {icon && <span className="text-slate-400">{icon}</span>}
+      <span className="flex items-center gap-1.5 text-[13px] font-bold text-slate-800">
+        {icon && <span className="text-slate-600">{icon}</span>}
         {label}
       </span>
       {children}
@@ -111,10 +110,7 @@ function Field({
 }
 
 const inputCls =
-  "w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm font-medium text-slate-800 outline-none transition-all placeholder:text-slate-400 hover:bg-slate-50 focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-500/10";
-
-const journalClampCls =
-  "block max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap sm:max-w-[180px]";
+  "w-full rounded-xl border border-slate-900 bg-slate-200/60 px-3.5 py-2.5 text-sm font-bold text-slate-900 outline-none transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] placeholder:text-slate-500 hover:bg-slate-200 focus:border-black focus:bg-slate-100 focus:ring-2 focus:ring-black/10";
 
 // ── قائمة اختيار الحساب المحسنة ──────────────────────────────────────────
 function AccountDropdownCell({
@@ -165,44 +161,44 @@ function AccountDropdownCell({
       <button
         type="button"
         onClick={handleOpen}
-        className={`flex h-[42px] w-full items-center justify-between gap-2 rounded-lg border px-3 text-right text-[13px] font-bold transition-all hover:shadow-sm focus:ring-2 focus:outline-none
+        className={`flex h-[42px] w-full items-center justify-between gap-2 rounded-lg border border-slate-900 px-3 text-right text-[13px] font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-y-0.5
           ${
             value
               ? isDebit
-                ? "border-emerald-200 bg-emerald-50 text-emerald-900 focus:ring-emerald-500/20"
-                : "border-rose-200 bg-rose-50 text-rose-900 focus:ring-rose-500/20"
-              : "border-slate-200 bg-white text-slate-400 hover:border-slate-300 focus:ring-slate-500/20"
+                ? "bg-emerald-100 text-emerald-950"
+                : "bg-rose-100 text-rose-950"
+              : "bg-slate-200 text-slate-700 hover:bg-slate-300"
           }`}
       >
         <span className="min-w-0 flex-1 truncate text-right">
           {value || (isDebit ? "اختر الحساب المدين…" : "اختر الحساب الدائن…")}
         </span>
-        <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+        <ChevronDown className="h-4 w-4 shrink-0 opacity-70" />
       </button>
 
       {open && (
         <>
-          <div className="fixed inset-0 z-[998] bg-slate-900/20 backdrop-blur-sm md:hidden" />
+          <div className="fixed inset-0 z-[998] bg-slate-900/40 backdrop-blur-sm md:hidden" />
           <div
-            className="fixed inset-x-0 bottom-0 z-[999] max-h-[75vh] flex flex-col overflow-hidden rounded-t-3xl border border-slate-200 bg-white shadow-2xl
-              md:absolute md:inset-x-auto md:bottom-auto md:right-0 md:left-0 md:top-[calc(100%+4px)] md:max-h-[350px] md:w-[320px] md:rounded-xl md:shadow-xl"
+            className="fixed inset-x-0 bottom-0 z-[999] flex max-h-[75vh] flex-col overflow-hidden rounded-t-3xl border-2 border-slate-900 bg-slate-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+              md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:right-0 md:top-[calc(100%+4px)] md:max-h-[350px] md:w-[320px] md:rounded-xl"
             dir="rtl"
           >
-            <div className="p-2 md:p-1.5 bg-slate-50 border-b border-slate-100">
-              <div className="mx-auto mb-2 h-1.5 w-12 rounded-full bg-slate-200 md:hidden" />
+            <div className="border-b border-slate-900 bg-slate-200 p-2 md:p-1.5">
+              <div className="mx-auto mb-2 h-1.5 w-12 rounded-full bg-slate-400 md:hidden" />
               <div className="relative flex items-center">
-                <Search className="absolute right-3 h-4 w-4 text-slate-400" />
+                <Search className="absolute right-3 h-4 w-4 text-slate-600" />
                 <input
                   ref={inputRef}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="ابحث عن حساب..."
-                  className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-9 text-sm outline-none transition-all focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10"
+                  className="w-full rounded-lg border border-slate-900 bg-slate-50 py-2 pl-9 pr-9 text-sm font-bold text-slate-900 outline-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:ring-2 focus:ring-slate-900"
                   onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
                 />
                 <button
                   onClick={() => setOpen(false)}
-                  className="absolute left-2 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 md:hidden"
+                  className="absolute left-2 rounded p-1 text-slate-600 hover:bg-slate-300 hover:text-slate-900 md:hidden"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -211,20 +207,20 @@ function AccountDropdownCell({
 
             <div className="flex-1 overflow-y-auto p-1.5 overscroll-contain">
               {filtered.length === 0 ? (
-                <div className="py-8 text-center text-sm text-slate-400">لا توجد نتائج مطابقة</div>
+                <div className="py-8 text-center text-sm font-bold text-slate-500">لا توجد نتائج مطابقة</div>
               ) : (
                 filtered.map((acc) => (
                   <button
                     key={acc}
                     type="button"
                     onClick={() => pick(acc)}
-                    className={`w-full rounded-md px-3 py-2.5 text-right text-[13px] font-medium transition-colors
+                    className={`mb-1 w-full rounded-md border border-slate-900 px-3 py-2.5 text-right text-[13px] font-bold transition-colors shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]
                       ${
                         value === acc
                           ? isDebit
-                            ? "bg-emerald-100 font-bold text-emerald-900"
-                            : "bg-rose-100 font-bold text-rose-900"
-                          : "text-slate-700 hover:bg-slate-100"
+                            ? "bg-emerald-300 text-emerald-950"
+                            : "bg-rose-300 text-rose-950"
+                          : "bg-slate-50 text-slate-800 hover:bg-slate-200"
                       }`}
                   >
                     {acc}
@@ -241,7 +237,7 @@ function AccountDropdownCell({
 
 // ── المكوّن الرئيسي ───────────────────────────────────────────────────────
 export default function JournalTab() {
-  const { journal, addJournal, updateJournal, deleteJournal, clearJournal } = useStore();
+  const { journal, addJournal, deleteJournal, clearJournal } = useStore();
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formNo, setFormNo] = useState("");
@@ -365,65 +361,63 @@ export default function JournalTab() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // ── سطر إدخال القيد بتصميم مدمج وأنيق ───────────────────────────────────
+  // ── سطر إدخال القيد ───────────────────────────────────
   const renderEntryRow = (l: EntryLine, idx: number, total: number) => {
     const isDebit = l.type === "debit";
     return (
       <tr
         key={l.id}
-        className={`group transition-colors ${
+        className={`group border-b border-slate-900 transition-colors ${
           isDebit
-            ? "bg-emerald-50/30 hover:bg-emerald-50/60"
-            : "bg-rose-50/30 hover:bg-rose-50/60"
-        } border-b border-slate-100 last:border-0`}
+            ? "bg-emerald-100/40 hover:bg-emerald-100/70"
+            : "bg-rose-100/40 hover:bg-rose-100/70"
+        }`}
       >
-        <td className="px-3 py-2.5 text-center align-top sm:px-4">
+        <td className="px-3 py-2.5 text-center align-middle sm:px-4">
           <span
-            className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold shadow-sm
-            ${isDebit ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"}`}
+            className={`inline-flex h-6 w-6 items-center justify-center rounded-full border border-slate-900 text-xs font-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]
+            ${isDebit ? "bg-emerald-300 text-emerald-950" : "bg-rose-300 text-rose-950"}`}
           >
             {idx + 1}
           </span>
         </td>
-        <td className="px-2 py-2.5 align-top sm:px-3">
+        <td className="px-2 py-2.5 align-middle sm:px-3">
           <AccountDropdownCell
             value={l.account}
             onChange={(v) => updateLine(l.id, "account", v)}
             type={l.type}
           />
         </td>
-        <td className="px-2 py-2.5 align-top sm:px-3">
+        <td className="px-2 py-2.5 align-middle sm:px-3">
           <input
             type="text"
             value={l.description || ""}
             onChange={(e) => updateLine(l.id, "description", e.target.value)}
             placeholder="بيان تفصيلي (اختياري)"
-            className="h-[42px] w-full min-w-[150px] rounded-lg border border-slate-200 bg-white/80 px-3 text-sm outline-none transition-all placeholder:text-slate-400 hover:border-slate-300 focus:border-sky-500 focus:bg-white focus:ring-2 focus:ring-sky-500/10"
+            className="h-[42px] w-full min-w-[150px] rounded-lg border border-slate-900 bg-slate-200/80 px-3 text-sm font-bold text-slate-900 outline-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] placeholder:text-slate-500 focus:border-black focus:bg-slate-100"
           />
         </td>
-        <td className="px-2 py-2.5 align-top sm:px-3">
-          <div className="relative">
-            <input
-              type="number"
-              inputMode="decimal"
-              dir="ltr"
-              value={l.amount || ""}
-              onChange={(e) => updateLine(l.id, "amount", e.target.value)}
-              placeholder="0.00"
-              className={`h-[42px] w-full min-w-[120px] rounded-lg border bg-white/80 px-3 text-left font-mono text-[15px] font-bold outline-none transition-all placeholder:font-sans hover:border-slate-300 focus:bg-white focus:ring-2
-                ${
-                  isDebit
-                    ? "border-emerald-200 text-emerald-700 focus:border-emerald-500 focus:ring-emerald-500/10"
-                    : "border-rose-200 text-rose-700 focus:border-rose-500 focus:ring-rose-500/10"
-                }`}
-            />
-          </div>
+        <td className="px-2 py-2.5 align-middle sm:px-3">
+          <input
+            type="number"
+            inputMode="decimal"
+            dir="ltr"
+            value={l.amount || ""}
+            onChange={(e) => updateLine(l.id, "amount", e.target.value)}
+            placeholder="0.00"
+            className={`h-[42px] w-full min-w-[120px] rounded-lg border border-slate-900 px-3 text-left font-mono text-[15px] font-black outline-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] placeholder:font-sans focus:bg-slate-100
+              ${
+                isDebit
+                  ? "bg-emerald-50 text-emerald-900 focus:border-emerald-700"
+                  : "bg-rose-50 text-rose-900 focus:border-rose-700"
+              }`}
+          />
         </td>
-        <td className="px-3 py-2.5 text-center align-top sm:px-4">
+        <td className="px-3 py-2.5 text-center align-middle sm:px-4">
           {total > 1 && (
             <button
               onClick={() => removeLine(l.id)}
-              className="mt-1 flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all hover:bg-rose-100 hover:text-rose-600 group-hover:opacity-100 focus:opacity-100"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-900 bg-slate-200 text-slate-700 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-rose-200 hover:text-rose-900 active:translate-y-0.5"
               title="حذف السطر"
             >
               <X className="h-4 w-4" />
@@ -439,7 +433,7 @@ export default function JournalTab() {
       label: "استيراد Excel",
       onSelect: () => undefined,
       content: (
-        <div className="flex w-full items-center rounded-lg hover:bg-slate-100">
+        <div className="flex w-full items-center rounded-lg hover:bg-slate-200">
           <ImportButton kind="journal" />
         </div>
       ),
@@ -469,21 +463,21 @@ export default function JournalTab() {
   );
 
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-5 p-2 sm:p-4 sm:pb-24" dir="rtl">
+    <div className="mx-auto w-full max-w-7xl space-y-6 bg-slate-200/50 p-3 sm:p-5 sm:pb-24" dir="rtl">
       {/* ══ بطاقة إدخال القيد ══ */}
-      <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:shadow-md">
+      <section className="relative overflow-hidden rounded-2xl border-2 border-slate-900 bg-slate-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         {/* الترويسة العلوية */}
-        <div className="border-b border-slate-100 bg-slate-50 px-4 py-3 sm:px-6">
+        <div className="border-b-2 border-slate-900 bg-slate-300/70 px-4 py-3.5 sm:px-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-100 text-sky-600 shadow-inner">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-900 bg-sky-200 text-sky-950 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 <BookOpenText className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-slate-800">
+                <h3 className="text-base font-black text-slate-900">
                   {editingId ? "تعديل قيد يومية" : "إضافة قيد يومية مركب"}
                 </h3>
-                <p className="text-xs font-medium text-slate-500">
+                <p className="text-xs font-bold text-slate-600">
                   قم بتسجيل أطراف القيد وتوزيع المبالغ بسهولة
                 </p>
               </div>
@@ -493,8 +487,8 @@ export default function JournalTab() {
         </div>
 
         <div className="p-4 sm:p-6">
-          {/* حقول الرأس (Form Header) */}
-          <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {/* حقول الرأس (تم تعديل الهيكل لتكون حقلين في كل سطر) */}
+          <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="رقم الاستمارة" icon={<Hash className="h-3.5 w-3.5" />}>
               <input
                 placeholder="مثال: 145"
@@ -530,10 +524,10 @@ export default function JournalTab() {
           </div>
 
           {/* جدول أسطر القيد */}
-          <div className="overflow-hidden rounded-xl border border-slate-200">
+          <div className="overflow-hidden rounded-xl border-2 border-slate-900 bg-slate-200/40 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[700px] text-right">
-                <thead className="bg-slate-50 text-[13px] font-bold text-slate-600">
+                <thead className="border-b-2 border-slate-900 bg-slate-300 text-[13px] font-black text-slate-900">
                   <tr>
                     <th className="w-12 px-3 py-3 text-center sm:px-4">#</th>
                     <th className="w-[30%] px-2 py-3 sm:px-3">الحساب المالي</th>
@@ -542,18 +536,18 @@ export default function JournalTab() {
                     <th className="w-12 px-3 py-3 text-center sm:px-4"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-900">
                   {/* الطرف المدين */}
-                  <tr className="bg-emerald-50/50">
-                    <td colSpan={5} className="px-4 py-2 text-xs font-bold text-emerald-700">
+                  <tr className="border-b border-slate-900 bg-emerald-200/70">
+                    <td colSpan={5} className="px-4 py-2 text-xs font-black text-emerald-950">
                       الطرف المدين (من حـ/)
                     </td>
                   </tr>
                   {debitLinesArr.map((l, i) => renderEntryRow(l, i, debitLinesArr.length))}
-                  
+
                   {/* الطرف الدائن */}
-                  <tr className="bg-rose-50/50 border-t border-slate-200">
-                    <td colSpan={5} className="px-4 py-2 text-xs font-bold text-rose-700">
+                  <tr className="border-b border-slate-900 bg-rose-200/70">
+                    <td colSpan={5} className="px-4 py-2 text-xs font-black text-rose-950">
                       الطرف الدائن (إلى حـ/)
                     </td>
                   </tr>
@@ -562,51 +556,51 @@ export default function JournalTab() {
               </table>
             </div>
 
-            {/* أزرار الإضافة السريعة تحت الجدول */}
-            <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-50 px-4 py-3 sm:px-6">
-              <div className="flex gap-2">
+            {/* أزرار الإضافة السريعة (زرين في سطر واحد) */}
+            <div className="border-t-2 border-slate-900 bg-slate-300/80 p-3">
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => addLine("debit")}
-                  className="flex items-center gap-1.5 rounded-lg border border-dashed border-emerald-300 bg-white px-3 py-1.5 text-xs font-bold text-emerald-700 transition-colors hover:bg-emerald-50 hover:border-emerald-400"
+                  className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-900 bg-emerald-200 px-3 py-2 text-xs font-black text-emerald-950 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-emerald-300 active:translate-y-0.5"
                 >
-                  <Plus className="h-3.5 w-3.5" /> إضافة طرف مدين
+                  <Plus className="h-4 w-4" /> إضافة طرف مدين
                 </button>
                 <button
                   onClick={() => addLine("credit")}
-                  className="flex items-center gap-1.5 rounded-lg border border-dashed border-rose-300 bg-white px-3 py-1.5 text-xs font-bold text-rose-700 transition-colors hover:bg-rose-50 hover:border-rose-400"
+                  className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-900 bg-rose-200 px-3 py-2 text-xs font-black text-rose-950 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-rose-300 active:translate-y-0.5"
                 >
-                  <Plus className="h-3.5 w-3.5" /> إضافة طرف دائن
+                  <Plus className="h-4 w-4" /> إضافة طرف دائن
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* شريط التوازن والحفظ (عائم في أسفل البطاقة) */}
-        <div className="border-t border-slate-100 bg-white p-4 sm:px-6 sm:py-4">
+        {/* شريط التوازن والحفظ (أسفل البطاقة) */}
+        <div className="border-t-2 border-slate-900 bg-slate-200/90 p-4 sm:px-6 sm:py-4">
           <div
-            className={`flex flex-col gap-4 rounded-xl border p-3 transition-colors sm:flex-row sm:items-center sm:justify-between
-              ${isBalanced ? "border-emerald-200 bg-emerald-50/50" : "border-amber-200 bg-amber-50/30"}`}
+            className={`flex flex-col gap-4 rounded-xl border-2 border-slate-900 p-3.5 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
+              ${isBalanced ? "bg-emerald-100/80" : "bg-amber-100/80"}`}
           >
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-slate-500">الإجمالي المدين:</span>
-                  <span className="font-mono text-base font-black text-emerald-700">
+                  <span className="text-sm font-black text-slate-800">الإجمالي المدين:</span>
+                  <span className="font-mono text-base font-black text-emerald-900">
                     {totalDebit.toLocaleString("en-US")}
                   </span>
                 </div>
-                <div className="hidden h-4 w-px bg-slate-300 sm:block"></div>
+                <div className="hidden h-4 w-0.5 bg-slate-900 sm:block"></div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-slate-500">الإجمالي الدائن:</span>
-                  <span className="font-mono text-base font-black text-rose-700">
+                  <span className="text-sm font-black text-slate-800">الإجمالي الدائن:</span>
+                  <span className="font-mono text-base font-black text-rose-900">
                     {totalCredit.toLocaleString("en-US")}
                   </span>
                 </div>
                 <div className="ml-auto">
                   <span
-                    className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold
-                    ${isBalanced ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}
+                    className={`flex items-center gap-1.5 rounded-lg border border-slate-900 px-3 py-1 text-xs font-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]
+                    ${isBalanced ? "bg-emerald-300 text-emerald-950" : "bg-amber-300 text-amber-950"}`}
                   >
                     {isBalanced ? (
                       <>
@@ -614,27 +608,32 @@ export default function JournalTab() {
                       </>
                     ) : (
                       <>
-                        <AlertTriangle className="h-4 w-4" /> 
-                        {totalDebit > 0 || totalCredit > 0 ? `الفرق: ${diff.toLocaleString("en-US")}` : "بانتظار إدخال المبالغ"}
+                        <AlertTriangle className="h-4 w-4" />
+                        {totalDebit > 0 || totalCredit > 0
+                          ? `الفرق: ${diff.toLocaleString("en-US")}`
+                          : "بانتظار إدخال المبالغ"}
                       </>
                     )}
                   </span>
                 </div>
               </div>
               {/* شريط التقدم للاتزان */}
-              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-slate-200/60">
+              <div className="mt-3 h-2 w-full overflow-hidden rounded-full border border-slate-900 bg-slate-300 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
                 <div
-                  className={`h-full rounded-full transition-all duration-500 ${isBalanced ? "bg-emerald-500" : "bg-amber-400"}`}
+                  className={`h-full transition-all duration-500 ${
+                    isBalanced ? "bg-emerald-600" : "bg-amber-500"
+                  }`}
                   style={{ width: `${Math.round(balanceRatio * 100)}%` }}
                 />
               </div>
             </div>
 
-            <div className="flex w-full gap-2 sm:w-auto">
+            {/* الأزرار هنا مقسمة إلى 2 في كل سطر في شاشات الجوال ومرتبة أفصل */}
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:w-auto">
               {editingId && (
                 <button
                   onClick={resetForm}
-                  className="flex-1 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900 sm:flex-none"
+                  className="rounded-lg border border-slate-900 bg-slate-300 px-4 py-2 text-sm font-black text-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-slate-400 active:translate-y-0.5"
                 >
                   إلغاء
                 </button>
@@ -642,11 +641,13 @@ export default function JournalTab() {
               <button
                 onClick={handleSave}
                 disabled={!isBalanced}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-6 py-2 text-sm font-bold text-white shadow-sm transition-all sm:flex-none
+                className={`flex items-center justify-center gap-2 rounded-lg border border-slate-900 px-6 py-2 text-sm font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all ${
+                  editingId ? "" : "col-span-2 sm:col-span-1"
+                }
                   ${
                     isBalanced
-                      ? "bg-sky-600 hover:bg-sky-700 hover:shadow active:scale-95"
-                      : "cursor-not-allowed bg-slate-300"
+                      ? "bg-sky-400 text-slate-950 hover:bg-sky-500 active:translate-y-0.5"
+                      : "cursor-not-allowed bg-slate-300 text-slate-500 shadow-none opacity-60"
                   }`}
               >
                 <Save className="h-4 w-4" />
@@ -658,18 +659,18 @@ export default function JournalTab() {
       </section>
 
       {/* ══ سجل القيود ══ */}
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50 px-4 py-3 sm:px-6">
+      <section className="overflow-hidden rounded-2xl border-2 border-slate-900 bg-slate-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-slate-900 bg-slate-300/80 px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2">
-            <h3 className="text-base font-bold text-slate-800">سجل القيود المسجلة</h3>
-            <span className="rounded-full bg-sky-100 px-2.5 py-0.5 text-xs font-bold text-sky-700">
+            <h3 className="text-base font-black text-slate-900">سجل القيود المسجلة</h3>
+            <span className="rounded-lg border border-slate-900 bg-sky-200 px-2.5 py-0.5 text-xs font-black text-sky-950 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
               {filteredJournal.length} قيد
             </span>
           </div>
           {Object.values(journalFilters).some(Boolean) && (
             <button
               onClick={clearJournalFilters}
-              className="rounded-lg bg-slate-200/50 px-3 py-1.5 text-xs font-bold text-slate-600 transition-colors hover:bg-slate-200 hover:text-slate-900"
+              className="rounded-lg border border-slate-900 bg-slate-200 px-3 py-1.5 text-xs font-black text-slate-900 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-colors hover:bg-slate-300 active:translate-y-0.5"
             >
               مسح التصفية
             </button>
@@ -678,49 +679,49 @@ export default function JournalTab() {
 
         {journal.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 text-slate-300">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-slate-900 bg-slate-200 text-slate-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <Inbox className="h-8 w-8" />
             </div>
-            <p className="text-base font-bold text-slate-500">لا توجد قيود يومية بعد</p>
-            <p className="text-sm text-slate-400">ابدأ بإضافة قيد جديد من النموذج أعلاه</p>
+            <p className="text-base font-black text-slate-800">لا توجد قيود يومية بعد</p>
+            <p className="text-sm font-bold text-slate-600">ابدأ بإضافة قيد جديد من النموذج أعلاه</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[900px] text-right text-sm">
-              <thead className="bg-white">
+              <thead className="bg-slate-200/90">
                 {/* عناوين الأعمدة */}
                 <tr>
                   {JOURNAL_COLS.map((c) => (
                     <th
                       key={c.key}
-                      className="whitespace-nowrap border-b border-slate-200 px-4 py-3 font-bold text-slate-600"
+                      className="whitespace-nowrap border-b-2 border-slate-900 px-4 py-3 font-black text-slate-900"
                     >
                       {c.label}
                     </th>
                   ))}
-                  <th className="whitespace-nowrap border-b border-slate-200 px-4 py-3 text-center font-bold text-slate-600">
+                  <th className="whitespace-nowrap border-b-2 border-slate-900 px-4 py-3 text-center font-black text-slate-900">
                     الإجراءات
                   </th>
                 </tr>
                 {/* حقول التصفية */}
-                <tr className="bg-slate-50/50">
+                <tr className="border-b border-slate-900 bg-slate-300/50">
                   {JOURNAL_COLS.map((c) => (
-                    <th key={c.key} className="border-b border-slate-200 px-2 py-2">
+                    <th key={c.key} className="px-2 py-2">
                       <input
                         value={journalFilters[c.key] || ""}
                         onChange={(e) => setJournalFilter(c.key, e.target.value)}
                         placeholder="تصفية..."
-                        className="w-full rounded-md border border-slate-200 bg-white px-2 py-1.5 text-xs font-medium text-slate-700 outline-none transition-colors placeholder:text-slate-300 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20"
+                        className="w-full rounded-md border border-slate-900 bg-slate-50 px-2 py-1.5 text-xs font-bold text-slate-900 outline-none shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] placeholder:text-slate-500 focus:bg-slate-100"
                       />
                     </th>
                   ))}
-                  <th className="border-b border-slate-200 px-2 py-2" />
+                  <th className="px-2 py-2" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-900">
                 {filteredJournal.length === 0 ? (
                   <tr>
-                    <td colSpan={JOURNAL_COLS.length + 1} className="py-8 text-center text-slate-400">
+                    <td colSpan={JOURNAL_COLS.length + 1} className="py-8 text-center font-bold text-slate-600">
                       لا توجد نتائج تطابق شروط التصفية
                     </td>
                   </tr>
@@ -728,47 +729,48 @@ export default function JournalTab() {
                   filteredJournal.map((j) => (
                     <tr
                       key={j.id}
-                      className="group bg-white transition-colors hover:bg-sky-50/30"
+                      className="group bg-slate-100/90 transition-colors hover:bg-sky-100/60"
                     >
-                      <td className="px-4 py-3 font-mono text-slate-600">{j.formNo || "—"}</td>
-                      <td className="px-4 py-3 text-slate-600">{j.settlement || "—"}</td>
-                      <td className="whitespace-nowrap px-4 py-3 font-mono text-slate-500">
+                      <td className="px-4 py-3 font-mono font-bold text-slate-900">{j.formNo || "—"}</td>
+                      <td className="px-4 py-3 font-bold text-slate-900">{j.settlement || "—"}</td>
+                      <td className="whitespace-nowrap px-4 py-3 font-mono font-bold text-slate-800">
                         {j.date || "—"}
                       </td>
-                      <td className="max-w-[200px] truncate px-4 py-3 font-medium text-slate-700" title={j.description}>
+                      <td className="max-w-[200px] truncate px-4 py-3 font-bold text-slate-900" title={j.description}>
                         {j.description || "—"}
                       </td>
                       <td className="px-4 py-3">
-                        <span className="inline-block max-w-[160px] truncate rounded-md bg-emerald-50 px-2 py-1 text-xs font-bold text-emerald-700" title={j.debitAccount}>
+                        <span className="inline-block max-w-[160px] truncate rounded-md border border-slate-900 bg-emerald-200 px-2 py-1 text-xs font-black text-emerald-950 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title={j.debitAccount}>
                           {j.debitAccount || "—"}
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="inline-block max-w-[160px] truncate rounded-md bg-rose-50 px-2 py-1 text-xs font-bold text-rose-700" title={j.creditAccount}>
+                        <span className="inline-block max-w-[160px] truncate rounded-md border border-slate-900 bg-rose-200 px-2 py-1 text-xs font-black text-rose-950 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title={j.creditAccount}>
                           {j.creditAccount || "—"}
                         </span>
                       </td>
-                      <td className="whitespace-nowrap px-4 py-3 font-mono font-bold text-emerald-600">
+                      <td className="whitespace-nowrap px-4 py-3 font-mono font-black text-emerald-900">
                         {j.debit ? j.debit.toLocaleString("en-US") : "—"}
                       </td>
-                      <td className="whitespace-nowrap px-4 py-3 font-mono font-bold text-rose-600">
+                      <td className="whitespace-nowrap px-4 py-3 font-mono font-black text-rose-900">
                         {j.credit ? j.credit.toLocaleString("en-US") : "—"}
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex items-center justify-center gap-2">
+                        {/* أزرار التعديل والحذف مقسمة بطريقة متناسقة (2 أزرار) */}
+                        <div className="grid grid-cols-2 gap-1.5">
                           <button
                             onClick={() => startEdit(j)}
-                            className="rounded p-1.5 text-slate-400 transition-colors hover:bg-sky-100 hover:text-sky-600"
+                            className="flex items-center justify-center rounded-lg border border-slate-900 bg-sky-200 p-1.5 text-sky-950 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-sky-300 active:translate-y-0.5"
                             title="تعديل"
                           >
-                            <Edit className="h-4 w-4" />
+                            <Edit className="h-3.5 w-3.5" />
                           </button>
                           <button
                             onClick={() => deleteJournal(j.id)}
-                            className="rounded p-1.5 text-slate-400 transition-colors hover:bg-rose-100 hover:text-rose-600"
+                            className="flex items-center justify-center rounded-lg border border-slate-900 bg-rose-200 p-1.5 text-rose-950 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-rose-300 active:translate-y-0.5"
                             title="حذف"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
                       </td>
@@ -776,15 +778,15 @@ export default function JournalTab() {
                   ))
                 )}
               </tbody>
-              <tfoot className="bg-slate-50">
-                <tr className="border-t-2 border-slate-200">
-                  <td colSpan={6} className="px-4 py-3 text-left font-bold text-slate-700">
+              <tfoot className="border-t-2 border-slate-900 bg-slate-300">
+                <tr>
+                  <td colSpan={6} className="px-4 py-3 text-left font-black text-slate-900">
                     الإجمالي العام:
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3 font-mono text-base font-black text-emerald-700">
+                  <td className="whitespace-nowrap px-4 py-3 font-mono text-base font-black text-emerald-950">
                     {grandDebit.toLocaleString("en-US")}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3 font-mono text-base font-black text-rose-700">
+                  <td className="whitespace-nowrap px-4 py-3 font-mono text-base font-black text-rose-950">
                     {grandCredit.toLocaleString("en-US")}
                   </td>
                   <td />
