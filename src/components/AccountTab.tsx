@@ -924,6 +924,13 @@ export default function AccountsTab() {
               className="bg-white text-[#0f2f44] font-bold border-black/30 focus:border-[#1f5f7a]"
             />
 
+
+
+
+
+
+
+
             {/* السطر 4 */}
             <div className="w-full">
               <label className="block text-xs font-black mb-1 text-[#0f2f44] truncate">
