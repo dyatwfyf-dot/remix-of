@@ -711,28 +711,28 @@ export default function AccountsTab() {
       </div>
 
       {/* ===== التقارير الدورية (حقول مرتبة 2 في سطر) ===== */}
-      <div
-        className="accounts-print-hide rounded-xl p-2.5 sm:p-3 border border-1-black text-[#1a2a3a]"
-        style={{
-          background: "linear-gradient(135deg, #f4f7f4 0%, #e2ecc9 100%)",
+<div
+className="accounts-print-hide rounded-xl p-2.5 sm:p-3 border border-2-black text-[#1a2a3a]"
+style={{
+background: "linear-gradient(135deg, #f0f7f4 50%, #e2ecc9 50%)",
         }}
       >
-        <div className="mb-2">
-          <h2 className="text-xm sm:text-sm font-black text-[#1a2a3a]">
+<div className="mb-2">
+<h2 className="text-lg:font-black text-[#1a2a3a]">
             تقارير الحساب الدورية
           </h2>
-          <p className="text-[10px] text-[#5c2a1a] font-bold">
+<p className="text-[12px] text-[#5c2a1a] font-bold">
             اختر الفترة ثم صدّر التقرير
           </p>
         </div>
 
         {/* شبكة حقول التقارير: 2 حقل لكل سطر */}
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="block text-[13px] font-black text-black mb-1">
+<div className="grid grid-cols-2 gap-2">
+<div>
+<label className="block text-[13px] font-black text-black mb-1">
               نوع التقرير
-            </label>
-            <select
+</label>
+<select
               value={accountReportMode}
               onChange={(e) => {
                 const nextMode = e.target.value as "quarter" | "halfYear" | "year";
@@ -823,11 +823,11 @@ export default function AccountsTab() {
 
       {/* ===== لوحة القيد اليدوي والمطابقة (خلفية فاتحة، واضحة وأنيقة) ===== */}
       <div
-        className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-1-black shadow-md bg-Sky"
+        className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-1-black shadow-md bg-#451a03"
       >
         <div
-          className="px-3 py-2.5 flex items-center justify-between border-b border-black"
-          style={{ background: "linear-gradient(135deg, #eefffb 0%, #d777f0 100%)" }}
+          className="px-3 py-2.5 flex items-center justify-between border- border-2-black"
+          style={{ background: "linear-gradient(135deg, #451a03 70%, #d777f0 30%)" }}
         >
           <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-lg border border-1-black 
@@ -1371,11 +1371,11 @@ export default function AccountsTab() {
                 className="w-full py-1.5 bg-[#0f2f44] text-white rounded-lg font-black text-xs"
               >
                 حفظ التعديلات
-              </button>
-            </div>
-          </form>
+        </button>
+     </div>
+   </form>
         )}
-      </Modal>
-    </div>
+ </Modal>
+      </div>
   );
 }

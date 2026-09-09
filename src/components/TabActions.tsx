@@ -78,7 +78,7 @@ export default function TabActions({
       </style>
     `;
 
-    const html = `<!doctype html><html lang="ar" dir="rtl"><head>${head}</head><body>
+const html = `<!doctype html><html lang="ar" dir="rtl"><head>${head}</head><body>
       ${reportLetterheadHtml()}
       ${tableHtml()}
       <script>
