@@ -350,7 +350,7 @@ table th.font-mono :where(span, div, input, button) {
   }
 }
 
-/* توحيد نصوص ومحتويات الجداول للون الأسود الداكن */
+/* توحيد نصوص ومحتويات الجداول للون الأسود الغامق */
 table th :where(span, div, p, label, strong, b, small, a),
 table td :where(span, div, p, label, strong, b, small, a),
 table th input,
@@ -362,7 +362,7 @@ table td textarea,
 table th button,
 table td button {
   color: #000 !important;
-  font-weight: 700 !important;
+  font-weight: 900 !important;
 }
 
 /* منع الحقول الداخلية من تجاوز عرض الخلية */
@@ -414,8 +414,9 @@ table td > * {
 /* مقياس شاشات الهواتف (شاومي ~390px): خطوط متوسطة متوازنة وأزرار مريحة للمس */
 @media screen and (max-width: 640px) {
   .apk-tabs-ui {
-  font-family: var(--font-ui);
+    font-family: var(--font-ui);
     font-size: 14px;
+    font-weight: 900;
   }
 
   .apk-tabs-ui h1 { font-size: 1.18rem !important; line-height: 1.35 !important; }
@@ -604,17 +605,18 @@ table td > * {
 /* ===== تبويبات الكشوف (الإيرادات، الحساب الشهري، المصروفات، سجل الاستخدامات) ===== */
 /* هوية عصرية: أزرق بترولي عميق + لمسة نحاسية، واحتواء تلقائي للأعمدة بدون التفاف النصوص */
 .sheet-tabs-ui {
-  --sheet-ink: #0f2f44;
-  --sheet-brand: #1f5f7a;
-  --sheet-accent: #c98a3c;
+  --sheet-ink: #081b2b;
+  --sheet-brand: #164b63;
+  --sheet-accent: #a36d2a;
   color: var(--sheet-ink);
   font-family: var(--font-ui);
+  font-weight: 900;
   letter-spacing: 0.1px;
 }
 
 .sheet-tabs-ui :where(h1, h2, h3, h4) {
   letter-spacing: 0.2px;
-  font-weight: 800;
+  font-weight: 1000;
 }
 
 /* الجداول: عرض تلقائي للأعمدة وارتفاع تلقائي للصفوف مع التفاف النص الطويل. */
@@ -635,6 +637,7 @@ table td > * {
   padding: 6px 9px !important;
   font-size: clamp(13px, 3.3vw, 14.5px) !important;
   line-height: 1.35 !important;
+  font-weight: 900;
 }
 
 .sheet-tabs-ui :where(table th, table td) * {
@@ -646,20 +649,20 @@ table td > * {
 }
 
 .sheet-tabs-ui thead th {
-  font-weight: 900 !important;
+  font-weight: 1000 !important;
   letter-spacing: 0.2px;
 }
 
 /* الأزرار: أحجام مريحة للمس على شاشات شاومي */
 .sheet-tabs-ui :where(button, [role="button"], label.cursor-pointer) {
   border-radius: 0.75rem !important;
-  font-weight: 800 !important;
+  font-weight: 900 !important;
   min-height: 40px;
 }
 
 .sheet-tabs-ui :where(input, select) {
   border-radius: 0.65rem !important;
-  font-weight: 700;
+  font-weight: 900;
 }
 
 /* ضبط دقيق لمحتوى التبويبات على هواتف شاومي/أندرويد بعرض يقارب 390px. */
