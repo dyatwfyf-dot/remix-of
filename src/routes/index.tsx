@@ -75,7 +75,7 @@ type TabItem = {
 };
 
 // تعريف قائمة التبويبات مع بياناتها (تدرج موحّد لهوية "صقيع قطبي")
-const ACTIVE_TAB_CLASS = "bg-gradient-to-b from-[#2e6b8a] to-[#6ba3c8]";
+const ACTIVE_TAB_CLASS = "tab-active-pastel";
 
 const tabs: TabItem[] = [
   {
@@ -236,11 +236,11 @@ function Index() {
   return (
     // الحاوية الرئيسية بهوية "صقيع قطبي" الفاتحة
     <div
-      className="apk-tabs-ui w-full min-h-screen bg-[#e8f0f8] selection:bg-[#6ba3c8]/30 text-base"
+      className="apk-tabs-ui pastel-tabs-theme w-full min-h-screen text-base"
       dir="rtl"
     >
       {/* قسم الهيدر العلوي — أزرق ثلجي عصري */}
-      <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 bg-gradient-to-l from-[#2e6b8a] via-[#3d7fa0] to-[#2e6b8a] px-3 py-3 sm:px-5 sm:py-4 border-b border-[#b8d4e8] shadow-sm text-white overflow-hidden">
+      <div className="app-topbar relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-3 py-3 sm:px-5 sm:py-4 overflow-hidden">
         {/* خيط زخرفي أعلى الهيدر */}
         <div className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,#b8d4e8,#e8f0f8,#b8d4e8)] opacity-80" />
 
@@ -277,7 +277,7 @@ function Index() {
       </div>
 
       {/* محتوى التبويب النشط */}
-      <div className="tab-content w-full min-w-0 bg-[#f4f9fd] pb-28 sm:pb-24 min-h-[calc(100vh-140px)]">
+      <div className="tab-content w-full min-w-0 pb-28 sm:pb-24 min-h-[calc(100vh-140px)]">
         <Suspense
           fallback={
             <div
@@ -302,7 +302,7 @@ function Index() {
 
       {/* شريط التبويبات السفلي — عائم زجاجي فاتح */}
       <nav
-        className="fixed inset-x-0 bottom-0 z-[60] border-t border-[#b8d4e8] bg-white/90 pb-[env(safe-area-inset-bottom)] shadow-[0_-6px_22px_rgba(46,107,138,0.14)] backdrop-blur-xl"
+        className="app-tabbar fixed inset-x-0 bottom-0 z-[60] pb-[env(safe-area-inset-bottom)] backdrop-blur-xl"
         dir="rtl"
         aria-label="التنقل الرئيسي"
       >
@@ -317,8 +317,8 @@ function Index() {
                 aria-current={isActive ? "page" : undefined}
                 className={`flex min-h-[48px] min-w-[76px] shrink-0 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-1.5 text-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#6ba3c8] active:scale-[0.97] sm:min-w-[104px] sm:px-3 ${
                   isActive
-                    ? `${tab.activeClass} text-white shadow-md`
-                    : "text-[#4e6b80] hover:bg-[#e8f0f8]"
+                    ? `${tab.activeClass} shadow-md`
+                    : "tab-idle-pastel"
                 }`}
               >
                 <span className={isActive ? "scale-105" : "scale-100"}>{tab.icon}</span>
