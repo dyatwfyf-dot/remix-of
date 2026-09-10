@@ -1371,3 +1371,4 @@ export default function AccountsTab() {
       </Modal>
     </div>
   );
+}
