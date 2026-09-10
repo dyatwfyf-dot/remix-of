@@ -492,7 +492,7 @@ export default function JournalTab() {
           }}
         >
           <div className="absolute inset-x-0 top-0 h-[3px] bg-[repeating-linear-gradient(90deg,#0f4a44_0_10px,transparent_10px_20px)] opacity-25" />
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:gap-3">
+          <div className="grid grid-cols-2 items-center gap-2 sm:gap-2">
             <div className="flex min-w-0 items-center gap-2.5">
               <span
                 className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-black/10 bg-white text-[#0f4a44] shadow-sm"
@@ -517,7 +517,7 @@ export default function JournalTab() {
 
         <div className="space-y-4 p-3 sm:p-4">
           {/* رأس القيد */}
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-1 sm:grid-cols-2">
             <Field label="رقم الاستمارة" icon={<Hash className="h-3.5 w-3.5" />}>
               <input
                 placeholder="مثال: 145"
@@ -721,7 +721,7 @@ export default function JournalTab() {
         ) : (
           <>
             <div className="overflow-auto max-h-[72vh]">
-              <table className="w-full min-w-0 table-auto border-collapse text-center text-sm sm:text-base font-semibold">
+              <table className="w-full table-auto border-collapse text-center text-sm sm:text-base font-semibold">
                 <thead
                   className="sticky top-0 z-20 shadow-md"
                   style={{
@@ -733,12 +733,12 @@ export default function JournalTab() {
                     {JOURNAL_COLS.map((c) => (
                       <th
                         key={c.key}
-                        className="min-w-0 max-w-[120px] whitespace-nowrap border-b border-black/10 text-center font-bold leading-tight !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
+                        className=" max-w-[120px] whitespace-nowrap border-b border-black/10 text-center font-bold leading-tight !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
                       >
                         {c.label}
                       </th>
                     ))}
-                    <th className="min-w-0 max-w-[120px] whitespace-nowrap border-b border-black/10 text-center font-bold leading-tight !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                    <th className=" whitespace-nowrap border-b border-black/10 text-center font-bold leading-tight !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
                       الإجراءات
                     </th>
                   </tr>
@@ -750,7 +750,7 @@ export default function JournalTab() {
                           onChange={(e) => setJournalFilter(c.key, e.target.value)}
                           placeholder="تصفية..."
                           aria-label={`تصفية ${c.label}`}
-                          className="w-full min-w-[58px] rounded border border-slate-300 bg-white px-1 py-1 text-xs font-bold text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 sm:text-sm"
+                          className="w-auto rounded border border-slate-300 bg-white px-1 py-1 text-xs font-bold text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 sm:text-sm"
                         />
                       </th>
                     ))}
@@ -801,7 +801,7 @@ export default function JournalTab() {
                       <td className="min-w-0 max-w-[105px] numeric-cell font-mono font-black text-rose-700 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base whitespace-nowrap">
                         <span className={journalClampCls}>{j.credit ? j.credit.toLocaleString("en-US") : "—"}</span>
                       </td>
-                      <td className="min-w-0 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                      <td className=" !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
                         <div className="flex justify-center gap-1.5">
                           <button
                             onClick={() => startEdit(j)}

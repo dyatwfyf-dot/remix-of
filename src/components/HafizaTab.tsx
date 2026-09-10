@@ -516,7 +516,7 @@ export default function HafizaTab() {
         </CardHeader>
 
         <CardContent>
-          <div className="w-full overflow-auto max-h-[72vh] rounded-lg">
+          <div className="w-auto overflow-auto rounded-lg">
             <Table>
               <TableHeader
                 style={{
