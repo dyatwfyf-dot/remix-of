@@ -764,3 +764,184 @@ table td > * {
     padding-inline: 0 !important;
   }
 }
+
+/* ===== الهوية الموحدة للتبويبات: باستيل لامع هادئ وحدود سوداء ===== */
+.pastel-tabs-theme {
+  --pastel-canvas: oklch(0.95 0.025 205);
+  --pastel-panel: oklch(0.95 0.045 190 / 0.88);
+  --pastel-card: oklch(0.96 0.055 160 / 0.86);
+  --pastel-card-alt: oklch(0.96 0.055 285 / 0.84);
+  --pastel-control: oklch(0.94 0.075 200 / 0.92);
+  --pastel-action: oklch(0.88 0.105 195);
+  --pastel-action-alt: oklch(0.91 0.105 145);
+  --pastel-warm: oklch(0.93 0.095 80);
+  --pastel-danger: oklch(0.91 0.09 20);
+  --pastel-ink: oklch(0.16 0.025 240);
+  background:
+    linear-gradient(135deg, oklch(0.94 0.05 195), oklch(0.96 0.045 285) 48%, oklch(0.95 0.06 145));
+  color: var(--pastel-ink);
+}
+
+.pastel-tabs-theme .app-topbar {
+  color: var(--pastel-ink);
+  border-bottom: 2px solid var(--pastel-ink);
+  background: linear-gradient(120deg, oklch(0.88 0.11 195 / 0.94), oklch(0.92 0.09 275 / 0.94));
+  box-shadow: 0 4px 0 oklch(0.16 0.025 240 / 0.9);
+  backdrop-filter: blur(14px) saturate(145%);
+}
+
+.pastel-tabs-theme .app-topbar :where(h1, p, span, svg) {
+  color: var(--pastel-ink) !important;
+}
+
+.pastel-tabs-theme .tab-content {
+  background: oklch(0.96 0.03 210 / 0.55);
+}
+
+.pastel-tabs-theme .app-tabbar {
+  border-top: 2px solid var(--pastel-ink);
+  background: oklch(0.94 0.05 190 / 0.9);
+  box-shadow: 0 -5px 0 oklch(0.16 0.025 240 / 0.88);
+}
+
+.pastel-tabs-theme .tab-active-pastel {
+  color: var(--pastel-ink) !important;
+  border: 2px solid var(--pastel-ink);
+  background: linear-gradient(145deg, oklch(0.9 0.12 195), oklch(0.92 0.095 275));
+  box-shadow: 3px 3px 0 var(--pastel-ink);
+}
+
+.pastel-tabs-theme .tab-idle-pastel {
+  color: var(--pastel-ink);
+  border: 2px solid transparent;
+}
+
+.pastel-tabs-theme .tab-idle-pastel:hover {
+  border-color: var(--pastel-ink);
+  background: var(--pastel-warm);
+}
+
+/* البطاقات والحاويات المكررة */
+.pastel-tabs-theme .tab-content :where(
+  [class*="rounded-lg"],
+  [class*="rounded-xl"],
+  [class*="rounded-2xl"]
+) {
+  border-color: var(--pastel-ink) !important;
+}
+
+.pastel-tabs-theme .tab-content :where(
+  section,
+  [class*="rounded-xl"],
+  [class*="rounded-2xl"]
+):not(button):not(input):not(select):not(textarea):not([role="button"]) {
+  backdrop-filter: blur(10px) saturate(135%);
+}
+
+.pastel-tabs-theme .tab-content > * > :where(div, section)[class*="rounded"],
+.pastel-tabs-theme .tab-content :where(form, [class*="space-y"]) > [class*="rounded"] {
+  background-color: var(--pastel-card) !important;
+  box-shadow: 4px 4px 0 oklch(0.16 0.025 240 / 0.88) !important;
+}
+
+/* الحقول: حقول لامعة، سوداء الحدود، وحقلان في الصف في نماذج الإدخال. */
+.pastel-tabs-theme .tab-content :where(input, select, textarea) {
+  color: var(--pastel-ink) !important;
+  background-color: var(--pastel-control) !important;
+  border: 2px solid var(--pastel-ink) !important;
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.7);
+}
+
+.pastel-tabs-theme .tab-content :where(input, select, textarea):focus {
+  outline: 2px solid oklch(0.72 0.13 195);
+  outline-offset: 1px;
+}
+
+.pastel-tabs-theme .tab-content form :where(.grid, [class*="grid-cols-"]) {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+/* الأزرار: لون باستيل لامع وحد أسود؛ مجموعات الإجراءات 2 على الهاتف و3 على الأوسع. */
+.pastel-tabs-theme .tab-content :where(button, [role="button"], label.cursor-pointer) {
+  color: var(--pastel-ink) !important;
+  border: 2px solid var(--pastel-ink) !important;
+  background: linear-gradient(145deg, oklch(0.93 0.08 195), var(--pastel-action)) !important;
+  box-shadow: 3px 3px 0 var(--pastel-ink) !important;
+  backdrop-filter: blur(8px) saturate(140%);
+}
+
+.pastel-tabs-theme .tab-content :where(button, [role="button"], label.cursor-pointer):hover {
+  background: linear-gradient(145deg, oklch(0.95 0.1 145), var(--pastel-action-alt)) !important;
+}
+
+.pastel-tabs-theme .tab-content :where(button, [role="button"], label.cursor-pointer):active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--pastel-ink) !important;
+}
+
+.pastel-tabs-theme .apk-only-actions {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem !important;
+  width: 100%;
+}
+
+.pastel-tabs-theme .apk-only-actions > :where(button, [role="button"], label) {
+  min-width: 0 !important;
+  width: 100%;
+  justify-content: center;
+}
+
+/* الجداول: قياس تلقائي كامل، ارتفاع تلقائي، ومنع التفاف النص بلا استثناء. */
+.pastel-tabs-theme .tab-content :where(.overflow-x-auto, .overflow-auto, [class*="overflow-auto"]) {
+  overflow-x: auto !important;
+}
+
+.pastel-tabs-theme .tab-content table {
+  width: max-content !important;
+  min-width: 100% !important;
+  table-layout: auto !important;
+  background: var(--pastel-panel) !important;
+  border: 2px solid var(--pastel-ink) !important;
+}
+
+.pastel-tabs-theme .tab-content table :where(thead, tbody, tfoot, tr, th, td) {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+.pastel-tabs-theme .tab-content table :where(th, td),
+.pastel-tabs-theme .tab-content table :where(th, td) * {
+  width: auto !important;
+  max-width: none !important;
+  white-space: nowrap !important;
+  overflow-wrap: normal !important;
+  word-break: keep-all !important;
+  hyphens: none !important;
+}
+
+.pastel-tabs-theme .tab-content table th {
+  color: var(--pastel-ink) !important;
+  background: var(--pastel-action) !important;
+  border: 1px solid var(--pastel-ink) !important;
+}
+
+.pastel-tabs-theme .tab-content table td {
+  color: var(--pastel-ink) !important;
+  background: oklch(0.96 0.045 160 / 0.84) !important;
+  border: 1px solid var(--pastel-ink) !important;
+}
+
+.pastel-tabs-theme .tab-content table tbody tr:nth-child(even) td {
+  background: var(--pastel-card-alt) !important;
+}
+
+@media screen and (max-width: 640px) {
+  .pastel-tabs-theme .apk-only-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pastel-tabs-theme .tab-content form :where(.grid, [class*="grid-cols-"]) {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
