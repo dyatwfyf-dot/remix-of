@@ -120,7 +120,7 @@ const PRINT_STYLES = `
     border-collapse: collapse !important;
     width: 100% !important;
     min-width:auto !important;
-    table-layout:auto!important;
+    table-layout:auto !important;
   }
   .accounts-print-area thead th {
     color: white !important;
@@ -134,15 +134,16 @@ const PRINT_STYLES = `
   .accounts-print-area th,
   .accounts-print-area td {
     border: 1px solid #000 !important;
-    white-space: nowrap!important;
-    text-overflow:clip !important;
+    white-space: normal !important;
+    text-overflow: clip !important;
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
     hyphens: auto !important;
-    line-height: 1.1 !important;
-    padding: 0 !important;
-    font-size: 14px !important;
+    line-height: 1.2 !important;
+    padding: 2px 4px !important;
+    font-size: 13px !important;
     height: auto !important;
+    width: auto !important;
     max-width: none !important;
     color: #000 !important;
   }
@@ -153,8 +154,8 @@ const PRINT_STYLES = `
   .accounts-print-area td.font-mono,
   .accounts-print-area th.font-mono {
     font-family: 'Times New Roman', Times, serif !important;
-    font-size: 14px !important;
-    line-height: 1.05 !important;
+    font-size: 13px !important;
+    line-height: 1.1 !important;
     white-space: nowrap !important;
     overflow-wrap: normal !important;
     word-break: keep-all !important;
@@ -711,28 +712,28 @@ export default function AccountsTab() {
       </div>
 
       {/* ===== التقارير الدورية (حقول مرتبة 2 في سطر) ===== */}
-<div
-className="accounts-print-hide rounded-xl p-2.5 sm:p-3 border border-2-black text-[#1a2a3a]"
-style={{
-background: "linear-gradient(135deg, #f0f7f4 50%, #e2ecc9 50%)",
+      <div
+        className="accounts-print-hide rounded-xl p-2.5 sm:p-3 border border-2-black text-[#1a2a3a]"
+        style={{
+          background: "linear-gradient(135deg, #f0f7f4 50%, #e2ecc9 50%)",
         }}
       >
-<div className="mb-2">
-<h2 className="text-lg:font-black text-[#1a2a3a]">
+        <div className="mb-2">
+          <h2 className="text-lg:font-black text-[#1a2a3a]">
             تقارير الحساب الدورية
           </h2>
-<p className="text-[12px] text-[#5c2a1a] font-bold">
+          <p className="text-[12px] text-[#5c2a1a] font-bold">
             اختر الفترة ثم صدّر التقرير
           </p>
         </div>
 
         {/* شبكة حقول التقارير: 2 حقل لكل سطر */}
-<div className="grid grid-cols-2 gap-2">
-<div>
-<label className="block text-[13px] font-black text-black mb-1">
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="block text-[13px] font-black text-black mb-1">
               نوع التقرير
-</label>
-<select
+            </label>
+            <select
               value={accountReportMode}
               onChange={(e) => {
                 const nextMode = e.target.value as "quarter" | "halfYear" | "year";
@@ -830,8 +831,7 @@ background: "linear-gradient(135deg, #f0f7f4 50%, #e2ecc9 50%)",
           style={{ background: "linear-gradient(135deg, #451a03 70%, #d777f0 30%)" }}
         >
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg border border-1-black 
-            bg-[#1f5ffa] text-white">
+            <div className="p-1.5 rounded-lg border border-1-black bg-[#1f5ffa] text-white">
               <Plus className={ICON_MOBILE} />
             </div>
             <h2 className="text-xs sm:text-sm font-black text-[#0f2f44]">
@@ -924,13 +924,6 @@ background: "linear-gradient(135deg, #f0f7f4 50%, #e2ecc9 50%)",
               on={(v) => setForm({ ...form, checkDate: v })}
               className="bg-white text-[#0f2f44] font-bold border-black/30 focus:border-[#1f5f7a]"
             />
-
-
-
-
-
-
-
 
             {/* السطر 4 */}
             <div className="w-full">
@@ -1085,17 +1078,17 @@ background: "linear-gradient(135deg, #f0f7f4 50%, #e2ecc9 50%)",
 
         <div className="p-1 sm:p-2">
           <div className="overflow-x-auto overflow-y-auto max-h-[65vh] relative rounded-xl border border-black/20">
-            <table className="min-w-max table-auto text-xs text-center font-semibold border-collapse border border-black">
+            <table className="w-full table-auto text-xs text-center font-semibold border-collapse border border-black">
               <thead
                 className="sticky top-0 z-20 text-[#0f2f44] font-black text-xs"
                 style={{ background: THEME.warmCream }}
               >
                 <tr>
-                  <th className="border border-black px-1.5 py-1.5 w-8">م</th>
+                  <th className="border border-black px-1.5 py-1.5 h-auto whitespace-nowrap">م</th>
                   {COLS.map((c) => (
                     <th
                       key={c.key}
-                      className="border border-black px-1.5 py-1.5 cursor-pointer hover:bg-[#cfe4ef] select-none"
+                      className="border border-black px-1.5 py-1.5 h-auto whitespace-nowrap cursor-pointer hover:bg-[#cfe4ef] select-none"
                       onClick={() => toggleSort(c.key)}
                     >
                       <div className="flex items-center justify-center gap-1">
@@ -1106,21 +1099,21 @@ background: "linear-gradient(135deg, #f0f7f4 50%, #e2ecc9 50%)",
                       </div>
                     </th>
                   ))}
-                  <th className="border border-black px-1.5 py-1.5">إجراءات</th>
+                  <th className="border border-black px-1.5 py-1.5 h-auto whitespace-nowrap">إجراءات</th>
                 </tr>
                 <tr className="accounts-print-hide" style={{ background: THEME.cream }}>
-                  <th className="border border-black px-1 py-1"></th>
+                  <th className="border border-black px-1 py-1 h-auto"></th>
                   {COLS.map((c) => (
-                    <th key={c.key} className="border border-black px-1 py-1">
+                    <th key={c.key} className="border border-black px-1 py-1 h-auto">
                       <input
                         value={filters[c.key] || ""}
                         onChange={(e) => setFilter(c.key, e.target.value)}
                         placeholder="تصفية..."
-                        className="w-14 px-1 py-0.5 text-[10px] border rounded bg-white text-[#0f2f44] outline-none font-bold"
+                        className="w-full min-w-[2.5rem] px-1 py-0.5 text-[10px] border rounded bg-white text-[#0f2f44] outline-none font-bold"
                       />
                     </th>
                   ))}
-                  <th className="border border-black px-1 py-1"></th>
+                  <th className="border border-black px-1 py-1 h-auto"></th>
                 </tr>
               </thead>
 
@@ -1129,7 +1122,7 @@ background: "linear-gradient(135deg, #f0f7f4 50%, #e2ecc9 50%)",
                   <tr>
                     <td
                       colSpan={COLS.length + 2}
-                      className="text-center font-black border border-black bg-white px-2 py-3 text-xs"
+                      className="text-center font-black border border-black bg-white px-2 py-3 text-xs h-auto"
                     >
                       لا توجد بيانات تطابق مرشحات البحث.
                     </td>
@@ -1138,49 +1131,49 @@ background: "linear-gradient(135deg, #f0f7f4 50%, #e2ecc9 50%)",
                   filteredWithBalance.map((acc, index) => (
                     <tr
                       key={acc.id}
-                      className="odd:bg-white even:bg-[#f4fafd] hover:bg-[#e3f0f7] transition-colors"
+                      className="odd:bg-white even:bg-[#f4fafd] hover:bg-[#e3f0f7] transition-colors h-auto"
                     >
-                      <td className="border border-black text-center font-mono tabular-nums px-1 py-1 text-xs">
+                      <td className="border border-black text-center font-mono tabular-nums px-1 py-1 text-xs h-auto whitespace-nowrap">
                         {index + 1}
                       </td>
-                      <td className="border border-black font-mono tabular-nums text-center px-1 py-1 text-xs">
+                      <td className="border border-black font-mono tabular-nums text-center px-1 py-1 text-xs h-auto whitespace-nowrap">
                         {acc.date}
                       </td>
-                      <td className="border border-black font-mono tabular-nums font-black text-center px-1 py-1 text-xs">
+                      <td className="border border-black font-mono tabular-nums font-black text-center px-1 py-1 text-xs h-auto whitespace-nowrap">
                         {acc.hafizaNo || "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums text-center px-1 py-1 text-xs">
+                      <td className="border border-black font-mono tabular-nums text-center px-1 py-1 text-xs h-auto whitespace-nowrap">
                         {acc.notifyNo || "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums text-center px-1 py-1 text-xs">
+                      <td className="border border-black font-mono tabular-nums text-center px-1 py-1 text-xs h-auto whitespace-nowrap">
                         {acc.notifyDate || "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums text-center px-1 py-1 text-xs">
+                      <td className="border border-black font-mono tabular-nums text-center px-1 py-1 text-xs h-auto whitespace-nowrap">
                         {acc.checkNo || "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums text-center px-1 py-1 text-xs">
+                      <td className="border border-black font-mono tabular-nums text-center px-1 py-1 text-xs h-auto whitespace-nowrap">
                         {acc.checkDate || "—"}
                       </td>
-                      <td className="border border-black px-1.5 py-1 text-xs">
+                      <td className="border border-black px-1.5 py-1 text-xs h-auto whitespace-normal break-words">
                         {acc.description || "—"}
                       </td>
-                      <td className="border border-black px-1.5 py-1 text-xs">
+                      <td className="border border-black px-1.5 py-1 text-xs h-auto whitespace-normal break-words">
                         {acc.specialty || "—"}
                       </td>
-                      <td className="border border-black font-black px-1.5 py-1 text-xs">
+                      <td className="border border-black font-black px-1.5 py-1 text-xs h-auto whitespace-normal break-words">
                         {acc.name || "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums text-center px-1 py-1 text-xs">
+                      <td className="border border-black font-mono tabular-nums text-center px-1 py-1 text-xs h-auto whitespace-nowrap">
                         {Number(acc.hafizaAmount) > 0 ? fmt(Number(acc.hafizaAmount)) : "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums font-black text-center bg-[#1E8E5A]/[0.06] px-1 py-1 text-xs">
+                      <td className="border border-black font-mono tabular-nums font-black text-center bg-[#1E8E5A]/[0.06] px-1 py-1 text-xs h-auto whitespace-nowrap">
                         {Number(acc.income) > 0 ? fmt(Number(acc.income)) : "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums font-black text-center bg-[#D14343]/[0.06] px-1 py-1 text-xs">
+                      <td className="border border-black font-mono tabular-nums font-black text-center bg-[#D14343]/[0.06] px-1 py-1 text-xs h-auto whitespace-nowrap">
                         {Number(acc.expense) > 0 ? fmt(Number(acc.expense)) : "—"}
                       </td>
 
-                      <td className="accounts-print-hide border border-black text-center px-1 py-1 text-xs">
+                      <td className="accounts-print-hide border border-black text-center px-1 py-1 text-xs h-auto min-w-[5rem]">
                         <select
                           value={acc.revenueKey || ""}
                           onChange={(e) => {
@@ -1199,10 +1192,10 @@ background: "linear-gradient(135deg, #f0f7f4 50%, #e2ecc9 50%)",
                         </select>
                       </td>
 
-                      <td className="border border-black font-mono tabular-nums font-black text-center bg-[#1f5f7a]/[0.06] px-1 py-1 text-xs">
+                      <td className="border border-black font-mono tabular-nums font-black text-center bg-[#1f5f7a]/[0.06] px-1 py-1 text-xs h-auto whitespace-nowrap">
                         {fmt(acc.balance)}
                       </td>
-                      <td className="accounts-print-hide border border-black text-center px-1 py-1 text-xs">
+                      <td className="accounts-print-hide border border-black text-center px-1 py-1 text-xs h-auto whitespace-nowrap">
                         <div className="flex justify-center gap-1">
                           <button
                             onClick={() => setEditingRow(acc)}
@@ -1228,21 +1221,21 @@ background: "linear-gradient(135deg, #f0f7f4 50%, #e2ecc9 50%)",
               </tbody>
               {filteredWithBalance.length > 0 && (
                 <tfoot>
-                  <tr className="bg-[#E7E2D8]">
-                    <td colSpan={10} className="border border-black text-left font-black px-2 py-1.5 text-xs">
+                  <tr className="bg-[#E7E2D8] h-auto">
+                    <td colSpan={10} className="border border-black text-left font-black px-2 py-1.5 text-xs h-auto">
                       رصيد الإقفال
                     </td>
-                    <td className="border border-black font-mono tabular-nums font-black text-center px-1 py-1.5 text-xs">
+                    <td className="border border-black font-mono tabular-nums font-black text-center px-1 py-1.5 text-xs h-auto whitespace-nowrap">
                       {fmt(totalIncome)}
                     </td>
-                    <td className="border border-black font-mono tabular-nums font-black text-center px-1 py-1.5 text-xs">
+                    <td className="border border-black font-mono tabular-nums font-black text-center px-1 py-1.5 text-xs h-auto whitespace-nowrap">
                       {fmt(totalExpense)}
                     </td>
-                    <td className="border border-black px-1 py-1.5 text-xs"></td>
-                    <td className="border border-black font-mono tabular-nums font-black text-center bg-[#1f5f7a]/10 px-1 py-1.5 text-xs">
+                    <td className="border border-black px-1 py-1.5 text-xs h-auto"></td>
+                    <td className="border border-black font-mono tabular-nums font-black text-center bg-[#1f5f7a]/10 px-1 py-1.5 text-xs h-auto whitespace-nowrap">
                       {fmt(currentBalance)}
                     </td>
-                    <td className="accounts-print-hide border border-black px-1 py-1.5 text-xs"></td>
+                    <td className="accounts-print-hide border border-black px-1 py-1.5 text-xs h-auto"></td>
                   </tr>
                 </tfoot>
               )}
@@ -1371,11 +1364,11 @@ background: "linear-gradient(135deg, #f0f7f4 50%, #e2ecc9 50%)",
                 className="w-full py-1.5 bg-[#0f2f44] text-white rounded-lg font-black text-xs"
               >
                 حفظ التعديلات
-        </button>
-     </div>
-   </form>
+              </button>
+            </div>
+          </form>
         )}
- </Modal>
-      </div>
+      </Modal>
+    </div>
   );
 }
