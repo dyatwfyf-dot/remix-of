@@ -347,7 +347,7 @@ export default function HafizaTab() {
 
           </div>
 
-          <div className="grid grid-cols-2 gap-3 mt-5 pt-4 border-t border-sky-200">
+          <div className="grid grid-cols-2 gap-2 mt-5 pt-2 border-t border-sky-200">
             <Button onClick={submit} className="w-full bg-sky-700 hover:bg-sky-800 text-white font-medium rounded-lg px-4 py-2 text-sm transition-colors shadow-sm">
               <Save className="w-4 h-4 ml-1.5" /> حفظ السجل
             </Button>
@@ -395,7 +395,7 @@ export default function HafizaTab() {
 
           {/* الجدول */}
           <div className="overflow-x-auto border border-violet-200 rounded-xl bg-white shadow-sm">
-            <Table className="w-full border-collapse text-center">
+            <Table className="w-auto border-collapse text-center">
               <TableHeader>
                 <TableRow className="bg-[#E6D7C3] text-violet-900 border-b border-violet-200">
                   <th className="px-3 py-2 text-sm font-bold text-center whitespace-nowrap">#</th>
@@ -412,7 +412,7 @@ export default function HafizaTab() {
                             value={filters[c.key] || ""}
                             onChange={(e) => setFilter(c.key, e.target.value)}
                             placeholder="فلتر..."
-                            className="w-full  px-2 py-1 rounded text-xs border border-violet-300 text-gray-800 focus:outline-none focus:border-violet-500 bg-white"
+                            className="w-auto  px-2 py-2 rounded text-xs border border-violet-300 text-gray-800 focus:outline-none focus:border-violet-500 bg-white"
                           />
                         </div>
                       </th>

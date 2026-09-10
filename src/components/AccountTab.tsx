@@ -49,7 +49,7 @@ const THEME = {
 
 /* أحجام العناصر المناسبة لشاشات Redmi */
 const ICON_MOBILE = "w-4 h-4 sm:w-5 sm:h-5";
-const BTN_MOBILE = "px-3 py-2 text-xs sm:text-sm font-black";
+const BTN_MOBILE = "px-3 py-2 text-lg sm:text-sm font-black";
 const HEADING_MOBILE = "text-base sm:text-xl font-black";
 
 /* أعمدة الجدول */
@@ -118,9 +118,9 @@ const PRINT_STYLES = `
   .accounts-print-hide { display: none !important; }
   .accounts-print-area table {
     border-collapse: collapse !important;
-    width: 100% !important;
-    min-width:auto !important;
-    table-layout:auto !important;
+    width:100%!important;
+    min-width:auto!important;
+    table-layout:auto!important;
   }
   .accounts-print-area thead th {
     color: white !important;
@@ -228,8 +228,8 @@ function Field({
   className?: string;
 }) {
   return (
-    <div className="w-full">
-      <label className="block text-xs font-black text-[#0f2f44] mb-1 truncate">
+    <div className="w-auto">
+      <label className="block text-xm font-black text-[#0f2f44] mb-1 truncate">
         {label}
       </label>
       <div className="relative flex items-center">
@@ -1109,7 +1109,7 @@ export default function AccountsTab() {
                         value={filters[c.key] || ""}
                         onChange={(e) => setFilter(c.key, e.target.value)}
                         placeholder="تصفية..."
-                        className="w-full px-1 py-0.5 text-[13px] border rounded bg-white text-[#0f2f44] outline-none font-bold"
+                        className="w-auto px-1 py-0.5 text-[10px] border rounded bg-white text-[#0f2f44] outline-none font-bold"
                       />
                     </th>
                   ))}
@@ -1371,4 +1371,3 @@ export default function AccountsTab() {
       </Modal>
     </div>
   );
-}
