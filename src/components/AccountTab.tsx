@@ -134,7 +134,7 @@ const PRINT_STYLES = `
   .accounts-print-area th,
   .accounts-print-area td {
     border: 1px solid #000 !important;
-    white-space: normal !important;
+    white-space:nowrap !important;
     text-overflow: clip !important;
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
@@ -143,9 +143,9 @@ const PRINT_STYLES = `
     padding: 2px 4px !important;
     font-size: 13px !important;
     height: auto !important;
-    width: auto !important;
+    width:auto !important;
     max-width: none !important;
-    color: #000 !important;
+    color:#000 !important;
   }
   .accounts-print-area td.numeric-cell,
   .accounts-print-area th.numeric-cell,
@@ -153,7 +153,7 @@ const PRINT_STYLES = `
   .accounts-print-area th.date-cell,
   .accounts-print-area td.font-mono,
   .accounts-print-area th.font-mono {
-    font-family: 'Times New Roman', Times, serif !important;
+    font-family: 'Times New Roman'!important;
     font-size: 13px !important;
     line-height: 1.1 !important;
     white-space: nowrap !important;
@@ -239,7 +239,7 @@ function Field({
           value={v}
           onChange={(e) => on(e.target.value)}
           placeholder={placeholder}
-          className={`w-full ${icon ? "pr-8" : "px-2.5"} pl-2 py-1.5 text-xs sm:text-sm border border-black/30 rounded-lg outline-none focus:border-[#1f5f7a] focus:ring-1 focus:ring-[#1f5f7a] text-[#0f2f44] bg-white ${className}`}
+          className={`w-full ${icon ? "pr-8" : "px-2.5"} pl-2 py-1.5 text-xs sm:text-sm border border-black rounded-lg outline-none focus:border-[#1f5f7a] focus:ring-1 focus:ring-[#1f5f7a] text-[#0f2f44] bg-white ${className}`}
         />
       </div>
     </div>
@@ -267,7 +267,7 @@ function LedgerStat({
   const t = toneMap[tone];
   return (
     <div
-      className="relative rounded-xl px-2 py-2 sm:px-3 sm:py-2.5 border border-black/40 shadow-sm"
+      className="relative rounded-xl px-2 py-2 sm:px-3 sm:py-2.5 border border-black shadow-sm"
       style={{ ...style }}
     >
       <div className="flex items-center justify-between gap-1">
@@ -1045,7 +1045,7 @@ export default function AccountsTab() {
         className="accounts-print-area w-full rounded-2xl overflow-hidden border border-black shadow-sm bg-white"
       >
         <div
-          className="accounts-print-hide px-3 py-2 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 border-b border-black/20"
+          className="accounts-print-hide px-2 py-2 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-1 border- border-black"
           style={{ background: THEME.cream }}
         >
           <div className="flex items-center gap-2">
@@ -1077,8 +1077,8 @@ export default function AccountsTab() {
         </div>
 
         <div className="p-1 sm:p-2">
-          <div className="overflow-x-auto overflow-y-auto max-h-[65vh] relative rounded-xl border border-black/20">
-            <table className="w-full table-auto text-xs text-center font-semibold border-collapse border border-black">
+          <div className="overflow-x-auto overflow-y-auto max-h-[65vh] relative rounded-xl border border-black">
+            <table className="w-auto table-auto text-xs text-center font-semibold border-collapse border border-black">
               <thead
                 className="sticky top-0 z-20 text-[#0f2f44] font-black text-xs"
                 style={{ background: THEME.warmCream }}
@@ -1109,7 +1109,7 @@ export default function AccountsTab() {
                         value={filters[c.key] || ""}
                         onChange={(e) => setFilter(c.key, e.target.value)}
                         placeholder="تصفية..."
-                        className="w-full min-w-[2.5rem] px-1 py-0.5 text-[10px] border rounded bg-white text-[#0f2f44] outline-none font-bold"
+                        className="w-full px-1 py-0.5 text-[13px] border rounded bg-white text-[#0f2f44] outline-none font-bold"
                       />
                     </th>
                   ))}

@@ -203,7 +203,7 @@ export default function HafizaTab() {
         <div className="bg-sky-50/70 p-6 rounded-2xl shadow-sm border border-sky-200">
           <h3 className="text-sm font-bold text-sky-900 mb-4 pb-2 border-b border-sky-200">إضافة حافظة جديدة</h3>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
             
             {/* الحقل 1: الاسم الكامل */}
             <div className="relative">
@@ -412,7 +412,7 @@ export default function HafizaTab() {
                             value={filters[c.key] || ""}
                             onChange={(e) => setFilter(c.key, e.target.value)}
                             placeholder="فلتر..."
-                            className="w-full min-w-[70px] px-2 py-1 rounded text-xs border border-violet-300 text-gray-800 focus:outline-none focus:border-violet-500 bg-white"
+                            className="w-full  px-2 py-1 rounded text-xs border border-violet-300 text-gray-800 focus:outline-none focus:border-violet-500 bg-white"
                           />
                         </div>
                       </th>
