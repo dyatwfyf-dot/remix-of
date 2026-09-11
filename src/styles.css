@@ -838,15 +838,37 @@ table td > * {
 
 .pastel-tabs-theme .tab-content > * > :where(div, section)[class*="rounded"],
 .pastel-tabs-theme .tab-content :where(form, [class*="space-y"]) > [class*="rounded"] {
-  background: linear-gradient(135deg, var(--pastel-green), var(--pastel-green-deep)) !important;
+  background: var(--pastel-white) !important;
   border: 2px solid var(--pastel-ink) !important;
   box-shadow: 3px 3px 0 var(--pastel-ink) !important;
+  color: var(--pastel-ink) !important;
+}
+
+/* اللوحات الملوّنة (رؤوس البطاقات) تتحول للأخضر الزمردي */
+.pastel-tabs-theme .tab-content :where(
+  [class*="from-sky-"],
+  [class*="via-sky-"],
+  [class*="from-blue-"],
+  [class*="from-indigo-"],
+  [class*="from-cyan-"],
+  [class*="from-teal-"]
+):not(table):not(thead):not(th):not(button):not([role="button"]) {
+  background: linear-gradient(135deg, var(--pastel-green), var(--pastel-green-deep)) !important;
+  color: #ffffff !important;
+  border-color: var(--pastel-ink) !important;
+}
+
+.pastel-tabs-theme .tab-content :where(
+  [class*="from-sky-"],
+  [class*="via-sky-"],
+  [class*="from-blue-"],
+  [class*="from-indigo-"],
+  [class*="from-cyan-"],
+  [class*="from-teal-"]
+):not(table):not(thead):not(button) :where(h1, h2, h3, h4, p, span, label) {
   color: #ffffff !important;
 }
 
-.pastel-tabs-theme .tab-content > * > :where(div, section)[class*="rounded"] :where(h1, h2, h3, h4, p, span, label) {
-  color: #ffffff !important;
-}
 
 /* الحقول: بيضاء بحدود سوداء، صف منتظم بلا التفاف */
 .pastel-tabs-theme .tab-content :where(input, select, textarea) {
