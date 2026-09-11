@@ -11,6 +11,7 @@ import {
 import appCss from "../styles.css?url";
 import tabThemeCss from "../tab-theme.css?url";
 import lightSurfaceThemeCss from "../light-surface-theme.css?url";
+import fontThemeCss from "../font-theme.css?url";
 import { useEffect } from "react";
 import { initPwa } from "@/lib/pwa";
 import { ReportDateProvider } from "@/lib/reportDate";
@@ -79,6 +80,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "stylesheet", href: tabThemeCss },
       { rel: "stylesheet", href: lightSurfaceThemeCss },
+      { rel: "stylesheet", href: fontThemeCss },
     ],
   }),
   shellComponent: RootShell,
