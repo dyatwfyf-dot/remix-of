@@ -779,7 +779,16 @@ table td > * {
   --pastel-blue: #14508e;
   background: var(--pastel-mint-2);
   color: var(--pastel-ink);
+  overflow-x: hidden;
+  max-width: 100vw;
 }
+
+html:has(.pastel-tabs-theme),
+body:has(.pastel-tabs-theme) {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 
 .pastel-tabs-theme .app-topbar {
   color: #ffffff;
