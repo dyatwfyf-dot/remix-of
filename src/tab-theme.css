@@ -1,0 +1,191 @@
+/*
+ * واجهة التبويبات — هوية ضوئية لامعة مخصصة للجوال وواجهات شاومي.
+ * هذا الملف منفصل حتى تبقى أنماط الجداول والطباعة الحالية مستقرة.
+ */
+
+:root {
+  --tab-cyan: #4f9fbe;
+  --tab-cyan-deep: #2f718f;
+  --tab-sky: #dff5ff;
+  --tab-lilac: #eee9ff;
+  --tab-mint: #ddf8ee;
+  --tab-gold: #fff0c7;
+  --tab-ink: #214457;
+  --tab-border: rgba(94, 164, 195, .28);
+  --tab-shadow: 0 10px 30px rgba(56, 125, 157, .14);
+}
+
+/* الشريط الرئيسي السفلي */
+.apk-tabs-ui nav[aria-label="التنقل الرئيسي"] {
+  border-top: 1px solid var(--tab-border) !important;
+  background: linear-gradient(180deg, rgba(247,252,255,.96), rgba(226,244,252,.96)) !important;
+  box-shadow: 0 -10px 30px rgba(50, 115, 145, .15), 0 -1px 0 rgba(255,255,255,.9) inset !important;
+}
+
+.apk-tabs-ui nav[aria-label="التنقل الرئيسي"] > div {
+  scrollbar-width: none;
+  padding-top: .55rem !important;
+  padding-bottom: .55rem !important;
+}
+
+.apk-tabs-ui nav[aria-label="التنقل الرئيسي"] > div::-webkit-scrollbar { display: none; }
+
+.apk-tabs-ui nav[aria-label="التنقل الرئيسي"] button {
+  position: relative;
+  min-height: 54px !important;
+  border: 1px solid transparent !important;
+  color: var(--tab-ink) !important;
+  background: linear-gradient(145deg, rgba(255,255,255,.86), rgba(224,244,252,.82)) !important;
+  box-shadow: 0 3px 10px rgba(61, 128, 157, .08), inset 0 1px 0 rgba(255,255,255,.95) !important;
+  overflow: hidden;
+}
+
+.apk-tabs-ui nav[aria-label="التنقل الرئيسي"] button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(255,255,255,.62), transparent 42%, rgba(174,226,244,.16));
+  pointer-events: none;
+}
+
+.apk-tabs-ui nav[aria-label="التنقل الرئيسي"] button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(79,159,190,.32) !important;
+  background: linear-gradient(145deg, #effaff, #d8f1fa) !important;
+}
+
+.apk-tabs-ui nav[aria-label="التنقل الرئيسي"] button:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(79,159,190,.22), var(--tab-shadow) !important;
+}
+
+.apk-tabs-ui nav[aria-label="التنقل الرئيسي"] button:has(svg) svg {
+  filter: drop-shadow(0 2px 3px rgba(37,96,122,.16));
+}
+
+.apk-tabs-ui nav[aria-label="التنقل الرئيسي"] button[class*="bg-gradient"] {
+  color: #fff !important;
+  border-color: rgba(255,255,255,.34) !important;
+  background: linear-gradient(145deg, #3f91b1 0%, #58b0cb 52%, #76c5dc 100%) !important;
+  box-shadow: 0 8px 20px rgba(48,126,157,.28), inset 0 1px 0 rgba(255,255,255,.35) !important;
+}
+
+.apk-tabs-ui nav[aria-label="التنقل الرئيسي"] button[class*="bg-gradient"]::after {
+  content: "";
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  bottom: 3px;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.9);
+  box-shadow: 0 0 10px rgba(255,255,255,.8);
+}
+
+/* بطاقات المحتوى حول الصفحة */
+.apk-tabs-ui .tab-content {
+  background:
+    radial-gradient(700px 260px at 15% 0%, rgba(211,242,255,.65), transparent 65%),
+    radial-gradient(650px 300px at 90% 100%, rgba(234,228,255,.5), transparent 65%),
+    #f1f8fc !important;
+}
+
+/* التبويبات الداخلية المبنية على شريط slate الحالي */
+.apk-tabs-ui div[class*="bg-slate-100"][class*="rounded-xl"] {
+  border-color: rgba(112,166,190,.24) !important;
+  background: linear-gradient(145deg, #e9f7fc, #eeeaff) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 5px 16px rgba(67,111,145,.08) !important;
+}
+
+.apk-tabs-ui div[class*="bg-slate-100"][class*="rounded-xl"] > div[class*="min-w-full"] > button {
+  min-height: 42px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: .5rem .85rem;
+  color: #416174;
+  background: rgba(255,255,255,.48);
+  font-weight: 800;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.apk-tabs-ui div[class*="bg-slate-100"][class*="rounded-xl"] > div[class*="min-w-full"] > button:hover {
+  background: linear-gradient(145deg, #f2fbff, #e4f4fa);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(70,130,157,.12);
+}
+
+/* يلتقط التبويب النشط في المكونات التي تستخدم bg-blue/sky/primary */
+.apk-tabs-ui div[class*="bg-slate-100"][class*="rounded-xl"] > div[class*="min-w-full"] > button[class*="bg-blue"],
+.apk-tabs-ui div[class*="bg-slate-100"][class*="rounded-xl"] > div[class*="min-w-full"] > button[class*="bg-sky"],
+.apk-tabs-ui div[class*="bg-slate-100"][class*="rounded-xl"] > div[class*="min-w-full"] > button[class*="bg-primary"] {
+  color: #fff !important;
+  border-color: rgba(255,255,255,.35) !important;
+  background: linear-gradient(135deg, #4b98b7, #79c7dd) !important;
+  box-shadow: 0 6px 16px rgba(54,126,157,.22), inset 0 1px 0 rgba(255,255,255,.38) !important;
+}
+
+/* تحسين عام لعناصر التبويب الداخلية ذات role=tab إن أضيفت مستقبلاً */
+.apk-tabs-ui [role="tablist"] {
+  gap: .4rem;
+  padding: .4rem;
+  border: 1px solid var(--tab-border);
+  border-radius: 15px;
+  background: linear-gradient(145deg, #e7f6fc, #eeeaff);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 5px 16px rgba(67,111,145,.08);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.apk-tabs-ui [role="tablist"]::-webkit-scrollbar { display: none; }
+
+.apk-tabs-ui [role="tab"] {
+  min-height: 42px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: .5rem .9rem;
+  color: #456477;
+  font-weight: 800;
+  background: rgba(255,255,255,.5);
+  transition: all .18s ease;
+}
+
+.apk-tabs-ui [role="tab"][aria-selected="true"] {
+  color: #fff;
+  background: linear-gradient(135deg, #4b98b7, #79c7dd);
+  border-color: rgba(255,255,255,.4);
+  box-shadow: 0 6px 16px rgba(54,126,157,.22), inset 0 1px 0 rgba(255,255,255,.38);
+}
+
+@media (max-width: 640px) {
+  .apk-tabs-ui nav[aria-label="التنقل الرئيسي"] > div {
+    gap: .4rem !important;
+    padding-left: .55rem !important;
+    padding-right: .55rem !important;
+  }
+
+  .apk-tabs-ui nav[aria-label="التنقل الرئيسي"] button {
+    min-width: 72px !important;
+    min-height: 52px !important;
+    border-radius: 15px !important;
+    padding: .4rem .55rem !important;
+  }
+
+  .apk-tabs-ui nav[aria-label="التنقل الرئيسي"] button svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  .apk-tabs-ui div[class*="bg-slate-100"][class*="rounded-xl"] > div[class*="min-w-full"] > button {
+    min-height: 40px;
+    padding: .45rem .7rem;
+    font-size: .82rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .apk-tabs-ui nav[aria-label="التنقل الرئيسي"] button,
+  .apk-tabs-ui [role="tab"],
+  .apk-tabs-ui div[class*="bg-slate-100"][class*="rounded-xl"] > div[class*="min-w-full"] > button {
+    transition: none !important;
+  }
+}
