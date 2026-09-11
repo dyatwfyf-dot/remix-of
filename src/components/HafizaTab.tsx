@@ -40,8 +40,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 // لوحة فاتحة لامعة (نفس ترتيب الألوان الأصلي: بنفسجي→أزرق→أخضر→أصفر→أحمر)
-// بدرجات باستيل فاتحة بدل الألوان الزاهية الغامقة، مع لون نص غامق مطابق لكل درجة
+// بدرجات باستيل فاتحة بدل الألوان الزاهية الغامقة
 const PALETTE = ["#e3d9f5", "#cfe8fa", "#dcf5cf", "#fff3c4", "#ffd9d3"];
+// ألوان نص غامقة تطابق كل درجة من PALETTE، لتبقى النصوص مقروءة فوق الخلفيات الفاتحة
 const PALETTE_TEXT = ["#4a2f7a", "#0f4a6b", "#2f5c1a", "#7a5c00", "#7a2a1a"];
 
 // table columns
@@ -516,7 +517,7 @@ export default function HafizaTab() {
         </CardHeader>
 
         <CardContent>
-          <div className="w-auto overflow-auto rounded-lg">
+          <div className="w-full overflow-auto max-h-[72vh] rounded-lg">
             <Table>
               <TableHeader
                 style={{

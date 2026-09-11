@@ -636,16 +636,15 @@ export default function AccountsTab() {
     label: "مطابقة شاملة ٢٠٢٦",
     icon: Zap,
     onSelect: handleSyncFromHafiza,
-    // تم تعديل className ليصبح بتدرج كحلي - بترولي
-    className: "flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white bg-gradient-to-r from-[#1a2a3a] via-[#2a4a5a] to-[#2a6b6a] border border-black shadow-sm hover:from-[#2a4a5a] hover:to-[#1a3a4a] transition-all duration-200",
+    className: "flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#0f4a5c] bg-gradient-to-r from-[#f4fbff] via-[#d9f0f7] to-[#b9e6f0] border border-black shadow-sm hover:brightness-105 transition-all duration-200",
   },
   {
     label: "استيراد Excel",
     icon: FileSpreadsheet,
     onSelect: () => undefined,
     content: (
-      <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#f5f0e6] bg-gradient-to-r from-[#9e3a2a] via-[#7a2a1a] to-[#5c2a1a] border border-black shadow-sm hover:from-[#7a2a1a] hover:to-[#4a1a0a] transition-all duration-200">
-        <FileSpreadsheet className={`${ICON_MOBILE} text-[#f5f0e6]`} />
+      <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#7a2a1a] bg-gradient-to-r from-[#fff6f5] via-[#ffd9d3] to-[#ffb8ac] border border-black shadow-sm hover:brightness-105 transition-all duration-200">
+        <FileSpreadsheet className={`${ICON_MOBILE} text-[#7a2a1a]`} />
         <span>استيراد Excel</span>
         <input
           type="file"
@@ -664,7 +663,7 @@ export default function AccountsTab() {
     >
       <style>{PRINT_STYLES}</style>
 
- {/*شريط العنوان */}
+ {/*شريط العنوان — تدرج فاتح لامع بدل الغامق */}
 <div
   className="accounts-print-hide flex items-center justify-between border border-black p-3 rounded-xl"
   style={{
@@ -728,7 +727,7 @@ export default function AccountsTab() {
     icon={<Wallet className="text-[#0f4a5c]" />}
   />
 </div>
-      {/* ===== التقارير الدورية ===== */}
+      {/* ===== التقارير الدورية — تدرج فاتح لامع بدل الغامق ===== */}
 <div
   className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-black shadow-sm"
   style={{
@@ -818,7 +817,7 @@ export default function AccountsTab() {
     </div>
   </div> 
 </div>
-      {/* ===== لوحة القيد اليدوي والمطابقة ===== */}
+      {/* ===== لوحة القيد اليدوي والمطابقة — تدرج فاتح لامع بدل الغامق ===== */}
       
 <div
   className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-black shadow-sm"
@@ -854,9 +853,9 @@ export default function AccountsTab() {
     <div className="apk-only-actions flex items-center gap-2.5 flex-wrap">
       <button
         onClick={handleSyncFromHafiza}
-        className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full font-black border border-black shadow-sm transition-all bg-gradient-to-r from-[#1a2a3a] to-[#2a6b6a] text-white`}
+        className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full font-black border border-black shadow-sm transition-all bg-gradient-to-r from-[#f4fbff] to-[#b9e6f0] text-[#0f4a5c]`}
       >
-        <Zap className={`${ICON_MOBILE} text-white`} />
+        <Zap className={`${ICON_MOBILE} text-[#0f4a5c]`} />
         <span className="text-sm">مطابقة شاملة ٢٠٢٦</span>
       </button>
 
@@ -1025,9 +1024,9 @@ export default function AccountsTab() {
     <div className="flex gap-2 pt-4 mt-2 border-t border-black">
       <button
         onClick={submit}
-        className={`${BTN_MOBILE} flex-1 flex items-center justify-center gap-2 rounded-xl font-black border border-black shadow-sm transition-all bg-gradient-to-r from-[#1a2a3a] to-[#2a6b6a] text-white`}
+        className={`${BTN_MOBILE} flex-1 flex items-center justify-center gap-2 rounded-xl font-black border border-black shadow-sm transition-all bg-gradient-to-r from-[#f4fff2] to-[#b8ecae] text-[#2f5c1a]`}
       >
-        <Save className={`${ICON_MOBILE} text-white`} /> <span>ترحيل القيد</span>
+        <Save className={`${ICON_MOBILE} text-[#2f5c1a]`} /> <span>ترحيل القيد</span>
       </button>
       <button
         onClick={() => setForm(emptyForm)}
