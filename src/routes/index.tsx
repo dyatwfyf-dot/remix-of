@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Toaster, toast } from "sonner";
 
@@ -70,7 +70,7 @@ type TabItem = {
   value: Tab;
   label: string;
   shortLabel: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   activeClass: string;
 };
 
@@ -136,7 +136,6 @@ const tabs: TabItem[] = [
   },
 ];
 
-
 const isTabValue = (value: string | null): value is Tab =>
   value !== null && tabs.some((tab) => tab.value === value);
 
@@ -201,7 +200,7 @@ function Index() {
   }, []);
 
   useEffect(() => {
-    return installAndroidBackButton(() => goBackWithinApp());
+    return installAndroidBackButton(goBackWithinApp);
   }, [goBackWithinApp]);
 
   useEffect(() => {
@@ -315,10 +314,8 @@ function Index() {
                 type="button"
                 onClick={() => handleTabChange(tab.value)}
                 aria-current={isActive ? "page" : undefined}
-                className={`flex min-h-[48px] min-w-[76px] shrink-0 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-1.5 text-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#6ba3c8] active:scale-[0.97] sm:min-w-[104px] sm:px-3 ${
-                  isActive
-                    ? `${tab.activeClass} shadow-md`
-                    : "tab-idle-pastel"
+                className={`flex min-h-[48px] min-w-[76px] shrink-0 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-1.5 text-center transition-all duration-200 focus:outline-none ${
+                  isActive ? `${tab.activeClass} shadow-md` : "tab-idle-pastel"
                 }`}
               >
                 <span className={isActive ? "scale-105" : "scale-100"}>{tab.icon}</span>
