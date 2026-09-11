@@ -8,7 +8,6 @@ export type WebActionItem = {
   disabled?: boolean;
   destructive?: boolean;
   content?: ReactNode;
-  className?: string;
 };
 
 type Props = {
@@ -94,7 +93,7 @@ export default function WebActionMenu({
                   setOpen(false);
                   void action.onSelect();
                 }}
-                className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${action.className ?? ""} ${
+                className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                   action.destructive
                     ? "text-rose-700 hover:bg-rose-50"
                     : "text-slate-700 hover:bg-slate-100"
