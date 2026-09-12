@@ -601,7 +601,7 @@ export default function AccountsTab() {
       icon: FileSpreadsheet,
       onSelect: () => undefined,
       content: (
-        <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#7a2a1a] bg-gradient-to-r from-[#fff6f5] via-[#ffd9d3] to-[#ffb8ac] border-2 border-black shadow-sm hover:brightness-105 transition-all duration-200 whitespace-nowrap">
+        <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#7a2a1a] bg-gradient-to-r from-[#f4fbff] via-[#ffd9d3] to-[#ffb8ac] border-2 border-black shadow-sm hover:brightness-105 transition-all duration-200 whitespace-nowrap">
           <FileSpreadsheet className={`${ICON_MOBILE} text-[#7a2a1a]`} />
           <span>استيراد Excel</span>
           <input
@@ -648,11 +648,11 @@ export default function AccountsTab() {
       </div>
 
       {/* بطاقات الإجماليات */}
-      <div className="accounts-print-hide grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="accounts-print-hide grid grid-cols-3 sm:grid-cols-3 gap-1">
         <LedgerStat
           label="إجمالي الإيرادات"
           style={{
-            background: "linear-gradient(135deg, #fffdf5 0%, #fff3c4 45%, #ffe985 100%)",
+            background: "linear-gradient(145deg, #fffdf5 20%, #fff3c4 45%, #ffe985 100%)",
             borderColor: "#000",
             color: "#7a5c00",
           }}
@@ -664,7 +664,7 @@ export default function AccountsTab() {
         <LedgerStat
           label="إجمالي المصروفات"
           style={{
-            background: "linear-gradient(135deg, #fff6f5 0%, #ffd9d3 45%, #ffb8ac 100%)",
+            background: "linear-gradient(135deg, #fff6f5 20%, #ffd9d3 45%, #ffb8ac 100%)",
             borderColor: "#000",
             color: "#7a2a1a",
           }}
@@ -676,7 +676,7 @@ export default function AccountsTab() {
         <LedgerStat
           label="الرصيد الحالي"
           style={{
-            background: "linear-gradient(135deg, #f4fbff 0%, #d9f0f7 45%, #b9e6f0 100%)",
+            background: "linear-gradient(135deg, #f4fbff 20%, #d9f0f7 45%, #b9e6f0 100%)",
             borderColor: "#000",
             color: "#0f4a5c",
           }}
@@ -690,24 +690,24 @@ export default function AccountsTab() {
       <div
         className="accounts-print-hide w-full rounded-2xl overflow-hidden border-2 border-black shadow-sm"
         style={{
-          background: "linear-gradient(135deg, #f4fff2 0%, #d7f5cf 45%, #b8ecae 100%)",
+          background: "linear-gradient(135deg, #f4fff2 20%, #d7f5cf 45%, #b8ecae 100%)",
         }}
       >
         <div
-          className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b-2 border-black"
+          className="px-4 py-3 flex flex-wrap justify-between items-center gap-2 border-b-2 border-black"
           style={{ background: "#f5f5dc" }}
         >
           <div>
-            <h2 className="text-base font-black text-[#1a2a3a] tracking-wide whitespace-nowrap">
+            <h2 className="text-lg font-black text-[#1a2a3a] tracking-wide whitespace-nowrap">
               تقارير الحساب الدورية
             </h2>
-            <p className="text-xs text-[#5c2a1a] font-bold mt-1 whitespace-nowrap">
+            <p className="text-xm text-[#5c2a1a] font-bold mt-1 whitespace-nowrap">
               اختر الربع أو النصف أو السنة ثم صدّر التقرير
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <label className="text-xs font-black text-[#1a2a3a] whitespace-nowrap">
+            <label className="text-xm font-black text-[black] whitespace-nowrap">
               نوع التقرير
               <select
                 value={accountReportMode}
@@ -716,7 +716,7 @@ export default function AccountsTab() {
                   setAccountReportMode(nextMode);
                   setAccountReportPeriod(1);
                 }}
-                className="block mt-1 px-2.5 py-2 border-2 border-black bg-[#1a2a3a] text-[#d2b48c] text-xs font-black rounded-lg outline-none cursor-pointer"
+                className="block mt-1 px-2.5 py-2 border-2 border-black bg-[#ffd9d3] text-[#d2b48c] text-xs font-black rounded-lg outline-none cursor-pointer"
               >
                 <option value="quarter">ربع سنوي</option>
                 <option value="halfYear">نصف سنوي</option>
@@ -730,7 +730,7 @@ export default function AccountsTab() {
                 <select
                   value={accountReportPeriod}
                   onChange={(e) => setAccountReportPeriod(Number(e.target.value))}
-                  className="block mt-1 px-2.5 py-2 border-2 border-black bg-[#1a2a3a] text-[#d2b48c] text-xs font-black rounded-lg outline-none cursor-pointer"
+                  className="block mt-1 px-2.5 py-2 border-2 border-black bg-[#ffd9d3] text-[#d2b48c] text-xm font-black rounded-lg outline-none cursor-pointer"
                 >
                   {accountReportMode === "quarter" ? (
                     <>
@@ -755,7 +755,7 @@ export default function AccountsTab() {
                 type="number"
                 value={accountReportYear}
                 onChange={(e) => setAccountReportYear(Number(e.target.value) || accountReportYear)}
-                className="block mt-1 w-24 px-2 py-2 border-2 border-black bg-[#1a2a3a] text-[#d2b48c] text-xs font-black font-mono text-center rounded-lg outline-none"
+                className="block mt-1 w-24 px-2 py-2 border-2 border-black bg-[#ffd9d3] text-[#d2b48c] text-xs font-black font-mono text-center rounded-lg outline-none"
               />
             </label>
 
@@ -781,7 +781,7 @@ export default function AccountsTab() {
       <div
         className="accounts-print-hide w-full rounded-2xl overflow-hidden border-2 border-black shadow-sm"
         style={{
-          background: "linear-gradient(135deg, #fef9f2 0%, #fbe8cf 45%, #f5d3a3 100%)",
+          background: "linear-gradient(135deg, #fef9f2 30%, #fbe8cf 45%, #f5d3a3 100%)",
         }}
       >
         <div
@@ -834,7 +834,7 @@ export default function AccountsTab() {
         </div>
 
         <div className="p-3 sm:p-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 items-end">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 gap-2 items-end">
             <Field
               label="التاريخ"
               type="date"
@@ -948,14 +948,14 @@ export default function AccountsTab() {
               className="text-[#722f37] font-black font-mono tabular-nums numeric-cell bg-[#e6d7c3] border-2 border-black"
             />
 
-            <div className="sm:col-span-2 lg:col-span-3">
-              <label className="flex items-center gap-1.5 text-[15px] font-black mb-1.5 mr-0.5 tracking-wide text-[#1a2a3a] whitespace-nowrap">
+            <div className="sm:col-span-2 sm:col-span-2">
+              <label className="flex items-center gap-1 text-[15px] font-black mb-1.5 mr-0.5 tracking-wide text-[#1a2a3a] whitespace-nowrap">
                 <Link className={`${ICON_MOBILE} text-[#c5a059]`} /> ربط بدليل هيكل الإيرادات
               </label>
               <select
                 value={form.revenueKey}
                 onChange={(e) => setForm({ ...form, revenueKey: e.target.value })}
-                className="w-full px-3 py-2 text-[15px] border-2 border-black rounded-xl outline-none shadow-sm bg-[#f5f5dc] text-[#1a2a3a] font-black cursor-pointer"
+                className="w-auto px-2 py-2 text-[15px] border-2 border-black rounded-xl outline-none shadow-sm bg-[#f5f5dc] text-[#1a2a3a] font-black cursor-pointer"
               >
                 <option value="">-- بدون ربط --</option>
                 {revenueTypes.map((t) => (
@@ -970,7 +970,7 @@ export default function AccountsTab() {
           <div className="flex gap-2 pt-4 mt-4 border-t-2 border-black">
             <button
               onClick={submit}
-              className={`${BTN_MOBILE} flex-1 flex items-center justify-center gap-2 rounded-xl font-black border-2 border-black shadow-sm transition-all bg-gradient-to-r from-[#f4fff2] to-[#b8ecae] text-[#2f5c1a]`}
+              className={`${BTN_MOBILE} flex-0 flex items-center justify-center gap-2 rounded-xl font-black border-2 border-black shadow-sm transition-all bg-gradient-to-r from-[#f4fff2] to-[#b8ecae] text-[#2f5c1a]`}
             >
               <Save className={`${ICON_MOBILE} text-[#2f5c1a]`} /> <span>ترحيل القيد</span>
             </button>
@@ -1021,7 +1021,7 @@ export default function AccountsTab() {
 
         <div className="p-2 sm:p-3">
           <div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-xl border-2 border-black">
-            <table className="min-w-max table-auto text-sm text-center font-bold border-collapse border-2 border-black">
+            <table className="min-w-max table-auto text-lg text-center font-bold border-collapse border-2 border-black">
               <thead
                 className="sticky top-0 z-20 text-[#0f2f44] font-black text-[15px]"
                 style={{ background: THEME.warmCream }}
@@ -1056,7 +1056,7 @@ export default function AccountsTab() {
                         value={filters[c.key] || ""}
                         onChange={(e) => setFilter(c.key, e.target.value)}
                         placeholder="تصفية..."
-                        className="w-20 px-2 py-1 text-xs border-2 border-black rounded-lg bg-white text-[#0f2f44] outline-none font-black transition-colors"
+                        className="w-10 px-1 py-1 text-xs border-2 border-black rounded-lg bg-white text-[#0f2f44] outline-none font-black transition-colors"
                       />
                     </th>
                   ))}
@@ -1080,43 +1080,43 @@ export default function AccountsTab() {
                       key={acc.id}
                       className="odd:bg-white even:bg-[#f4fafd] hover:bg-[#e3f0f7] transition-colors group"
                     >
-                      <td className="border-2 border-black text-center font-mono tabular-nums numeric-cell px-2 py-2 text-sm whitespace-nowrap">
+                      <td className="border-2 border-black text-center font-bold tabular-nums numeric-cell px-2 py-2 text-lg whitespace-nowrap">
                         {index + 1}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell text-center px-2.5 py-2 text-sm whitespace-nowrap">
+                      <td className="border-2 border-black font-bold tabular-nums numeric-cell text-center px-2.5 py-2 text-lg whitespace-nowrap">
                         {acc.date}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell font-black text-center px-2.5 py-2 text-sm whitespace-nowrap">
+                      <td className="border-2 border-black font-bold tabular-nums numeric-cell font-black text-center px-2.5 py-2 text-lg whitespace-nowrap">
                         {acc.hafizaNo || "—"}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell text-center px-2.5 py-2 text-sm whitespace-nowrap">
+                      <td className="border-2 border-black font-bold tabular-nums numeric-cell text-center px-2.5 py-2 text-lg whitespace-nowrap">
                         {acc.notifyNo || "—"}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell text-center px-2.5 py-2 text-sm whitespace-nowrap">
+                      <td className="border-2 border-black font-bold tabular-nums numeric-cell text-center px-2.5 py-2 text-lg  whitespace-nowrap">
                         {acc.notifyDate || "—"}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell text-center px-2.5 py-2 text-sm whitespace-nowrap">
+                      <td className="border-2 border-black font-bold tabular-nums numeric-cell text-center px-2.5 py-2 text-lg whitespace-nowrap">
                         {acc.checkNo || "—"}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell text-center px-2.5 py-2 text-sm whitespace-nowrap">
+                      <td className="border-2 border-black font-bold tabular-nums numeric-cell text-center px-2.5 py-2 text-lg whitespace-nowrap">
                         {acc.checkDate || "—"}
                       </td>
-                      <td className="border-2 border-black px-2.5 py-2 text-sm whitespace-nowrap text-right">
+                      <td className="border-2 border-black px-2 py-2 text-lg whitespace-nowrap text-center">
                         {acc.description || "—"}
                       </td>
-                      <td className="border-2 border-black px-2.5 py-2 text-sm whitespace-nowrap text-right">
+                      <td className="border-2 border-black px-2 py-2 text-lg whitespace-nowrap text-center">
                         {acc.specialty || "—"}
                       </td>
-                      <td className="border-2 border-black font-black px-2.5 py-2 text-sm whitespace-nowrap text-right">
+                      <td className="border-2 border-black font-black px-2 py-2 text-lg whitespace-nowrap text-center">
                         {acc.name || "—"}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell text-center px-2.5 py-2 text-sm whitespace-nowrap">
+                      <td className="border-2 border-black font-bold tabular-nums numeric-cell text-center px-2 py-2 text-lg whitespace-nowrap">
                         {Number(acc.hafizaAmount) > 0 ? fmt(Number(acc.hafizaAmount)) : "—"}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#1E8E5A]/[0.08] px-2.5 py-2 text-sm whitespace-nowrap text-[#1E8E5A]">
+                      <td className="border-2 border-black font-bold tabular-nums numeric-cell font-black text-center bg-[#1E8E5A]/[0.08] px-2 py-2 text-lg whitespace-nowrap text-[#1E8E5A]">
                         {Number(acc.income) > 0 ? fmt(Number(acc.income)) : "—"}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#D14343]/[0.08] px-2.5 py-2 text-sm whitespace-nowrap text-[#D14343]">
+                      <td className="border-2 border-black font-bold tabular-nums numeric-cell font-black text-center bg-[#D14343]/[0.08] px-2 py-2 text-sm whitespace-nowrap text-[#D14343]">
                         {Number(acc.expense) > 0 ? fmt(Number(acc.expense)) : "—"}
                       </td>
                       <td className="accounts-print-hide border-2 border-black text-center px-2 py-2 whitespace-nowrap">
@@ -1127,7 +1127,7 @@ export default function AccountsTab() {
                             updateAccount(acc.id, { ...acc, revenueKey: newKey || undefined });
                             toast.success("تم ربط رمز الإيراد بنجاح");
                           }}
-                          className="w-full px-2 py-1.5 text-xs font-black text-[#7C3AED] bg-[#7C3AED]/10 border-2 border-black rounded-lg outline-none cursor-pointer whitespace-nowrap"
+                          className="w-full px-2 py-2 text-xs font-black text-[#7C3AED] bg-[#7C3AED]/10 border-2 border-black rounded-lg outline-none cursor-pointer whitespace-nowrap"
                         >
                           <option value="">— ربط الرمز —</option>
                           {revenueTypes.map((t) => (
@@ -1137,14 +1137,14 @@ export default function AccountsTab() {
                           ))}
                         </select>
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#1f5f7a]/[0.08] px-2.5 py-2 text-sm whitespace-nowrap text-[#1f5f7a]">
+                      <td className="border-2 border-black font-bolder tabular-nums numeric-cell font-black text-center bg-[#1f5f7a]/[0.08] px-2.5 py-2 text-lg  whitespace-nowrap text-[#1f5f7a]">
                         {fmt(acc.balance)}
                       </td>
                       <td className="accounts-print-hide border-2 border-black text-center px-2 py-2 whitespace-nowrap">
                         <div className="flex justify-center gap-1.5">
                           <button
                             onClick={() => setEditingRow(acc)}
-                            className="p-1.5 text-[#1E8E5A] hover:bg-[#1E8E5A]/10 border-2 border-black rounded-lg transition-colors"
+                            className="p-2 text-[black] bg-[#1E8E5A] border-1 border-black rounded-lg transition-colors"
                             aria-label="تعديل"
                           >
                             <Edit className={ICON_MOBILE} />
@@ -1153,7 +1153,7 @@ export default function AccountsTab() {
                             onClick={() => {
                               if (confirm("هل أنت متأكد من الحذف؟")) deleteAccount(acc.id);
                             }}
-                            className="p-1.5 text-[#D14343] hover:bg-[#D14343]/10 border-2 border-black rounded-lg transition-colors"
+                            className="p-2 text-[black] bg-[#D14343] border-1 border-black rounded-lg transition-colors"
                             aria-label="حذف"
                           >
                             <Trash2 className={ICON_MOBILE} />
@@ -1169,7 +1169,7 @@ export default function AccountsTab() {
                   <tr className="bg-[#E7E2D8]">
                     <td
                       colSpan={10}
-                      className="border-2 border-black text-left font-black px-3 py-2.5 text-sm whitespace-nowrap"
+                      className="border-2 border-black text-center font-black px-2 py-2.5 text-lg whitespace-nowrap"
                     >
                       رصيد الإقفال النهائي
                     </td>
@@ -1199,8 +1199,8 @@ export default function AccountsTab() {
         onClose={() => setEditingRow(null)}
       >
         {editingRow && (
-          <form onSubmit={handleEditSave} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <form onSubmit={handleEditSave} className="space-y-7">
+            <div className="grid grid-cols-2 sm:grid-cols-2 gap-2">
               <div>
                 <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide whitespace-nowrap">
                   التاريخ
