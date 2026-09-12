@@ -86,6 +86,7 @@ export default defineConfig({
             },
             {
               urlPattern: ({ url, request }) =>
+                // guard access to runtime location in Node/build environments where `location` may be undefined
                 url.origin === ((globalThis as any).location?.origin ?? url.origin) &&
                 ["script", "style", "font", "image"].includes(request.destination),
               handler: "CacheFirst",
