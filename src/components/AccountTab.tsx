@@ -648,7 +648,7 @@ export default function AccountsTab() {
       </div>
 
       {/* بطاقات الإجماليات */}
-      <div className="accounts-print-hide grid grid-cols-3 sm:grid-cols-3 gap-1">
+      <div className="accounts-print-hide grid grid-cols-2 sm:grid-cols-2 gap-1">
         <LedgerStat
           label="إجمالي الإيرادات"
           style={{
@@ -701,13 +701,13 @@ export default function AccountsTab() {
             <h2 className="text-lg font-black text-[#1a2a3a] tracking-wide whitespace-nowrap">
               تقارير الحساب الدورية
             </h2>
-            <p className="text-xm text-[#5c2a1a] font-bold mt-1 whitespace-nowrap">
+            <p className="text-xl text-[#5c2a1a] font-bold mt-1 whitespace-nowrap">
               اختر الربع أو النصف أو السنة ثم صدّر التقرير
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <label className="text-xm font-black text-[black] whitespace-nowrap">
+ <label className="text-xm font-black text-black whitespace-nowrap">
               نوع التقرير
               <select
                 value={accountReportMode}
@@ -716,7 +716,7 @@ export default function AccountsTab() {
                   setAccountReportMode(nextMode);
                   setAccountReportPeriod(1);
                 }}
-                className="block mt-1 px-2.5 py-2 border-2 border-black bg-[#ffd9d3] text-[#d2b48c] text-xs font-black rounded-lg outline-none cursor-pointer"
+                className="block mt-1 px-2.5 py-2 border-2 border-black bg-[#ffd9d3] text-black text-xl font-black rounded-lg outline-none cursor-pointer"
               >
                 <option value="quarter">ربع سنوي</option>
                 <option value="halfYear">نصف سنوي</option>
@@ -725,12 +725,12 @@ export default function AccountsTab() {
             </label>
 
             {accountReportMode !== "year" && (
-              <label className="text-xs font-black text-[#1a2a3a] whitespace-nowrap">
+              <label className="text-xl font-black text-[#1a2a3a] whitespace-nowrap">
                 الفترة
                 <select
                   value={accountReportPeriod}
                   onChange={(e) => setAccountReportPeriod(Number(e.target.value))}
-                  className="block mt-1 px-2.5 py-2 border-2 border-black bg-[#ffd9d3] text-[#d2b48c] text-xm font-black rounded-lg outline-none cursor-pointer"
+                  className="block mt-1 px-2.5 py-2 border-2 border-black bg-[#ffd9d3] text-black text-xl font-black rounded-lg outline-none cursor-pointer"
                 >
                   {accountReportMode === "quarter" ? (
                     <>
@@ -749,7 +749,7 @@ export default function AccountsTab() {
               </label>
             )}
 
-            <label className="text-xs font-black text-[#1a2a3a] whitespace-nowrap">
+            <label className="text-xl font-black text-[#1a2a3a] whitespace-nowrap">
               السنة
               <input
                 type="number"
@@ -948,8 +948,8 @@ export default function AccountsTab() {
               className="text-[#722f37] font-black font-mono tabular-nums numeric-cell bg-[#e6d7c3] border-2 border-black"
             />
 
-            <div className="sm:col-span-2 sm:col-span-2">
-              <label className="flex items-center gap-1 text-[15px] font-black mb-1.5 mr-0.5 tracking-wide text-[#1a2a3a] whitespace-nowrap">
+            <div className="sm:col-span-1 sm:col-span-1">
+              <label className="flex items-center gap-1 text-[15px] font-black mb-1 mr-0.5 tracking-wide text-[#1a2a3a] whitespace-nowrap">
                 <Link className={`${ICON_MOBILE} text-[#c5a059]`} /> ربط بدليل هيكل الإيرادات
               </label>
               <select
@@ -989,7 +989,7 @@ export default function AccountsTab() {
         className="accounts-print-area w-full rounded-2xl overflow-hidden border-2 border-black shadow-sm bg-white"
       >
         <div
-          className="accounts-print-hide px-3 py-3 sm:px-5 sm:py-3.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2 border-b-2 border-black"
+          className="accounts-print-hide px-2 py-2 sm:px-2 sm:py-3 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2 border-b-2 border-black"
           style={{ background: THEME.cream }}
         >
           <div className="flex items-center gap-2.5">
@@ -1101,10 +1101,10 @@ export default function AccountsTab() {
                       <td className="border-2 border-black font-bold tabular-nums numeric-cell text-center px-2.5 py-2 text-lg whitespace-nowrap">
                         {acc.checkDate || "—"}
                       </td>
-                      <td className="border-2 border-black px-2 py-2 text-lg whitespace-nowrap text-center">
+                      <td className="border-2 border-black px-1 py-1 text-lg whitespace-nowrap text-center">
                         {acc.description || "—"}
                       </td>
-                      <td className="border-2 border-black px-2 py-2 text-lg whitespace-nowrap text-center">
+                      <td className="border-2 border-black px-1 py-1 text-lg whitespace-nowrap text-center">
                         {acc.specialty || "—"}
                       </td>
                       <td className="border-2 border-black font-black px-2 py-2 text-lg whitespace-nowrap text-center">
@@ -1127,7 +1127,7 @@ export default function AccountsTab() {
                             updateAccount(acc.id, { ...acc, revenueKey: newKey || undefined });
                             toast.success("تم ربط رمز الإيراد بنجاح");
                           }}
-                          className="w-full px-2 py-2 text-xs font-black text-[#7C3AED] bg-[#7C3AED]/10 border-2 border-black rounded-lg outline-none cursor-pointer whitespace-nowrap"
+                          className="w-full px-3 py-3 text-xs font-black text-[#7C3AED] bg-[#7C3AED]/10 border-1 border-black rounded-lg outline-none cursor-pointer whitespace-nowrap"
                         >
                           <option value="">— ربط الرمز —</option>
                           {revenueTypes.map((t) => (
@@ -1144,7 +1144,7 @@ export default function AccountsTab() {
                         <div className="flex justify-center gap-1.5">
                           <button
                             onClick={() => setEditingRow(acc)}
-                            className="p-2 text-[black] bg-[#1E8E5A] border-1 border-black rounded-lg transition-colors"
+                            className="p-4 text-[black] bg-[#1E8E5A] border-1 border-black rounded-lg transition-colors"
                             aria-label="تعديل"
                           >
                             <Edit className={ICON_MOBILE} />
@@ -1153,7 +1153,7 @@ export default function AccountsTab() {
                             onClick={() => {
                               if (confirm("هل أنت متأكد من الحذف؟")) deleteAccount(acc.id);
                             }}
-                            className="p-2 text-[black] bg-[#D14343] border-1 border-black rounded-lg transition-colors"
+                            className="p-4 text-[black] bg-[#D14343] border-1 border-black rounded-lg transition-colors"
                             aria-label="حذف"
                           >
                             <Trash2 className={ICON_MOBILE} />
@@ -1169,9 +1169,9 @@ export default function AccountsTab() {
                   <tr className="bg-[#E7E2D8]">
                     <td
                       colSpan={10}
-                      className="border-2 border-black text-center font-black px-2 py-2.5 text-lg whitespace-nowrap"
+className="border-2 border-black text-center font-black px-2 py-2.5 text-lg whitespace-nowrap"
                     >
-                      رصيد الإقفال النهائي
+   رصيد الإقفال النهائي
                     </td>
                     <td className="border-2 border-black font-mono tabular-nums numeric-cell font-black text-center px-2.5 py-2.5 text-sm whitespace-nowrap">
                       {fmt(totalIncome)}
@@ -1199,10 +1199,10 @@ export default function AccountsTab() {
         onClose={() => setEditingRow(null)}
       >
         {editingRow && (
-          <form onSubmit={handleEditSave} className="space-y-7">
+          <form onSubmit={handleEditSave} className="space-y-13">
             <div className="grid grid-cols-2 sm:grid-cols-2 gap-2">
               <div>
-                <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide whitespace-nowrap">
+                <label className="block text-lg font-black text-[#0f2f44] mb-1 tracking-wide whitespace-nowrap">
                   التاريخ
                 </label>
                 <input
