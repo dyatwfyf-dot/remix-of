@@ -1021,7 +1021,7 @@ export default function AccountsTab() {
 
         <div className="p-2 sm:p-3">
           <div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-xl border-2 border-black">
-            <table className="min-w-max table-auto text-lg text-center font-bold border-collapse border-2 border-black">
+            <table className="w-auto table-auto text-lg text-center font-bold border-collapse border-2 border-black">
               <thead
                 className="sticky top-0 z-20 text-[#0f2f44] font-black text-[15px]"
                 style={{ background: THEME.warmCream }}
@@ -1199,7 +1199,7 @@ className="border-2 border-black text-center font-black px-2 py-2.5 text-lg whit
         onClose={() => setEditingRow(null)}
       >
         {editingRow && (
-          <form onSubmit={handleEditSave} className="space-y-13">
+          <form onSubmit={handleEditSave} className="space-y-18">
             <div className="grid grid-cols-2 sm:grid-cols-2 gap-2">
               <div>
                 <label className="block text-lg font-black text-[#0f2f44] mb-1 tracking-wide whitespace-nowrap">

@@ -205,7 +205,7 @@ export default function HafizaTab() {
         </div>
 
         {/* FORM CARD */}
-        <div className="p-4 sm:p-6 rounded-2xl shadow-sm border-2 border-black bg-white">
+        <div className="p-4 sm:p-6 rounded-2xl shadow-sm border-2 border-black bg-gold">
           <h3 className="text-sm font-black text-black mb-4 pb-2 border-b-2 border-black">إضافة حافظة جديدة</h3>
 
           <div className="grid grid-cols-2 gap-4">
@@ -370,7 +370,7 @@ export default function HafizaTab() {
         </div>
 
         {/* TABLE CARD */}
-        <div className="p-4 sm:p-6 rounded-2xl shadow-sm border-2 border-black bg-white">
+        <div className="p-4 sm:p-6 rounded-2xl shadow-sm border-2 border-black bg-green light">
           <div className="grid grid-cols-2 items-center mb-4 pb-2 border-b-2 border-black">
             <div className="flex items-center gap-3">
               <h2 className="text-lg font-black text-black">كشف القيود الحالية</h2>

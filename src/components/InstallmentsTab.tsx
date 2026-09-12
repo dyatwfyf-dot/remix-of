@@ -2409,7 +2409,7 @@ const installments2026WebActions: WebActionItem[] = [
         <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2026} columns={3} />
           <div className="overflow-auto max-h-auto rounded-lg border border-slate-200 shadow-sm relative">
-            <table className="installments-table min-w-auto w-auto table-auto text-lg font-extrabold text-black">
+            <table className="installments-table w-auto table-auto text-lg font-extrabold text-black">
               {/* ترويسة الجدول: لون ذهبي لامع مع خط أسود غامق */}
               <thead className="bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500 font-extrabold border-b-2 border-sky-700 text-black sticky top-0 z-20 shadow-md">
                 <tr>
@@ -2531,27 +2531,27 @@ const installments2026WebActions: WebActionItem[] = [
                       return (
                         <tr
                           key={i}
-                          className={`border-t border-slate-200 transition-colors ${rowBgClass}`}
+className={`border-t border-slate-200 transition-colors ${rowBgClass}`}
                         >
-                          <td className="text-center w-auto text-black font-mono whitespace-nowrap !px-2 !py-2 !text-lg border-l border-slate-200">
+  <td className="text-center w-auto text-black font-black whitespace-nowrap !px-2 !py-2 !text-lg border-l border-black ">
                             {i + 1}
                           </td>
-                          <td className="text-center w-auto font-bold text-black whitespace-nowrap bg-fuchsia-50/70 !px-2 !py-2 !text-lg border-l border-slate-200">
+<td className="text-center w-auto font-bold text-black whitespace-nowrap bg-fuchsia-50/70 !px-2 !py-2 !text-lg border-l border-slate-200">
                             <input
                               value={r.name || ""}
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "name", e.target.value)
                               }
-                              className="w-full min-w-[140px] bg-transparent text-center text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+className="w-full min-w-auto bg-transparent text-center text-black font-extrabold text-lg sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
                             />
                           </td>
-                          <td className="text-center w-auto text-black whitespace-nowrap bg-sky-50/70 !px-2 !py-2 !text-lg border-l border-slate-200">
+  <td className="text-center w-auto text-black whitespace-nowrap bg-sky-50/70 !px-2 !py-2 !text-lg border-l border-slate-200">
                             <input
                               value={r.batch || ""}
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "batch", e.target.value)
                               }
-                              className="w-full min-w-[90px] bg-transparent text-center text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+className="w-auto bg-transparent text-center text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
                               placeholder="—"
                             />
                           </td>
@@ -2561,7 +2561,7 @@ const installments2026WebActions: WebActionItem[] = [
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "specialty", e.target.value)
                               }
-                              className="w-full min-w-[110px] bg-transparent text-center text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-auto bg-transparent text-center text-black font-extrabold text-lg sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
                               placeholder="—"
                             />
                           </td>
@@ -2573,10 +2573,10 @@ const installments2026WebActions: WebActionItem[] = [
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "prevDue", e.target.value)
                               }
-                              className="w-full min-w-[100px] bg-transparent text-center font-mono text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-auto bg-transparent text-center font-black text-black font-extrabold text-lg sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
                             />
                           </td>
-                          <td className="text-center w-auto numeric-cell font-mono text-black font-extrabold whitespace-nowrap bg-sky-50/50 !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center w-auto numeric-cell font-black text-black font-extrabold whitespace-nowrap bg-sky-50/50 !px-2 !py-2 !text-lg border-l border-slate-200">
                             <input
                               type="text"
                               inputMode="decimal"
@@ -2584,7 +2584,7 @@ const installments2026WebActions: WebActionItem[] = [
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "fees", e.target.value)
                               }
-                              className="w-full min-w-[90px] bg-transparent text-center font-mono text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-auto bg-transparent text-center font-black text-black font-extrabold text-lg sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
                             />
                           </td>
                           {MONTHS_2026.map((m) => {
@@ -2604,7 +2604,7 @@ const installments2026WebActions: WebActionItem[] = [
                                   onChange={(e) =>
                                     update2026PaymentValue(originalIndex, m, e.target.value)
                                   }
-                                  className="w-full min-w-[70px] bg-transparent text-center numeric-cell font-mono text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                                  className="w-auto bg-transparent text-center numeric-cell font-black text-black font-extrabold text-lg sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
                                   placeholder="—"
                                 />
                               </td>
@@ -2629,7 +2629,7 @@ const installments2026WebActions: WebActionItem[] = [
                                   ))}
                                 </select>
                               ) : col.type === "formula" ? (
-                                <div className="text-center min-w-[70px] numeric-cell font-mono text-sm font-extrabold text-yellow-700 bg-white/50 py-1 rounded">
+                                <div className="text-center w-auto numeric-cell font-mono text-sm font-extrabold text-yellow-700 bg-white/50 py-1 rounded">
                                   {fmt(Number(evaluateFormula(col.formula || "", r) || 0))}
                                 </div>
                               ) : (
