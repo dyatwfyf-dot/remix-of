@@ -178,7 +178,7 @@ const Modal = ({
       <div className="rounded-t-2xl sm:rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto border-2 border-black bg-white">
         <div
           className="flex justify-between items-center px-5 py-4 border-b-2 border-black sticky top-0 z-10"
-          style={{ background: THEME.LightBrush || "#c98a3c" }}
+          style={{ background: THEME.LightBrown || "#c98a3c" }}
         >
           <h3 className={`${HEADING_MOBILE} text-[#0f2f44] flex items-center gap-2 tracking-tight`}>
             {title}
