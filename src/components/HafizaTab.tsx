@@ -175,7 +175,7 @@ export default function HafizaTab() {
 
         {/* HEADER CARD */}
         <div className="p-4 sm:p-6 rounded-2xl shadow-lg border-2 border-black bg-gradient-to-l from-sky-700 via-sky-600 to-sky-500">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="grid grid-cols-2 items-center gap-4">
             <div className="flex items-center gap-3">
               <span className="p-2.5 rounded-xl bg-white/20 border-2 border-black flex items-center justify-center">
                 <Wallet className="w-6 h-6 text-white" />
@@ -186,7 +186,7 @@ export default function HafizaTab() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="flex items-center gap-2 justify-end w-full sm:w-auto">
               <div className="flex items-center justify-center h-9 px-3 rounded-lg bg-white border-2 border-black hover:bg-sky-50 transition-colors">
                 <ImportButton kind="hafiza" />
               </div>
@@ -208,7 +208,7 @@ export default function HafizaTab() {
         <div className="p-4 sm:p-6 rounded-2xl shadow-sm border-2 border-black bg-white">
           <h3 className="text-sm font-black text-black mb-4 pb-2 border-b-2 border-black">إضافة حافظة جديدة</h3>
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
 
             {/* NAME */}
             <div className="relative">
@@ -371,14 +371,14 @@ export default function HafizaTab() {
 
         {/* TABLE CARD */}
         <div className="p-4 sm:p-6 rounded-2xl shadow-sm border-2 border-black bg-white">
-          <div className="flex items-center justify-between mb-4 pb-2 border-b-2 border-black">
+          <div className="grid grid-cols-2 items-center mb-4 pb-2 border-b-2 border-black">
             <div className="flex items-center gap-3">
               <h2 className="text-lg font-black text-black">كشف القيود الحالية</h2>
               <Badge variant="secondary" className="bg-sky-600 text-white border-2 border-black font-black">
                 {filtered.length} سجل
               </Badge>
             </div>
-            <div className="flex items-center gap-0">
+            <div className="flex items-center gap-0 justify-end">
               <TabActions title="حوافظ التوريد" rows={hafiza} columns={COLS} fileName="حوافظ-التوريد" pdfLayout="wide-centered" />
             </div>
           </div>
@@ -440,8 +440,7 @@ export default function HafizaTab() {
                         <TableCell
                           key={c.key}
                           onClick={() => !isEditing && handleCellClick(row.id, c.key, val)}
-                          className={`cursor-pointer ${isNumOrDate ? "whitespace-nowrap" : ""}`}
-                        >
+                          className={`cursor-pointer ${isNumOrDate ? "whitespace-nowrap" : ""}`}>
                           {isEditing ? (
                             <Input
                               autoFocus
