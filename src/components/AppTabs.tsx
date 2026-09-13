@@ -1202,7 +1202,7 @@ const AppTabs: React.FC = () => {
   font-size: 12px;
   font-weight: 900;
   line-height: 1.25;
-  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  background: linear-gradient(35deg, #1e293b 50%, #0f172a 50%);
 }
 
 .usage-table td {
@@ -1236,7 +1236,7 @@ const AppTabs: React.FC = () => {
 
 .usage-table .month-row button {
   color: #ffffff;
-  background: linear-gradient(135deg, #0d9488, #06b6d4);
+  background: linear-gradient(100deg, #0d9488, #06b6d4);
   border: none;
   box-shadow: 0 2px 6px rgba(13, 148, 136, 0.25);
 }
@@ -1518,7 +1518,7 @@ const AppTabs: React.FC = () => {
                       {mainHeaders.map((col) => (
                         <td
                           key={col}
-                          className="bg-[#0e2735]"
+                          className="bg-[#e0f2fe]"
                         >
                           <EditableCell
                             rowId={row.id}
