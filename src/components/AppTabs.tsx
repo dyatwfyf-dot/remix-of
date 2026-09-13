@@ -1181,140 +1181,108 @@ const AppTabs: React.FC = () => {
       dir="rtl"
     >
       <style>{`
-        .usage-header {
-          color: ${UI.text};
-        }
+.usage-table-shell {
+  scrollbar-color: #0d9488 #f1f5f9;
+}
 
-        .usage-table-shell {
-          scrollbar-color: ${UI.teal} ${UI.navy};
-        }
+.usage-table {
+  font-family: "Tajawal", "Noto Sans Arabic", sans-serif;
+}
 
-        .usage-table {
-          font-family: "Tajawal", "Noto Sans Arabic", sans-serif;
-        }
+.usage-table th {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  color: #ffffff;
+  border: 1px solid #94a3b8;
+  padding: 10px 8px;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.25;
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+}
 
-        .usage-table th {
-          position: sticky;
-          top: 0;
-          z-index: 20;
-          color: ${UI.text};
-          border: 1px solid ${UI.grid};
-          padding: 10px 8px;
-          text-align: center;
-          vertical-align: middle;
-          white-space: nowrap;
-          font-size: 12px;
-          font-weight: 900;
-          line-height: 1.25;
-          background: ${UI.surface2};
-        }
+.usage-table td {
+  border: 1px solid #cbd5e1;
+  padding: 0;
+  vertical-align: middle;
+}
 
-        .usage-table td {
-          border: 1px solid ${UI.grid};
-          padding: 0;
-          vertical-align: middle;
-        }
+.usage-table tbody tr {
+  background: #ffffff;
+  transition: background .15s ease;
+}
 
-        .usage-table tbody tr {
-          background: ${UI.row};
-          transition: background .15s ease;
-        }
+.usage-table tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
 
-        .usage-table tbody tr:nth-child(even) {
-          background: ${UI.rowAlt};
-        }
+.usage-table tbody tr:hover {
+  background: #e0f2fe;
+}
 
-        .usage-table tbody tr:hover {
-          background: #143748;
-        }
+/* صف الشهر الفاتح المتدرج */
+.usage-table .month-row td {
+  background: linear-gradient(90deg, #e0f2fe 0%, #f0fdf4 50%, #fef2f2 100%);
+  color: #0369a1;
+  border-color: #cbd5e1;
+  font-weight: 900;
+  padding: 8px 12px;
+  box-shadow: inset 0 2px 0 #0d9488;
+}
 
-        .usage-table .month-row td {
-          background: linear-gradient(90deg, #0a1b28, #145362);
-          color: ${UI.cyanText};
-          border-color: #286372;
-          font-weight: 900;
-          padding: 9px 10px;
-          box-shadow: inset 0 2px 0 rgba(223,157,84,.75), inset 0 -1px 0 rgba(30,179,176,.35);
-        }
+.usage-table .month-row button {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0d9488, #06b6d4);
+  border: none;
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.25);
+}
 
-        .usage-table .month-row button {
-          color: #040c14;
-          background: ${UI.bronze};
-          border: 1px solid #df9d54;
-          box-shadow: 0 4px 12px rgba(0,0,0,.28);
-        }
+.usage-table .month-row button:hover {
+  opacity: 0.9;
+}
 
-        .usage-table .month-row button:hover {
-          background: ${UI.bronzeLight};
-        }
+/* صفوف الإجماليات */
+.usage-table .total-current td {
+  background: #ccfbf1;
+  color: #0f766e;
+  font-weight: 900;
+}
 
-        .usage-table .total-current td {
-          background: #143748;
-          color: #cff5f3;
-          font-weight: 900;
-        }
+.usage-table .total-previous td {
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 900;
+}
 
-        .usage-table .total-previous td {
-          background: #102a38;
-          color: #8fb3c2;
-          font-weight: 900;
-        }
+.usage-table .total-cumulative td {
+  background: linear-gradient(90deg, #fef3c7 0%, #fef9c3 100%);
+  color: #92400e;
+  font-weight: 900;
+}
 
-        .usage-table .total-cumulative td {
-          background: linear-gradient(90deg, #0a1b28, #194650);
-          color: #df9d54;
-          font-weight: 900;
-          box-shadow: inset 0 1px 0 rgba(223,157,84,.3);
-        }
+.usage-table .formula-col {
+  background: rgba(204, 251, 241, 0.3);
+}
 
-        .usage-table .formula-col {
-          background: rgba(30,179,176,.08);
-        }
+.usage-table .formula-col > div {
+  color: #0f766e;
+  font-weight: 800;
+}
 
-        .usage-table .formula-col > div {
-          color: #cff5f3;
-        }
+.usage-table .delete-btn {
+  color: #e11d48;
+  transition: all .15s ease;
+}
 
-        .usage-table .action-cell {
-          background: rgba(196,70,112,.08);
-        }
-
-        .usage-table .delete-btn {
-          color: #ff9bbb;
-          transition: all .15s ease;
-        }
-
-        .usage-table .delete-btn:hover {
-          color: #eaf8fa;
-          background: rgba(196,70,112,.25);
-        }
-
-        .usage-table-shell::-webkit-scrollbar {
-          width: 10px;
-          height: 10px;
-        }
-
-        .usage-table-shell::-webkit-scrollbar-track {
-          background: ${UI.navy};
-        }
-
-        .usage-table-shell::-webkit-scrollbar-thumb {
-          background: #286372;
-          border-radius: 999px;
-          border: 2px solid ${UI.navy};
-        }
-
-        @media (max-width: 640px) {
-          .usage-table th {
-            font-size: 11px;
-            padding: 9px 6px;
-          }
-
-          .usage-table-shell {
-            max-height: 68vh !important;
-          }
-        }
-      `}</style>
+.usage-table .delete-btn:hover {
+  color: #ffffff;
+  background: #be123c;
+}
+`}</style>
 
       {/* شريط العنوان والإجراءات */}
       <div
