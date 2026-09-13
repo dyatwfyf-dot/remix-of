@@ -284,11 +284,11 @@ const EditableCell: React.FC<{
             : "rtl"
       }
       className="
-        w-full h-full min-w-[76px]
-        rounded-md border border-transparent
+        w-auto h-full min-w-auto 
+        rounded-md border border-1-black
         bg-transparent px-1.5 py-1.5
         text-center text-[12px] sm:text-[13px]
-        font-semibold text-[#0f172a]
+        font-bold text-[#0f172a]
         transition-all duration-150
         placeholder:text-[#94a3b8]
         focus:border-[#0d9488] focus:bg-[#f0fdfa]
@@ -568,7 +568,7 @@ const AppTabs: React.FC = () => {
         orientation: "landscape",
         paperSize: 9,
         fitToPage: true,
-        fitToWidth: 1,
+        fitToWidth: 0,
         fitToHeight: 0,
         margins: { left: 0.25, right: 0.25, top: 0.35, bottom: 0.35, header: 0.15, footer: 0.15 },
       },
@@ -719,13 +719,13 @@ const AppTabs: React.FC = () => {
       html, body { margin:0; padding:0; }
       body { font-family:'Cairo','Tajawal',sans-serif; direction:rtl; color:#0f172a !important; padding:0 1px; width:100%; font-weight:700 !important; }
       .report-letterhead-block { display:flex; width:100%; height:30mm; overflow:hidden; justify-content:center; margin:0 0 3mm; }
-      .report-letterhead-image { width:100% !important; height:100% !important; object-fit:fill !important; }
+      .report-letterhead-image { width:auto !important; height:auto !important; object-fit:fill !important; }
       h2 { text-align:center; color:#0f172a !important; margin:0 0 3mm; font-weight:800; }
       .report-date { text-align:center; color:#334155 !important; margin:0 0 5px; font-size:10px; font-weight:700; }
-      table { width:100%; border-collapse:collapse; table-layout:auto !important; font-size:clamp(14px,1.05vw,16px); }
-      th, td { border:1px solid #cbd5e1; padding:2px 3px !important; text-align:center; vertical-align:middle; line-height:1.15; font-size:clamp(14px,1.05vw,16px); color:#0f172a !important; font-weight:700 !important; }
+      table { width:auto; border-collapse:collapse; table-layout:auto !important; font-size:clamp(14px,1.05vw,16px); }
+      th, td { border:1px solid #000; padding:2px 3px !important; text-align:center; vertical-align:middle; line-height:1.15; font-size:clamp(14px,1.05vw,16px); color:#0f172a !important; font-weight:700 !important; }
       .num, .numeric-cell, .date-cell { width:1%; white-space:nowrap !important; font-family:'Times New Roman',Times,serif !important; font-size:clamp(14px,1vw,16px) !important; font-variant-numeric:tabular-nums; direction:ltr; }
-      .text-cell { width:auto; white-space:normal; overflow-wrap:break-word; }
+      .text-cell { width:auto; white-space:nowrap; overflow-wrap:break-word; }
       
       /* ألوان رؤوس الأعمدة المتدرجة للطباعة */
       thead th { font-weight:800; color:#0f172a !important; }
@@ -781,7 +781,7 @@ const AppTabs: React.FC = () => {
         /* ألوان رؤوس الجدول المتدرجة الفاتحة */
         .usage-table th {
           position: sticky; top: 0; z-index: 20; color: #0f172a;
-          border: 1px solid ${UI.grid}; padding: 10px 8px; text-align: center;
+          border: 1px solid #000; padding: 10px 8px; text-align: center;
           vertical-align: middle; white-space: nowrap; font-size: 12px; font-weight: 900;
           line-height: 1.25; background: linear-gradient(180deg, #f8fafc, #e2e8f0);
         }
@@ -804,7 +804,7 @@ const AppTabs: React.FC = () => {
         .usage-table tbody tr:hover { background: #f0fdfa; }
         .usage-table .month-row td {
           background: linear-gradient(90deg, #38bdf8, #818cf8); color: #ffffff;
-          border-color: #93c5fd; font-weight: 900; padding: 9px 10px;
+          border-color: #000; font-weight: 900; padding: 9px 10px;
           box-shadow: inset 0 2px 0 rgba(255,255,255,.6), inset 0 -1px 0 rgba(0,0,0,.1);
         }
         .usage-table .month-row button {
