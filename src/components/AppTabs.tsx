@@ -22,30 +22,31 @@ const mainHeaders = ["رقم الاستمارة", "كشف التسوية", "ال
 const STORAGE_KEY = "app-tabs-usages-v1";
 
 /* ============================================================
-   لوحة الألوان الجديدة — سجل مفردات الاستخدامات
+   لوحة الألوان الداكنة والعميقة — سجل مفردات الاستخدامات
+   تعتمد على التدرجات الكحلية، التركواز، والبرونزي بدون الأبيض الداكن
    ============================================================ */
 const UI = {
-  page: "#081925",
-  surface: "#0d2432",
-  surface2: "#123445",
-  surface3: "#163f52",
-  navy: "#0b2030",
-  navyLight: "#14384a",
-  teal: "#168b8b",
-  tealDark: "#0f6f70",
-  turquoise: "#22b8b5",
-  bronze: "#c98a3c",
-  bronzeLight: "#e0aa62",
-  pink: "#c94c76",
-  pinkDark: "#a83a5f",
-  cyanText: "#b7f1ef",
-  text: "#effcff",
-  muted: "#9ab8c5",
-  grid: "#315769",
-  row: "#102d3c",
-  rowAlt: "#0d2633",
-  formula: "#173a4b",
-  formulaText: "#d3f3f2",
+  page: "#071622",
+  surface: "#0c2130",
+  surface2: "#102f42",
+  surface3: "#153b52",
+  navy: "#0a1b28",
+  navyLight: "#123246",
+  teal: "#148686",
+  tealDark: "#0e6768",
+  turquoise: "#1eb3b0",
+  bronze: "#c58538",
+  bronzeLight: "#df9d54",
+  pink: "#c44670",
+  pinkDark: "#a2355a",
+  cyanText: "#b2f0ee",
+  text: "#eaf8fa",
+  muted: "#8fb3c2",
+  grid: "#284f61",
+  row: "#0e2937",
+  rowAlt: "#0a202d",
+  formula: "#143748",
+  formulaText: "#cff5f3",
 };
 
 const COLORS = {
@@ -60,10 +61,10 @@ const ARGB = {
   BAB_TOTAL: "FF1B4B55",
   FASL: "FF4A3146",
   BAND: "FF704F2F",
-  DARK: "FF0B2030",
-  GOLD: "FFE0AA62",
-  CUR: "FF173A4B",
-  PREV: "FF132D3A",
+  DARK: "FF0A1B28",
+  GOLD: "FFDF9D54",
+  CUR: "FF143748",
+  PREV: "FF102A38",
 };
 
 const dataColumnsOrder = [
@@ -204,49 +205,6 @@ const parseMonthId = (value: any): number | null => {
     : null;
 };
 
-const IMPORT_MONTH_KEYS = [
-  "monthid",
-  "month id",
-  "month_id",
-  "month",
-  "monthname",
-  "الشهر",
-  "شهر",
-  "اسم الشهر",
-  "رقم الشهر",
-  "الفترة",
-];
-
-const IMPORT_DATE_KEYS = ["التاريخ", "date", "تاريخ"];
-
-const hasNamedMonth = (value: any) => {
-  const text = normalizeDigits(norm(value)).toLowerCase();
-
-  return MONTH_ALIASES.some((aliases) =>
-    aliases.some(
-      (alias) =>
-        text === alias ||
-        text.startsWith(`${alias} `) ||
-        text.includes(`شهر ${alias}`) ||
-        text.includes(`month ${alias}`),
-    ),
-  );
-};
-
-const monthIdFromLookup = (lookup: Record<string, any>) => {
-  for (const key of IMPORT_MONTH_KEYS) {
-    const monthId = parseMonthId(lookup[norm(key).toLowerCase()]);
-    if (monthId) return monthId;
-  }
-
-  for (const key of IMPORT_DATE_KEYS) {
-    const monthId = parseMonthId(lookup[norm(key).toLowerCase()]);
-    if (monthId) return monthId;
-  }
-
-  return null;
-};
-
 const formatNumberEn = (val: any) => {
   if (val === "" || val === null || val === undefined) return "";
 
@@ -358,13 +316,13 @@ const EditableCell: React.FC<{
         text-center
         text-[12px] sm:text-[13px]
         font-semibold
-        text-[#ecf9fb]
+        text-[#e8f8f9]
         transition-all duration-150
-        placeholder:text-[#6f8f9d]
-        focus:border-[#22b8b5]
-        focus:bg-[#173a4b]
+        placeholder:text-[#5a8090]
+        focus:border-[#1eb3b0]
+        focus:bg-[#143748]
         focus:outline-none
-        focus:ring-2 focus:ring-[#22b8b5]/30
+        focus:ring-2 focus:ring-[#1eb3b0]/35
       "
     />
   );
@@ -380,7 +338,7 @@ const FormulaCell: React.FC<{ value: any }> = React.memo(({ value }) => (
       text-center
       text-[12px] sm:text-[13px]
       font-black
-      text-[#d7f7f5]
+      text-[#cff5f3]
       font-mono
       tabular-nums
     "
@@ -710,7 +668,13 @@ const AppTabs: React.FC = () => {
     title.font = {
       bold: true,
       size: 14,
-      color: { argb: ARGB.DARK },
+      color: { argb: "FFEAF8FA" },
+    };
+
+    title.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: ARGB.DARK },
     };
 
     title.alignment = {
@@ -733,6 +697,7 @@ const AppTabs: React.FC = () => {
       cell.font = {
         bold: true,
         size: 9,
+        color: { argb: "FFEAF8FA" },
       };
 
       cell.alignment = {
@@ -744,15 +709,13 @@ const AppTabs: React.FC = () => {
 
       cell.border = border;
 
-      const argb = colArgb(c);
+      const argb = colArgb(c) || ARGB.DARK;
 
-      if (argb) {
-        cell.fill = {
-          type: "pattern",
-          pattern: "solid",
-          fgColor: { argb },
-        };
-      }
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb },
+      };
     });
 
     disp.getColumn(1).width = 12;
@@ -816,19 +779,18 @@ const AppTabs: React.FC = () => {
           cell.font = {
             size: 9,
             bold: isFormulaCol(c),
+            color: { argb: "FFEAF8FA" },
           };
 
           cell.border = border;
 
-          const argb = colArgb(c);
+          const argb = colArgb(c) || "FF0E2937";
 
-          if (argb) {
-            cell.fill = {
-              type: "pattern",
-              pattern: "solid",
-              fgColor: { argb },
-            };
-          }
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb },
+          };
         });
 
         r++;
@@ -898,14 +860,14 @@ const AppTabs: React.FC = () => {
         `إجمالي شهر ${m.name}`,
         t.current,
         ARGB.CUR,
-        ARGB.DARK,
+        "FFCFF5F3",
       );
 
       rowCur(
         `إجمالي الأشهر السابقة (قبل ${m.name})`,
         t.before,
         ARGB.PREV,
-        "FF334155",
+        "FF8FB3C2",
       );
 
       rowCur(
@@ -958,7 +920,7 @@ const AppTabs: React.FC = () => {
         cell.font = {
           bold: true,
           size: 9,
-          color: { argb: "FFFFFFFF" },
+          color: { argb: "FFEAF8FA" },
         };
 
         cell.fill = {
@@ -1160,26 +1122,26 @@ const AppTabs: React.FC = () => {
       @page { size:A4 landscape; margin:3mm; }
       * { box-sizing:border-box; }
       html, body { margin:0; padding:0; }
-      body { font-family:'Cairo','Tajawal','Segoe UI',Tahoma,Arial,sans-serif; direction:rtl; color:#000 !important; padding:0 1px; width:100%; font-weight:700 !important; }
+      body { font-family:'Cairo','Tajawal','Segoe UI',Tahoma,Arial,sans-serif; direction:rtl; color:#0c2130 !important; padding:0 1px; width:100%; font-weight:700 !important; }
       .report-letterhead-block { display:flex; width:100%; max-width:none; height:30mm; min-height:30mm; max-height:30mm; overflow:hidden; align-items:stretch; justify-content:center; margin:0 0 3mm; page-break-before:avoid; page-break-after:avoid; }
       .report-letterhead-image { display:block; width:100% !important; max-width:none !important; height:100% !important; max-height:100% !important; object-fit:fill !important; object-position:top; margin:0 !important; }
-      h2 { text-align:center; color:#000 !important; margin:0 0 3mm; font-weight:800; }
-      .report-date { text-align:center; color:#000 !important; margin:0 0 5px; font-size:10px; font-weight:700; }
+      h2 { text-align:center; color:#0c2130 !important; margin:0 0 3mm; font-weight:800; }
+      .report-date { text-align:center; color:#153b52 !important; margin:0 0 5px; font-size:10px; font-weight:700; }
       table { width:100%; max-width:100%; min-width:0; border-collapse:collapse; table-layout:auto !important; font-size:clamp(14px,1.05vw,16px); }
-      th, td { border:1px solid #000; padding:2px 3px !important; text-align:center; vertical-align:middle; white-space:normal; overflow:visible; overflow-wrap:break-word; word-break:normal; hyphens:none; line-height:1.15; font-size:clamp(14px,1.05vw,16px); color:#000 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      th, td { border:1px solid #284f61; padding:2px 3px !important; text-align:center; vertical-align:middle; white-space:normal; overflow:visible; overflow-wrap:break-word; word-break:normal; hyphens:none; line-height:1.15; font-size:clamp(14px,1.05vw,16px); color:#0c2130 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
       .num, .numeric-cell, .date-cell { width:1%; min-width:0; white-space:nowrap !important; overflow:visible; overflow-wrap:normal; word-break:keep-all; hyphens:none; font-family:'Times New Roman',Times,serif !important; font-size:clamp(14px,1vw,16px) !important; font-variant-numeric:tabular-nums; direction:ltr; }
       .text-cell { width:auto; white-space:normal; overflow-wrap:break-word; word-break:normal; }
       .report-letterhead-cell { padding:0 !important; border:0 !important; width:100%; }
-      thead th { background:#fff; font-weight:700; color:#000 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      thead .c-total { background:${COLORS.TOTAL_ALL}; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      thead .c-bab   { background:${COLORS.BAB_TOTAL}; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      thead .c-fasl  { background:${COLORS.FASL}; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      thead .c-band  { background:${COLORS.BAND}; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      td.formula { background:#f8fafc; font-weight:700; color:#000 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      tr.month td { background:#0b3d6d; color:#000 !important; font-weight:700 !important; text-align:center; padding:0 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      tr.t-cur td  { background:#dbeafe; color:#000 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      tr.t-prev td { background:#e2e8f0; color:#000 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      tr.t-cum td  { background:#0b3d6d; color:#000 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      thead th { background:#102f42; font-weight:700; color:#eaf8fa !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      thead .c-total { background:${COLORS.TOTAL_ALL}; color:#eaf8fa !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      thead .c-bab   { background:${COLORS.BAB_TOTAL}; color:#eaf8fa !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      thead .c-fasl  { background:${COLORS.FASL}; color:#eaf8fa !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      thead .c-band  { background:${COLORS.BAND}; color:#eaf8fa !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      td.formula { background:#143748; font-weight:700; color:#cff5f3 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      tr.month td { background:#0a1b28; color:#df9d54 !important; font-weight:800 !important; text-align:center; padding:0 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      tr.t-cur td  { background:#143748; color:#cff5f3 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      tr.t-prev td { background:#102a38; color:#8fb3c2 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      tr.t-cum td  { background:#0a1b28; color:#df9d54 !important; font-weight:800 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
       tr.t-cur td:first-child, tr.t-prev td:first-child, tr.t-cum td:first-child { text-align:center; padding-right:4px; }
       @media print { @page { size:A4 landscape; margin:3mm; } }
       ${runningLetterheadCss}
@@ -1213,7 +1175,7 @@ const AppTabs: React.FC = () => {
       className="sheet-tabs-ui apk-tabs-ui w-full space-y-4 p-2 sm:p-3 font-tajawal"
       style={{
         background:
-          "radial-gradient(circle at top right, #123a4a 0%, #091b27 38%, #06131d 100%)",
+          "radial-gradient(circle at top right, #102f42 0%, #071622 42%, #040c14 100%)",
         color: UI.text,
       }}
       dir="rtl"
@@ -1263,23 +1225,23 @@ const AppTabs: React.FC = () => {
         }
 
         .usage-table tbody tr:hover {
-          background: #17394a;
+          background: #143748;
         }
 
         .usage-table .month-row td {
-          background: linear-gradient(90deg, #0b2030, #155a68);
+          background: linear-gradient(90deg, #0a1b28, #145362);
           color: ${UI.cyanText};
-          border-color: #2c6b79;
+          border-color: #286372;
           font-weight: 900;
           padding: 9px 10px;
-          box-shadow: inset 0 2px 0 rgba(224,170,98,.75), inset 0 -1px 0 rgba(34,184,181,.35);
+          box-shadow: inset 0 2px 0 rgba(223,157,84,.75), inset 0 -1px 0 rgba(30,179,176,.35);
         }
 
         .usage-table .month-row button {
-          color: #06131d;
+          color: #040c14;
           background: ${UI.bronze};
-          border: 1px solid #e2b36e;
-          box-shadow: 0 4px 12px rgba(0,0,0,.22);
+          border: 1px solid #df9d54;
+          box-shadow: 0 4px 12px rgba(0,0,0,.28);
         }
 
         .usage-table .month-row button:hover {
@@ -1287,44 +1249,44 @@ const AppTabs: React.FC = () => {
         }
 
         .usage-table .total-current td {
-          background: #15394c;
-          color: #c9f7f5;
+          background: #143748;
+          color: #cff5f3;
           font-weight: 900;
         }
 
         .usage-table .total-previous td {
-          background: #122b39;
-          color: #9eb6c2;
+          background: #102a38;
+          color: #8fb3c2;
           font-weight: 900;
         }
 
         .usage-table .total-cumulative td {
-          background: linear-gradient(90deg, #0b2030, #1b4b55);
-          color: #e4c27f;
+          background: linear-gradient(90deg, #0a1b28, #194650);
+          color: #df9d54;
           font-weight: 900;
-          box-shadow: inset 0 1px 0 rgba(224,170,98,.3);
+          box-shadow: inset 0 1px 0 rgba(223,157,84,.3);
         }
 
         .usage-table .formula-col {
-          background: rgba(34,184,181,.07);
+          background: rgba(30,179,176,.08);
         }
 
         .usage-table .formula-col > div {
-          color: #d8f7f5;
+          color: #cff5f3;
         }
 
         .usage-table .action-cell {
-          background: rgba(201,76,118,.05);
+          background: rgba(196,70,112,.08);
         }
 
         .usage-table .delete-btn {
-          color: #ff99b7;
+          color: #ff9bbb;
           transition: all .15s ease;
         }
 
         .usage-table .delete-btn:hover {
-          color: white;
-          background: rgba(201,76,118,.2);
+          color: #eaf8fa;
+          background: rgba(196,70,112,.25);
         }
 
         .usage-table-shell::-webkit-scrollbar {
@@ -1337,7 +1299,7 @@ const AppTabs: React.FC = () => {
         }
 
         .usage-table-shell::-webkit-scrollbar-thumb {
-          background: #2f6878;
+          background: #286372;
           border-radius: 999px;
           border: 2px solid ${UI.navy};
         }
@@ -1359,8 +1321,8 @@ const AppTabs: React.FC = () => {
         className="rounded-2xl border p-3 sm:p-4 shadow-2xl"
         style={{
           background:
-            "linear-gradient(135deg, rgba(13,36,50,.98), rgba(18,52,69,.98))",
-          borderColor: "#2d5d70",
+            "linear-gradient(135deg, rgba(12,33,48,.98), rgba(16,47,66,.98))",
+          borderColor: "#285466",
         }}
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1369,10 +1331,10 @@ const AppTabs: React.FC = () => {
               className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border"
               style={{
                 background:
-                  "linear-gradient(135deg, #c98a3c, #e0aa62)",
-                borderColor: "#efc887",
-                color: "#09202d",
-                boxShadow: "0 7px 18px rgba(0,0,0,.24)",
+                  "linear-gradient(135deg, #c58538, #df9d54)",
+                borderColor: "#e8b272",
+                color: "#051622",
+                boxShadow: "0 7px 18px rgba(0,0,0,.32)",
               }}
             >
               <FileSpreadsheet className="h-5 w-5" />
@@ -1399,7 +1361,7 @@ const AppTabs: React.FC = () => {
               className="rounded-xl border px-2.5 py-2"
               style={{
                 background: UI.surface,
-                borderColor: "#2d5d70",
+                borderColor: "#285466",
               }}
             >
               <select
@@ -1416,8 +1378,8 @@ const AppTabs: React.FC = () => {
                     key={m.id}
                     value={m.id}
                     style={{
-                      background: "#0d2432",
-                      color: "#effcff",
+                      background: "#0c2130",
+                      color: "#eaf8fa",
                     }}
                   >
                     {m.name}
@@ -1466,7 +1428,7 @@ const AppTabs: React.FC = () => {
                 className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98] transition-transform"
                 style={{
                   background: UI.tealDark,
-                  color: "#eaffff",
+                  color: "#e2fbfb",
                   border: `1px solid ${UI.teal}`,
                 }}
               >
@@ -1479,8 +1441,8 @@ const AppTabs: React.FC = () => {
                 className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98] transition-transform"
                 style={{
                   background: UI.surface3,
-                  color: "#dffcfb",
-                  border: "1px solid #2e6878",
+                  color: "#dbf9f8",
+                  border: "1px solid #285e6e",
                 }}
               >
                 <Download className="w-4 h-4" />
@@ -1492,8 +1454,8 @@ const AppTabs: React.FC = () => {
                 className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98] transition-transform"
                 style={{
                   background: UI.bronze,
-                  color: "#101b20",
-                  border: "1px solid #e3b36a",
+                  color: "#08151f",
+                  border: "1px solid #dfa561",
                 }}
               >
                 <FileText className="w-4 h-4" />
@@ -1505,8 +1467,8 @@ const AppTabs: React.FC = () => {
                 className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98] transition-transform"
                 style={{
                   background: UI.navy,
-                  color: "#f0ffff",
-                  border: "1px solid #2c5d70",
+                  color: "#eaf8fa",
+                  border: "1px solid #255365",
                 }}
               >
                 <Printer className="w-4 h-4" />
@@ -1518,8 +1480,8 @@ const AppTabs: React.FC = () => {
                 className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98] transition-transform"
                 style={{
                   background: UI.pinkDark,
-                  color: "#fff3f7",
-                  border: "1px solid #d86b91",
+                  color: "#ffeff4",
+                  border: "1px solid #ce5f83",
                 }}
               >
                 <Eraser className="w-4 h-4" />
@@ -1544,7 +1506,7 @@ const AppTabs: React.FC = () => {
         style={{
           maxHeight: "70vh",
           background: UI.page,
-          borderColor: "#2e5e70",
+          borderColor: "#285466",
         }}
       >
         <table className="usage-table w-auto table-auto border-collapse text-center">
@@ -1588,7 +1550,7 @@ const AppTabs: React.FC = () => {
                       {mainHeaders.map((col) => (
                         <td
                           key={col}
-                          className="bg-[#0f2a38]"
+                          className="bg-[#0e2735]"
                         >
                           <EditableCell
                             rowId={row.id}
@@ -1643,51 +1605,51 @@ const AppTabs: React.FC = () => {
                   <tr className="total-current">
                     <td
                       colSpan={4}
-                      className="border border-[#315769] px-2 py-2 text-right text-[12px] font-black"
+                      className="border border-[#284f61] px-2 py-2 text-right text-[12px] font-black"
                     >
                       إجمالي شهر {m.name}
                     </td>
 
                     {dataColumnsOrder.map((c) => (
-                      <td key={c} className="border border-[#315769]">
+                      <td key={c} className="border border-[#284f61]">
                         <FormulaCell value={t.current(c)} />
                       </td>
                     ))}
 
-                    <td className="border border-[#315769]" />
+                    <td className="border border-[#284f61]" />
                   </tr>
 
                   {/* إجمالي الأشهر السابقة */}
                   <tr className="total-previous">
                     <td
                       colSpan={4}
-                      className="border border-[#315769] px-2 py-2 text-right text-[12px] font-black"
+                      className="border border-[#284f61] px-2 py-2 text-right text-[12px] font-black"
                     >
                       إجمالي الأشهر السابقة (قبل {m.name})
                     </td>
 
                     {dataColumnsOrder.map((c) => (
-                      <td key={c} className="border border-[#315769]">
+                      <td key={c} className="border border-[#284f61]">
                         <FormulaCell value={t.before(c)} />
                       </td>
                     ))}
 
-                    <td className="border border-[#315769]" />
+                    <td className="border border-[#284f61]" />
                   </tr>
 
                   {/* الإجمالي التراكمي */}
                   <tr className="total-cumulative">
                     <td
                       colSpan={4}
-                      className="border border-[#315769] px-2 py-2 text-right text-[12px] font-black"
+                      className="border border-[#284f61] px-2 py-2 text-right text-[12px] font-black"
                     >
                       الإجمالي العام (حتى {m.name})
                     </td>
 
                     {dataColumnsOrder.map((c) => (
-                      <td key={c} className="border border-[#315769]">
+                      <td key={c} className="border border-[#284f61]">
                         <div
-                          className="px-1.5 py-1 text-[12px] font-black text-[#e5c57f] font-mono"
+                          className="px-1.5 py-1 text-[12px] font-black text-[#df9d54] font-mono"
                           dir="ltr"
                         >
                           {formatNumberEn(t.cumulative(c)) || "-"}
@@ -1695,7 +1657,7 @@ const AppTabs: React.FC = () => {
                       </td>
                     ))}
 
-                    <td className="border border-[#315769]" />
+                    <td className="border border-[#284f61]" />
                   </tr>
                 </React.Fragment>
               );
@@ -1708,8 +1670,8 @@ const AppTabs: React.FC = () => {
       <div
         className="rounded-2xl border px-3 py-2.5 text-center text-[11px] sm:text-xs font-bold"
         style={{
-          background: "rgba(13,36,50,.78)",
-          borderColor: "#264f61",
+          background: "rgba(12,33,48,.85)",
+          borderColor: "#204656",
           color: UI.muted,
         }}
       >
