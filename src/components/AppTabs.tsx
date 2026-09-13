@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import {
   FileSpreadsheet,
   Plus,
@@ -9,7 +9,6 @@ import {
   Printer,
   Eraser,
 } from "lucide-react";
-import * as XLSX from "xlsx";
 import { useReportDate } from "@/lib/reportDate";
 import { toast } from "sonner";
 import { reportLetterheadHtml, runningLetterheadCss } from "@/lib/printTableHtml";
@@ -21,10 +20,6 @@ import WebActionMenu from "./WebActionMenu";
 const mainHeaders = ["رقم الاستمارة", "كشف التسوية", "التاريخ", "البيان"];
 const STORAGE_KEY = "app-tabs-usages-v1";
 
-/* ============================================================
-   لوحة الألوان الداكنة والعميقة — سجل مفردات الاستخدامات
-   تعتمد على التدرجات الكحلية، التركواز، والبرونزي بدون الأبيض الداكن
-   ============================================================ */
 const UI = {
   page: "#071622",
   surface: "#0c2130",
@@ -89,7 +84,7 @@ const dataColumnsOrder = [
   "ادوات كتابية",
   "نشر واعلان",
   "اتصالات",
-  "مؤتمرات واحتفالات",
+  "مؤتمرات وااحتفالات",
   "نفقات النظافة",
   "اخرى",
   "نقل مهام",
@@ -115,8 +110,7 @@ const dataColumnsOrder = [
 const allCols = [...mainHeaders, ...dataColumnsOrder];
 const TOTAL_COLS = allCols.length + 1;
 
-const isFormulaCol = (col: string) =>
-  col.includes("اجمالي") || col.includes("الفصل");
+const isFormulaCol = (col: string) => col.includes("اجمالي") || col.includes("الفصل");
 
 const colArgb = (col: string) =>
   col === "اجمالي عام الاستخدامات"
@@ -142,78 +136,22 @@ const MONTHS = [
   { id: 12, name: "ديسمبر" },
 ];
 
-const norm = (s: any) => String(s ?? "").replace(/\s+/g, " ").trim();
-
-const normalizeDigits = (value: string) =>
-  value.replace(/[٠-٩]/g, (digit) =>
-    String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)),
-  );
-
-const MONTH_ALIASES = [
-  ["يناير", "jan", "january"],
-  ["فبراير", "فبر", "feb", "february"],
-  ["مارس", "mar", "march"],
-  ["أبريل", "ابريل", "apr", "april"],
-  ["مايو", "may"],
-  ["يونيو", "يونية", "jun", "june"],
-  ["يوليو", "july", "jul"],
-  ["أغسطس", "اغسطس", "aug", "august"],
-  ["سبتمبر", "sep", "september"],
-  ["أكتوبر", "اكتوبر", "oct", "october"],
-  ["نوفمبر", "nov", "november"],
-  ["ديسمبر", "dec", "december"],
-];
-
-const parseMonthId = (value: any): number | null => {
-  if (value instanceof Date && !Number.isNaN(value.getTime())) {
-    return value.getMonth() + 1;
+const getColumnLetter = (colIndex: number): string => {
+  let temp = colIndex;
+  let letter = "";
+  while (temp > 0) {
+    const mod = (temp - 1) % 26;
+    letter = String.fromCharCode(65 + mod) + letter;
+    temp = Math.floor((temp - mod) / 26);
   }
-
-  const text = normalizeDigits(norm(value)).toLowerCase();
-  if (!text) return null;
-
-  const aliasIndex = MONTH_ALIASES.findIndex((aliases) =>
-    aliases.some(
-      (alias) =>
-        text === alias ||
-        text.startsWith(`${alias} `) ||
-        text.includes(`شهر ${alias}`) ||
-        text.includes(`month ${alias}`),
-    ),
-  );
-
-  if (aliasIndex >= 0) return aliasIndex + 1;
-
-  const monthLabel = text.match(/(?:شهر|month)\s*([0-9]{1,2})/);
-  if (monthLabel) {
-    const month = Number(monthLabel[1]);
-    if (month >= 1 && month <= 12) return month;
-  }
-
-  const yearFirst = text.match(
-    /(?:^|[^0-9])20[0-9]{2}[\/\\.-]([0-9]{1,2})(?:[\/\\.-][0-9]{1,2})?(?:$|[^0-9])/,
-  );
-
-  if (yearFirst) {
-    const month = Number(yearFirst[1]);
-    if (month >= 1 && month <= 12) return month;
-  }
-
-  const numeric = Number(text.replace(/,/g, ""));
-  return Number.isInteger(numeric) && numeric >= 1 && numeric <= 12
-    ? numeric
-    : null;
+  return letter;
 };
 
 const formatNumberEn = (val: any) => {
   if (val === "" || val === null || val === undefined) return "";
-
   const num = Number(val);
   if (isNaN(num)) return val;
-
-  return new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: 2,
-  }).format(num);
+  return new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(num);
 };
 
 const sumColumns = (row: any, cols: string[]): number =>
@@ -287,6 +225,9 @@ const recomputeRow = (row: any) => {
   return newRow;
 };
 
+/* ============================================================
+   مكون إدخال متفاعل محلياً مع تأجيل الحفظ حتى انتهاء الكتابة
+   ============================================================ */
 const EditableCell: React.FC<{
   rowId: string;
   field: string;
@@ -294,35 +235,48 @@ const EditableCell: React.FC<{
   onCommit: (rowId: string, field: string, value: string) => void;
 }> = React.memo(({ rowId, field, value, onCommit }) => {
   const isDate = field === "التاريخ";
+  const [localVal, setLocalVal] = useState(value ?? "");
+
+  useEffect(() => {
+    setLocalVal(value ?? "");
+  }, [value]);
+
+  const handleBlur = () => {
+    if (localVal !== (value ?? "")) {
+      onCommit(rowId, field, localVal);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.currentTarget.blur();
+    }
+  };
 
   return (
     <input
       type={isDate ? "date" : "text"}
-      value={value ?? ""}
-      onChange={(e) => onCommit(rowId, field, e.target.value)}
+      value={localVal}
+      onChange={(e) => setLocalVal(e.target.value)}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
       dir={
         isDate
           ? "ltr"
-          : /^[\d.,\-]*$/.test(String(value ?? ""))
+          : /^[\d.,\-]*$/.test(String(localVal ?? ""))
             ? "ltr"
             : "rtl"
       }
       className="
         w-full h-full min-w-[76px]
-        rounded-md
-        border border-transparent
-        bg-transparent
-        px-1.5 py-1.5
-        text-center
-        text-[12px] sm:text-[13px]
-        font-semibold
-        text-[#e8f8f9]
+        rounded-md border border-transparent
+        bg-transparent px-1.5 py-1.5
+        text-center text-[12px] sm:text-[13px]
+        font-semibold text-[#e8f8f9]
         transition-all duration-150
         placeholder:text-[#5a8090]
-        focus:border-[#1eb3b0]
-        focus:bg-[#143748]
-        focus:outline-none
-        focus:ring-2 focus:ring-[#1eb3b0]/35
+        focus:border-[#1eb3b0] focus:bg-[#143748]
+        focus:outline-none focus:ring-2 focus:ring-[#1eb3b0]/35
       "
     />
   );
@@ -333,14 +287,10 @@ EditableCell.displayName = "EditableCell";
 const FormulaCell: React.FC<{ value: any }> = React.memo(({ value }) => (
   <div
     className="
-      rounded-md
-      px-1.5 py-1
-      text-center
-      text-[12px] sm:text-[13px]
-      font-black
-      text-[#cff5f3]
-      font-mono
-      tabular-nums
+      rounded-md px-1.5 py-1
+      text-center text-[12px] sm:text-[13px]
+      font-black text-[#cff5f3]
+      font-mono tabular-nums
     "
     dir="ltr"
   >
@@ -429,7 +379,6 @@ const AppTabs: React.FC = () => {
 
   const [importMonthId, setImportMonthId] = useState<number>(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
   const latestDataRows = useRef(dataRows);
   const storageTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -440,16 +389,12 @@ const AppTabs: React.FC = () => {
 
     storageTimer.current = setTimeout(() => {
       try {
-        localStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify(latestDataRows.current),
-        );
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(latestDataRows.current));
       } catch (error) {
         console.error("[Storage] Failed to persist usage rows", error);
       }
-
       storageTimer.current = null;
-    }, 80);
+    }, 150);
 
     return () => {
       if (storageTimer.current) clearTimeout(storageTimer.current);
@@ -459,54 +404,37 @@ const AppTabs: React.FC = () => {
   useEffect(() => {
     const flush = () => {
       if (storageTimer.current) clearTimeout(storageTimer.current);
-
       try {
-        localStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify(latestDataRows.current),
-        );
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(latestDataRows.current));
       } catch (error) {
         console.error("[Storage] Failed to flush usage rows", error);
       }
-
       storageTimer.current = null;
     };
 
     window.addEventListener("pagehide", flush);
-
     return () => {
       window.removeEventListener("pagehide", flush);
       flush();
     };
   }, []);
 
-  const rowsOfMonth = useCallback(
-    (id: number) => dataRows.filter((r) => r.monthId === id),
-    [dataRows],
-  );
-
-  const makeEmptyRow = (monthId: number) => {
+  const makeEmptyRow = useCallback((monthId: number) => {
     const r: any = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       monthId,
     };
-
     mainHeaders.forEach((h) => (r[h] = ""));
     dataColumnsOrder.forEach((h) => (r[h] = ""));
-
     return recomputeRow(r);
-  };
+  }, []);
 
   useEffect(() => {
     setDataRows((prev) => {
       const counts: Record<number, number> = {};
-
-      prev.forEach(
-        (r) => (counts[r.monthId] = (counts[r.monthId] || 0) + 1),
-      );
+      prev.forEach((r) => (counts[r.monthId] = (counts[r.monthId] || 0) + 1));
 
       const additions: any[] = [];
-
       MONTHS.forEach((m) => {
         if (!counts[m.id]) {
           additions.push(makeEmptyRow(m.id), makeEmptyRow(m.id));
@@ -515,20 +443,54 @@ const AppTabs: React.FC = () => {
 
       return additions.length ? [...prev, ...additions] : prev;
     });
+  }, [makeEmptyRow]);
+
+  const updateCell = useCallback((rowId: string, key: string, rawValue: string) => {
+    setDataRows((prev) =>
+      prev.map((row) =>
+        row.id === rowId ? recomputeRow({ ...row, [key]: rawValue }) : row
+      )
+    );
   }, []);
 
-  const updateCell = useCallback(
-    (rowId: string, key: string, rawValue: string) => {
-      setDataRows((prev) =>
-        prev.map((row) =>
-          row.id === rowId
-            ? recomputeRow({ ...row, [key]: rawValue })
-            : row,
-        ),
-      );
-    },
-    [],
-  );
+  const rowsByMonth = useMemo(() => {
+    const map: Record<number, any[]> = {};
+    MONTHS.forEach((m) => (map[m.id] = []));
+    dataRows.forEach((row) => {
+      if (map[row.monthId]) {
+        map[row.monthId].push(row);
+      }
+    });
+    return map;
+  }, [dataRows]);
+
+  const computedTotals = useMemo(() => {
+    const sumCols = (rows: any[], col: string) =>
+      rows.reduce((acc, row) => acc + (Number(row[col]) || 0), 0);
+
+    const map: Record<
+      number,
+      {
+        current: (col: string) => number;
+        before: (col: string) => number;
+        cumulative: (col: string) => number;
+      }
+    > = {};
+
+    MONTHS.forEach((m) => {
+      const curRows = rowsByMonth[m.id] || [];
+      const beforeRows = dataRows.filter((r) => r.monthId < m.id);
+      const cumRows = dataRows.filter((r) => r.monthId <= m.id);
+
+      map[m.id] = {
+        current: (c: string) => sumCols(curRows, c),
+        before: (c: string) => sumCols(beforeRows, c),
+        cumulative: (c: string) => sumCols(cumRows, c),
+      };
+    });
+
+    return map;
+  }, [dataRows, rowsByMonth]);
 
   const handleAddRow = (monthId: number) =>
     setDataRows((prev) => [...prev, makeEmptyRow(monthId)]);
@@ -539,96 +501,44 @@ const AppTabs: React.FC = () => {
   };
 
   const handleClearAll = () => {
-    if (
-      !window.confirm(
-        "سيتم حذف جميع بيانات كل الأشهر نهائياً. هل أنت متأكد؟",
-      )
-    ) {
-      return;
-    }
-
+    if (!window.confirm("سيتم حذف جميع بيانات كل الأشهر نهائياً. هل أنت متأكد؟")) return;
     const fresh: any[] = [];
-
-    MONTHS.forEach((m) =>
-      fresh.push(makeEmptyRow(m.id), makeEmptyRow(m.id)),
-    );
-
+    MONTHS.forEach((m) => fresh.push(makeEmptyRow(m.id), makeEmptyRow(m.id)));
     setDataRows(fresh);
-  };
-
-  const sumOf = (rows: any[], col: string) =>
-    rows.reduce((acc, row) => acc + (Number(row[col]) || 0), 0);
-
-  const monthTotals = (id: number) => {
-    const cur = rowsOfMonth(id);
-    const before = dataRows.filter((r) => r.monthId < id);
-    const cum = dataRows.filter((r) => r.monthId <= id);
-
-    return {
-      current: (c: string) => sumOf(cur, c),
-      before: (c: string) => sumOf(before, c),
-      cumulative: (c: string) => sumOf(cum, c),
-    };
   };
 
   const handleImportClick = () => fileInputRef.current?.click();
 
-  const handleImportFile = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     e.target.value = "";
 
     try {
       const imported = await importUsageInWorker(file, importMonthId);
-
       if (!imported.length) {
-        toast.error(
-          "لم يتم العثور على صفوف استخدامات صالحة في ملف Excel",
-        );
+        toast.error("لم يتم العثور على صفوف استخدامات صالحة في ملف Excel");
         return;
       }
 
-      const importedMonths = new Set(
-        imported.map((row: any) => row.monthId),
-      );
-
+      const importedMonths = new Set(imported.map((row: any) => row.monthId));
       setDataRows((prev) => [
         ...prev.filter((row) => !importedMonths.has(row.monthId)),
         ...imported,
       ]);
 
-      toast.success(
-        `تم استيراد ${imported.length} صف إلى ${importedMonths.size} شهر`,
-      );
+      toast.success(`تم استيراد ${imported.length} صف إلى ${importedMonths.size} شهر`);
     } catch (error) {
       console.error("[Excel] Usage import failed", error);
-
-      toast.error(
-        "تعذّر قراءة الملف. تأكد أنه ملف Excel صالح أو صادر من هذا الجدول.",
-      );
+      toast.error("تعذّر قراءة الملف. تأكد أنه ملف Excel صالح أو صادر من هذا الجدول.");
     }
   };
 
   const border = {
-    top: {
-      style: "thin" as const,
-      color: { argb: "FF203F4E" },
-    },
-    left: {
-      style: "thin" as const,
-      color: { argb: "FF203F4E" },
-    },
-    bottom: {
-      style: "thin" as const,
-      color: { argb: "FF203F4E" },
-    },
-    right: {
-      style: "thin" as const,
-      color: { argb: "FF203F4E" },
-    },
+    top: { style: "thin" as const, color: { argb: "FF203F4E" } },
+    left: { style: "thin" as const, color: { argb: "FF203F4E" } },
+    bottom: { style: "thin" as const, color: { argb: "FF203F4E" } },
+    right: { style: "thin" as const, color: { argb: "FF203F4E" } },
   };
 
   const handleExportExcel = async () => {
@@ -637,53 +547,23 @@ const AppTabs: React.FC = () => {
 
     const disp = wb.addWorksheet("عرض", {
       views: [{ rightToLeft: true, state: "frozen", ySplit: 2 }],
-      properties: {
-        defaultRowHeight: 20,
-        tabColor: { argb: ARGB.DARK },
-      },
+      properties: { defaultRowHeight: 20, tabColor: { argb: ARGB.DARK } },
       pageSetup: {
         orientation: "landscape",
         paperSize: 9,
         fitToPage: true,
         fitToWidth: 1,
         fitToHeight: 0,
-        horizontalDpi: 300,
-        verticalDpi: 300,
-        margins: {
-          left: 0.25,
-          right: 0.25,
-          top: 0.35,
-          bottom: 0.35,
-          header: 0.15,
-          footer: 0.15,
-        },
+        margins: { left: 0.25, right: 0.25, top: 0.35, bottom: 0.35, header: 0.15, footer: 0.15 },
       },
     });
 
     disp.mergeCells(1, 1, 1, allCols.length);
-
     const title = disp.getCell(1, 1);
     title.value = "سجل مفردات الاستخدامات والنفقات العامة";
-
-    title.font = {
-      bold: true,
-      size: 14,
-      color: { argb: "FFEAF8FA" },
-    };
-
-    title.fill = {
-      type: "pattern",
-      pattern: "solid",
-      fgColor: { argb: ARGB.DARK },
-    };
-
-    title.alignment = {
-      horizontal: "center",
-      vertical: "middle",
-      wrapText: true,
-      shrinkToFit: true,
-    };
-
+    title.font = { bold: true, size: 14, color: { argb: "FFEAF8FA" } };
+    title.fill = { type: "pattern", pattern: "solid", fgColor: { argb: ARGB.DARK } };
+    title.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
     disp.getRow(1).height = 28;
 
     const hdr = disp.getRow(2);
@@ -691,334 +571,77 @@ const AppTabs: React.FC = () => {
 
     allCols.forEach((c, i) => {
       const cell = hdr.getCell(i + 1);
-
       cell.value = c;
-
-      cell.font = {
-        bold: true,
-        size: 9,
-        color: { argb: "FFEAF8FA" },
-      };
-
-      cell.alignment = {
-        horizontal: "center",
-        vertical: "middle",
-        wrapText: true,
-        shrinkToFit: true,
-      };
-
+      cell.font = { bold: true, size: 9, color: { argb: "FFEAF8FA" } };
+      cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
       cell.border = border;
-
-      const argb = colArgb(c) || ARGB.DARK;
-
-      cell.fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb },
-      };
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: colArgb(c) || ARGB.DARK } };
     });
 
-    disp.getColumn(1).width = 12;
-
-    allCols.forEach((_, i) =>
-      (disp.getColumn(i + 1).width = i < 4 ? 14 : 11),
-    );
-
     let r = 3;
-
     MONTHS.forEach((m) => {
-      const rows = rowsOfMonth(m.id);
-      const t = monthTotals(m.id);
+      const rows = rowsByMonth[m.id] || [];
+      const t = computedTotals[m.id];
 
       disp.mergeCells(r, 1, r, allCols.length);
-
       const mc = disp.getCell(r, 1);
       mc.value = `شهر ${m.name}`;
-
-      mc.font = {
-        bold: true,
-        color: { argb: ARGB.GOLD },
-      };
-
-      mc.fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: ARGB.DARK },
-      };
-
-      mc.alignment = {
-        horizontal: "right",
-        vertical: "middle",
-        wrapText: true,
-        shrinkToFit: true,
-      };
-
+      mc.font = { bold: true, color: { argb: ARGB.GOLD } };
+      mc.fill = { type: "pattern", pattern: "solid", fgColor: { argb: ARGB.DARK } };
+      mc.alignment = { horizontal: "right", vertical: "middle" };
       r++;
 
       rows.forEach((row) => {
         allCols.forEach((c, i) => {
           const cell = disp.getCell(r, i + 1);
           const v = row[c];
-
-          cell.value =
-            typeof v === "number"
-              ? v
-              : v === ""
-                ? ""
-                : isNaN(Number(v))
-                  ? v
-                  : Number(v);
-
-          cell.alignment = {
-            horizontal: "center",
-            vertical: "middle",
-            wrapText: true,
-            shrinkToFit: true,
-          };
-
-          cell.font = {
-            size: 9,
-            bold: isFormulaCol(c),
-            color: { argb: "FFEAF8FA" },
-          };
-
+          cell.value = typeof v === "number" ? v : v === "" ? "" : isNaN(Number(v)) ? v : Number(v);
+          cell.alignment = { horizontal: "center", vertical: "middle" };
+          cell.font = { size: 9, bold: isFormulaCol(c), color: { argb: "FFEAF8FA" } };
           cell.border = border;
-
-          const argb = colArgb(c) || "FF0E2937";
-
-          cell.fill = {
-            type: "pattern",
-            pattern: "solid",
-            fgColor: { argb },
-          };
+          cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: colArgb(c) || "FF0E2937" } };
         });
-
         r++;
       });
 
-      const rowCur = (
-        label: string,
-        getter: (c: string) => number,
-        fillArgb: string,
-        fontArgb: string,
-      ) => {
+      const rowCur = (label: string, getter: (c: string) => number, fillArgb: string, fontArgb: string) => {
         disp.mergeCells(r, 1, r, 4);
-
         const lc = disp.getCell(r, 1);
-
         lc.value = label;
-        lc.font = {
-          bold: true,
-          color: { argb: fontArgb },
-        };
-
-        lc.alignment = {
-          horizontal: "right",
-          vertical: "middle",
-          wrapText: true,
-          shrinkToFit: true,
-        };
-
-        lc.fill = {
-          type: "pattern",
-          pattern: "solid",
-          fgColor: { argb: fillArgb },
-        };
+        lc.font = { bold: true, color: { argb: fontArgb } };
+        lc.alignment = { horizontal: "right", vertical: "middle" };
+        lc.fill = { type: "pattern", pattern: "solid", fgColor: { argb: fillArgb } };
 
         dataColumnsOrder.forEach((c, i) => {
           const cell = disp.getCell(r, 5 + i);
-          const val = getter(c);
-
-          cell.value = val || "";
-
-          cell.font = {
-            bold: true,
-            size: 9,
-            color: { argb: fontArgb },
-          };
-
-          cell.alignment = {
-            horizontal: "center",
-            vertical: "middle",
-            wrapText: true,
-            shrinkToFit: true,
-          };
-
+          cell.value = getter(c) || "";
+          cell.font = { bold: true, size: 9, color: { argb: fontArgb } };
+          cell.alignment = { horizontal: "center", vertical: "middle" };
           cell.border = border;
-
-          cell.fill = {
-            type: "pattern",
-            pattern: "solid",
-            fgColor: { argb: fillArgb },
-          };
+          cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: fillArgb } };
         });
-
         r++;
       };
 
-      rowCur(
-        `إجمالي شهر ${m.name}`,
-        t.current,
-        ARGB.CUR,
-        "FFCFF5F3",
-      );
-
-      rowCur(
-        `إجمالي الأشهر السابقة (قبل ${m.name})`,
-        t.before,
-        ARGB.PREV,
-        "FF8FB3C2",
-      );
-
-      rowCur(
-        `الإجمالي العام (حتى ${m.name})`,
-        t.cumulative,
-        ARGB.DARK,
-        ARGB.GOLD,
-      );
+      rowCur(`إجمالي شهر ${m.name}`, t.current, ARGB.CUR, "FFCFF5F3");
+      rowCur(`إجمالي الأشهر السابقة (قبل ${m.name})`, t.before, ARGB.PREV, "FF8FB3C2");
+      rowCur(`الإجمالي العام (حتى ${m.name})`, t.cumulative, ARGB.DARK, ARGB.GOLD);
     });
 
     for (let col = 1; col <= allCols.length; col++) {
-      let maxLength = allCols[col - 1].length;
-
-      for (let row = 1; row <= disp.rowCount; row++) {
-        const value = disp.getCell(row, col).value;
-
-        maxLength = Math.max(
-          maxLength,
-          String(value ?? "").length,
-        );
-      }
-
-      disp.getColumn(col).width = Math.min(
-        22,
-        Math.max(col <= 4 ? 12 : 9, maxLength + 2),
-      );
+      disp.getColumn(col).width = col <= 4 ? 14 : 10;
     }
 
-    disp.pageSetup.printArea = `A1:${XLSX.utils.encode_col(
-      Math.min(allCols.length, 16384) - 1,
-    )}${Math.max(1, disp.rowCount)}`;
-
+    disp.pageSetup.printArea = `A1:${getColumnLetter(allCols.length)}${Math.max(1, disp.rowCount)}`;
     disp.pageSetup.printTitlesRow = "2:2";
 
-    disp.headerFooter = {
-      oddFooter:
-        '&L&"Arial"المجلس اليمني للاختصاصات الطبية&C&"Arial"صفحة &P من &N&R&"Arial"فرع صعدة',
-    };
-
-    const flat = wb.addWorksheet("بيانات", {
-      views: [{ rightToLeft: true }],
-    });
-
-    flat.addRow(["monthId", ...allCols]);
-    flat.getRow(1).height = 34;
-
-    flat.getRow(1).eachCell(
-      { includeEmpty: true },
-      (cell: any) => {
-        cell.font = {
-          bold: true,
-          size: 9,
-          color: { argb: "FFEAF8FA" },
-        };
-
-        cell.fill = {
-          type: "pattern",
-          pattern: "solid",
-          fgColor: { argb: ARGB.DARK },
-        };
-
-        cell.alignment = {
-          horizontal: "center",
-          vertical: "middle",
-          wrapText: true,
-          shrinkToFit: true,
-        };
-
-        cell.border = border;
-      },
-    );
-
-    MONTHS.forEach((m) =>
-      rowsOfMonth(m.id).forEach((row) =>
-        flat.addRow([m.id, ...allCols.map((c) => row[c])]),
-      ),
-    );
-
-    flat.eachRow(
-      { includeEmpty: true },
-      (row: any) => {
-        row.eachCell(
-          { includeEmpty: true },
-          (cell: any) => {
-            cell.alignment = {
-              horizontal: "center",
-              vertical: "middle",
-              wrapText: true,
-              shrinkToFit: true,
-            };
-
-            cell.border = border;
-          },
-        );
-      },
-    );
-
-    allCols.forEach((col, index) => {
-      const maxLength = Math.max(
-        col.length,
-        ...flat
-          .getColumn(index + 2)
-          .values.slice(1)
-          .map((value: any) => String(value ?? "").length),
-      );
-
-      flat.getColumn(index + 2).width = Math.min(
-        22,
-        Math.max(9, maxLength + 2),
-      );
-    });
-
-    flat.pageSetup = {
-      orientation: "landscape",
-      paperSize: 9,
-      fitToPage: true,
-      fitToWidth: 1,
-      fitToHeight: 0,
-      margins: {
-        left: 0.25,
-        right: 0.25,
-        top: 0.35,
-        bottom: 0.35,
-        header: 0.15,
-        footer: 0.15,
-      },
-    };
-
-    flat.pageSetup.printArea = `A1:${XLSX.utils.encode_col(
-      Math.min(allCols.length + 1, 16384) - 1,
-    )}${Math.max(1, flat.rowCount)}`;
-
-    flat.pageSetup.printTitlesRow = "1:1";
-
-    flat.headerFooter = {
-      oddFooter:
-        '&L&"Arial"المجلس اليمني للاختصاصات الطبية&C&"Arial"صفحة &P من &N&R&"Arial"فرع صعدة',
-    };
-
     const buf = await wb.xlsx.writeBuffer();
-
     const blob = new Blob([buf], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
     const fileName = `الاستخدامات-${reportDate}.xlsx`;
-
-    const internalUri = await saveBlobToInternalStorage(
-      blob,
-      fileName,
-    );
+    const internalUri = await saveBlobToInternalStorage(blob, fileName);
 
     if (internalUri) {
       toast.success("تم حفظ ملف Excel داخل تخزين التطبيق");
@@ -1027,91 +650,47 @@ const AppTabs: React.FC = () => {
 
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-
     a.href = url;
     a.download = fileName;
     a.click();
-
     URL.revokeObjectURL(url);
   };
 
   const buildAllMonthsHtml = () => {
-    const numCell = (v: number) =>
-      v > 0 ? formatNumberEn(v) : "-";
-
+    const numCell = (v: number) => (v > 0 ? formatNumberEn(v) : "-");
     let body = "";
 
     MONTHS.forEach((m) => {
-      const rows = rowsOfMonth(m.id);
-      const t = monthTotals(m.id);
+      const rows = rowsByMonth[m.id] || [];
+      const t = computedTotals[m.id];
 
       body += `<tr class="month"><td colspan="${TOTAL_COLS}">شهر ${m.name}</td></tr>`;
 
       rows.forEach((row) => {
         body += "<tr>";
-
         mainHeaders.forEach((h) => {
-          const cls =
-            h === "التاريخ"
-              ? "date-cell"
-              : h === "رقم الاستمارة"
-                ? "num numeric-cell"
-                : "text-cell";
-
+          const cls = h === "التاريخ" ? "date-cell" : h === "رقم الاستمارة" ? "num numeric-cell" : "text-cell";
           body += `<td class="${cls}">${row[h] ?? ""}</td>`;
         });
 
         dataColumnsOrder.forEach((c) => {
-          const cls = `num numeric-cell${
-            isFormulaCol(c) ? " formula" : ""
-          }`;
-
-          body += `<td class="${cls}">${
-            row[c] === "" || row[c] === undefined
-              ? ""
-              : formatNumberEn(row[c])
-          }</td>`;
+          const cls = `num numeric-cell${isFormulaCol(c) ? " formula" : ""}`;
+          body += `<td class="${cls}">${row[c] === "" || row[c] === undefined ? "" : formatNumberEn(row[c])}</td>`;
         });
 
         body += `<td class="text-cell"></td></tr>`;
       });
 
-      const totalRow = (
-        label: string,
-        cls: string,
-        getter: (c: string) => number,
-      ) => {
+      const totalRow = (label: string, cls: string, getter: (c: string) => number) => {
         let tr = `<tr class="${cls}"><td class="text-cell" colspan="4">${label}</td>`;
-
-        dataColumnsOrder.forEach(
-          (c) =>
-            (tr += `<td class="num numeric-cell">${numCell(
-              getter(c),
-            )}</td>`),
-        );
-
+        dataColumnsOrder.forEach((c) => (tr += `<td class="num numeric-cell">${numCell(getter(c))}</td>`));
         tr += `<td class="text-cell"></td></tr>`;
-
         return tr;
       };
 
-      body += totalRow(
-        `إجمالي شهر ${m.name}`,
-        "t-cur",
-        t.current,
-      );
-
-      body += totalRow(
-        `إجمالي الأشهر السابقة (قبل ${m.name})`,
-        "t-prev",
-        t.before,
-      );
-
-      body += totalRow(
-        `الإجمالي العام (حتى ${m.name})`,
-        "t-cum",
-        t.cumulative,
-      );
+      body += totalRow(`إجمالي شهر ${m.name}`, "t-cur", t.current);
+      body += totalRow(`إجمالي الأشهر السابقة (قبل ${m.name})`, "t-prev", t.before);
+      body += totalRow(`الإجمالي العام (حتى ${m.name})`, "t-cum", t.cumulative);
     });
 
     return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
@@ -1122,28 +701,25 @@ const AppTabs: React.FC = () => {
       @page { size:A4 landscape; margin:3mm; }
       * { box-sizing:border-box; }
       html, body { margin:0; padding:0; }
-      body { font-family:'Cairo','Tajawal','Segoe UI',Tahoma,Arial,sans-serif; direction:rtl; color:#0c2130 !important; padding:0 1px; width:100%; font-weight:700 !important; }
-      .report-letterhead-block { display:flex; width:100%; max-width:none; height:30mm; min-height:30mm; max-height:30mm; overflow:hidden; align-items:stretch; justify-content:center; margin:0 0 3mm; page-break-before:avoid; page-break-after:avoid; }
-      .report-letterhead-image { display:block; width:100% !important; max-width:none !important; height:100% !important; max-height:100% !important; object-fit:fill !important; object-position:top; margin:0 !important; }
+      body { font-family:'Cairo','Tajawal',sans-serif; direction:rtl; color:#0c2130 !important; padding:0 1px; width:100%; font-weight:700 !important; }
+      .report-letterhead-block { display:flex; width:100%; height:30mm; overflow:hidden; justify-content:center; margin:0 0 3mm; }
+      .report-letterhead-image { width:100% !important; height:100% !important; object-fit:fill !important; }
       h2 { text-align:center; color:#0c2130 !important; margin:0 0 3mm; font-weight:800; }
       .report-date { text-align:center; color:#153b52 !important; margin:0 0 5px; font-size:10px; font-weight:700; }
-      table { width:100%; max-width:100%; min-width:0; border-collapse:collapse; table-layout:auto !important; font-size:clamp(14px,1.05vw,16px); }
-      th, td { border:1px solid #284f61; padding:2px 3px !important; text-align:center; vertical-align:middle; white-space:normal; overflow:visible; overflow-wrap:break-word; word-break:normal; hyphens:none; line-height:1.15; font-size:clamp(14px,1.05vw,16px); color:#0c2130 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      .num, .numeric-cell, .date-cell { width:1%; min-width:0; white-space:nowrap !important; overflow:visible; overflow-wrap:normal; word-break:keep-all; hyphens:none; font-family:'Times New Roman',Times,serif !important; font-size:clamp(14px,1vw,16px) !important; font-variant-numeric:tabular-nums; direction:ltr; }
-      .text-cell { width:auto; white-space:normal; overflow-wrap:break-word; word-break:normal; }
-      .report-letterhead-cell { padding:0 !important; border:0 !important; width:100%; }
-      thead th { background:#102f42; font-weight:700; color:#eaf8fa !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      thead .c-total { background:${COLORS.TOTAL_ALL}; color:#eaf8fa !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      thead .c-bab   { background:${COLORS.BAB_TOTAL}; color:#eaf8fa !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      thead .c-fasl  { background:${COLORS.FASL}; color:#eaf8fa !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      thead .c-band  { background:${COLORS.BAND}; color:#eaf8fa !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      td.formula { background:#143748; font-weight:700; color:#cff5f3 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      tr.month td { background:#0a1b28; color:#df9d54 !important; font-weight:800 !important; text-align:center; padding:0 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      tr.t-cur td  { background:#143748; color:#cff5f3 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      tr.t-prev td { background:#102a38; color:#8fb3c2 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      tr.t-cum td  { background:#0a1b28; color:#df9d54 !important; font-weight:800 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      tr.t-cur td:first-child, tr.t-prev td:first-child, tr.t-cum td:first-child { text-align:center; padding-right:4px; }
-      @media print { @page { size:A4 landscape; margin:3mm; } }
+      table { width:100%; border-collapse:collapse; table-layout:auto !important; font-size:clamp(14px,1.05vw,16px); }
+      th, td { border:1px solid #284f61; padding:2px 3px !important; text-align:center; vertical-align:middle; line-height:1.15; font-size:clamp(14px,1.05vw,16px); color:#0c2130 !important; font-weight:700 !important; }
+      .num, .numeric-cell, .date-cell { width:1%; white-space:nowrap !important; font-family:'Times New Roman',Times,serif !important; font-size:clamp(14px,1vw,16px) !important; font-variant-numeric:tabular-nums; direction:ltr; }
+      .text-cell { width:auto; white-space:normal; overflow-wrap:break-word; }
+      thead th { background:#102f42; font-weight:700; color:#eaf8fa !important; }
+      thead .c-total { background:${COLORS.TOTAL_ALL}; color:#eaf8fa !important; }
+      thead .c-bab   { background:${COLORS.BAB_TOTAL}; color:#eaf8fa !important; }
+      thead .c-fasl  { background:${COLORS.FASL}; color:#eaf8fa !important; }
+      thead .c-band  { background:${COLORS.BAND}; color:#eaf8fa !important; }
+      td.formula { background:#143748; font-weight:700; color:#cff5f3 !important; }
+      tr.month td { background:#0a1b28; color:#df9d54 !important; font-weight:800 !important; text-align:center; }
+      tr.t-cur td  { background:#143748; color:#cff5f3 !important; font-weight:700 !important; }
+      tr.t-prev td { background:#102a38; color:#8fb3c2 !important; font-weight:700 !important; }
+      tr.t-cum td  { background:#0a1b28; color:#df9d54 !important; font-weight:800 !important; }
       ${runningLetterheadCss}
     </style></head><body>
     ${reportLetterheadHtml()}
@@ -1156,140 +732,63 @@ const AppTabs: React.FC = () => {
   const handlePrint = () => {
     const opened = printReportHtml(
       buildAllMonthsHtml(),
-      `سجل مفردات الاستخدامات والنفقات العامة - ${reportDateLabel}`,
+      `سجل مفردات الاستخدامات والنفقات العامة - ${reportDateLabel}`
     );
-
     if (!opened) {
-      toast.error(
-        "تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة",
-      );
+      toast.error("تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة");
     }
-  };
-
-  const handlePdf = () => {
-    handlePrint();
   };
 
   return (
     <div
       className="sheet-tabs-ui apk-tabs-ui w-full space-y-4 p-2 sm:p-3 font-tajawal"
       style={{
-        background:
-          "radial-gradient(circle at top right, #102f42 0%, #071622 42%, #040c14 100%)",
+        background: "radial-gradient(circle at top right, #102f42 0%, #071622 42%, #040c14 100%)",
         color: UI.text,
       }}
       dir="rtl"
     >
       <style>{`
-.usage-table-shell {
-  scrollbar-color: #0d9488 #f1f5f9;
-}
-
-.usage-table {
-  font-family: "Tajawal", "Noto Sans Arabic", sans-serif;
-}
-
-.usage-table th {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  color: #ffffff;
-  border: 1px solid #94a3b8;
-  padding: 10px 8px;
-  text-align: center;
-  vertical-align: middle;
-  white-space: nowrap;
-  font-size: 12px;
-  font-weight: 900;
-  line-height: 1.25;
-  background: linear-gradient(35deg, #1e293b 50%, #0f172a 50%);
-}
-
-.usage-table td {
-  border: 1px solid #cbd5e1;
-  padding: 0;
-  vertical-align: middle;
-}
-
-.usage-table tbody tr {
-  background: #ffffff;
-  transition: background .15s ease;
-}
-
-.usage-table tbody tr:nth-child(even) {
-  background: #f8fafc;
-}
-
-.usage-table tbody tr:hover {
-  background: #e0f2fe;
-}
-
-/* صف الشهر الفاتح المتدرج */
-.usage-table .month-row td {
-  background: linear-gradient(90deg, #e0f2fe 0%, #f0fdf4 50%, #fef2f2 100%);
-  color: #0369a1;
-  border-color: #cbd5e1;
-  font-weight: 900;
-  padding: 8px 12px;
-  box-shadow: inset 0 2px 0 #0d9488;
-}
-
-.usage-table .month-row button {
-  color: #ffffff;
-  background: linear-gradient(100deg, #0d9488, #06b6d4);
-  border: none;
-  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.25);
-}
-
-.usage-table .month-row button:hover {
-  opacity: 0.9;
-}
-
-/* صفوف الإجماليات */
-.usage-table .total-current td {
-  background: #ccfbf1;
-  color: #0f766e;
-  font-weight: 900;
-}
-
-.usage-table .total-previous td {
-  background: #f1f5f9;
-  color: #475569;
-  font-weight: 900;
-}
-
-.usage-table .total-cumulative td {
-  background: linear-gradient(90deg, #fef3c7 0%, #fef9c3 100%);
-  color: #92400e;
-  font-weight: 900;
-}
-
-.usage-table .formula-col {
-  background: rgba(204, 251, 241, 0.3);
-}
-
-.usage-table .formula-col > div {
-  color: #0f766e;
-  font-weight: 800;
-}
-
-.usage-table .delete-btn {
-  color: #e11d48;
-  transition: all .15s ease;
-}
-
-.usage-table .delete-btn:hover {
-  color: #ffffff;
-  background: #be123c;
-}
-`}</style>
+        .usage-header { color: ${UI.text}; }
+        .usage-table-shell { scrollbar-color: ${UI.teal} ${UI.navy}; }
+        .usage-table { font-family: "Tajawal", "Noto Sans Arabic", sans-serif; }
+        .usage-table th {
+          position: sticky; top: 0; z-index: 20; color: ${UI.text};
+          border: 1px solid ${UI.grid}; padding: 10px 8px; text-align: center;
+          vertical-align: middle; white-space: nowrap; font-size: 12px; font-weight: 900;
+          line-height: 1.25; background: ${UI.surface2};
+        }
+        .usage-table td { border: 1px solid ${UI.grid}; padding: 0; vertical-align: middle; }
+        .usage-table tbody tr { background: ${UI.row}; transition: background .15s ease; }
+        .usage-table tbody tr:nth-child(even) { background: ${UI.rowAlt}; }
+        .usage-table tbody tr:hover { background: #143748; }
+        .usage-table .month-row td {
+          background: linear-gradient(90deg, #0a1b28, #145362); color: ${UI.cyanText};
+          border-color: #286372; font-weight: 900; padding: 9px 10px;
+          box-shadow: inset 0 2px 0 rgba(223,157,84,.75), inset 0 -1px 0 rgba(30,179,176,.35);
+        }
+        .usage-table .month-row button {
+          color: #040c14; background: ${UI.bronze}; border: 1px solid #df9d54;
+          box-shadow: 0 4px 12px rgba(0,0,0,.28);
+        }
+        .usage-table .month-row button:hover { background: ${UI.bronzeLight}; }
+        .usage-table .total-current td { background: #143748; color: #cff5f3; font-weight: 900; }
+        .usage-table .total-previous td { background: #102a38; color: #8fb3c2; font-weight: 900; }
+        .usage-table .total-cumulative td {
+          background: linear-gradient(90deg, #0a1b28, #194650); color: #df9d54; font-weight: 900;
+          box-shadow: inset 0 1px 0 rgba(223,157,84,.3);
+        }
+        .usage-table .formula-col { background: rgba(30,179,176,.08); }
+        .usage-table .action-cell { background: rgba(196,70,112,.08); }
+        .usage-table .delete-btn { color: #ff9bbb; transition: all .15s ease; }
+        .usage-table .delete-btn:hover { color: #eaf8fa; background: rgba(196,70,112,.25); }
+      `}</style>
 
       {/* شريط العنوان والإجراءات */}
       <div
         className="rounded-2xl border p-3 sm:p-4 shadow-2xl"
         style={{
-          background:
-            "linear-gradient(135deg, rgba(12,33,48,.98), rgba(16,47,66,.98))",
+          background: "linear-gradient(135deg, rgba(12,33,48,.98), rgba(16,47,66,.98))",
           borderColor: "#285466",
         }}
       >
@@ -1298,8 +797,7 @@ const AppTabs: React.FC = () => {
             <span
               className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border"
               style={{
-                background:
-                  "linear-gradient(135deg, #c58538, #df9d54)",
+                background: "linear-gradient(135deg, #c58538, #df9d54)",
                 borderColor: "#e8b272",
                 color: "#051622",
                 boxShadow: "0 7px 18px rgba(0,0,0,.32)",
@@ -1309,47 +807,26 @@ const AppTabs: React.FC = () => {
             </span>
 
             <div className="min-w-0">
-              <h2
-                className="usage-header truncate text-[16px] sm:text-[18px] font-black tracking-tight"
-              >
+              <h2 className="usage-header truncate text-[16px] sm:text-[18px] font-black tracking-tight">
                 سجل مفردات الاستخدامات
               </h2>
-
-              <p
-                className="truncate text-[12px] sm:text-[13px] font-bold mt-0.5"
-                style={{ color: UI.muted }}
-              >
+              <p className="truncate text-[12px] sm:text-[13px] font-bold mt-0.5" style={{ color: UI.muted }}>
                 النفقات العامة شهراً بشهر
               </p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <div
-              className="rounded-xl border px-2.5 py-2"
-              style={{
-                background: UI.surface,
-                borderColor: "#285466",
-              }}
-            >
+            <div className="rounded-xl border px-2.5 py-2" style={{ background: UI.surface, borderColor: "#285466" }}>
               <select
                 value={importMonthId}
-                onChange={(e) =>
-                  setImportMonthId(Number(e.target.value))
-                }
+                onChange={(e) => setImportMonthId(Number(e.target.value))}
                 className="bg-transparent text-[13px] font-bold outline-none"
                 style={{ color: UI.text }}
-                title="الشهر الافتراضي للاستيراد (إن لم يحتوِ الملف عمود الشهر)"
+                title="الشهر الافتراضي للاستيراد"
               >
                 {MONTHS.map((m) => (
-                  <option
-                    key={m.id}
-                    value={m.id}
-                    style={{
-                      background: "#0c2130",
-                      color: "#eaf8fa",
-                    }}
-                  >
+                  <option key={m.id} value={m.id} style={{ background: "#0c2130", color: "#eaf8fa" }}>
                     {m.name}
                   </option>
                 ))}
@@ -1360,32 +837,11 @@ const AppTabs: React.FC = () => {
               <WebActionMenu
                 label="إجراءات سجل الاستخدامات"
                 actions={[
-                  {
-                    label: "استيراد Excel",
-                    icon: Upload,
-                    onSelect: handleImportClick,
-                  },
-                  {
-                    label: "تصدير Excel",
-                    icon: Download,
-                    onSelect: handleExportExcel,
-                  },
-                  {
-                    label: "تحويل PDF",
-                    icon: FileText,
-                    onSelect: handlePdf,
-                  },
-                  {
-                    label: "طباعة",
-                    icon: Printer,
-                    onSelect: handlePrint,
-                  },
-                  {
-                    label: "مسح الكل",
-                    icon: Eraser,
-                    onSelect: handleClearAll,
-                    destructive: true,
-                  },
+                  { label: "استيراد Excel", icon: Upload, onSelect: handleImportClick },
+                  { label: "تصدير Excel", icon: Download, onSelect: handleExportExcel },
+                  { label: "تحويل PDF", icon: FileText, onSelect: handlePrint },
+                  { label: "طباعة", icon: Printer, onSelect: handlePrint },
+                  { label: "مسح الكل", icon: Eraser, onSelect: handleClearAll, destructive: true },
                 ]}
               />
             </div>
@@ -1393,12 +849,8 @@ const AppTabs: React.FC = () => {
             <div className="apk-only-actions flex flex-wrap items-center gap-2">
               <button
                 onClick={handleImportClick}
-                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98] transition-transform"
-                style={{
-                  background: UI.tealDark,
-                  color: "#e2fbfb",
-                  border: `1px solid ${UI.teal}`,
-                }}
+                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98]"
+                style={{ background: UI.tealDark, color: "#e2fbfb", border: `1px solid ${UI.teal}` }}
               >
                 <Upload className="w-4 h-4" />
                 استيراد Excel
@@ -1406,25 +858,17 @@ const AppTabs: React.FC = () => {
 
               <button
                 onClick={handleExportExcel}
-                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98] transition-transform"
-                style={{
-                  background: UI.surface3,
-                  color: "#dbf9f8",
-                  border: "1px solid #285e6e",
-                }}
+                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98]"
+                style={{ background: UI.surface3, color: "#dbf9f8", border: "1px solid #285e6e" }}
               >
                 <Download className="w-4 h-4" />
                 تصدير Excel
               </button>
 
               <button
-                onClick={handlePdf}
-                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98] transition-transform"
-                style={{
-                  background: UI.bronze,
-                  color: "#08151f",
-                  border: "1px solid #dfa561",
-                }}
+                onClick={handlePrint}
+                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98]"
+                style={{ background: UI.bronze, color: "#08151f", border: "1px solid #dfa561" }}
               >
                 <FileText className="w-4 h-4" />
                 تحويل PDF
@@ -1432,12 +876,8 @@ const AppTabs: React.FC = () => {
 
               <button
                 onClick={handlePrint}
-                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98] transition-transform"
-                style={{
-                  background: UI.navy,
-                  color: "#eaf8fa",
-                  border: "1px solid #255365",
-                }}
+                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98]"
+                style={{ background: UI.navy, color: "#eaf8fa", border: "1px solid #255365" }}
               >
                 <Printer className="w-4 h-4" />
                 طباعة
@@ -1445,25 +885,15 @@ const AppTabs: React.FC = () => {
 
               <button
                 onClick={handleClearAll}
-                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98] transition-transform"
-                style={{
-                  background: UI.pinkDark,
-                  color: "#ffeff4",
-                  border: "1px solid #ce5f83",
-                }}
+                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98]"
+                style={{ background: UI.pinkDark, color: "#ffeff4", border: "1px solid #ce5f83" }}
               >
                 <Eraser className="w-4 h-4" />
                 مسح الكل
               </button>
             </div>
 
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".xlsx,.xls"
-              onChange={handleImportFile}
-              className="hidden"
-            />
+            <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleImportFile} className="hidden" />
           </div>
         </div>
       </div>
@@ -1471,39 +901,26 @@ const AppTabs: React.FC = () => {
       {/* الجدول الرئيسي */}
       <div
         className="usage-table-shell w-full overflow-auto rounded-2xl border shadow-2xl"
-        style={{
-          maxHeight: "70vh",
-          background: UI.page,
-          borderColor: "#285466",
-        }}
+        style={{ maxHeight: "70vh", background: UI.page, borderColor: "#285466" }}
       >
         <table className="usage-table w-auto table-auto border-collapse text-center">
-          <thead
-            className="sticky top-0 z-30"
-            dangerouslySetInnerHTML={{ __html: THEAD_HTML }}
-          />
+          <thead className="sticky top-0 z-30" dangerouslySetInnerHTML={{ __html: THEAD_HTML }} />
 
           <tbody>
             {MONTHS.map((m) => {
-              const rows = rowsOfMonth(m.id);
-              const t = monthTotals(m.id);
+              const rows = rowsByMonth[m.id] || [];
+              const t = computedTotals[m.id];
 
               return (
                 <React.Fragment key={m.id}>
                   {/* شريط الشهر */}
                   <tr className="month-row">
-                    <td
-                      colSpan={TOTAL_COLS}
-                      className="text-right"
-                    >
+                    <td colSpan={TOTAL_COLS} className="text-right">
                       <div className="flex flex-wrap items-center justify-between gap-2">
-                        <span className="font-black text-[13px] sm:text-[14px]">
-                          شهر {m.name}
-                        </span>
-
+                        <span className="font-black text-[13px] sm:text-[14px]">شهر {m.name}</span>
                         <button
                           onClick={() => handleAddRow(m.id)}
-                          className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] sm:text-xs font-black transition-all"
+                          className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] sm:text-xs font-black"
                         >
                           <Plus className="w-3.5 h-3.5" />
                           إضافة سطر
@@ -1516,46 +933,24 @@ const AppTabs: React.FC = () => {
                   {rows.map((row) => (
                     <tr key={row.id}>
                       {mainHeaders.map((col) => (
-                        <td
-                          key={col}
-                          className="bg-[#e0f2fe]"
-                        >
-                          <EditableCell
-                            rowId={row.id}
-                            field={col}
-                            value={row[col]}
-                            onCommit={updateCell}
-                          />
+                        <td key={col} className="bg-[#0e2735]">
+                          <EditableCell rowId={row.id} field={col} value={row[col]} onCommit={updateCell} />
                         </td>
                       ))}
 
                       {dataColumnsOrder.map((col) => {
                         const isFormula = isFormulaCol(col);
-
                         return (
-                          <td
-                            key={col}
-                            className={
-                              isFormula
-                                ? "formula-col"
-                                : "bg-transparent"
-                            }
-                          >
+                          <td key={col} className={isFormula ? "formula-col" : "bg-transparent"}>
                             {isFormula ? (
                               <FormulaCell value={row[col]} />
                             ) : (
-                              <EditableCell
-                                rowId={row.id}
-                                field={col}
-                                value={row[col]}
-                                onCommit={updateCell}
-                              />
+                              <EditableCell rowId={row.id} field={col} value={row[col]} onCommit={updateCell} />
                             )}
                           </td>
                         );
                       })}
 
-                      {/* زر الحذف */}
                       <td className="action-cell px-1.5">
                         <button
                           onClick={() => handleDeleteRow(row.id)}
@@ -1571,60 +966,42 @@ const AppTabs: React.FC = () => {
 
                   {/* إجمالي الشهر */}
                   <tr className="total-current">
-                    <td
-                      colSpan={4}
-                      className="border border-[#284f61] px-2 py-2 text-right text-[12px] font-black"
-                    >
+                    <td colSpan={4} className="border border-[#284f61] px-2 py-2 text-right text-[12px] font-black">
                       إجمالي شهر {m.name}
                     </td>
-
                     {dataColumnsOrder.map((c) => (
                       <td key={c} className="border border-[#284f61]">
                         <FormulaCell value={t.current(c)} />
                       </td>
                     ))}
-
                     <td className="border border-[#284f61]" />
                   </tr>
 
                   {/* إجمالي الأشهر السابقة */}
                   <tr className="total-previous">
-                    <td
-                      colSpan={4}
-                      className="border border-[#284f61] px-2 py-2 text-right text-[12px] font-black"
-                    >
+                    <td colSpan={4} className="border border-[#284f61] px-2 py-2 text-right text-[12px] font-black">
                       إجمالي الأشهر السابقة (قبل {m.name})
                     </td>
-
                     {dataColumnsOrder.map((c) => (
                       <td key={c} className="border border-[#284f61]">
                         <FormulaCell value={t.before(c)} />
                       </td>
                     ))}
-
                     <td className="border border-[#284f61]" />
                   </tr>
 
                   {/* الإجمالي التراكمي */}
                   <tr className="total-cumulative">
-                    <td
-                      colSpan={4}
-                      className="border border-[#284f61] px-2 py-2 text-right text-[12px] font-black"
-                    >
+                    <td colSpan={4} className="border border-[#284f61] px-2 py-2 text-right text-[12px] font-black">
                       الإجمالي العام (حتى {m.name})
                     </td>
-
                     {dataColumnsOrder.map((c) => (
                       <td key={c} className="border border-[#284f61]">
-                        <div
-                          className="px-1.5 py-1 text-[12px] font-black text-[#df9d54] font-mono"
-                          dir="ltr"
-                        >
+                        <div className="px-1.5 py-1 text-[12px] font-black text-[#df9d54] font-mono" dir="ltr">
                           {formatNumberEn(t.cumulative(c)) || "-"}
                         </div>
                       </td>
                     ))}
-
                     <td className="border border-[#284f61]" />
                   </tr>
                 </React.Fragment>
@@ -1634,7 +1011,6 @@ const AppTabs: React.FC = () => {
         </table>
       </div>
 
-      {/* شريط سفلي */}
       <div
         className="rounded-2xl border px-3 py-2.5 text-center text-[11px] sm:text-xs font-bold"
         style={{
@@ -1643,8 +1019,7 @@ const AppTabs: React.FC = () => {
           color: UI.muted,
         }}
       >
-        يتم حفظ بيانات السجل تلقائياً داخل التطبيق مع بقاء وظائف الاستيراد
-        والتصدير والطباعة كما هي.
+        يتم حفظ بيانات السجل تلقائياً داخل التطبيق مع بقاء وظائف الاستيراد والتصدير والطباعة كما هي.
       </div>
     </div>
   );
