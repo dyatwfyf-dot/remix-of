@@ -21,27 +21,27 @@ const mainHeaders = ["رقم الاستمارة", "كشف التسوية", "ال
 const STORAGE_KEY = "app-tabs-usages-v1";
 
 const UI = {
-  page: "#071622",
-  surface: "#0c2130",
-  surface2: "#102f42",
-  surface3: "#153b52",
-  navy: "#0a1b28",
-  navyLight: "#123246",
-  teal: "#148686",
-  tealDark: "#0e6768",
-  turquoise: "#1eb3b0",
-  bronze: "#c58538",
-  bronzeLight: "#df9d54",
-  pink: "#c44670",
-  pinkDark: "#a2355a",
-  cyanText: "#b2f0ee",
-  text: "#eaf8fa",
-  muted: "#8fb3c2",
-  grid: "#284f61",
-  row: "#0e2937",
-  rowAlt: "#0a202d",
-  formula: "#143748",
-  formulaText: "#cff5f3",
+  page: "#f8fafc",
+  surface: "#ffffff",
+  surface2: "#f1f5f9",
+  surface3: "#e2e8f0",
+  navy: "#1e293b",
+  navyLight: "#334155",
+  teal: "#0d9488",
+  tealDark: "#0f766e",
+  turquoise: "#14b8a6",
+  bronze: "#d97706",
+  bronzeLight: "#f59e0b",
+  pink: "#e11d48",
+  pinkDark: "#be123c",
+  cyanText: "#0f766e",
+  text: "#0f172a",
+  muted: "#64748b",
+  grid: "#cbd5e1",
+  row: "#ffffff",
+  rowAlt: "#f8fafc",
+  formula: "#f0fdfa",
+  formulaText: "#0f766e",
 };
 
 const COLORS = {
@@ -186,7 +186,7 @@ const recomputeRow = (row: any) => {
     "ادوات كتابية",
     "نشر واعلان",
     "اتصالات",
-    "مؤتمرات واحتفالات",
+    "مؤتمرات وااحتفالات",
     "نفقات النظافة",
     "اخرى",
     "نقل مهام",
@@ -272,11 +272,11 @@ const EditableCell: React.FC<{
         rounded-md border border-transparent
         bg-transparent px-1.5 py-1.5
         text-center text-[12px] sm:text-[13px]
-        font-semibold text-[#e8f8f9]
+        font-semibold text-[#0f172a]
         transition-all duration-150
-        placeholder:text-[#5a8090]
-        focus:border-[#1eb3b0] focus:bg-[#143748]
-        focus:outline-none focus:ring-2 focus:ring-[#1eb3b0]/35
+        placeholder:text-[#94a3b8]
+        focus:border-[#0d9488] focus:bg-[#f0fdfa]
+        focus:outline-none focus:ring-2 focus:ring-[#0d9488]/30
       "
     />
   );
@@ -289,7 +289,7 @@ const FormulaCell: React.FC<{ value: any }> = React.memo(({ value }) => (
     className="
       rounded-md px-1.5 py-1
       text-center text-[12px] sm:text-[13px]
-      font-black text-[#cff5f3]
+      font-black text-[#0f766e]
       font-mono tabular-nums
     "
     dir="ltr"
@@ -743,53 +743,53 @@ const AppTabs: React.FC = () => {
     <div
       className="sheet-tabs-ui apk-tabs-ui w-full space-y-4 p-2 sm:p-3 font-tajawal"
       style={{
-        background: "radial-gradient(circle at top right, #102f42 0%, #071622 42%, #040c14 100%)",
+        background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%)",
         color: UI.text,
       }}
       dir="rtl"
     >
       <style>{`
         .usage-header { color: ${UI.text}; }
-        .usage-table-shell { scrollbar-color: ${UI.teal} ${UI.navy}; }
+        .usage-table-shell { scrollbar-color: ${UI.teal} ${UI.surface3}; }
         .usage-table { font-family: "Tajawal", "Noto Sans Arabic", sans-serif; }
         .usage-table th {
-          position: sticky; top: 0; z-index: 20; color: ${UI.text};
+          position: sticky; top: 0; z-index: 20; color: #ffffff;
           border: 1px solid ${UI.grid}; padding: 10px 8px; text-align: center;
           vertical-align: middle; white-space: nowrap; font-size: 12px; font-weight: 900;
-          line-height: 1.25; background: ${UI.surface2};
+          line-height: 1.25; background: linear-gradient(180deg, #1e293b, #0f172a);
         }
         .usage-table td { border: 1px solid ${UI.grid}; padding: 0; vertical-align: middle; }
         .usage-table tbody tr { background: ${UI.row}; transition: background .15s ease; }
         .usage-table tbody tr:nth-child(even) { background: ${UI.rowAlt}; }
-        .usage-table tbody tr:hover { background: #143748; }
+        .usage-table tbody tr:hover { background: #f0fdfa; }
         .usage-table .month-row td {
-          background: linear-gradient(90deg, #0a1b28, #145362); color: ${UI.cyanText};
-          border-color: #286372; font-weight: 900; padding: 9px 10px;
-          box-shadow: inset 0 2px 0 rgba(223,157,84,.75), inset 0 -1px 0 rgba(30,179,176,.35);
+          background: linear-gradient(90deg, #38bdf8, #818cf8); color: #ffffff;
+          border-color: #93c5fd; font-weight: 900; padding: 9px 10px;
+          box-shadow: inset 0 2px 0 rgba(255,255,255,.6), inset 0 -1px 0 rgba(0,0,0,.1);
         }
         .usage-table .month-row button {
-          color: #040c14; background: ${UI.bronze}; border: 1px solid #df9d54;
-          box-shadow: 0 4px 12px rgba(0,0,0,.28);
+          color: #ffffff; background: linear-gradient(135deg, #0d9488, #0f766e); border: 1px solid #0f766e;
+          box-shadow: 0 4px 10px rgba(13,148,136,.25);
         }
-        .usage-table .month-row button:hover { background: ${UI.bronzeLight}; }
-        .usage-table .total-current td { background: #143748; color: #cff5f3; font-weight: 900; }
-        .usage-table .total-previous td { background: #102a38; color: #8fb3c2; font-weight: 900; }
+        .usage-table .month-row button:hover { background: linear-gradient(135deg, #14b8a6, #0d9488); }
+        .usage-table .total-current td { background: linear-gradient(90deg, #ccfbf1, #e0f2fe); color: #0f766e; font-weight: 900; }
+        .usage-table .total-previous td { background: linear-gradient(90deg, #f1f5f9, #e2e8f0); color: #475569; font-weight: 900; }
         .usage-table .total-cumulative td {
-          background: linear-gradient(90deg, #0a1b28, #194650); color: #df9d54; font-weight: 900;
-          box-shadow: inset 0 1px 0 rgba(223,157,84,.3);
+          background: linear-gradient(90deg, #fef3c7, #fde68a); color: #92400e; font-weight: 900;
+          box-shadow: inset 0 1px 0 rgba(217,119,6,.2);
         }
-        .usage-table .formula-col { background: rgba(30,179,176,.08); }
-        .usage-table .action-cell { background: rgba(196,70,112,.08); }
-        .usage-table .delete-btn { color: #ff9bbb; transition: all .15s ease; }
-        .usage-table .delete-btn:hover { color: #eaf8fa; background: rgba(196,70,112,.25); }
+        .usage-table .formula-col { background: rgba(13,148,136,.05); }
+        .usage-table .action-cell { background: rgba(225,29,72,.04); }
+        .usage-table .delete-btn { color: ${UI.pink}; transition: all .15s ease; }
+        .usage-table .delete-btn:hover { color: #ffffff; background: ${UI.pink}; }
       `}</style>
 
       {/* شريط العنوان والإجراءات */}
       <div
-        className="rounded-2xl border p-3 sm:p-4 shadow-2xl"
+        className="rounded-2xl border p-3 sm:p-4 shadow-xl"
         style={{
-          background: "linear-gradient(135deg, rgba(12,33,48,.98), rgba(16,47,66,.98))",
-          borderColor: "#285466",
+          background: "linear-gradient(135deg, #ffffff, #f8fafc)",
+          borderColor: "#e2e8f0",
         }}
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -797,10 +797,10 @@ const AppTabs: React.FC = () => {
             <span
               className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border"
               style={{
-                background: "linear-gradient(135deg, #c58538, #df9d54)",
-                borderColor: "#e8b272",
-                color: "#051622",
-                boxShadow: "0 7px 18px rgba(0,0,0,.32)",
+                background: "linear-gradient(135deg, #0d9488, #14b8a6)",
+                borderColor: "#2dd4bf",
+                color: "#ffffff",
+                boxShadow: "0 6px 16px rgba(13,148,136,.25)",
               }}
             >
               <FileSpreadsheet className="h-5 w-5" />
@@ -817,7 +817,7 @@ const AppTabs: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <div className="rounded-xl border px-2.5 py-2" style={{ background: UI.surface, borderColor: "#285466" }}>
+            <div className="rounded-xl border px-2.5 py-2 shadow-sm" style={{ background: "#ffffff", borderColor: "#cbd5e1" }}>
               <select
                 value={importMonthId}
                 onChange={(e) => setImportMonthId(Number(e.target.value))}
@@ -826,7 +826,7 @@ const AppTabs: React.FC = () => {
                 title="الشهر الافتراضي للاستيراد"
               >
                 {MONTHS.map((m) => (
-                  <option key={m.id} value={m.id} style={{ background: "#0c2130", color: "#eaf8fa" }}>
+                  <option key={m.id} value={m.id} style={{ background: "#ffffff", color: "#0f172a" }}>
                     {m.name}
                   </option>
                 ))}
@@ -849,8 +849,8 @@ const AppTabs: React.FC = () => {
             <div className="apk-only-actions flex flex-wrap items-center gap-2">
               <button
                 onClick={handleImportClick}
-                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98]"
-                style={{ background: UI.tealDark, color: "#e2fbfb", border: `1px solid ${UI.teal}` }}
+                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-md active:scale-[0.98]"
+                style={{ background: "linear-gradient(135deg, #0d9488, #0f766e)", color: "#ffffff", border: "1px solid #0f766e" }}
               >
                 <Upload className="w-4 h-4" />
                 استيراد Excel
@@ -858,8 +858,8 @@ const AppTabs: React.FC = () => {
 
               <button
                 onClick={handleExportExcel}
-                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98]"
-                style={{ background: UI.surface3, color: "#dbf9f8", border: "1px solid #285e6e" }}
+                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-md active:scale-[0.98]"
+                style={{ background: "linear-gradient(135deg, #0284c7, #0369a1)", color: "#ffffff", border: "1px solid #0284c7" }}
               >
                 <Download className="w-4 h-4" />
                 تصدير Excel
@@ -867,8 +867,8 @@ const AppTabs: React.FC = () => {
 
               <button
                 onClick={handlePrint}
-                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98]"
-                style={{ background: UI.bronze, color: "#08151f", border: "1px solid #dfa561" }}
+                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-md active:scale-[0.98]"
+                style={{ background: "linear-gradient(135deg, #d97706, #b45309)", color: "#ffffff", border: "1px solid #d97706" }}
               >
                 <FileText className="w-4 h-4" />
                 تحويل PDF
@@ -876,8 +876,8 @@ const AppTabs: React.FC = () => {
 
               <button
                 onClick={handlePrint}
-                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98]"
-                style={{ background: UI.navy, color: "#eaf8fa", border: "1px solid #255365" }}
+                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-md active:scale-[0.98]"
+                style={{ background: "linear-gradient(135deg, #475569, #334155)", color: "#ffffff", border: "1px solid #334155" }}
               >
                 <Printer className="w-4 h-4" />
                 طباعة
@@ -885,8 +885,8 @@ const AppTabs: React.FC = () => {
 
               <button
                 onClick={handleClearAll}
-                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-lg active:scale-[0.98]"
-                style={{ background: UI.pinkDark, color: "#ffeff4", border: "1px solid #ce5f83" }}
+                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-extrabold shadow-md active:scale-[0.98]"
+                style={{ background: "linear-gradient(135deg, #e11d48, #be123c)", color: "#ffffff", border: "1px solid #e11d48" }}
               >
                 <Eraser className="w-4 h-4" />
                 مسح الكل
@@ -900,8 +900,8 @@ const AppTabs: React.FC = () => {
 
       {/* الجدول الرئيسي */}
       <div
-        className="usage-table-shell w-full overflow-auto rounded-2xl border shadow-2xl"
-        style={{ maxHeight: "70vh", background: UI.page, borderColor: "#285466" }}
+        className="usage-table-shell w-full overflow-auto rounded-2xl border shadow-xl"
+        style={{ maxHeight: "70vh", background: "#ffffff", borderColor: "#cbd5e1" }}
       >
         <table className="usage-table w-auto table-auto border-collapse text-center">
           <thead className="sticky top-0 z-30" dangerouslySetInnerHTML={{ __html: THEAD_HTML }} />
@@ -920,7 +920,7 @@ const AppTabs: React.FC = () => {
                         <span className="font-black text-[13px] sm:text-[14px]">شهر {m.name}</span>
                         <button
                           onClick={() => handleAddRow(m.id)}
-                          className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] sm:text-xs font-black"
+                          className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] sm:text-xs font-black transition-all"
                         >
                           <Plus className="w-3.5 h-3.5" />
                           إضافة سطر
@@ -933,7 +933,7 @@ const AppTabs: React.FC = () => {
                   {rows.map((row) => (
                     <tr key={row.id}>
                       {mainHeaders.map((col) => (
-                        <td key={col} className="bg-[#0e2735]">
+                        <td key={col} className="bg-[#f8fafc]">
                           <EditableCell rowId={row.id} field={col} value={row[col]} onCommit={updateCell} />
                         </td>
                       ))}
@@ -966,43 +966,43 @@ const AppTabs: React.FC = () => {
 
                   {/* إجمالي الشهر */}
                   <tr className="total-current">
-                    <td colSpan={4} className="border border-[#284f61] px-2 py-2 text-right text-[12px] font-black">
+                    <td colSpan={4} className="border border-[#cbd5e1] px-2 py-2 text-right text-[12px] font-black">
                       إجمالي شهر {m.name}
                     </td>
                     {dataColumnsOrder.map((c) => (
-                      <td key={c} className="border border-[#284f61]">
+                      <td key={c} className="border border-[#cbd5e1]">
                         <FormulaCell value={t.current(c)} />
                       </td>
                     ))}
-                    <td className="border border-[#284f61]" />
+                    <td className="border border-[#cbd5e1]" />
                   </tr>
 
                   {/* إجمالي الأشهر السابقة */}
                   <tr className="total-previous">
-                    <td colSpan={4} className="border border-[#284f61] px-2 py-2 text-right text-[12px] font-black">
+                    <td colSpan={4} className="border border-[#cbd5e1] px-2 py-2 text-right text-[12px] font-black">
                       إجمالي الأشهر السابقة (قبل {m.name})
                     </td>
                     {dataColumnsOrder.map((c) => (
-                      <td key={c} className="border border-[#284f61]">
+                      <td key={c} className="border border-[#cbd5e1]">
                         <FormulaCell value={t.before(c)} />
                       </td>
                     ))}
-                    <td className="border border-[#284f61]" />
+                    <td className="border border-[#cbd5e1]" />
                   </tr>
 
                   {/* الإجمالي التراكمي */}
                   <tr className="total-cumulative">
-                    <td colSpan={4} className="border border-[#284f61] px-2 py-2 text-right text-[12px] font-black">
+                    <td colSpan={4} className="border border-[#cbd5e1] px-2 py-2 text-right text-[12px] font-black">
                       الإجمالي العام (حتى {m.name})
                     </td>
                     {dataColumnsOrder.map((c) => (
-                      <td key={c} className="border border-[#284f61]">
-                        <div className="px-1.5 py-1 text-[12px] font-black text-[#df9d54] font-mono" dir="ltr">
+                      <td key={c} className="border border-[#cbd5e1]">
+                        <div className="px-1.5 py-1 text-[12px] font-black text-[#92400e] font-mono" dir="ltr">
                           {formatNumberEn(t.cumulative(c)) || "-"}
                         </div>
                       </td>
                     ))}
-                    <td className="border border-[#284f61]" />
+                    <td className="border border-[#cbd5e1]" />
                   </tr>
                 </React.Fragment>
               );
@@ -1012,10 +1012,10 @@ const AppTabs: React.FC = () => {
       </div>
 
       <div
-        className="rounded-2xl border px-3 py-2.5 text-center text-[11px] sm:text-xs font-bold"
+        className="rounded-2xl border px-3 py-2.5 text-center text-[11px] sm:text-xs font-bold shadow-sm"
         style={{
-          background: "rgba(12,33,48,.85)",
-          borderColor: "#204656",
+          background: "linear-gradient(135deg, #ffffff, #f8fafc)",
+          borderColor: "#e2e8f0",
           color: UI.muted,
         }}
       >
