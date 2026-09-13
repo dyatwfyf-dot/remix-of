@@ -45,21 +45,29 @@ const UI = {
 };
 
 const COLORS = {
-  TOTAL_ALL: "#18384A",
-  BAB_TOTAL: "#1B4B55",
-  FASL: "#4A3146",
-  BAND: "#704F2F",
+  MAIN_1: "#E0F2FE", // رقم الاستمارة (سماوي فاتح)
+  MAIN_2: "#E0E7FF", // كشف التسوية (بنفسجي فاتح)
+  MAIN_3: "#CCFBF1", // التاريخ (تركواز فاتح)
+  MAIN_4: "#FEF3C7", // البيان (أصفر دافئ فاتح)
+  TOTAL_ALL: "#FFE4E6", // إجمالي عام (وردي فاتح)
+  BAB_TOTAL: "#CFF4FC", // إجمالي الباب (سماوي مائي فاتح)
+  FASL: "#F3E8FF", // الفصل (أرجواني فاتح)
+  BAND: "#F1F5F9", // البند (رمادي فاتح)
 };
 
 const ARGB = {
-  TOTAL_ALL: "FF18384A",
-  BAB_TOTAL: "FF1B4B55",
-  FASL: "FF4A3146",
-  BAND: "FF704F2F",
-  DARK: "FF0A1B28",
-  GOLD: "FFDF9D54",
-  CUR: "FF143748",
-  PREV: "FF102A38",
+  MAIN_1: "FFE0F2FE",
+  MAIN_2: "FFE0E7FF",
+  MAIN_3: "FFCCFBF1",
+  MAIN_4: "FFFEF3C7",
+  TOTAL_ALL: "FFFEE4E6",
+  BAB_TOTAL: "FFCFF4FC",
+  FASL: "FFF3E8FF",
+  BAND: "FFF1F5F9",
+  DARK: "FF1E293B",
+  GOLD: "FFD97706",
+  CUR: "FFCCFBF1",
+  PREV: "FFF1F5F9",
 };
 
 const dataColumnsOrder = [
@@ -113,13 +121,21 @@ const TOTAL_COLS = allCols.length + 1;
 const isFormulaCol = (col: string) => col.includes("اجمالي") || col.includes("الفصل");
 
 const colArgb = (col: string) =>
-  col === "اجمالي عام الاستخدامات"
-    ? ARGB.TOTAL_ALL
-    : col.includes("اجمالي الباب")
-      ? ARGB.BAB_TOTAL
-      : col.includes("الفصل")
-        ? ARGB.FASL
-        : undefined;
+  col === "رقم الاستمارة"
+    ? ARGB.MAIN_1
+    : col === "كشف التسوية"
+      ? ARGB.MAIN_2
+      : col === "التاريخ"
+        ? ARGB.MAIN_3
+        : col === "البيان"
+          ? ARGB.MAIN_4
+          : col === "اجمالي عام الاستخدامات"
+            ? ARGB.TOTAL_ALL
+            : col.includes("اجمالي الباب")
+              ? ARGB.BAB_TOTAL
+              : col.includes("الفصل")
+                ? ARGB.FASL
+                : undefined;
 
 const MONTHS = [
   { id: 1, name: "يناير" },
@@ -302,10 +318,10 @@ FormulaCell.displayName = "FormulaCell";
 
 const THEAD_HTML = `
 <tr>
-  <th rowspan="4" class="c-main">رقم الاستمارة</th>
-  <th rowspan="4" class="c-main">كشف التسوية</th>
-  <th rowspan="4" class="c-main">التاريخ</th>
-  <th rowspan="4" class="c-main">البيان</th>
+  <th rowspan="4" class="c-main c-main-1">رقم الاستمارة</th>
+  <th rowspan="4" class="c-main c-main-2">كشف التسوية</th>
+  <th rowspan="4" class="c-main c-main-3">التاريخ</th>
+  <th rowspan="4" class="c-main c-main-4">البيان</th>
   <th rowspan="4" class="c-total">اجمالي عام الاستخدامات</th>
   <th colspan="13" class="c-bab">اجمالي الباب الاول</th>
   <th colspan="21" class="c-bab">اجمالي الباب الثاني</th>
@@ -320,49 +336,49 @@ const THEAD_HTML = `
   <th colspan="15" class="c-fasl">الفصل الاول</th>
   <th colspan="5" class="c-fasl">الفصل الثاني</th>
   <th rowspan="3" class="c-bab">الإجمالي</th>
-  <th rowspan="3" class="c-main">مركز صحي قحزة</th>
-  <th rowspan="3" class="c-main">وحدة الغسيل الكلوي</th>
-  <th rowspan="3" class="c-main">مشروع دعم الكلى</th>
-  <th rowspan="3" class="c-main">الصالة والمطبخ</th>
-  <th rowspan="3" class="c-main">مركز صحي</th>
-  <th rowspan="3" class="c-main">الامانات</th>
+  <th rowspan="3" class="c-sub-item">مركز صحي قحزة</th>
+  <th rowspan="3" class="c-sub-item">وحدة الغسيل الكلوي</th>
+  <th rowspan="3" class="c-sub-item">مشروع دعم الكلى</th>
+  <th rowspan="3" class="c-sub-item">الصالة والمطبخ</th>
+  <th rowspan="3" class="c-sub-item">مركز صحي</th>
+  <th rowspan="3" class="c-sub-item">الامانات</th>
 </tr>
 <tr>
   <th rowspan="2" class="c-fasl">إجمالي ف1</th>
   <th colspan="8" class="c-band">المرتبات والأجور</th>
   <th rowspan="2" class="c-fasl">إجمالي ف2</th>
-  <th rowspan="2" class="c-main">ح/حكومة</th>
-  <th rowspan="2" class="c-main">اصابة عمل</th>
+  <th rowspan="2" class="c-sub-item">ح/حكومة</th>
+  <th rowspan="2" class="c-sub-item">اصابة عمل</th>
   <th rowspan="2" class="c-fasl">إجمالي ف1</th>
-  <th rowspan="2" class="c-main">مياه</th>
-  <th rowspan="2" class="c-main">انارة</th>
-  <th rowspan="2" class="c-main">ادوات كتابية</th>
-  <th rowspan="2" class="c-main">نشر واعلان</th>
-  <th rowspan="2" class="c-main">اتصالات</th>
-  <th rowspan="2" class="c-main">مؤتمرات</th>
-  <th rowspan="2" class="c-main">نظافة</th>
-  <th rowspan="2" class="c-main">اخرى</th>
-  <th rowspan="2" class="c-main">نقل مهام</th>
-  <th rowspan="2" class="c-main">انتقالات</th>
-  <th rowspan="2" class="c-main">ايجار مباني</th>
-  <th rowspan="2" class="c-main">ادوية</th>
-  <th rowspan="2" class="c-main">اغذية</th>
-  <th rowspan="2" class="c-main">اخرى2</th>
+  <th rowspan="2" class="c-sub-item">مياه</th>
+  <th rowspan="2" class="c-sub-item">انارة</th>
+  <th rowspan="2" class="c-sub-item">ادوات كتابية</th>
+  <th rowspan="2" class="c-sub-item">نشر واعلان</th>
+  <th rowspan="2" class="c-sub-item">اتصالات</th>
+  <th rowspan="2" class="c-sub-item">مؤتمرات</th>
+  <th rowspan="2" class="c-sub-item">نظافة</th>
+  <th rowspan="2" class="c-sub-item">اخرى</th>
+  <th rowspan="2" class="c-sub-item">نقل مهام</th>
+  <th rowspan="2" class="c-sub-item">انتقالات</th>
+  <th rowspan="2" class="c-sub-item">ايجار مباني</th>
+  <th rowspan="2" class="c-sub-item">ادوية</th>
+  <th rowspan="2" class="c-sub-item">اغذية</th>
+  <th rowspan="2" class="c-sub-item">اخرى2</th>
   <th rowspan="2" class="c-fasl">إجمالي ف2</th>
-  <th rowspan="2" class="c-main">صيانة مباني</th>
-  <th rowspan="2" class="c-main">وقود وزيوت</th>
-  <th rowspan="2" class="c-main">قطع غيار نقل</th>
-  <th rowspan="2" class="c-main">قطع غيار معدات</th>
+  <th rowspan="2" class="c-sub-item">صيانة مباني</th>
+  <th rowspan="2" class="c-sub-item">وقود وزيوت</th>
+  <th rowspan="2" class="c-sub-item">قطع غيار نقل</th>
+  <th rowspan="2" class="c-sub-item">قطع غيار معدات</th>
 </tr>
 <tr>
-  <th>اساسية</th>
-  <th>تعاقدية</th>
-  <th>اضافي</th>
-  <th>مكافات</th>
-  <th>طبيعة عمل</th>
-  <th>بدل ريف</th>
-  <th>بدل سكن</th>
-  <th>تحديث</th>
+  <th class="c-sub-item">اساسية</th>
+  <th class="c-sub-item">تعاقدية</th>
+  <th class="c-sub-item">اضافي</th>
+  <th class="c-sub-item">مكافات</th>
+  <th class="c-sub-item">طبيعة عمل</th>
+  <th class="c-sub-item">بدل ريف</th>
+  <th class="c-sub-item">بدل سكن</th>
+  <th class="c-sub-item">تحديث</th>
 </tr>
 `;
 
@@ -535,10 +551,10 @@ const AppTabs: React.FC = () => {
   };
 
   const border = {
-    top: { style: "thin" as const, color: { argb: "FF203F4E" } },
-    left: { style: "thin" as const, color: { argb: "FF203F4E" } },
-    bottom: { style: "thin" as const, color: { argb: "FF203F4E" } },
-    right: { style: "thin" as const, color: { argb: "FF203F4E" } },
+    top: { style: "thin" as const, color: { argb: "FFCBD5E1" } },
+    left: { style: "thin" as const, color: { argb: "FFCBD5E1" } },
+    bottom: { style: "thin" as const, color: { argb: "FFCBD5E1" } },
+    right: { style: "thin" as const, color: { argb: "FFCBD5E1" } },
   };
 
   const handleExportExcel = async () => {
@@ -547,7 +563,7 @@ const AppTabs: React.FC = () => {
 
     const disp = wb.addWorksheet("عرض", {
       views: [{ rightToLeft: true, state: "frozen", ySplit: 2 }],
-      properties: { defaultRowHeight: 20, tabColor: { argb: ARGB.DARK } },
+      properties: { defaultRowHeight: 20, tabColor: { argb: "FF0D9488" } },
       pageSetup: {
         orientation: "landscape",
         paperSize: 9,
@@ -561,8 +577,8 @@ const AppTabs: React.FC = () => {
     disp.mergeCells(1, 1, 1, allCols.length);
     const title = disp.getCell(1, 1);
     title.value = "سجل مفردات الاستخدامات والنفقات العامة";
-    title.font = { bold: true, size: 14, color: { argb: "FFEAF8FA" } };
-    title.fill = { type: "pattern", pattern: "solid", fgColor: { argb: ARGB.DARK } };
+    title.font = { bold: true, size: 14, color: { argb: "FF0F172A" } };
+    title.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFE2E8F0" } };
     title.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
     disp.getRow(1).height = 28;
 
@@ -572,10 +588,10 @@ const AppTabs: React.FC = () => {
     allCols.forEach((c, i) => {
       const cell = hdr.getCell(i + 1);
       cell.value = c;
-      cell.font = { bold: true, size: 9, color: { argb: "FFEAF8FA" } };
+      cell.font = { bold: true, size: 9, color: { argb: "FF0F172A" } };
       cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
       cell.border = border;
-      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: colArgb(c) || ARGB.DARK } };
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: colArgb(c) || "FFF1F5F9" } };
     });
 
     let r = 3;
@@ -586,8 +602,8 @@ const AppTabs: React.FC = () => {
       disp.mergeCells(r, 1, r, allCols.length);
       const mc = disp.getCell(r, 1);
       mc.value = `شهر ${m.name}`;
-      mc.font = { bold: true, color: { argb: ARGB.GOLD } };
-      mc.fill = { type: "pattern", pattern: "solid", fgColor: { argb: ARGB.DARK } };
+      mc.font = { bold: true, color: { argb: "FF0F172A" } };
+      mc.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFBAE6FD" } };
       mc.alignment = { horizontal: "right", vertical: "middle" };
       r++;
 
@@ -597,9 +613,9 @@ const AppTabs: React.FC = () => {
           const v = row[c];
           cell.value = typeof v === "number" ? v : v === "" ? "" : isNaN(Number(v)) ? v : Number(v);
           cell.alignment = { horizontal: "center", vertical: "middle" };
-          cell.font = { size: 9, bold: isFormulaCol(c), color: { argb: "FFEAF8FA" } };
+          cell.font = { size: 9, bold: isFormulaCol(c), color: { argb: "FF0F172A" } };
           cell.border = border;
-          cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: colArgb(c) || "FF0E2937" } };
+          cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFFFFFF" } };
         });
         r++;
       });
@@ -623,9 +639,9 @@ const AppTabs: React.FC = () => {
         r++;
       };
 
-      rowCur(`إجمالي شهر ${m.name}`, t.current, ARGB.CUR, "FFCFF5F3");
-      rowCur(`إجمالي الأشهر السابقة (قبل ${m.name})`, t.before, ARGB.PREV, "FF8FB3C2");
-      rowCur(`الإجمالي العام (حتى ${m.name})`, t.cumulative, ARGB.DARK, ARGB.GOLD);
+      rowCur(`إجمالي شهر ${m.name}`, t.current, ARGB.CUR, "FF0F766E");
+      rowCur(`إجمالي الأشهر السابقة (قبل ${m.name})`, t.before, ARGB.PREV, "FF475569");
+      rowCur(`الإجمالي العام (حتى ${m.name})`, t.cumulative, "FFFDE68A", "FF92400E");
     });
 
     for (let col = 1; col <= allCols.length; col++) {
@@ -701,25 +717,34 @@ const AppTabs: React.FC = () => {
       @page { size:A4 landscape; margin:3mm; }
       * { box-sizing:border-box; }
       html, body { margin:0; padding:0; }
-      body { font-family:'Cairo','Tajawal',sans-serif; direction:rtl; color:#0c2130 !important; padding:0 1px; width:100%; font-weight:700 !important; }
+      body { font-family:'Cairo','Tajawal',sans-serif; direction:rtl; color:#0f172a !important; padding:0 1px; width:100%; font-weight:700 !important; }
       .report-letterhead-block { display:flex; width:100%; height:30mm; overflow:hidden; justify-content:center; margin:0 0 3mm; }
       .report-letterhead-image { width:100% !important; height:100% !important; object-fit:fill !important; }
-      h2 { text-align:center; color:#0c2130 !important; margin:0 0 3mm; font-weight:800; }
-      .report-date { text-align:center; color:#153b52 !important; margin:0 0 5px; font-size:10px; font-weight:700; }
+      h2 { text-align:center; color:#0f172a !important; margin:0 0 3mm; font-weight:800; }
+      .report-date { text-align:center; color:#334155 !important; margin:0 0 5px; font-size:10px; font-weight:700; }
       table { width:100%; border-collapse:collapse; table-layout:auto !important; font-size:clamp(14px,1.05vw,16px); }
-      th, td { border:1px solid #284f61; padding:2px 3px !important; text-align:center; vertical-align:middle; line-height:1.15; font-size:clamp(14px,1.05vw,16px); color:#0c2130 !important; font-weight:700 !important; }
+      th, td { border:1px solid #cbd5e1; padding:2px 3px !important; text-align:center; vertical-align:middle; line-height:1.15; font-size:clamp(14px,1.05vw,16px); color:#0f172a !important; font-weight:700 !important; }
       .num, .numeric-cell, .date-cell { width:1%; white-space:nowrap !important; font-family:'Times New Roman',Times,serif !important; font-size:clamp(14px,1vw,16px) !important; font-variant-numeric:tabular-nums; direction:ltr; }
       .text-cell { width:auto; white-space:normal; overflow-wrap:break-word; }
-      thead th { background:#102f42; font-weight:700; color:#eaf8fa !important; }
-      thead .c-total { background:${COLORS.TOTAL_ALL}; color:#eaf8fa !important; }
-      thead .c-bab   { background:${COLORS.BAB_TOTAL}; color:#eaf8fa !important; }
-      thead .c-fasl  { background:${COLORS.FASL}; color:#eaf8fa !important; }
-      thead .c-band  { background:${COLORS.BAND}; color:#eaf8fa !important; }
-      td.formula { background:#143748; font-weight:700; color:#cff5f3 !important; }
-      tr.month td { background:#0a1b28; color:#df9d54 !important; font-weight:800 !important; text-align:center; }
-      tr.t-cur td  { background:#143748; color:#cff5f3 !important; font-weight:700 !important; }
-      tr.t-prev td { background:#102a38; color:#8fb3c2 !important; font-weight:700 !important; }
-      tr.t-cum td  { background:#0a1b28; color:#df9d54 !important; font-weight:800 !important; }
+      
+      /* ألوان رؤوس الأعمدة المتدرجة للطباعة */
+      thead th { font-weight:800; color:#0f172a !important; }
+      thead .c-main-1 { background: linear-gradient(180deg, #e0f2fe, #bae6fd) !important; color: #0369a1 !important; }
+      thead .c-main-2 { background: linear-gradient(180deg, #e0e7ff, #c7d2fe) !important; color: #3730a3 !important; }
+      thead .c-main-3 { background: linear-gradient(180deg, #ccfbf1, #99f6e4) !important; color: #0f766e !important; }
+      thead .c-main-4 { background: linear-gradient(180deg, #fef3c7, #fde68a) !important; color: #92400e !important; }
+      thead .c-total  { background: linear-gradient(180deg, #ffe4e6, #fecdd3) !important; color: #be123c !important; }
+      thead .c-bab    { background: linear-gradient(180deg, #cff4fc, #a6e9f5) !important; color: #08596b !important; }
+      thead .c-fasl   { background: linear-gradient(180deg, #f3e8ff, #e9d5ff) !important; color: #6b21a8 !important; }
+      thead .c-band   { background: linear-gradient(180deg, #f1f5f9, #e2e8f0) !important; color: #334155 !important; }
+      thead .c-sub-item { background: linear-gradient(180deg, #f8fafc, #f1f5f9) !important; color: #1e293b !important; }
+      thead .c-action { background: linear-gradient(180deg, #ffe4e6, #fecdd3) !important; color: #be123c !important; }
+      
+      td.formula { background:#f0fdfa; font-weight:700; color:#0f766e !important; }
+      tr.month td { background: linear-gradient(90deg, #e0f2fe, #c7d2fe); color:#1e3a8a !important; font-weight:800 !important; text-align:center; }
+      tr.t-cur td  { background:#ccfbf1; color:#0f766e !important; font-weight:700 !important; }
+      tr.t-prev td { background:#f1f5f9; color:#475569 !important; font-weight:700 !important; }
+      tr.t-cum td  { background:#fef3c7; color:#92400e !important; font-weight:800 !important; }
       ${runningLetterheadCss}
     </style></head><body>
     ${reportLetterheadHtml()}
@@ -752,12 +777,27 @@ const AppTabs: React.FC = () => {
         .usage-header { color: ${UI.text}; }
         .usage-table-shell { scrollbar-color: ${UI.teal} ${UI.surface3}; }
         .usage-table { font-family: "Tajawal", "Noto Sans Arabic", sans-serif; }
+        
+        /* ألوان رؤوس الجدول المتدرجة الفاتحة */
         .usage-table th {
-          position: sticky; top: 0; z-index: 20; color: #ffffff;
+          position: sticky; top: 0; z-index: 20; color: #0f172a;
           border: 1px solid ${UI.grid}; padding: 10px 8px; text-align: center;
           vertical-align: middle; white-space: nowrap; font-size: 12px; font-weight: 900;
-          line-height: 1.25; background: linear-gradient(180deg, #1e293b, #0f172a);
+          line-height: 1.25; background: linear-gradient(180deg, #f8fafc, #e2e8f0);
         }
+        
+        /* تخصيص ألوان فاتحة مميزة لكل عمود رئيسي وتجميعي */
+        .usage-table th.c-main-1 { background: linear-gradient(180deg, #e0f2fe, #bae6fd); color: #0369a1; }
+        .usage-table th.c-main-2 { background: linear-gradient(180deg, #e0e7ff, #c7d2fe); color: #3730a3; }
+        .usage-table th.c-main-3 { background: linear-gradient(180deg, #ccfbf1, #99f6e4); color: #0f766e; }
+        .usage-table th.c-main-4 { background: linear-gradient(180deg, #fef3c7, #fde68a); color: #92400e; }
+        .usage-table th.c-total  { background: linear-gradient(180deg, #ffe4e6, #fecdd3); color: #be123c; }
+        .usage-table th.c-bab    { background: linear-gradient(180deg, #cff4fc, #a6e9f5); color: #08596b; }
+        .usage-table th.c-fasl   { background: linear-gradient(180deg, #f3e8ff, #e9d5ff); color: #6b21a8; }
+        .usage-table th.c-band   { background: linear-gradient(180deg, #f1f5f9, #e2e8f0); color: #334155; }
+        .usage-table th.c-sub-item { background: linear-gradient(180deg, #f8fafc, #f1f5f9); color: #1e293b; }
+        .usage-table th.c-action { background: linear-gradient(180deg, #ffe4e6, #fecdd3); color: #be123c; }
+
         .usage-table td { border: 1px solid ${UI.grid}; padding: 0; vertical-align: middle; }
         .usage-table tbody tr { background: ${UI.row}; transition: background .15s ease; }
         .usage-table tbody tr:nth-child(even) { background: ${UI.rowAlt}; }
