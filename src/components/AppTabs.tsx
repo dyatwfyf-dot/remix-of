@@ -285,7 +285,7 @@ const EditableCell: React.FC<{
       }
       className="
         w-auto h-auto
-        rounded-md border border-1-black
+        rounded-md border border
         bg-transparent px-1.5 py-1.5
         text-center text-[12px] sm:text-[13px]
         font-bold text-[#0f172a]
@@ -568,7 +568,7 @@ const AppTabs: React.FC = () => {
         orientation: "landscape",
         paperSize: 9,
         fitToPage: true,
-        fitToWidth: 7,
+        fitToWidth: 0,
         fitToHeight: 0,
         margins: { left: 0.25, right: 0.25, top: 0.35, bottom: 0.35, header: 0.15, footer: 0.15 },
       },
@@ -750,7 +750,10 @@ const AppTabs: React.FC = () => {
       }
       h2 { text-align:center; color:#0f172a !important; margin:0 0 3mm; font-weight:800; }
       .report-date { text-align:center; color:#334155 !important; margin:0 0 5px; font-size:10px; font-weight:700; }
-      table { width:100%; border-collapse:collapse; table-layout:auto !important; font-size:clamp(14px,1.05vw,16px); }
+      table { width:100%; border-collapse:collapse; table-layout:auto !important; font-size:clamp(14px,1.05vw,16px);
+      whitespace:normal؛ 
+      break-word:break-word;
+      }
       th, td { border:1px solid #000; padding:2px 3px !important; text-align:center; vertical-align:middle; line-height:1.15; font-size:clamp(14px,1.05vw,16px); color:#0f172a !important; font-weight:700 !important; }
       .num, .numeric-cell, .date-cell { width:1%; white-space:nowrap !important; font-family:'Times New Roman',Times,serif !important; font-size:clamp(14px,1vw,16px) !important; font-variant-numeric:tabular-nums; direction:ltr; }
       .text-cell { width:auto; white-space:nowrap; overflow-wrap:break-word; }
@@ -794,7 +797,7 @@ const AppTabs: React.FC = () => {
 
   return (
     <div
-      className="sheet-tabs-ui apk-tabs-ui w-full space-y-4 p-2 sm:p-3 font-tajawal"
+      className="sheet-tabs-ui apk-tabs-ui w-auto space-y-4 p-2 sm:p-3 font-tajawal"
       style={{
         background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%)",
         color: UI.text,
@@ -810,8 +813,9 @@ const AppTabs: React.FC = () => {
         .usage-table th {
           position: sticky; top: 0; z-index: 20; color: #0f172a;
           border: 1px solid #000; padding: 10px 8px; text-align: center;
-          vertical-align: middle; white-space:normal; font-size: 12px; font-weight: 900;
-          line-height: 1.25; background: linear-gradient(180deg, #f8fafc, #e2e8f0);
+          vertical-align: middle; white-space:wrap;
+          font-size: 12px; font-weight: 900;
+          line-height: 1; background: linear-gradient(180deg, #f8fafc, #e2e8f0);
         }
         
         /* تخصيص ألوان فاتحة مميزة لكل عمود رئيسي وتجميعي */
@@ -826,7 +830,9 @@ const AppTabs: React.FC = () => {
         .usage-table th.c-sub-item { background: linear-gradient(180deg, #f8fafc, #f1f5f9); color: #1e293b; }
         .usage-table th.c-action { background: linear-gradient(180deg, #ffe4e6, #fecdd3); color: #be123c; }
 
-        .usage-table td { border: 1px solid ${UI.grid}; padding: 0; vertical-align: middle; }
+        .usage-table td { border:  solid ${UI.grid}; padding: 0; vertical-align: middle;
+        whitespace-normal;
+        }
         .usage-table tbody tr { background: ${UI.row}; transition: background .15s ease; }
         .usage-table tbody tr:nth-child(even) { background: ${UI.rowAlt}; }
         .usage-table tbody tr:hover { background: #f0fdfa; }
@@ -971,7 +977,7 @@ const AppTabs: React.FC = () => {
         className="usage-table-shell  overflow-auto rounded-2xl border shadow-xl"
         style={{ maxHeight: "70vh", background: "#ffffff", borderColor: "#cbd5e1" }}
       >
-        <table className="usage-table w-full table-auto border-collapse text-center [&_th]:whitespace-normal [&_th]:break-words [&_td]:whitespace-normal [&_td]:break-words">
+        <table className="usage-table w-full table-auto border-collapse text-center whitespace-normal break-words">
     <thead className="sticky top-0 z-30" dangerouslySetInnerHTML={{ __html: THEAD_HTML }} />
 
           <tbody>
