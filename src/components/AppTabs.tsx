@@ -284,7 +284,7 @@ const EditableCell: React.FC<{
             : "rtl"
       }
       className="
-        w-full min-w-[55px] max-w-full h-auto
+        w-full max-w-full h-auto
         rounded-md border border-transparent
         bg-transparent px-1 py-1
         text-center text-[12px] sm:text-[13px]
@@ -302,12 +302,12 @@ EditableCell.displayName = "EditableCell";
 
 const FormulaCell: React.FC<{ value: any }> = React.memo(({ value }) => (
   <div
-    className="
-      w-full rounded-md px-1 py-1
-      text-center text-[12px] sm:text-[13px]
-      font-black text-[#0f766e]
-      font-mono tabular-nums whitespace-nowrap
-    "
+  className="
+    w-full rounded-md px-1 py-1
+ text-center text-[12px] sm:text-[13px]
+  font-black text-[#0f766e]
+font-mono tabular-nums 
+whitespace-nowrap"
     dir="ltr"
   >
     {formatNumberEn(value)}
@@ -555,8 +555,9 @@ const AppTabs: React.FC = () => {
         return !isTotalRow;
       });
 
-      if (!imported.length) {
-        toast.error("الملف يحتوي فقط على صفوف إجماليات بدون بيانات مفردات صالحة");
+ if (!imported.length) {
+toast.error(
+ "الملف يحتوي فقط على صفوف إجماليات بدون بيانات مفردات صالحة");
         return;
       }
 
@@ -785,12 +786,12 @@ const AppTabs: React.FC = () => {
         font-size:clamp(11px,0.85vw,14px); 
         color:#0f172a !important; 
         font-weight:700 !important; 
-        white-space: normal !important;
+        white-space:nowrap !important;
         word-break: break-word;
         overflow-wrap: break-word;
       }
       .num, .numeric-cell, .date-cell { width:1%; white-space:nowrap !important; font-family:'Times New Roman',Times,serif !important; font-size:clamp(11px,0.85vw,14px) !important; font-variant-numeric:tabular-nums; direction:ltr; }
-      .text-cell { width:auto; white-space:normal; overflow-wrap:break-word; word-break:break-word; }
+      .text-cell { width:auto; white-space:nowrap; overflow-wrap:break-word; word-break:break-word; }
       
       thead th { font-weight:800; color:#0f172a !important; white-space: normal !important; word-break: break-word; }
       thead .c-main-1 { background: linear-gradient(180deg, #e0f2fe, #bae6fd) !important; color: #0369a1 !important; }
@@ -871,7 +872,7 @@ const AppTabs: React.FC = () => {
           border: 1px solid ${UI.grid}; 
           padding: 2px; 
           vertical-align: middle;
-          white-space: normal !important;
+          white-space:normal !important;
           word-break: break-word;
           overflow-wrap: break-word;
         }
@@ -1019,7 +1020,9 @@ const AppTabs: React.FC = () => {
         className="usage-table-shell overflow-auto rounded-2xl border shadow-xl"
         style={{ maxHeight: "70vh", background: "#ffffff", borderColor: "#cbd5e1" }}
       >
-        <table className="usage-table w-full border-collapse text-center">
+        <table className="usage-table w-full border-collapse text-center
+   white-space:normal !important;
+   word-break: break-word;">
           <thead className="sticky top-0 z-30" dangerouslySetInnerHTML={{ __html: THEAD_HTML }} />
 
           <tbody>
@@ -1032,18 +1035,18 @@ const AppTabs: React.FC = () => {
                   {/* شريط الشهر */}
                   <tr className="month-row">
                     <td colSpan={TOTAL_COLS} className="text-right">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
+  <div className="flex flex-wrap items-center justify-between gap-2">
                         <span className="font-black text-[13px] sm:text-[14px]">شهر {m.name}</span>
-                        <button
-                          onClick={() => handleAddRow(m.id)}
-                          className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] sm:text-xs font-black transition-all"
+      <button
+  onClick={() => handleAddRow(m.id)}
+   className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] sm:text-xs font-black transition-all"
                         >
-                          <Plus className="w-3.5 h-3.5" />
-                          إضافة سطر
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+      <Plus className="w-3.5 h-3.5" />
+         إضافة سطر
+         </button>
+      </div>
+      </td>
+     </tr>
 
                   {/* صفوف البيانات */}
                   {rows.map((row) => (
