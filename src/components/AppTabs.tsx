@@ -284,7 +284,7 @@ const EditableCell: React.FC<{
             : "rtl"
       }
       className="
-        w-auto h-full min-w-auto 
+        w-auto h-auto
         rounded-md border border-1-black
         bg-transparent px-1.5 py-1.5
         text-center text-[12px] sm:text-[13px]
@@ -568,7 +568,7 @@ const AppTabs: React.FC = () => {
         orientation: "landscape",
         paperSize: 9,
         fitToPage: true,
-        fitToWidth: 0,
+        fitToWidth: 7,
         fitToHeight: 0,
         margins: { left: 0.25, right: 0.25, top: 0.35, bottom: 0.35, header: 0.15, footer: 0.15 },
       },
@@ -588,7 +588,7 @@ const AppTabs: React.FC = () => {
     allCols.forEach((c, i) => {
       const cell = hdr.getCell(i + 1);
       cell.value = c;
-      cell.font = { bold: true, size: 9, color: { argb: "FF0F172A" } };
+      cell.font = { bold: true, size: 13, color: { argb: "FF0F172A" } };
       cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
       cell.border = border;
       cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: colArgb(c) || "FFF1F5F9" } };
@@ -726,26 +726,26 @@ const AppTabs: React.FC = () => {
       body { 
         font-family: 'Cairo', 'Tajawal', sans-serif; 
         direction: rtl; 
-        color: #0f172a !important; 
+        color:#0f172a!important; 
         padding: 0 1px; 
         width: 100%; 
-        font-weight: 700 !important; 
+        font-weight: 700; !important; 
       }
 
       /* 2. تجعل الحاوية تمتد على 100% من عرض الصفحة */
       .report-letterhead-block { 
-        display: flex; 
-        width: 100% !important; 
-        height: 30mm; 
-        overflow: hidden; 
-        justify-content: space-between; /* توزيع النص والصورة على طرفي الصفحة */
+        display:flex !important; 
+        width:100% !important; 
+        height:30mm; 
+        overflow:hidden; 
+  justify-content:space-between; /* توزيع النص والصورة على طرفي الصفحة */
         align-items: center; 
         margin: 0 0 3mm; 
       }
       .report-letterhead-image { 
-        width: 100% !important; 
-        height: 100% !important; 
-        object-fit: contain !important;
+        width:100%!important; 
+        height:100%!important; 
+  object-fit:contain!important;
         /* يحافظ على أبعاد الصورة دون قص أو تشويه */
       }
       h2 { text-align:center; color:#0f172a !important; margin:0 0 3mm; font-weight:800; }
@@ -810,7 +810,7 @@ const AppTabs: React.FC = () => {
         .usage-table th {
           position: sticky; top: 0; z-index: 20; color: #0f172a;
           border: 1px solid #000; padding: 10px 8px; text-align: center;
-          vertical-align: middle; white-space: nowrap; font-size: 12px; font-weight: 900;
+          vertical-align: middle; white-space:normal; font-size: 12px; font-weight: 900;
           line-height: 1.25; background: linear-gradient(180deg, #f8fafc, #e2e8f0);
         }
         
@@ -968,11 +968,11 @@ const AppTabs: React.FC = () => {
 
       {/* الجدول الرئيسي */}
       <div
-        className="usage-table-shell w-auto overflow-auto rounded-2xl border shadow-xl"
+        className="usage-table-shell  overflow-auto rounded-2xl border shadow-xl"
         style={{ maxHeight: "70vh", background: "#ffffff", borderColor: "#cbd5e1" }}
       >
-        <table className="usage-table table-auto border-collapse text-center">
-          <thead className="sticky top-0 z-30" dangerouslySetInnerHTML={{ __html: THEAD_HTML }} />
+        <table className="usage-table w-full table-auto border-collapse text-center [&_th]:whitespace-normal [&_th]:break-words [&_td]:whitespace-normal [&_td]:break-words">
+    <thead className="sticky top-0 z-30" dangerouslySetInnerHTML={{ __html: THEAD_HTML }} />
 
           <tbody>
             {MONTHS.map((m) => {
