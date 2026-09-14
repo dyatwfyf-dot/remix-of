@@ -270,7 +270,7 @@ const TH = ({
   <th
     rowSpan={rowSpan}
     colSpan={colSpan}
-    className={`border border-black px-1 sm:px-2 py-1 whitespace-normal break-words text-center align-middle text-sm sm:text-base font-bold ${cls}`}
+    className={`border border-1-black px-1 sm:px-2 py-1 whitespace-normal break-words text-center align-middle text-lg sm:text-base font-bold ${cls}`}
   >
     {children}
   </th>
@@ -287,7 +287,7 @@ const TD = ({
   right?: boolean;
 }) => (
   <td
-    className={`border border-black px-1 sm:px-2 py-1 whitespace-nowrap align-middle numeric-cell font-mono text-sm sm:text-base ${right ? "text-right" : "text-center"} ${cls}`}
+    className={`border border-1-black px-1 sm:px-2 py-1 whitespace-nowrap align-middle numeric-cell font-mono text-sm sm:text-base ${right ? "text-center" : "text-center"} ${cls}`}
   >
     {children}
   </td>
@@ -735,240 +735,260 @@ export default function ExpensesTab() {
     },
   ];
 
-  return (
-    <div className="sheet-tabs-ui space-y-3" dir="rtl">
-      {/* شريط التبويبات + أزرار */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="bg-slate-100 p-1.5 rounded-xl border border-slate-200 overflow-x-auto flex-1 min-w-0">
-          <div className="flex gap-1 w-max min-w-full">
-            {subTabs.map((t) => (
-              <button
-                key={t.key}
-                onClick={() => setView(t.key)}
-                className={`px-2.5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg transition-all whitespace-nowrap ${
-                  view === t.key
-                    ? `${groupCls(t.group)} text-white shadow-md`
-                    : "bg-white text-slate-700 hover:bg-slate-50 border border-slate-200"
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
+ return (
+  <div className="sheet-tabs-ui space-y-4 font-sans" dir="rtl">
+    {/* شريط التبويبات + الأزرار العلوي */}
+    <div className="flex flex-wrap items-center gap-3 bg-white p-2.5 rounded-2xl border border-slate-200/80 shadow-sm backdrop-blur-sm">
+      {/* التبويبات */}
+      <div className="bg-slate-100/80 p-1.5 rounded-xl border border-slate-200/60 overflow-x-auto flex-1 min-w-0 shadow-inner scrollbar-thin scrollbar-thumb-slate-300">
+        <div className="flex gap-1.5 w-max min-w-full">
+          {subTabs.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setView(t.key)}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 whitespace-nowrap active:scale-95 ${
+                view === t.key
+                  ? `${groupCls(t.group)} text-white shadow-md shadow-slate-400/20 ring-1 ring-black/10`
+                  : "bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 border border-slate-200/80 shadow-2xs"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
-        <div className="web-only-actions sm:w-auto">
-          <WebActionMenu label="إجراءات المصروفات" actions={expenseWebActions} />
-        </div>
-        <div className="apk-only-actions flex gap-2">
-          {/* زر الطباعة المحدّث مع دعم ألوان الأبواب والاحتواء التلقائي */}
-          <button
-            id="expenses-print-action"
-            onClick={() => {
-              const el = document.getElementById("expenses-view-content");
-              if (!el) return;
-              const html = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escapeHtml(`المصروفات - ${view} - ${reportDateLabel}`)}</title>
-                <style>
-                @page { size: A4 landscape; margin: 3mm; }
-                * { box-sizing: border-box; }
-                html, body { margin: 0; padding: 0; }
-                body { direction: rtl; background: #f1f5f9; color: #000; font-family: Cairo, Tajawal, Tahoma, Arial, sans-serif; font-weight: 700; }
-                .print-page { min-height: auto; width: 100%; margin: 0; padding: 0; border: 0; background: #fff; }
-                .report-letterhead-block { display: flex; width: 100%; max-width: none; height: 30mm; min-height: 30mm; max-height: 30mm; align-items: stretch; justify-content: center; margin: 0 0 3mm; page-break-before: avoid; page-break-after: avoid; }
-                .report-letterhead-image { display: block; width: 100%; max-width: none; height: 100%; max-height: 100%; object-fit: fill; object-position: center; margin: 0; }
-                ${runningLetterheadCss}
-                #expenses-report { width: 100%; }
-                #expenses-report > * { margin-bottom: 4mm; }
-                #expenses-report .overflow-x-auto, #expenses-report .overflow-auto { overflow: visible !important; }
-                #expenses-report .rounded-xl { border-radius: 9px; }
-                #expenses-report .border-2 { border-width: 2px; }
-                #expenses-report .border-black, #expenses-report .border { border-color: #000 !important; }
-                #expenses-report .shadow, #expenses-report .shadow-sm, #expenses-report .shadow-md { box-shadow: none !important; }
-                #expenses-report .bg-gradient-to-r { background: linear-gradient(90deg, #0f766e, #047857) !important; color: #fff !important; padding: 9px !important; text-align: center; }
-                #expenses-report .bg-sky-800 { background: #115e59 !important; color: #fff !important; padding: 8px !important; text-align: center; }
-                #expenses-report .bg-sky-700 { background: #0f766e !important; color: #fff !important; }
-                #expenses-report .bg-sky-100 { background: #fef3c7 !important; color: #78350f !important; }
-                #expenses-report .bg-sky-50 { background: #f0f9ff !important; color: #1e293b !important; }
-                #expenses-report .bg-slate-50 { background: #f8fafc !important; color: #000 !important; }
-                #expenses-report .bg-white { background: #fff !important; color: #000 !important; }
-                #expenses-report .bg-slate-200 { background: #e2e8f0 !important; color: #000 !important; }
-                #expenses-report .bg-amber-300 { background: #fcd34d !important; color: #78350f !important; }
-                #expenses-report .bg-sky-50 { background: #fffbeb !important; color: #000 !important; }
-                #expenses-report .bg-sky-300 { background: #7dd3fc !important; color: #0c4a6e !important; }
-                #expenses-report .bg-emerald-200 { background: #a7f3d0 !important; color: #064e3b !important; }
-                #expenses-report .bg-emerald-50 { background: #ecfdf5 !important; color: #000 !important; }
-                #expenses-report .bab-1 { background-color: #a7f3d0 !important; color: #064e3b !important; }
-                #expenses-report .bab-2 { background-color: #bfdbfe !important; color: #1e3a8a !important; }
-                #expenses-report .bab-3 { background-color: #f5d0fe !important; color: #701a75 !important; }
-                #expenses-report .bab-4 { background-color: #fed7aa !important; color: #7c2d12 !important; }
-                #expenses-report .bab-5 { background-color: #fecdd3 !important; color: #881337 !important; }
-                #expenses-report .bab-default { background-color: #d1fae5 !important; color: #064e3b !important; }
-                #expenses-report table { width: 100%; max-width: 100%; min-width: 0; table-layout: auto; border-collapse: collapse; font-size: 9px; }
-                #expenses-report th, #expenses-report td { border: 1px solid #000 !important; padding: 2px 3px !important; text-align: center !important; vertical-align: middle !important; white-space: normal !important; overflow: visible !important; overflow-wrap: break-word !important; word-break: normal !important; line-height: 1.2; color: #000 !important; font-weight: 700 !important; }
-                #expenses-report thead th { font-size: 9px; font-weight: 900 !important; }
-                #expenses-report tbody td { font-size: 8.5px; }
-                #expenses-report .numeric-cell, #expenses-report .date-cell, #expenses-report .font-mono, #expenses-report input[type="number"], #expenses-report input[type="date"] { width: 1% !important; min-width: 0 !important; white-space: nowrap !important; overflow: visible !important; overflow-wrap: normal !important; word-break: keep-all !important; font-family: 'Times New Roman', Times, serif !important; font-size: clamp(8px, 1vw, 11px) !important; font-variant-numeric: tabular-nums; direction: ltr; }
-                #expenses-report input { width: 100% !important; min-width: 0 !important; border: 0; background: transparent; color: #000; font: inherit; text-align: center; }
-                #expenses-report .text-white { color: #fff !important; }
-                @media print {
-                  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-                  body { background: #fff; }
-                  .print-page { min-height: auto; width: 100%; padding: 0; border: 0; }
-                  #expenses-report { page-break-before: avoid; }
-                  #expenses-report table { page-break-inside: auto; }
-                  #expenses-report thead { display: table-header-group; }
-                  #expenses-report tr { page-break-inside: avoid; }
-                  #expenses-report th, #expenses-report td { white-space: normal !important; }
-                  #expenses-report .numeric-cell, #expenses-report .date-cell, #expenses-report .font-mono { white-space: nowrap !important; }
-                }
-                </style></head><body><div class="print-page">${reportLetterheadHtml()}<div id="expenses-report">${el.innerHTML}</div></div>
-                <script>window.onload=()=>setTimeout(()=>window.print(),300)</script></body></html>`;
-              const opened = printReportHtml(html, `المصروفات - ${view} - ${reportDateLabel}`);
-              if (!opened) toast.error("تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة");
-            }}
-            className="px-3 py-1.5 bg-white text-[#10528e] border border-[#10528e]/30 rounded-lg text-xs font-bold shadow-sm hover:bg-blue-50"
-          >
-            🖨️ طباعة
-          </button>
-          {/* ... باقي الأزرار دون تغيير ... */}
-          <button
-            id="expenses-excel-action"
-            onClick={async () => {
-              const el = document.getElementById("expenses-view-content");
-              if (!el) return;
-              const tables = Array.from(el.querySelectorAll("table")) as HTMLTableElement[];
-              if (!tables.length) {
-                toast.error("لا يوجد جدول للتصدير");
-                return;
-              }
+      </div>
 
-              try {
-                const workbook = await createExcelWorkbook();
-                const imageId = await loadReportLetterhead(workbook);
-                const tableMatrices = tables.map(htmlTableToMatrix);
-                const totalColumns = Math.max(
-                  1,
-                  ...tableMatrices.map((matrix) => matrix[0]?.length || 1),
-                );
-                const worksheet = workbook.addWorksheet("المصروفات", {
-                  views: [{ rightToLeft: true }],
-                });
-                const dataStartRow = addReportHeader(
-                  workbook,
-                  worksheet,
-                  {
-                    title: `المصروفات - ${view} - ${year}م`,
-                    reportDateLabel,
-                    recordCount: tableMatrices.reduce(
-                      (count, matrix) => count + Math.max(0, matrix.length - 2),
-                      0,
-                    ),
-                    totalColumns,
-                    palette: getExcelPalette("المصروفات"),
-                  },
-                  imageId,
-                );
+      {/* إجراءات ويب */}
+      <div className="web-only-actions sm:w-auto">
+        <WebActionMenu label="إجراءات المصروفات" actions={expenseWebActions} />
+      </div>
 
-                let nextRow = dataStartRow;
-                let firstHeaderRow = dataStartRow;
-                tableMatrices.forEach((matrix, tableIndex) => {
-                  if (tableIndex > 0) nextRow += 1;
-                  const sectionRow = worksheet.getRow(nextRow);
-                  sectionRow.getCell(1).value =
-                    tableIndex === 0 ? `تفاصيل تقرير ${view}` : "ملخص إجمالي الاستخدامات حسب الأبواب";
-                  worksheet.mergeCells(nextRow, 1, nextRow, totalColumns);
-                  sectionRow.height = 22;
-                  sectionRow.getCell(1).font = {
-                    name: "Arial",
-                    size: 11,
-                    bold: true,
-                    color: { argb: "FF000000" },
-                  };
-                  sectionRow.getCell(1).alignment = {
-                    horizontal: "right",
-                    vertical: "middle",
-                    wrapText: true,
-                    shrinkToFit: true,
-                  };
-                  sectionRow.getCell(1).border = {
-                    top: { style: "thin", color: { argb: "FF000000" } },
-                    left: { style: "thin", color: { argb: "FF000000" } },
-                    bottom: { style: "thin", color: { argb: "FF000000" } },
-                    right: { style: "thin", color: { argb: "FF000000" } },
-                  };
-                  sectionRow.getCell(1).fill = {
-                    type: "pattern",
-                    pattern: "solid",
-                    fgColor: { argb: "FFE7E2D8" },
-                  };
+      {/* إجراءات التطبيق / أزرار العمليات */}
+      <div className="apk-only-actions flex items-center gap-2">
+        {/* زر الطباعة */}
+        <button
+          id="expenses-print-action"
+          onClick={() => {
+            const el = document.getElementById("expenses-view-content");
+            if (!el) return;
+           
+            const html = `<!doctype html><html lang="ar" dir="rtl"><head
+><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escapeHtml(`المصروفات - ${view} - ${reportDateLabel}`)}</title>
+      <style>
+ @page { size: A4 landscape; margin: 4mm; }
+  * { box-sizing: border-box; }
+   html, body { margin: 0; padding: 0; }
+body { direction: rtl; background: #fff; color: #0f172a; font-family: 'Cairo', 'Tajawal', Tahoma, Arial, sans-serif; font-weight: 700; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+ 
+ .print-page { min-height: auto; width: 100%; margin: 0; padding: 0; border: 1px solid #1e293b; background: #fff; border-radius: 4px; overflow: hidden; }
+ 
+ .report-letterhead-block { display: flex; width: 100%; max-width: auto; height: 30mm; min-height: 30mm; max-height: 30mm; align-items: stretch; justify-content: center; margin: 0 0 3mm; page-break-before: avoid; page-break-after: avoid; }
 
-                  const headerRow = nextRow + 1;
-                  if (tableIndex === 0) firstHeaderRow = headerRow;
-                  appendRows(worksheet, matrix, headerRow);
-                  nextRow = headerRow + matrix.length;
-                });
+ .report-letterhead-image { display: block; width: 100%; max-width: 100%; height: 100%; max-height: 100%; object-fit: contain; object-position: center; margin: 0; }
+ 
+ ${runningLetterheadCss}
+ #expenses-report { width: 100%; padding: 2mm; }
+ #expenses-report > * { margin-bottom: 4mm; }
+ #expenses-report .overflow-x-auto, #expenses-report .overflow-auto { overflow: visible !important; }
+ #expenses-report .rounded-xl { border-radius: 6px; }
+ #expenses-report .border-2 { border-width: 1.5px; }
+ #expenses-report .border-black, #expenses-report .border { border-color: #000 !important; }
+ #expenses-report .shadow, #expenses-report .shadow-sm, #expenses-report .shadow-md { box-shadow: none !important; }
+ #expenses-report .bg-gradient-to-r { background: linear-gradient(135deg, #0f766e, #047857) !important; color: #fff !important; padding: 8px !important; text-align: center; font-size: 13px; }
+ #expenses-report .bg-sky-800 { background: #0f766e !important; color: #fff !important; padding: 7px !important; text-align: center; }
+ #expenses-report .bg-sky-700 { background: #115e59 !important; color: #fff !important; }
+ #expenses-report .bg-sky-100 { background: #fef3c7 !important; color: #78350f !important; }
+ #expenses-report .bg-sky-50 { background: #f0f9ff !important; color: #1e293b !important; }
+ #expenses-report .bg-slate-50 { background: #f8fafc !important; color: #000 !important; }
+ #expenses-report .bg-white { background: #fff !important; color: #000 !important; }
+ #expenses-report .bg-slate-200 { background: #e2e8f0 !important; color: #000 !important; }
+ #expenses-report .bg-amber-300 { background: #fcd34d !important; color: #78350f !important; }
+ #expenses-report .bg-sky-300 { background: #7dd3fc !important; color: #0c4a6e !important; }
+ #expenses-report .bg-emerald-200 { background: #a7f3d0 !important; color: #064e3b !important; }
+ #expenses-report .bg-emerald-50 { background: #ecfdf5 !important; color: #000 !important; }
+ #expenses-report .bab-1 { background-color: #d1fae5 !important; color: #064e3b !important; }
+ #expenses-report .bab-2 { background-color: #dbeafe !important; color: #1e3a8a !important; }
+ #expenses-report .bab-3 { background-color: #fae8ff !important; color: #701a75 !important; }
+ #expenses-report .bab-4 { background-color: #ffedd5 !important; color: #7c2d12 !important; }
+ #expenses-report .bab-5 { background-color: #ffe4e6 !important; color: #881337 !important; }
+ #expenses-report .bab-default { background-color: #ecfdf5 !important; color: #064e3b !important; }
+ #expenses-report table { width: 100%; max-width: 100%; min-width: 0; table-layout: auto; border-collapse: collapse; font-size: 9px; }
+ #expenses-report th, #expenses-report td { border: 1px solid #000 !important; padding: 3px 4px !important; text-align: center !important; vertical-align: middle !important; white-space: normal !important; overflow: visible !important; overflow-wrap: break-word !important; word-break: normal !important; line-height: 1.25; color: #000 !important; font-weight: 700 !important; }
+ #expenses-report thead th { font-size: 9px; font-weight: 900 !important; letter-spacing: -0.2px; }
+ #expenses-report tbody td { font-size: 8.5px; }
+ #expenses-report .numeric-cell, #expenses-report .date-cell, #expenses-report .font-mono, #expenses-report input[type="number"], #expenses-report input[type="date"] { width: 1% !important; min-width: 0 !important; white-space: nowrap !important; overflow: visible !important; overflow-wrap: normal !important; word-break: keep-all !important; font-family: 'Times New Roman', Times, serif !important; font-size: clamp(8.5px, 1.1vw, 11px) !important; font-variant-numeric: tabular-nums; direction: ltr; }
+ #expenses-report input { width: 100% !important; min-width: 0 !important; border: 0; background: transparent; color: #000; font: inherit; text-align: center; }
+ #expenses-report .text-white { color: #fff !important; }
+ @media print {
+   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+   body { background: #fff; }
+   .print-page { min-height: auto; width: 100%; padding: 0; border: 1px solid #000; }
+   #expenses-report { page-break-before: avoid; }
+   #expenses-report table { page-break-inside: auto; }
+   #expenses-report thead { display: table-header-group; }
+   #expenses-report tr { page-break-inside: avoid; }
+   #expenses-report th, #expenses-report td { white-space: normal !important; }
+   #expenses-report .numeric-cell, #expenses-report .date-cell, #expenses-report .font-mono { white-space: nowrap !important; }
+ }
+ </style></head><body><div class="print-page">${reportLetterheadHtml()}<div id="expenses-report">${el.innerHTML}</div></div>
+ <script>window.onload=()=>setTimeout(()=>window.print(),300)</script></body></html>`;
+            const opened = printReportHtml(html, `المصروفات - ${view} - ${reportDateLabel}`);
+            if (!opened) toast.error("تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة");
+          }}
+          className="px-3.5 py-1.5 bg-white text-[#10528e] hover:bg-blue-50/80 border border-[#10528e]/30 rounded-xl text-xs font-bold shadow-xs hover:shadow-sm hover:border-[#10528e]/50 active:scale-95 transition-all duration-200 flex items-center gap-1.5"
+        >
+          <span>🖨️</span>
+          <span>طباعة</span>
+        </button>
 
-                formatWorksheet(worksheet, {
-                  headerRow: firstHeaderRow,
+        {/* زر التصدير إكسل */}
+        <button
+          id="expenses-excel-action"
+          onClick={async () => {
+            const el = document.getElementById("expenses-view-content");
+            if (!el) return;
+            const tables = Array.from(el.querySelectorAll("table")) as HTMLTableElement[];
+            if (!tables.length) {
+              toast.error("لا يوجد جدول للتصدير");
+              return;
+            }
+
+            try {
+              const workbook = await createExcelWorkbook();
+              const imageId = await loadReportLetterhead(workbook);
+              const tableMatrices = tables.map(htmlTableToMatrix);
+              const totalColumns = Math.max(
+                1,
+                ...tableMatrices.map((matrix) => matrix[0]?.length || 1),
+              );
+              const worksheet = workbook.addWorksheet("المصروفات", {
+                views: [{ rightToLeft: true }],
+              });
+              const dataStartRow = addReportHeader(
+                workbook,
+                worksheet,
+                {
+                  title: `المصروفات - ${view} - ${year}م`,
+                  reportDateLabel,
+                  recordCount: tableMatrices.reduce(
+                    (count, matrix) => count + Math.max(0, matrix.length - 2),
+                    0,
+                  ),
+                  totalColumns,
                   palette: getExcelPalette("المصروفات"),
-                  maxColumnWidth: 32,
-                });
-                await downloadWorkbook(workbook, `المصروفات-${view}-${year}-${reportDate}.xlsx`);
-                toast.success("تم التصدير");
-              } catch (error) {
-                console.error("Expenses Excel export error:", error);
-                toast.error("تعذّر تصدير ملف Excel");
-              }
-            }}
-            className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700"
-          >
-            📊 Excel
-          </button>
-          <button
-            id="expenses-clear-action"
-            onClick={() => {
-              if (!confirm("هل أنت متأكد من مسح جميع بيانات المصروفات؟")) return;
-              setStore({});
-              localStorage.removeItem(STORAGE_KEY);
-              toast.success("تم مسح البيانات");
-            }}
-            className="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-rose-700"
-          >
-            🗑️ مسح
-          </button>
-        </div>
-      </div>
+                },
+                imageId,
+              );
 
-      {/* محتوى التبويب */}
-      <div id="expenses-view-content">
-        {view === "cover" && renderCover()}
-        {view.startsWith("m") && view.length <= 3 && renderMonth(Number(view.slice(1)))}
-        {view.startsWith("p") && renderQuarter(Number(view.slice(1)) - 1)}
-        {view === "final" && renderFinal()}
-        {view === "year" && renderYear()}
-      </div>
+              let nextRow = dataStartRow;
+              let firstHeaderRow = dataStartRow;
+              tableMatrices.forEach((matrix, tableIndex) => {
+                if (tableIndex > 0) nextRow += 1;
+                const sectionRow = worksheet.getRow(nextRow);
+                sectionRow.getCell(1).value =
+                  tableIndex === 0 ? `تفاصيل تقرير ${view}` : "ملخص إجمالي الاستخدامات حسب الأبواب";
+                worksheet.mergeCells(nextRow, 1, nextRow, totalColumns);
+                sectionRow.height = 22;
+                sectionRow.getCell(1).font = {
+                  name: "Arial",
+                  size: 11,
+                  bold: true,
+                  color: { argb: "FF000000" },
+                };
+                sectionRow.getCell(1).alignment = {
+                  horizontal: "right",
+                  vertical: "middle",
+                  wrapText: true,
+                  shrinkToFit: true,
+                };
+                sectionRow.getCell(1).border = {
+                  top: { style: "thin", color: { argb: "FF000000" } },
+                  left: { style: "thin", color: { argb: "FF000000" } },
+                  bottom: { style: "thin", color: { argb: "FF000000" } },
+                  right: { style: "thin", color: { argb: "FF000000" } },
+                };
+                sectionRow.getCell(1).fill = {
+                  type: "pattern",
+                  pattern: "solid",
+                  fgColor: { argb: "FFE7E2D8" },
+                };
 
-      {/* مفتاح الألوان */}
-      <div
-        className="flex flex-wrap gap-3 justify-center text-[10px] bg-slate-50 p-2 rounded-lg border border-slate-200"
-        dir="rtl"
-      >
-        <span className="flex items-center gap-1">
-          <span className={`inline-block w-4 h-4 rounded ${CUR_C} border border-black`}></span>{" "}
-          الشهر / المدة الجارية
-        </span>
-        <span className="flex items-center gap-1">
-          <span className={`inline-block w-4 h-4 rounded ${PREV_C} border border-black`}></span>{" "}
-          الأشهر / المدد السابقة
-        </span>
-        <span className="flex items-center gap-1">
-          <span className={`inline-block w-4 h-4 rounded ${TOT_C} border border-black`}></span>{" "}
-          الجملة
-        </span>
-        <span className="text-slate-400">|</span>
-        <span className="text-slate-500">
-          الصفوف البيضاء (النوع) قابلة للإدخال — الباقي يُحسب تلقائياً
-        </span>
+                const headerRow = nextRow + 1;
+                if (tableIndex === 0) firstHeaderRow = headerRow;
+                appendRows(worksheet, matrix, headerRow);
+                nextRow = headerRow + matrix.length;
+              });
+
+              formatWorksheet(worksheet, {
+                headerRow: firstHeaderRow,
+                palette: getExcelPalette("المصروفات"),
+                maxColumnWidth: 32,
+              });
+              await downloadWorkbook(workbook, `المصروفات-${view}-${year}-${reportDate}.xlsx`);
+              toast.success("تم التصدير");
+            } catch (error) {
+              console.error("Expenses Excel export error:", error);
+              toast.error("تعذّر تصدير ملف Excel");
+            }
+          }}
+          className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow-md hover:shadow-emerald-600/20 active:scale-95 transition-all duration-200 flex items-center gap-1.5"
+        >
+          <span>📊</span>
+          <span>Excel</span>
+        </button>
+
+        {/* زر المسح */}
+        <button
+          id="expenses-clear-action"
+          onClick={() => {
+            if (!confirm("هل أنت متأكد من مسح جميع بيانات المصروفات؟")) return;
+            setStore({});
+            localStorage.removeItem(STORAGE_KEY);
+            toast.success("تم مسح البيانات");
+          }}
+          className="px-3.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-bold shadow-xs hover:shadow-sm active:scale-95 transition-all duration-200 flex items-center gap-1.5"
+        >
+          <span>🗑️</span>
+          <span>مسح</span>
+        </button>
       </div>
     </div>
-  );
+
+    {/* محتوى التبويب الحالية */}
+    <div
+      id="expenses-view-content"
+      className="bg-white rounded-2xl border border-slate-200/80 p-2 sm:p-4 shadow-xs transition-all duration-300"
+    >
+      {view === "cover" && renderCover()}
+      {view.startsWith("m") && view.length <= 3 && renderMonth(Number(view.slice(1)))}
+      {view.startsWith("p") && renderQuarter(Number(view.slice(1)) - 1)}
+      {view === "final" && renderFinal()}
+      {view === "year" && renderYear()}
+    </div>
+
+    {/* مفتاح الألوان والإرشادات */}
+    <div
+      className="flex flex-wrap gap-4 items-center justify-center text-xs bg-gradient-to-r from-slate-50 via-white to-slate-50 p-3 rounded-2xl border border-slate-200/80 shadow-2xs text-slate-700"
+      dir="rtl"
+    >
+      <span className="flex items-center gap-2 font-medium">
+        <span className={`inline-block w-4 h-4 rounded-md ${CUR_C} border border-slate-400 shadow-2xs`}></span>
+        <span>الشهر / المدة الجارية</span>
+      </span>
+      <span className="flex items-center gap-2 font-medium">
+        <span className={`inline-block w-4 h-4 rounded-md ${PREV_C} border border-slate-400 shadow-2xs`}></span>
+        <span>الأشهر / المدد السابقة</span>
+      </span>
+      <span className="flex items-center gap-2 font-medium">
+        <span className={`inline-block w-4 h-4 rounded-md ${TOT_C} border border-slate-400 shadow-2xs`}></span>
+        <span>الجملة</span>
+      </span>
+      <span className="text-slate-300 hidden sm:inline">|</span>
+      <span className="text-slate-500 text-[11px] font-normal">
+        💡 الصفوف البيضاء (النوع) قابلة للإدخال — الباقي يُحسب تلقائياً
+      </span>
+    </div>
+  </div>
+);
+
 }
