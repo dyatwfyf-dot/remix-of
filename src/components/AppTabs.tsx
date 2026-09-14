@@ -242,7 +242,7 @@ const recomputeRow = (row: any) => {
 };
 
 /* ============================================================
-   مكون إدخال متفاعل محلياً مع تأجيل الحفظ حتى انتهاء الكتابة
+   مكون إدخال متفاعل محلياً مع احتواء تلقائي داخل خلايا الجدول
    ============================================================ */
 const EditableCell: React.FC<{
   rowId: string;
@@ -284,9 +284,9 @@ const EditableCell: React.FC<{
             : "rtl"
       }
       className="
-        w-auto h-auto
-        rounded-md border border
-        bg-transparent px-1.5 py-1.5
+        w-full min-w-[55px] max-w-full h-auto
+        rounded-md border border-transparent
+        bg-transparent px-1 py-1
         text-center text-[12px] sm:text-[13px]
         font-bold text-[#0f172a]
         transition-all duration-150
@@ -303,10 +303,10 @@ EditableCell.displayName = "EditableCell";
 const FormulaCell: React.FC<{ value: any }> = React.memo(({ value }) => (
   <div
     className="
-      rounded-md px-1.5 py-1
+      w-full rounded-md px-1 py-1
       text-center text-[12px] sm:text-[13px]
       font-black text-[#0f766e]
-      font-mono tabular-nums
+      font-mono tabular-nums whitespace-nowrap
     "
     dir="ltr"
   >
@@ -531,9 +531,32 @@ const AppTabs: React.FC = () => {
     e.target.value = "";
 
     try {
-      const imported = await importUsageInWorker(file, importMonthId);
-      if (!imported.length) {
+      const rawImported = await importUsageInWorker(file, importMonthId);
+      if (!rawImported.length) {
         toast.error("لم يتم العثور على صفوف استخدامات صالحة في ملف Excel");
+        return;
+      }
+
+      // استبعاد صفوف الإجماليات وملخصات الأشهر عند الاستيراد من Excel
+      const imported = rawImported.filter((row: any) => {
+        const statement = String(row["البيان"] || "").trim();
+        const numForm = String(row["رقم الاستمارة"] || "").trim();
+        const settlement = String(row["كشف التسوية"] || "").trim();
+
+        const isTotalRow =
+          statement.includes("إجمالي") ||
+          statement.includes("اجمالي") ||
+          statement.includes("الإجمالي") ||
+          numForm.includes("إجمالي") ||
+          numForm.includes("اجمالي") ||
+          settlement.includes("إجمالي") ||
+          settlement.includes("اجمالي");
+
+        return !isTotalRow;
+      });
+
+      if (!imported.length) {
+        toast.error("الملف يحتوي فقط على صفوف إجماليات بدون بيانات مفردات صالحة");
         return;
       }
 
@@ -543,7 +566,7 @@ const AppTabs: React.FC = () => {
         ...imported,
       ]);
 
-      toast.success(`تم استيراد ${imported.length} صف إلى ${importedMonths.size} شهر`);
+      toast.success(`تم استيراد ${imported.length} صف إلى ${importedMonths.size} شهر (تم استبعاد صفوف الإجماليات)`);
     } catch (error) {
       console.error("[Excel] Usage import failed", error);
       toast.error("تعذّر قراءة الملف. تأكد أنه ملف Excel صالح أو صادر من هذا الجدول.");
@@ -714,7 +737,6 @@ const AppTabs: React.FC = () => {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Tajawal:wght@400;500;700&display=swap">
 <style>
-      /* 1. ضبط حجم الورقة إلى A3 بالوضع الأفقي */
       @page { 
         size: A3 landscape; 
         margin: 3mm; 
@@ -729,37 +751,48 @@ const AppTabs: React.FC = () => {
         color:#0f172a!important; 
         padding: 0 1px; 
         width: 100%; 
-        font-weight: 700; !important; 
+        font-weight: 700!important; 
       }
 
-      /* 2. تجعل الحاوية تمتد على 100% من عرض الصفحة */
       .report-letterhead-block { 
         display:flex !important; 
         width:100% !important; 
         height:30mm; 
         overflow:hidden; 
-  justify-content:space-between; /* توزيع النص والصورة على طرفي الصفحة */
+        justify-content:space-between; 
         align-items: center; 
         margin: 0 0 3mm; 
       }
       .report-letterhead-image { 
         width:100%!important; 
         height:100%!important; 
-  object-fit:contain!important;
-        /* يحافظ على أبعاد الصورة دون قص أو تشويه */
+        object-fit:contain!important;
       }
       h2 { text-align:center; color:#0f172a !important; margin:0 0 3mm; font-weight:800; }
       .report-date { text-align:center; color:#334155 !important; margin:0 0 5px; font-size:10px; font-weight:700; }
-      table { width:100%; border-collapse:collapse; table-layout:auto !important; font-size:clamp(14px,1.05vw,16px);
-      whitespace:normal؛ 
-      break-word:break-word;
+      table { 
+        width:100%; 
+        border-collapse:collapse; 
+        table-layout:auto !important; 
+        font-size:clamp(11px,0.85vw,14px);
       }
-      th, td { border:1px solid #000; padding:2px 3px !important; text-align:center; vertical-align:middle; line-height:1.15; font-size:clamp(14px,1.05vw,16px); color:#0f172a !important; font-weight:700 !important; }
-      .num, .numeric-cell, .date-cell { width:1%; white-space:nowrap !important; font-family:'Times New Roman',Times,serif !important; font-size:clamp(14px,1vw,16px) !important; font-variant-numeric:tabular-nums; direction:ltr; }
-      .text-cell { width:auto; white-space:nowrap; overflow-wrap:break-word; }
+      th, td { 
+        border:1px solid #000; 
+        padding:3px 2px !important; 
+        text-align:center; 
+        vertical-align:middle; 
+        line-height:1.2; 
+        font-size:clamp(11px,0.85vw,14px); 
+        color:#0f172a !important; 
+        font-weight:700 !important; 
+        white-space: normal !important;
+        word-break: break-word;
+        overflow-wrap: break-word;
+      }
+      .num, .numeric-cell, .date-cell { width:1%; white-space:nowrap !important; font-family:'Times New Roman',Times,serif !important; font-size:clamp(11px,0.85vw,14px) !important; font-variant-numeric:tabular-nums; direction:ltr; }
+      .text-cell { width:auto; white-space:normal; overflow-wrap:break-word; word-break:break-word; }
       
-      /* ألوان رؤوس الأعمدة المتدرجة للطباعة */
-      thead th { font-weight:800; color:#0f172a !important; }
+      thead th { font-weight:800; color:#0f172a !important; white-space: normal !important; word-break: break-word; }
       thead .c-main-1 { background: linear-gradient(180deg, #e0f2fe, #bae6fd) !important; color: #0369a1 !important; }
       thead .c-main-2 { background: linear-gradient(180deg, #e0e7ff, #c7d2fe) !important; color: #3730a3 !important; }
       thead .c-main-3 { background: linear-gradient(180deg, #ccfbf1, #99f6e4) !important; color: #0f766e !important; }
@@ -807,18 +840,21 @@ const AppTabs: React.FC = () => {
       <style>{`
         .usage-header { color: ${UI.text}; }
         .usage-table-shell { scrollbar-color: ${UI.teal} ${UI.surface3}; }
-        .usage-table { font-family: "Tajawal", "Noto Sans Arabic", sans-serif; }
+        .usage-table { font-family: "Tajawal", "Noto Sans Arabic", sans-serif; table-layout: auto; }
         
-        /* ألوان رؤوس الجدول المتدرجة الفاتحة */
+        /* التفاف النص في رؤوس الأعمدة مع ضبط الحجم */
         .usage-table th {
           position: sticky; top: 0; z-index: 20; color: #0f172a;
-          border: 1px solid #000; padding: 10px 8px; text-align: center;
-          vertical-align: middle; white-space:wrap;
-          font-size: 12px; font-weight: 900;
-          line-height: 1; background: linear-gradient(180deg, #f8fafc, #e2e8f0);
+          border: 1px solid #cbd5e1; padding: 8px 4px; text-align: center;
+          vertical-align: middle; 
+          white-space: normal !important;
+          word-break: break-word;
+          overflow-wrap: break-word;
+          font-size: 11px; font-weight: 900;
+          line-height: 1.2; background: linear-gradient(180deg, #f8fafc, #e2e8f0);
+          min-width: 60px;
         }
         
-        /* تخصيص ألوان فاتحة مميزة لكل عمود رئيسي وتجميعي */
         .usage-table th.c-main-1 { background: linear-gradient(180deg, #e0f2fe, #bae6fd); color: #0369a1; }
         .usage-table th.c-main-2 { background: linear-gradient(180deg, #e0e7ff, #c7d2fe); color: #3730a3; }
         .usage-table th.c-main-3 { background: linear-gradient(180deg, #ccfbf1, #99f6e4); color: #0f766e; }
@@ -830,15 +866,21 @@ const AppTabs: React.FC = () => {
         .usage-table th.c-sub-item { background: linear-gradient(180deg, #f8fafc, #f1f5f9); color: #1e293b; }
         .usage-table th.c-action { background: linear-gradient(180deg, #ffe4e6, #fecdd3); color: #be123c; }
 
-        .usage-table td { border:  solid ${UI.grid}; padding: 0; vertical-align: middle;
-        whitespace-normal;
+        /* احتواء الخلايا ومحتوياتها بمرونة */
+        .usage-table td { 
+          border: 1px solid ${UI.grid}; 
+          padding: 2px; 
+          vertical-align: middle;
+          white-space: normal !important;
+          word-break: break-word;
+          overflow-wrap: break-word;
         }
         .usage-table tbody tr { background: ${UI.row}; transition: background .15s ease; }
         .usage-table tbody tr:nth-child(even) { background: ${UI.rowAlt}; }
         .usage-table tbody tr:hover { background: #f0fdfa; }
         .usage-table .month-row td {
           background: linear-gradient(90deg, #38bdf8, #818cf8); color: #ffffff;
-          border-color: #000; font-weight: 900; padding: 9px 10px;
+          border-color: #000; font-weight: 900; padding: 8px 10px;
           box-shadow: inset 0 2px 0 rgba(255,255,255,.6), inset 0 -1px 0 rgba(0,0,0,.1);
         }
         .usage-table .month-row button {
@@ -974,11 +1016,11 @@ const AppTabs: React.FC = () => {
 
       {/* الجدول الرئيسي */}
       <div
-        className="usage-table-shell  overflow-auto rounded-2xl border shadow-xl"
+        className="usage-table-shell overflow-auto rounded-2xl border shadow-xl"
         style={{ maxHeight: "70vh", background: "#ffffff", borderColor: "#cbd5e1" }}
       >
-        <table className="usage-table w-full table-auto border-collapse text-center whitespace-normal break-words">
-    <thead className="sticky top-0 z-30" dangerouslySetInnerHTML={{ __html: THEAD_HTML }} />
+        <table className="usage-table w-full border-collapse text-center">
+          <thead className="sticky top-0 z-30" dangerouslySetInnerHTML={{ __html: THEAD_HTML }} />
 
           <tbody>
             {MONTHS.map((m) => {
@@ -1071,7 +1113,7 @@ const AppTabs: React.FC = () => {
                     </td>
                     {dataColumnsOrder.map((c) => (
                       <td key={c} className="border border-[#cbd5e1]">
-                        <div className="px-1.5 py-1 text-[12px] font-black text-[#92400e] font-mono" dir="ltr">
+                        <div className="px-1 py-1 text-[12px] font-black text-[#92400e] font-mono whitespace-nowrap" dir="ltr">
                           {formatNumberEn(t.cumulative(c)) || "-"}
                         </div>
                       </td>
