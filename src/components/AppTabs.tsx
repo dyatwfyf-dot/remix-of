@@ -722,7 +722,7 @@ const AppTabs: React.FC = () => {
       .report-letterhead-image { width:auto !important; height:auto !important; object-fit:fill !important; }
       h2 { text-align:center; color:#0f172a !important; margin:0 0 3mm; font-weight:800; }
       .report-date { text-align:center; color:#334155 !important; margin:0 0 5px; font-size:10px; font-weight:700; }
-      table { width:auto; border-collapse:collapse; table-layout:auto !important; font-size:clamp(14px,1.05vw,16px); }
+      table { width:100%; border-collapse:collapse; table-layout:auto !important; font-size:clamp(14px,1.05vw,16px); }
       th, td { border:1px solid #000; padding:2px 3px !important; text-align:center; vertical-align:middle; line-height:1.15; font-size:clamp(14px,1.05vw,16px); color:#0f172a !important; font-weight:700 !important; }
       .num, .numeric-cell, .date-cell { width:1%; white-space:nowrap !important; font-family:'Times New Roman',Times,serif !important; font-size:clamp(14px,1vw,16px) !important; font-variant-numeric:tabular-nums; direction:ltr; }
       .text-cell { width:auto; white-space:nowrap; overflow-wrap:break-word; }
@@ -940,10 +940,10 @@ const AppTabs: React.FC = () => {
 
       {/* الجدول الرئيسي */}
       <div
-        className="usage-table-shell w-full overflow-auto rounded-2xl border shadow-xl"
+        className="usage-table-shell w-auto overflow-auto rounded-2xl border shadow-xl"
         style={{ maxHeight: "70vh", background: "#ffffff", borderColor: "#cbd5e1" }}
       >
-        <table className="usage-table w-auto table-auto border-collapse text-center">
+        <table className="usage-table table-auto border-collapse text-center">
           <thead className="sticky top-0 z-30" dangerouslySetInnerHTML={{ __html: THEAD_HTML }} />
 
           <tbody>
