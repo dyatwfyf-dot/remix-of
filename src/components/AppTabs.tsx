@@ -713,13 +713,41 @@ const AppTabs: React.FC = () => {
     <title>سجل مفردات الاستخدامات والنفقات العامة - ${reportDateLabel}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Tajawal:wght@400;500;700&display=swap">
-    <style>
-      @page { size:A4 landscape; margin:3mm; }
-      * { box-sizing:border-box; }
-      html, body { margin:0; padding:0; }
-      body { font-family:'Cairo','Tajawal',sans-serif; direction:rtl; color:#0f172a !important; padding:0 1px; width:100%; font-weight:700 !important; }
-      .report-letterhead-block { display:flex; width:100%; height:30mm; overflow:hidden; justify-content:center; margin:0 0 3mm; }
-      .report-letterhead-image { width:auto !important; height:auto !important; object-fit:fill !important; }
+<style>
+      /* 1. ضبط حجم الورقة إلى A3 بالوضع الأفقي */
+      @page { 
+        size: A3 landscape; 
+        margin: 3mm; 
+      }
+
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      
+      body { 
+        font-family: 'Cairo', 'Tajawal', sans-serif; 
+        direction: rtl; 
+        color: #0f172a !important; 
+        padding: 0 1px; 
+        width: 100%; 
+        font-weight: 700 !important; 
+      }
+
+      /* 2. تجعل الحاوية تمتد على 100% من عرض الصفحة */
+      .report-letterhead-block { 
+        display: flex; 
+        width: 100% !important; 
+        height: 30mm; 
+        overflow: hidden; 
+        justify-content: space-between; /* توزيع النص والصورة على طرفي الصفحة */
+        align-items: center; 
+        margin: 0 0 3mm; 
+      }
+      .report-letterhead-image { 
+        width: 100% !important; 
+        height: 100% !important; 
+        object-fit: contain !important;
+        /* يحافظ على أبعاد الصورة دون قص أو تشويه */
+      }
       h2 { text-align:center; color:#0f172a !important; margin:0 0 3mm; font-weight:800; }
       .report-date { text-align:center; color:#334155 !important; margin:0 0 5px; font-size:10px; font-weight:700; }
       table { width:100%; border-collapse:collapse; table-layout:auto !important; font-size:clamp(14px,1.05vw,16px); }
