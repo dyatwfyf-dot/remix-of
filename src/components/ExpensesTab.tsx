@@ -441,16 +441,16 @@ export default function ExpensesTab() {
 
       {/* بيانات الجهة */}
       <div className="flex flex-col items-center">
-        <div className="w-full max-w-md space-y-4 text-right text-[1.25rem] font-medium leading-[1.7] text-slate-700 sm:space-y-5 sm:text-xl">
-          <p className="flex items-center justify-end gap-3">
+        <div className="w-full max-w-md space-y-4 text-left text-[1.25rem] font-bold leading-[1.7] text-slate-700 sm:space-y-5 sm:text-xl">
+          <p className="flex items-center justify-start gap-1">
             <span className="w-20 shrink-0 text-slate-600">المحافظة</span>
             <span className="font-extrabold text-slate-900">: صعـــدة</span>
           </p>
-          <p className="flex items-center justify-end gap-3">
+          <p className="flex items-center justify-start gap-2">
             <span className="w-20 shrink-0 text-slate-600">المديرية</span>
             <span className="font-extrabold text-slate-900">: مركز المحافظة</span>
           </p>
-          <p className="flex items-center justify-end gap-3">
+          <p className="flex items-center justify-start gap-3">
             <span className="w-20 shrink-0 text-slate-600">المكتب</span>
             <span className="font-extrabold text-slate-900 text-[1.1rem] sm:text-xl">: المجلس الطبي فرع صعدة</span>
           </p>
