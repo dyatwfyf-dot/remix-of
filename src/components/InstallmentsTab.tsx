@@ -1859,7 +1859,7 @@ const dueTotal = year === 2026 ? prevDue + 0 : fees;
       <tbody>
 <tr class="row-fees"><td class="lbl">إجمالي رسوم الدراسة </td><td class="num">${escapeHtml(fmt(prevDue))}</td></tr>
               ${prevRow}
- <tr class="row-total-due"><td class="lbl">إجمالي المبلغ المطلوب</td><td class="num">${escapeHtml(fmt(dueTotal))}</td></tr>
+ <tr class="row-total-due"><td class="lbl">إجمالي المبلغ المطلوب</td><td class="num">${escapeHtml(fmt(prevDue))}</td></tr>
               ${paidRows}
   <tr class="row-total-paid"><td class="lbl">إجمالي المسدد (له)</td><td class="num">${escapeHtml(fmt(totalPaid))}</td></tr>
               <tr class="row-final"><td class="lbl">${escapeHtml(remainingLabel)}</td><td class="num">${escapeHtml(fmt(Math.abs(remaining)))}</td></tr>
