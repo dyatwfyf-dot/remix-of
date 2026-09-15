@@ -2054,7 +2054,7 @@ const installments2026WebActions: WebActionItem[] = [
                 className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"
               />
             </div>
-<label className="apk-only-actions relative w-full px-1.5 sm:px-2 py-1 sm:py-1 bg-white text-sky-700 rounded-lg text-xs sm:text-xs font-bold cursor-pointer hover:bg-sky-50 shadow text-center">
+<label className="apk-only-actions relative w-full px-2 py-1 bg-white text-sky-800 rounded-md text-sm font-bold cursor-pointer hover:bg-sky-50 shadow text-center">
   📥 استيراد الملف{" "}
   <input
     type="file"
@@ -2068,15 +2068,15 @@ const installments2026WebActions: WebActionItem[] = [
             <div className="apk-only-actions col-span-2 flex gap-1 w-full sm:w-auto">
         <button
       onClick={() => exportToExcel(2025)}
-className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
+className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white text-sky-800 rounded-md font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1`}
               >
- <FileSpreadsheet className={ICON_MOBILE} /> <span className="hidden sm:inline">⬆️Excelتصدير الي</span>
+ <FileSpreadsheet className={ICON_MOBILE} /> <span >تصدير Excel</span>
               </button>
    <button
     onClick={() => setPrintSettingsYear(2025)}
-className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white/95 text-sky-800 rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`}
+className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white text-sky-800 rounded-md font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1`}
               >
-                <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة</span>
+                <Printer className={ICON_MOBILE} /> <span >طباعة</span>
               </button>
             </div>
 
@@ -2111,7 +2111,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white/95 text-sky-800 rounded-
         <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2025} columns={3} />
           <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
-            <table className="installments-table table-auto text-lg sm:text-base font-bold">
+            <table className="installments-table w-full table-auto text-sm sm:text-base font-bold text-black">
               <thead className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900  [&>tr>th]:!text-white sticky top-0 z-20 shadow-md">
                 <tr>
                   <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">#</th>
@@ -2300,51 +2300,51 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white/95 text-sky-800 rounded-
           </div>
     
     <div className="w-auto grid grid-cols-3 sm:flex gap-1 sm:gap-2 items-center">
- <button
-   onClick={() => setCondFormatModal(true)}
-className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-extrabold shadow transition-colors flex items-center justify-center gap-1 ${
-                condFormatRules.length
-                  ? "bg-yellow-400 text-yellow-900 animate-pulse"
-                  : "bg-white/20 text-white hover:bg-white/30"
-              }`}
-              title="تلوين الصفوف حسب نص معين"
-            >
-              <Palette className={ICON_MOBILE} />
-              <span className="hidden sm:inline">{condFormatRules.length ? `تنسيق نشط (${condFormatRules.length})` : "تنسيق شرطي"}</span>
-            </button>
-
             <div className="relative w-auto ">
-              <Search className="w-4 h-4 absolute right-2.5 top-2.5 text-yellow-500" />
+              <Search className="w-4 h-4 absolute right-2.5 top-2.5 text-sky-500" />
               <input type="text"
                 placeholder="بحث (الاسم، الدفعة، المساق)..."
                 value={search2026}
                 onChange={(e) => setSearch2026(e.target.value)}
-                className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-yellow-600 shadow-sm"
+                className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"
               />
             </div>
-      
-            <button
-              onClick={() => setNewRowModal2026(true)}
-              className="apk-only-actions w-full px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-sm font-bold shadow hover:bg-blue-200 transition-colors flex items-center justify-center gap-1"
-            >
-              <Plus className={ICON_MOBILE} /> <span className="hidden sm:inline">طالب جديد</span>
-            </button>
 
             <button
-              onClick={() => setNewColModal(true)}
-              className="apk-only-actions w-full px-2 py-1 bg-amber-100 text-amber-800 rounded-md text-sm font-bold shadow hover:bg-amber-200 transition-colors flex items-center justify-center gap-1"
+              onClick={() => setNewRowModal2026(true)}
+              className="apk-only-actions w-full px-2 py-1 bg-white text-sky-800 rounded-md text-sm font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1"
             >
-              <Plus className={ICON_MOBILE} /> <span className="hidden sm:inline">عمود جديد</span>
+              <Plus className={ICON_MOBILE} /> <span>طالب جديد</span>
             </button>
 
             <button
               onClick={() => setNewPaymentModal(true)}
-              className="apk-only-actions w-full px-2 py-1 bg-white/20 text-white rounded-md text-sm font-bold shadow hover:bg-white/30 transition-colors truncate"
+              className="apk-only-actions w-full px-2 py-1 bg-white text-sky-800 rounded-md text-sm font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1 truncate"
             >
               <span>➕ إضافة قسط</span>
             </button>
-    
-            <label className="apk-only-actions w-full px-2 py-1 bg-white text-sky-700 rounded-md text-sm font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors">
+
+            <button
+              onClick={() => setNewColModal(true)}
+              className="apk-only-actions w-full px-2 py-1 bg-white text-sky-800 rounded-md text-sm font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1"
+            >
+              <Plus className={ICON_MOBILE} /> <span>عمود جديد</span>
+            </button>
+
+  <button
+    onClick={() => setCondFormatModal(true)}
+className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-bold shadow transition-colors flex items-center justify-center gap-1 ${
+                condFormatRules.length
+                  ? "bg-yellow-300 text-yellow-900 animate-pulse"
+                  : "bg-white text-sky-800 hover:bg-sky-50"
+              }`}
+              title="تلوين الصفوف حسب نص معين"
+            >
+              <Palette className={ICON_MOBILE} />
+              <span>{condFormatRules.length ? `تنسيق نشط (${condFormatRules.length})` : "تنسيق شرطي"}</span>
+            </button>
+
+            <label className="apk-only-actions w-full px-2 py-1 bg-white text-sky-800 rounded-md text-sm font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1">
               📥 استيراد{" "}
               <input
                 type="file"
@@ -2357,15 +2357,25 @@ className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-extrabold 
             <div className="apk-only-actions col-span-3 flex gap-1 w-full sm">
               <button
                 onClick={() => exportToExcel(2026)}
-                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
+                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white text-sky-800 font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1`}
               >
-                <FileSpreadsheet className={ICON_MOBILE} /> <span className="hidden sm:inline">Excel</span>
+                <FileSpreadsheet className={ICON_MOBILE} /> <span>تصدير Excel</span>
               </button>
               <button
                 onClick={() => setPrintSettingsYear(2026)}
-                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white/95 text-sky-800 rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`}
+                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white text-sky-800 font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1`}
               >
-                <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة</span>
+                <Printer className={ICON_MOBILE} /> <span>طباعة</span>
+              </button>
+              <button
+                className="apk-only-actions flex-1 sm:flex-none flex items-center justify-center gap-1 px-2 py-1 text-xs bg-white text-sky-800 rounded-md font-bold shadow hover:bg-sky-50 active:scale-95 transition-all"
+                type="button"
+                onClick={handleDetailedPdf2026}
+                disabled={detailedPdfBusy2026}
+                title="تنزيل تقرير الأقساط التفصيلي لعام 2026"
+              >
+                <Download className={`${ICON_MOBILE} ${detailedPdfBusy2026 ? "animate-pulse" : ""}`} />
+                <span>{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تنزيل PDF"}</span>
               </button>
             </div>
 
@@ -2398,16 +2408,6 @@ className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-extrabold 
                 additionalWebActions={installments2026WebActions}
                 className="!flex-1 min-w-0 !gap-1 sm:!gap-2 [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-2 [&>button]:py-1 [&>button]:text-sm"
               />
-              <button
-                className="apk-only-actions flex items-center gap-1 px-3 py-1 bg-[#10528e] text-white rounded-md text-sm font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all"
-                type="button"
-                onClick={handleDetailedPdf2026}
-                disabled={detailedPdfBusy2026}
-                title="تنزيل تقرير الأقساط التفصيلي لعام 2026"
-              >
-                <Download className={`${ICON_MOBILE} ${detailedPdfBusy2026 ? "animate-pulse" : ""}`} />
-                <span className="hidden sm:inline">{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تنزيل PDF"}</span>
-              </button>
             </div>
           </div>
         </div>
@@ -2415,13 +2415,13 @@ className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-extrabold 
   <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2026} columns={3} />
  <div className="overflow-auto max-h-auto rounded-lg border border-slate-200 shadow-sm relative">
- <table className="installments-table w-full table-auto text-lg font-extrabold text-black">
+ <table className="installments-table w-full table-auto text-sm sm:text-base font-bold text-black">
 {/* ترويسة الجدول: لون ذهبي لامع مع خط أسود غامق */}
-<thead className="bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500 font-extrabold border-b-2 border-sky-700 text-black sticky top-0 z-20 shadow-md">
+<thead className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900 [&>tr>th]:!text-white sticky top-0 z-20 shadow-md">
  <tr>
- <th className="text-center w-full whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30">#</th>
+ <th className="text-center w-full whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25">#</th>
 <th
-className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     onClick={() => handleSort2026("name")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2429,7 +2429,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     onClick={() => handleSort2026("batch")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2437,7 +2437,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     onClick={() => handleSort2026("specialty")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2445,7 +2445,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     onClick={() => handleSort2026("prevDue")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2453,7 +2453,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     onClick={() => handleSort2026("fees")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2463,7 +2463,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                   {MONTHS_2026.map((m) => (
                     <th
                       key={m}
-                      className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                      className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     >
                       {m.trim()}
                     </th>
@@ -2471,7 +2471,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                   {extraCols2026.map((col) => (
                     <th
                       key={col.name}
-                      className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                      className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     >
                       <div className="flex items-center justify-center gap-1">
                         {col.name}
@@ -2485,7 +2485,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                               formula: col.formula || "",
                             })
                           }
-                          className="p-0.5 bg-black/10 hover:bg-black/20 rounded transition-all"
+                          className="p-0.5 bg-white/10 hover:bg-white/20 rounded transition-all"
                           title="تعديل أو حذف العمود"
                         >
                           <Settings className={ICON_MOBILE} />
@@ -2494,7 +2494,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                     </th>
                   ))}
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     onClick={() => handleSort2026("totalPaid")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2502,16 +2502,16 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     onClick={() => handleSort2026("remaining")}
                   >
                     <div className="flex items-center justify-center gap-1">
                       الرصيد المتبقي <SortIcon sortConfig={sortConfig2026} columnKey="remaining" />
                     </div>
                   </th>
-                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30">الملاحظات</th>
-                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30">حالة</th>
-                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black">إجراءات</th>
+                  <th className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25">الملاحظات</th>
+                  <th className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25">حالة</th>
+                  <th className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">إجراءات</th>
                 </tr>
               </thead>
               <tbody>
