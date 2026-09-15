@@ -1653,7 +1653,7 @@ const getStatusText = (rem: number) =>
 
     // 4. حساب إجمالي المستحق:
     // إذا كانت السنة 2026 يتم إضاف المتبقي السابق إلى الرسوم الحالية، وإلا تُحسب الرسوم فقط.
-const dueTotal = year === 2026 ? prevDue + 0 : fees;
+const dueTotal = year === 2026 ? fees + 0 : fees;
     // 5. حساب المبلغ المتبقي
     const remaining = dueTotal - totalPaid;
 
@@ -1685,7 +1685,7 @@ const dueTotal = year === 2026 ? prevDue + 0 : fees;
 المتبق علية من
 العام 2025 (مدور)
  </td>
-   <td class="num">${escapeHtml(fmt(fees))}</td>
+<td class="num">${escapeHtml(fmt(prevDue))}</td>
         </tr>`
         : "";
 
@@ -1857,11 +1857,14 @@ const dueTotal = year === 2026 ? prevDue + 0 : fees;
        </tr>
             </thead>
       <tbody>
-<tr class="row-fees"><td class="lbl">إجمالي رسوم الدراسة </td><td class="num">${escapeHtml(fmt(prevDue))}</td></tr>
+<tr class="row-fees"><td class="lbl">إجمالي رسوم الدراسة </td><td class="num">
+${escapeHtml(fmt(fees))}</td></tr>
               ${prevRow}
- <tr class="row-total-due"><td class="lbl">إجمالي المبلغ المطلوب</td><td class="num">${escapeHtml(fmt(prevDue))}</td></tr>
+ <tr class="row-total-due"><td class="lbl">إجمالي المبلغ المطلوب</td><td class="num">
+ ${escapeHtml(fmt(prevDue))}</td></tr>
               ${paidRows}
-  <tr class="row-total-paid"><td class="lbl">إجمالي المسدد (له)</td><td class="num">${escapeHtml(fmt(totalPaid))}</td></tr>
+  <tr class="row-total-paid"><td class="lbl">إجمالي المسدد (له)</td><td class="num">
+  ${escapeHtml(fmt(totalPaid))}</td></tr>
               <tr class="row-final"><td class="lbl">${escapeHtml(remainingLabel)}</td><td class="num">${escapeHtml(fmt(Math.abs(remaining)))}</td></tr>
             </tbody>
           </table>
@@ -2064,15 +2067,15 @@ const installments2026WebActions: WebActionItem[] = [
 
 
             <div className="apk-only-actions col-span-2 flex gap-1 w-full sm:w-auto">
-              <button
-                onClick={() => exportToExcel(2025)}
-                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
+        <button
+      onClick={() => exportToExcel(2025)}
+className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
               >
-                <FileSpreadsheet className={ICON_MOBILE} /> <span className="hidden sm:inline">Excel</span>
+ <FileSpreadsheet className={ICON_MOBILE} /> <span className="hidden sm:inline">⬆️Excelتصدير الي</span>
               </button>
-              <button
-                onClick={() => setPrintSettingsYear(2025)}
-                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white/95 text-sky-800 rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`}
+   <button
+    onClick={() => setPrintSettingsYear(2025)}
+className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white/95 text-sky-800 rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`}
               >
                 <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة</span>
               </button>
@@ -2109,7 +2112,7 @@ const installments2026WebActions: WebActionItem[] = [
         <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2025} columns={3} />
           <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
-            <table className="installments-table min-w-auto table-auto text-lg sm:text-base font-bold">
+            <table className="installments-table table-auto text-lg sm:text-base font-bold">
               <thead className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900  [&>tr>th]:!text-white sticky top-0 z-20 shadow-md">
                 <tr>
                   <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">#</th>
@@ -2289,17 +2292,18 @@ const installments2026WebActions: WebActionItem[] = [
       </div>
 {/* ========== واجهة جدول 2026 ========== */}
       <div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-lg border border-sky-100 rounded-2xl overflow-hidden">
-        <div className="bg-gradient-to-l from-sky-800 via-sky-600 to-sky-600 px-2 sm:px-6 py-2.5 sm:py-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2">
-          <div className="min-w-0">
+<div className="bg-gradient-to-l from-sky-800 via-sky-600 to-sky-600 px-2 sm:px-2 py-2.5 sm:py-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2">
+ <div className="min-w-0">
             <h2 className="text-base sm:text-lg sm:text-xl font-extrabold text-white">
               📊 سجل أقساط العام الحالي 2026
             </h2>
             <p className="text-xs sm:text-sm font-bold text-white">بيانات المسدد والرصيد المدور لعام 2026</p>
           </div>
-          <div className="w-full grid grid-cols-2 sm:flex gap-1.5 sm:gap-2 items-center">
-            <button
-              onClick={() => setCondFormatModal(true)}
-              className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-extrabold shadow transition-colors flex items-center justify-center gap-1 ${
+    
+    <div className="w-auto grid grid-cols-3 sm:flex gap-1 sm:gap-2 items-center">
+ <button
+   onClick={() => setCondFormatModal(true)}
+className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-extrabold shadow transition-colors flex items-center justify-center gap-1 ${
                 condFormatRules.length
                   ? "bg-yellow-400 text-yellow-900 animate-pulse"
                   : "bg-white/20 text-white hover:bg-white/30"
@@ -2310,7 +2314,7 @@ const installments2026WebActions: WebActionItem[] = [
               <span className="hidden sm:inline">{condFormatRules.length ? `تنسيق نشط (${condFormatRules.length})` : "تنسيق شرطي"}</span>
             </button>
 
-            <div className="relative w-full sm:w-auto">
+            <div className="relative w-auto ">
               <Search className="w-4 h-4 absolute right-2.5 top-2.5 text-yellow-500" />
               <input type="text"
                 placeholder="بحث (الاسم، الدفعة، المساق)..."
@@ -2351,7 +2355,7 @@ const installments2026WebActions: WebActionItem[] = [
               />
             </label>
 
-            <div className="apk-only-actions col-span-2 flex gap-1 w-full sm:w-auto">
+            <div className="apk-only-actions col-span-3 flex gap-1 w-full sm">
               <button
                 onClick={() => exportToExcel(2026)}
                 className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
@@ -2408,16 +2412,17 @@ const installments2026WebActions: WebActionItem[] = [
             </div>
           </div>
         </div>
-        <div className="p-1 sm:p-3">
+
+  <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2026} columns={3} />
-          <div className="overflow-auto max-h-auto rounded-lg border border-slate-200 shadow-sm relative">
-            <table className="installments-table w-auto table-auto text-lg font-extrabold text-black">
-              {/* ترويسة الجدول: لون ذهبي لامع مع خط أسود غامق */}
-              <thead className="bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500 font-extrabold border-b-2 border-sky-700 text-black sticky top-0 z-20 shadow-md">
-                <tr>
-                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30">#</th>
-                  <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+ <div className="overflow-auto max-h-auto rounded-lg border border-slate-200 shadow-sm relative">
+ <table className="installments-table w-full table-auto text-lg font-extrabold text-black">
+{/* ترويسة الجدول: لون ذهبي لامع مع خط أسود غامق */}
+<thead className="bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500 font-extrabold border-b-2 border-sky-700 text-black sticky top-0 z-20 shadow-md">
+ <tr>
+ <th className="text-center w-full whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30">#</th>
+<th
+className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("name")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2544,7 +2549,7 @@ className={`border-t border-slate-200 transition-colors ${rowBgClass}`}
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "name", e.target.value)
                               }
-className="w-full min-w-auto bg-transparent text-center text-black font-extrabold text-lg sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+className="w-full min-w-0 bg-transparent text-center text-black font-extrabold text-lg sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
                             />
                           </td>
   <td className="text-center w-auto text-black whitespace-nowrap bg-sky-50/70 !px-2 !py-2 !text-lg border-l border-slate-200">
