@@ -2417,11 +2417,11 @@ className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-bold shado
  <div className="overflow-auto max-h-auto rounded-lg border border-slate-200 shadow-sm relative">
  <table className="installments-table w-full table-auto text-sm sm:text-base font-bold text-black">
 {/* ترويسة الجدول: لون ذهبي لامع مع خط أسود غامق */}
-<thead className="bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500 font-extrabold border-b-2 border-sky-700 text-black sticky top-0 z-20 shadow-md">
+<thead className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900 [&>tr>th]:!text-white sticky top-0 z-20 shadow-md">
  <tr>
- <th className="text-center w-full whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30">#</th>
+ <th className="text-center w-full whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25">#</th>
 <th
-className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     onClick={() => handleSort2026("name")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2429,7 +2429,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     onClick={() => handleSort2026("batch")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2437,7 +2437,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     onClick={() => handleSort2026("specialty")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2445,7 +2445,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     onClick={() => handleSort2026("prevDue")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2453,7 +2453,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     onClick={() => handleSort2026("fees")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2463,7 +2463,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                   {MONTHS_2026.map((m) => (
                     <th
                       key={m}
-                      className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                      className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     >
                       {m.trim()}
                     </th>
@@ -2471,7 +2471,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                   {extraCols2026.map((col) => (
                     <th
                       key={col.name}
-                      className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                      className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     >
                       <div className="flex items-center justify-center gap-1">
                         {col.name}
@@ -2485,7 +2485,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                               formula: col.formula || "",
                             })
                           }
-                          className="p-0.5 bg-black/10 hover:bg-black/20 rounded transition-all"
+                          className="p-0.5 bg-white/10 hover:bg-white/20 rounded transition-all"
                           title="تعديل أو حذف العمود"
                         >
                           <Settings className={ICON_MOBILE} />
@@ -2494,7 +2494,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                     </th>
                   ))}
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     onClick={() => handleSort2026("totalPaid")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2502,16 +2502,16 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-black/5 
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     onClick={() => handleSort2026("remaining")}
                   >
                     <div className="flex items-center justify-center gap-1">
                       الرصيد المتبقي <SortIcon sortConfig={sortConfig2026} columnKey="remaining" />
                     </div>
                   </th>
-                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30">الملاحظات</th>
-                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30">حالة</th>
-                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black">إجراءات</th>
+                  <th className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25">الملاحظات</th>
+                  <th className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25">حالة</th>
+                  <th className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">إجراءات</th>
                 </tr>
               </thead>
               <tbody>
