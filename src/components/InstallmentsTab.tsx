@@ -1652,8 +1652,8 @@ const getStatusText = (rem: number) =>
     }, 0);
 
     // 4. حساب إجمالي المستحق:
-    // إذا كانت السنة 2026 يتم إضافة المتبقي السابق إلى الرسوم الحالية، وإلا تُحسب الرسوم فقط.
-    const dueTotal = year === 2026 ? fees + 0 : prevDue
+    // إذا كانت السنة 2026 يتم إضاف المتبقي السابق إلى الرسوم الحالية، وإلا تُحسب الرسوم فقط.
+    const dueTotal = year === 2026 ? prevDue + 0 : prevDue
 ;
     // 5. حساب المبلغ المتبقي
     const remaining = dueTotal - totalPaid;
@@ -1681,9 +1681,9 @@ const getStatusText = (rem: number) =>
 
     const prevRow =
       year === 2026
-        ? `<tr class="row-due-old">
-          <td class="lbl">متبقي من العام 2025 (مدور)</td>
-          <td class="num">${escapeHtml(fmt(prevDue))}</td>
+    ? `<tr class="row-due-old">
+  <td class="lbl">متبقي من العام 2025 (مدور)</td>
+   <td class="num">${escapeHtml(fmt(prevDue))}</td>
         </tr>`
         : "";
 
@@ -1855,11 +1855,11 @@ const getStatusText = (rem: number) =>
               </tr>
             </thead>
       <tbody>
-<tr class="row-fees"><td class="lbl">إجمالي الرسوم المستحقة</td><td class="num">${escapeHtml(fmt(fees))}</td></tr>
+<tr class="row-fees"><td class="lbl">إجمالي الرسوم المستحقة</td><td class="num">${escapeHtml(fmt(prevDue))}</td></tr>
               ${prevRow}
  <tr class="row-total-due"><td class="lbl">إجمالي المبلغ المطلوب</td><td class="num">${escapeHtml(fmt(dueTotal))}</td></tr>
               ${paidRows}
-              <tr class="row-total-paid"><td class="lbl">إجمالي المسدد (له)</td><td class="num">${escapeHtml(fmt(totalPaid))}</td></tr>
+  <tr class="row-total-paid"><td class="lbl">إجمالي المسدد (له)</td><td class="num">${escapeHtml(fmt(totalPaid))}</td></tr>
               <tr class="row-final"><td class="lbl">${escapeHtml(remainingLabel)}</td><td class="num">${escapeHtml(fmt(Math.abs(remaining)))}</td></tr>
             </tbody>
           </table>
