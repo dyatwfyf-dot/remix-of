@@ -1631,8 +1631,7 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
     }
   };
 
-
-  const getStatusText = (rem: number) =>
+const getStatusText = (rem: number) =>
     rem <= 0
       ? { text: "له", color: "text-emerald-800", bg: "bg-emerald-50" }
       : { text: "عليه", color: "text-rose-800", bg: "bg-rose-50" };
@@ -1654,8 +1653,8 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
 
     // 4. حساب إجمالي المستحق:
     // إذا كانت السنة 2026 يتم إضافة المتبقي السابق إلى الرسوم الحالية، وإلا تُحسب الرسوم فقط.
-    const dueTotal = year === 2026 ? prevDue + 0 : fees;
-
+    const dueTotal = year === 2026 ? fees + 0 : prevDue
+;
     // 5. حساب المبلغ المتبقي
     const remaining = dueTotal - totalPaid;
 
@@ -1753,7 +1752,7 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
 
  .statement-title {
   text-align: center;
-  font-size: 18pt;
+  font-size: 15pt;
   font-weight: 900;
   color: #0f766e;
   margin: 0 0 6px;
@@ -1855,10 +1854,10 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
                 <th style="width: 40%">المبلغ</th>
               </tr>
             </thead>
-            <tbody>
-              <tr class="row-fees"><td class="lbl">إجمالي الرسوم المستحقة</td><td class="num">${escapeHtml(fmt(fees))}</td></tr>
+      <tbody>
+<tr class="row-fees"><td class="lbl">إجمالي الرسوم المستحقة</td><td class="num">${escapeHtml(fmt(fees))}</td></tr>
               ${prevRow}
-              <tr class="row-total-due"><td class="lbl">إجمالي المبلغ المطلوب</td><td class="num">${escapeHtml(fmt(dueTotal))}</td></tr>
+ <tr class="row-total-due"><td class="lbl">إجمالي المبلغ المطلوب</td><td class="num">${escapeHtml(fmt(dueTotal))}</td></tr>
               ${paidRows}
               <tr class="row-total-paid"><td class="lbl">إجمالي المسدد (له)</td><td class="num">${escapeHtml(fmt(totalPaid))}</td></tr>
               <tr class="row-final"><td class="lbl">${escapeHtml(remainingLabel)}</td><td class="num">${escapeHtml(fmt(Math.abs(remaining)))}</td></tr>
@@ -1879,6 +1878,7 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
     };
   };
 
+  
   // فتح كشف الحساب في نافذة طباعة عالية الجودة (يمكن حفظه كـ PDF)
   const handleExportPdf = async (row: any, year: number) => {
     const { title, body, css } = generateAccountStatement(row, year);
