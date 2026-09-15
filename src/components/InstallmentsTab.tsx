@@ -2054,7 +2054,7 @@ const installments2026WebActions: WebActionItem[] = [
                 className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"
               />
             </div>
-<label className="apk-only-actions relative w-full px-1.5 sm:px-2 py-1 sm:py-1 bg-white text-sky-700 rounded-lg text-xs sm:text-xs font-bold cursor-pointer hover:bg-sky-50 shadow text-center">
+<label className="apk-only-actions relative w-full px-2 py-1 bg-white text-sky-800 rounded-md text-sm font-bold cursor-pointer hover:bg-sky-50 shadow text-center">
   📥 استيراد الملف{" "}
   <input
     type="file"
@@ -2068,13 +2068,13 @@ const installments2026WebActions: WebActionItem[] = [
             <div className="apk-only-actions col-span-2 flex gap-1 w-full sm:w-auto">
         <button
       onClick={() => exportToExcel(2025)}
-className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
+className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white text-sky-800 rounded-md font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1`}
               >
  <FileSpreadsheet className={ICON_MOBILE} /> <span >تصدير Excel</span>
               </button>
    <button
     onClick={() => setPrintSettingsYear(2025)}
-className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white/95 text-sky-800 rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`}
+className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white text-sky-800 rounded-md font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1`}
               >
                 <Printer className={ICON_MOBILE} /> <span >طباعة</span>
               </button>
