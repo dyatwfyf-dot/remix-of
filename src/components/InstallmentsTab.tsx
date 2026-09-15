@@ -2070,13 +2070,13 @@ const installments2026WebActions: WebActionItem[] = [
       onClick={() => exportToExcel(2025)}
 className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
               >
- <FileSpreadsheet className={ICON_MOBILE} /> <span className="hidden sm:inline">⬆️Excelتصدير الي</span>
+ <FileSpreadsheet className={ICON_MOBILE} /> <span >تصدير Excel</span>
               </button>
    <button
     onClick={() => setPrintSettingsYear(2025)}
 className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white/95 text-sky-800 rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`}
               >
-                <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة</span>
+                <Printer className={ICON_MOBILE} /> <span >طباعة</span>
               </button>
             </div>
 
@@ -2111,7 +2111,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white/95 text-sky-800 rounded-
         <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2025} columns={3} />
           <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
-            <table className="installments-table table-auto text-lg sm:text-base font-bold">
+            <table className="installments-table w-full table-auto text-sm sm:text-base font-bold text-black">
               <thead className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900  [&>tr>th]:!text-white sticky top-0 z-20 shadow-md">
                 <tr>
                   <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">#</th>
@@ -2415,7 +2415,7 @@ className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-bold shado
   <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2026} columns={3} />
  <div className="overflow-auto max-h-auto rounded-lg border border-slate-200 shadow-sm relative">
- <table className="installments-table w-full table-auto text-lg font-extrabold text-black">
+ <table className="installments-table w-full table-auto text-sm sm:text-base font-bold text-black">
 {/* ترويسة الجدول: لون ذهبي لامع مع خط أسود غامق */}
 <thead className="bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500 font-extrabold border-b-2 border-sky-700 text-black sticky top-0 z-20 shadow-md">
  <tr>
