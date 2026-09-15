@@ -1683,7 +1683,7 @@ const getStatusText = (rem: number) =>
       year === 2026
     ? `<tr class="row-due-old">
   <td class="lbl">متبقي من العام 2025 (مدور)</td>
-   <td class="num">${escapeHtml(fmt(prevDue))}</td>
+   <td class="num">${escapeHtml(fmt(fees))}</td>
         </tr>`
         : "";
 
@@ -1855,7 +1855,7 @@ const getStatusText = (rem: number) =>
               </tr>
             </thead>
       <tbody>
-<tr class="row-fees"><td class="lbl">إجمالي الرسوم المستحقة</td><td class="num">${escapeHtml(fmt(fees))}</td></tr>
+<tr class="row-fees"><td class="lbl">إجمالي الرسوم المستحقة</td><td class="num">${escapeHtml(fmt(prevDue))}</td></tr>
               ${prevRow}
  <tr class="row-total-due"><td class="lbl">إجمالي المبلغ المطلوب</td><td class="num">${escapeHtml(fmt(dueTotal))}</td></tr>
               ${paidRows}
