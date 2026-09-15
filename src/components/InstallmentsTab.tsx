@@ -1653,7 +1653,7 @@ const getStatusText = (rem: number) =>
 
     // 4. حساب إجمالي المستحق:
     // إذا كانت السنة 2026 يتم إضاف المتبقي السابق إلى الرسوم الحالية، وإلا تُحسب الرسوم فقط.
-    const dueTotal = year === 2026 ? prevDue + 0 : prevDue
+    const dueTotal = year === 2026 ? fees + 0 : prevDue
 ;
     // 5. حساب المبلغ المتبقي
     const remaining = dueTotal - totalPaid;
