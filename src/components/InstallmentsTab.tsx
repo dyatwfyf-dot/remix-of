@@ -1652,7 +1652,7 @@ const getStatusText = (rem: number) =>
     }, 0);
 // 4. حساب إجمالي المستحق:
  // إذا      كانت السنة 2026 يتم إضاف المتب.   قي السابق إلى الرسوم الحالية، وإلا تُحسب الرسوم فقط.
-const dueTotal = year === 2026 ? fees : prevDue;
+const dueTotal = year === 2026 ? fees+0: prevDue;
     // 5. حساب المبلغ المتبقي
     const remaining = dueTotal - totalPaid;
 
@@ -1684,7 +1684,7 @@ const dueTotal = year === 2026 ? fees : prevDue;
 المتبق علية من
 العام 2025 (مدور)
  </td>
-<td class="num">${escapeHtml(fmt(fees))}</td>
+<td class="num">${escapeHtml(fmt(prevDue))}</td>
         </tr>`
         : "";
 
@@ -1857,7 +1857,7 @@ const dueTotal = year === 2026 ? fees : prevDue;
             </thead>
       <tbody>
 <tr class="row-fees"><td class="lbl">إجمالي رسوم الدراسة </td><td class="num">
-${escapeHtml(fmt(prevDue))}</td></tr>
+${escapeHtml(fmt(fees))}</td></tr>
               ${prevRow}
  <tr class="row-total-due"><td class="lbl">إجمالي المبلغ المطلوب</td><td class="num">
  ${escapeHtml(fmt(dueTotal))}</td></tr>
