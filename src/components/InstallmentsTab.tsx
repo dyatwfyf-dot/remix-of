@@ -2417,6 +2417,7 @@ className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-
         <Download className={`${ICON_MOBILE} ${detailedPdfBusy2026 ? "animate-pulse" : ""}`} />
         <span className="truncate">{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تنزيل PDF"}</span>
       </button>
+      </div>
 
       {/* 9. إجراءات التبويب TabActions (ممتدة على العمودين) */}
       <TabActions
@@ -2450,7 +2451,6 @@ className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-
 
     </div>
   </div>
-      </div>
 
 
   <div className="p-1 sm:p-3">
