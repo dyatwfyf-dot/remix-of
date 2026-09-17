@@ -2036,22 +2036,22 @@ const installments2026WebActions: WebActionItem[] = [
 <div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-lg border border-sky-100 rounded-2xl overflow-hidden">
 <div className="bg-gradient-to-l from-sky-800 via-sky-600 to-sky-600 px-2 sm:px-6 py-2.5 sm:py-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2">
  <div className="min-w-0">
-            <h2 className={`${HEADING_MOBILE} text-white`}>
- 
- 📊 أقساط ومستندات 
+<h2 className={`${HEADING_MOBILE} text-white text-lg`}>
+  📊 أقساط ومستندات 
  العام 2025
-            </h2>
-            <p className="text-lg text-sky-100">يشمل جميع الدفعات لعامي 2024 و 2025</p>
-          </div>
- <div className="w-full sm:w-auto grid grid-cols-2 sm:flex gap-1.5 sm:gap-2 items-center">
- <div className="relative w-full sm:w-auto">
+</h2>
+<p className="text-xs text-sky-100">يشمل جميع الدفعات لعامي 2024 و 2025</p>
+ </div>
+ 
+ <div className="w-full sm: grid grid-cols-1 sm:flex gap-1.5 sm:gap-2 items-center">
+ <div className="relative w-full sm:">
 <Search className="w-4 h-4 absolute right-2.5 top-2.5 text-sky-500" />
-              <input
-                type="text"
-                placeholder="بحث (الاسم، الدفعة، المساق)..."
-                value={search2025}
-                onChange={(e) => setSearch2025(e.target.value)}
- className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"
+<input
+   type="text"
+ placeholder="بحث (الاسم، الدفعة، المساق)..."
+value={search2025}
+ onChange={(e) => setSearch2025(e.target.value)}
+ className="pl-3 pr-8 py-2 rounded-lg text-sm border border-black outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"
               />
             </div>
 <label className="apk-only-actions relative w-full px-2 py-1 bg-white text-black rounded-md text-sm font-bold cursor-pointer hover:bg-sky-50 shadow text-center">
@@ -2068,15 +2068,16 @@ const installments2026WebActions: WebActionItem[] = [
 <div className="apk-only-actions col-span-2 flex gap-1 w-full sm:w-auto">
   <button
       onClick={() => exportToExcel(2025)}
-className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green text-black rounded-md font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1`}
+className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green text-white rounded-md font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1`}
               >
- <FileSpreadsheet className={ICON_MOBILE} /> <span >تصدير Excel</span>
+ <FileSpreadsheet className={ICON_MOBILE} /> <span > الي تصدير Excel </span>
               </button>
 <button
  onClick={() => setPrintSettingsYear(2025)}
-className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-Orange text-black rounded-md font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1`}
+className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-Orange text-white rounded-md font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1`}
               >
-<Printer className={ICON_MOBILE} /> <span >طباعة تفصيلي</span>
+<Printer className={ICON_MOBILE} /> 
+<span >طباعة تفصيلي</span>
               </button>
    </div>
 
@@ -2096,7 +2097,7 @@ rows={installments2025 || []}
               onClear={() => clearInstallments("2025")}
               printLabel="الأقساط/إجمالي"
               additionalWebActions={installments2025WebActions}
-className="col-span-2 w-full !grid !grid-cols-3 sm:!flex !gap-1 sm:!gap-2 [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-2 sm:[&>button]:py-1"
+className="col-span-2 w-full !grid !grid-cols-2 sm:!flex !gap-1 sm:!gap-2 [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-2 sm:[&>button]:py-1"
             />
           </div>
         </div>
@@ -2111,7 +2112,7 @@ className="col-span-2 w-full !grid !grid-cols-3 sm:!flex !gap-1 sm:!gap-2 [&>but
         <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2025} columns={3} />
 <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
-            <table className="installments-table w-full table-auto text-sm sm:text-base font-bold text-black">
+<table className="installments-table w-full table-auto text-sm sm:text-base font-bold text-black">
               <thead 
 className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900 text-white sticky top-0 z-20 shadow-md">
    <tr>
@@ -2293,25 +2294,22 @@ className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-
 {/* ========== واجهة جدول 2026 ========== */}
 <div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-lg border border-sky-100 rounded-2xl overflow-hidden">
 <div className="bg-gradient-to-l from-sky-800 via-sky-600 to-sky-600 px-2 sm:px-2 py-2.5 sm:py-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2">
- <div className="min-w-auto ">
- <h2 className="text-base sm:text-lg sm:text-xl font-extrabold text-white">
-              📊 سجل أقساط العام الحالي 2026
-            </h2>
-            <p className="text-xs sm:text-sm font-bold text-white">بيانات المسدد والرصيد المدور لعام 2026</p>
+ <div className="min-w-0">
+ <h2 className="text-base sm: text-lg sm: font-extrabold text-white">
+ 📊 سجل أقساط العام الحالي 2026</h2>
+<p className="text-xs sm:text-sm font-bold text-white">بيانات المسدد والرصيد المدور لعام 2026</p>
           </div>
-    
-    <div className="w-auto grid grid-cols-2 sm:flex gap-1 sm:gap-2 items-center">
-            <div className="relative w-auto ">
-              <Search className="w-4 h-4 absolute right-2.5 top-2.5 text-sky-500" />
-              <input type="text"
+  <div className="w-full grid grid-cols-2 sm:flex gap-1 sm:gap-2 items-center">
+<div className="relative w-full ">
+<Search className="w-4 h-4 absolute right-2.5 top-2.5 text-sky-500" />
+ <input type="text"
                 placeholder="بحث (الاسم، الدفعة، المساق)..."
                 value={search2026}
                 onChange={(e) => setSearch2026(e.target.value)}
-                className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"
+className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"
               />
-            </div>
 
-            <button
+<button
 onClick={() => setNewRowModal2026(true)}
 className="apk-only-actions w-full px-2 py-1 bg-green -800 text-black rounded-md text-sm font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1"
             >
@@ -2327,7 +2325,7 @@ className="apk-only-actions w-full px-2 py-1 bg-green -800 text-black rounded-md
 
             <button
               onClick={() => setNewColModal(true)}
-              className="apk-only-actions w-full px-2 py-1 bg-white text-black rounded-md text-sm font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1"
+  className="apk-only-actions w-full px-2 py-1 bg-white text-black rounded-md text-sm font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1"
             >
               <Plus className={ICON_MOBILE} /> <span>عمود جديد</span>
             </button>
@@ -2336,8 +2334,8 @@ className="apk-only-actions w-full px-2 py-1 bg-green -800 text-black rounded-md
     onClick={() => setCondFormatModal(true)}
 className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-bold shadow transition-colors flex items-center justify-center gap-1 ${
   condFormatRules.length
-   ? "bg-yellow-300 text-black animate-pulse"
-     : "bg-red-800  text-black hover:bg-sky-50"
+   ? "bg-yellow text-black animate-pulse"
+     :"bg-red-800  text-black hover:bg-sky-50"
               }`}
               title="تلوين الصفوف حسب نص معين"
             >
@@ -2345,7 +2343,7 @@ className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-bold shado
               <span>{condFormatRules.length ? `تنسيق نشط (${condFormatRules.length})` : "تنسيق شرطي"}</span>
             </button>
 
-<label className="apk-only-actions w-full px-2 py-1 bg-white text-sky-800 rounded-md text-sm font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1">
+<label className="apk-only-actions w-full px-2 py-1 bg-white text-black rounded-md text-sm font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1">
               📥 استيراد{" "}
               <input
                 type="file"
@@ -2380,7 +2378,7 @@ className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-bold shado
               </button>
             </div>
 
- <div className="col-span-2 w-auto flex flex-wrap items-center gap-1 sm:gap-2">
+ <div className="col-span-2 w-full flex flex-wrap items-center gap-1 sm:gap-2">
               <TabActions
                 title="أقساط العام 2026"
                 rows={(installments || []).map((r: any) => {
@@ -2412,11 +2410,12 @@ className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-bold shado
             </div>
           </div>
         </div>
+        </div>
 
   <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2026} columns={3} />
  <div className="overflow-auto max-h-auto rounded-lg border border-slate-200 shadow-sm relative">
- <table className="installments-table w-auto table-auto text-sm sm:text-base font-bold text-black">
+ <table className="installments-table w-full table-auto text-sm sm:text-base font-bold text-black">
 {/* ترويسة الجدول: لون ذهبي لامع مع خط أسود غامق */}
 <thead className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900 [&>tr>th]:!text-white sticky top-0 z-20 shadow-md">
  <tr>
