@@ -2030,7 +2030,7 @@ const installments2026WebActions: WebActionItem[] = [
 ];
 
   return (
-    <div className="w-full space-y-4 sm:space-y-6 p-0" dir="rtl">
+<div className="w-full space-y-4 sm:space-y-6 p-0" dir="rtl">
       
 {/* ========== واجهة جدول 2025 ========== */}
 <div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-xl border border-sky-100 rounded-2xl overflow-hidden">
@@ -2060,72 +2060,90 @@ const installments2026WebActions: WebActionItem[] = [
     </div>
 
     {/* شبكة الأزرار: كل 2 أزرار في صف واحد */}
-    <div className="grid grid-cols-2 gap-2.5 w-full">
-      
-      {/* 1. زر استيراد الملف (بنفسجي نيلي المميز) */}
-      <label className="apk-only-actions relative flex items-center justify-center gap-1.5 px-2 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md cursor-pointer transition-all active:scale-95 text-center border border-indigo-500/30">
-        <span className="truncate">📥 استيراد الملف</span>
-        <input
-          type="file"
-          accept=".xlsx,.xls"
-          onChange={(e) => importFile(e, 2025)}
-          className="absolute h-0 w-0 opacity-0 overflow-hidden"
-        />
-      </label>
+         {/* ======================================================== */}
+      {/* أزرار واجهة وإجراءات أقساط 2025 (كل زرين في صف واحد) */}
+      {/* ======================================================== */}
+      <div className="grid grid-cols-2 gap-2.5 w-full my-3">
+        {/* 1. زر استيراد ملف الأقساط */}
+<label className="apk-only-actions relative flex items-center justify-center gap-1.5 px-2 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md cursor-pointer transition-all active:scale-95 text-center border border-indigo-500/30">
+<FileSpreadsheet className="w-4 h-4" />
+          <span>استيراد ملف</span>
+          <input
+            type="file"
+            accept=".xlsx, .xls"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) importFile(file, 2025);
+            }}
+          />
+        </label>
 
-      {/* 2. زر تصدير Excel (أخضر زمردي المميز) */}
-      <button
-        onClick={() => exportToExcel(2025)}
-        className={`apk-only-actions ${BTN_COMPACT} bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-emerald-500/30`}
-      >
-        <FileSpreadsheet className={ICON_MOBILE} />
-        <span className="truncate">تصدير Excel</span>
-      </button>
+        {/* 2. زر إضافة قسط جديد */}
+        <button
+          type="button"
+          onClick={() => setShowAddModal(true)}
+          className={`apk-only-actions ${BTN_COMPACT} bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-emerald-500/30`}
+        >
+          <Plus className="w-4 h-4" />
+          <span>إضافة قسط جديد</span>
+        </button>
 
-      {/* 3. زر طباعة تفصيلي (برتقالي دافئ المميز) */}
-      <button
-        onClick={() => setPrintSettingsYear(2025)}
-        className={`apk-only-actions ${BTN_COMPACT} bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-amber-500/30`}
-      >
-        <Printer className={ICON_MOBILE} />
-        <span className="truncate">طباعة تفصيلي</span>
-      </button>
+        {/* 3. زر إعدادات الطباعة */}
+        <button
+          type="button"
+          onClick={() => setShowPrintSettings(true)}
+          className={`apk-only-actions ${BTN_COMPACT} bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-amber-500/30`}
+        >
+          <Settings className="w-4 h-4" />
+          <span>إعدادات الطباعة</span>
+        </button>
 
-      {/* 4. إجراءات التبويب الإضافية TabActions (ممتدة لتكمل التناسق) */}
-      <TabActions
-        title="أقساط العام 2025"
-        rows={installments2025 || []}
-        columns={[
-          { key: "name", label: "اسم المتدرب" },
-          { key: "batch", label: "الدفعة" },
-          { key: "specialty", label: "المساق" },
-          { key: "fees", label: "الرسوم" },
-          { key: "totalPaid", label: "المسدد" },
-          { key: "remaining", label: "المتبقي" },
-        ]}
-        fileName="اقساط-2025"
-        numericKeys={["fees", "totalPaid", "remaining"]}
-        onClear={() => clearInstallments("2025")}
-        printLabel="الأقساط/إجمالي"
-        additionalWebActions={installments2025WebActions}
-        className="col-span-2 w-full grid grid-cols-2 gap-2.5 [&>button]:w-full [&>button]:py-2.5 [&>button]:px-2 [&>button]:rounded-xl [&>button]:font-bold [&>button]:text-xs sm:[&>button]:text-sm [&>button]:shadow-md [&>button]:transition-all active:[&>button]:scale-95 [&>button]:flex [&>button]:items-center [&>button]:justify-center [&>button:nth-child(1)]:bg-teal-600 hover:[&>button:nth-child(1)]:bg-teal-700 [&>button:nth-child(1)]:text-white [&>button:nth-child(2)]:bg-purple-600 hover:[&>button:nth-child(2)]:bg-purple-700 [&>button:nth-child(2)]:text-white"
-      />
+        {/* 4. زر طباعة التقرير */}
+        <button
+          type="button"
+          onClick={() => handlePrintReport(2025)}
+          className={`apk-only-actions ${BTN_COMPACT} bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-teal-500/30`}
+        >
+          <Printer className="w-4 h-4" />
+          <span>طباعة التقرير</span>
+        </button>
 
-    </div>
-  </div>
+        {/* 5. زر تصدير Excel التفصيلي */}
+        <button
+          type="button"
+          onClick={() => exportToExcel(2025)}
+          className={`apk-only-actions ${BTN_COMPACT} bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-blue-500/30`}
+        >
+          <FileSpreadsheet className="w-4 h-4" />
+          <span>تصدير Excel</span>
+        </button>
 
-  {/* تنبيه الخطأ */}
+<div className="col-span-1">
+<TabActions
+ title="أقساط 2025"
+            rows={filteredRows2025}
+            columns={columns2025}
+            fileName="أقساط_2025"
+            onClear={() => clearInstallments("2025")}
+            additionalWebActions={installments2025WebActions}
+            className="w-full !p-0 !m-0"
+          />
+        </div> 
+        </div>
   {importError && (
     <div className="bg-red-50 border-r-4 border-red-500 p-3 flex items-center gap-2.5">
       <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
       <p className="text-xs sm:text-sm font-bold text-red-700">{importError}</p>
     </div>
-  )}
-</div>
+    )}
+
+  </div>
 
 
-        <div className="p-1 sm:p-3">
-          <StatsGrid stats={stats2025} columns={3} />
+ <div className="p-1 sm:p-3">
+ <StatsGrid stats={stats2025} columns={3} />
+          
 <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
 <table className="installments-table w-full table-auto text-sm sm:text-base font-bold text-black">
               <thead 
@@ -2305,6 +2323,8 @@ className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-
             </table>
           </div>
         </div>
+    </div>
+
 {/* ========== واجهة جدول 2026 ========== */}
 <div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-xl border border-sky-100 rounded-2xl overflow-hidden">
   {/* الهيدر الرئيسي */}
