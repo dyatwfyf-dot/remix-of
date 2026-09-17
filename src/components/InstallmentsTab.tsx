@@ -2033,81 +2033,97 @@ const installments2026WebActions: WebActionItem[] = [
     <div className="w-full space-y-4 sm:space-y-6 p-0" dir="rtl">
       
 {/* ========== واجهة جدول 2025 ========== */}
-<div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-lg border border-sky-100 rounded-2xl overflow-hidden">
-<div className="bg-gradient-to-l from-sky-800 via-sky-600 to-sky-600 px-2 sm:px-6 py-2.5 sm:py-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2">
- <div className="min-w-0">
-<h2 className={`${HEADING_MOBILE} text-white text-lg`}>
-  📊 أقساط ومستندات 
- العام 2025
-</h2>
-<p className="text-xs text-sky-100">يشمل جميع الدفعات لعامي 2024 و 2025</p>
- </div>
- 
- <div className="w-full sm: grid grid-cols-1 sm:flex gap-1.5 sm:gap-2 items-center">
- <div className="relative w-full sm:">
-<Search className="w-4 h-4 absolute right-2.5 top-2.5 text-sky-500" />
-<input
-   type="text"
- placeholder="بحث (الاسم، الدفعة، المساق)..."
-value={search2025}
- onChange={(e) => setSearch2025(e.target.value)}
- className="pl-3 pr-8 py-2 rounded-lg text-sm border border-black outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"
-              />
-            </div>
-<label className="apk-only-actions relative w-full px-2 py-1 bg-white text-black rounded-md text-sm font-bold cursor-pointer hover:bg-sky-50 shadow text-center">
-  📥 استيراد الملف{" "}
-  <input
-    type="file"
-    accept=".xlsx,.xls"
-    onChange={(e) => importFile(e, 2025)}
-    className="absolute h-0 w-0 opacity-0 overflow-hidden"
-  />
-</label>
+<div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-xl border border-sky-100 rounded-2xl overflow-hidden">
+  {/* حاوية الترويسة والأدوات */}
+  <div className="bg-gradient-to-l from-sky-800 via-sky-600 to-sky-500 px-4 sm:px-6 py-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+    
+    {/* العناوين */}
+    <div className="min-w-0 w-full flex flex-col gap-1">
+      <h2 className={`${HEADING_MOBILE} text-white font-bold tracking-wide flex items-center gap-2`}>
+        📊 أقساط ومستندات العام 2025
+      </h2>
+      <p className="text-xs sm:text-sm text-sky-100 font-medium opacity-90">
+        يشمل جميع الدفعات لعامي 2024 و 2025
+      </p>
+    </div>
 
+    {/* أدوات التحكم (البحث والأزرار) */}
+    <div className="w-full flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 items-stretch lg:items-center">
+      
+      {/* حقل البحث */}
+      <div className="relative w-full sm:w-auto sm:min-w-[220px] flex-grow">
+        <Search className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-sky-500" />
+        <input
+          type="text"
+          placeholder="بحث (الاسم، الدفعة، المساق)..."
+          value={search2025}
+          onChange={(e) => setSearch2025(e.target.value)}
+          className="w-full bg-white/95 pl-3 pr-9 py-2.5 rounded-xl text-sm border-0 focus:ring-2 focus:ring-sky-300 text-slate-800 shadow-sm outline-none transition-all placeholder:text-gray-400"
+        />
+      </div>
 
-<div className="apk-only-actions col-span-2 flex gap-1 w-full sm:w-auto">
-  <button
-      onClick={() => exportToExcel(2025)}
-className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green text-white rounded-md font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1`}
-              >
- <FileSpreadsheet className={ICON_MOBILE} /> <span > الي تصدير Excel </span>
-              </button>
-<button
- onClick={() => setPrintSettingsYear(2025)}
-className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-Orange text-white rounded-md font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1`}
-              >
-<Printer className={ICON_MOBILE} /> 
-<span >طباعة تفصيلي</span>
-              </button>
-   </div>
+      {/* زر الاستيراد */}
+      <label className="apk-only-actions relative w-full sm:w-auto px-4 py-2.5 bg-white text-sky-700 rounded-xl text-sm font-bold cursor-pointer hover:bg-sky-50 shadow-sm flex items-center justify-center gap-2 active:scale-95 transition-all">
+        📥 استيراد الملف
+        <input
+          type="file"
+          accept=".xlsx,.xls"
+          onChange={(e) => importFile(e, 2025)}
+          className="absolute h-0 w-0 opacity-0 overflow-hidden"
+        />
+      </label>
 
- <TabActions
- title="أقساط العام 2025"
-rows={installments2025 || []}
-  columns={[
-   { key: "name", label: "اسم المتدرب" },
-                { key: "batch", label: "الدفعة" },
-                { key: "specialty", label: "المساق" },
-                { key: "fees", label: "الرسوم" },
-                { key: "totalPaid", label: "المسدد" },
-                { key: "remaining", label: "المتبقي" },
-              ]}
-              fileName="اقساط-2025"
-              numericKeys={["fees", "totalPaid", "remaining"]}
-              onClear={() => clearInstallments("2025")}
-              printLabel="الأقساط/إجمالي"
-              additionalWebActions={installments2025WebActions}
-className="col-span-2 w-full !grid !grid-cols-2 sm:!flex !gap-1 sm:!gap-2 [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-2 sm:[&>button]:py-1"
-            />
-          </div>
-        </div>
+      {/* أزرار التصدير والطباعة */}
+      <div className="apk-only-actions flex w-full sm:w-auto gap-2">
+        <button
+          onClick={() => exportToExcel(2025)}
+          className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green text-white rounded-xl py-2.5 px-3 font-bold shadow-sm hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-1.5`}
+        >
+          <FileSpreadsheet className={ICON_MOBILE} /> 
+          <span className="text-xs sm:text-sm">تصدير Excel</span>
+        </button>
+        
+        <button
+          onClick={() => setPrintSettingsYear(2025)}
+          className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-Orange text-white rounded-xl py-2.5 px-3 font-bold shadow-sm hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-1.5`}
+        >
+          <Printer className={ICON_MOBILE} /> 
+          <span className="text-xs sm:text-sm">طباعة تفصيلي</span>
+        </button>
+      </div>
 
-        {importError && (
-<div className="bg-red-50 border-b border-red-200 p-3 flex gap-2">
-            <AlertCircle className="w-5 h-5 text-red-600" />
-            <p className="text-sm text-red-700">{importError}</p>
-          </div>
-        )}
+      {/* مكون التبويبات الإضافية */}
+      <div className="w-full mt-1 sm:mt-0">
+        <TabActions
+          title="أقساط العام 2025"
+          rows={installments2025 || []}
+          columns={[
+            { key: "name", label: "اسم المتدرب" },
+            { key: "batch", label: "الدفعة" },
+            { key: "specialty", label: "المساق" },
+            { key: "fees", label: "الرسوم" },
+            { key: "totalPaid", label: "المسدد" },
+            { key: "remaining", label: "المتبقي" },
+          ]}
+          fileName="اقساط-2025"
+          numericKeys={["fees", "totalPaid", "remaining"]}
+          onClear={() => clearInstallments("2025")}
+          printLabel="الأقساط/إجمالي"
+          additionalWebActions={installments2025WebActions}
+          className="w-full grid grid-cols-2 sm:flex gap-2 [&>button]:rounded-xl [&>button]:justify-center [&>button]:py-2.5 [&>button]:shadow-sm active:[&>button]:scale-95 [&>button]:transition-all"
+        />
+      </div>
+    </div>
+  </div>
+
+  {/* عرض رسالة الخطأ إن وجدت */}
+  {importError && (
+    <div className="bg-red-50 border-r-4 border-red-500 p-3 sm:p-4 flex items-start gap-3 animate-pulse">
+      <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+      <p className="text-sm font-medium text-red-700 leading-relaxed">{importError}</p>
+    </div>
+  )}
+
 
         <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2025} columns={3} />
