@@ -2450,6 +2450,7 @@ className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-
 
     </div>
   </div>
+      </div>
 
 
   <div className="p-1 sm:p-3">
@@ -2797,7 +2798,6 @@ className="w-auto bg-transparent text-center text-black font-extrabold text-sm s
             </table>
           </div>
         </div>
-      </div>
 
 
       {/* ========== النوافذ المنبثقة ========== */}
