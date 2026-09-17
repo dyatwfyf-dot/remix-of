@@ -2032,7 +2032,10 @@ const installments2026WebActions: WebActionItem[] = [
   return (
 <div className="w-full space-y-4 sm:space-y-6 p-0" dir="rtl">
       
-{/* ========== واجهة جدول 2025 ========== */}
+  
+      
+{/*  واجهة جدول 2025 */}
+
 <div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-xl border border-sky-100 rounded-2xl overflow-hidden">
   {/* الهيدر الرئيسي */}
   <div className="bg-gradient-to-l from-sky-800 via-sky-700 to-sky-600 px-3.5 sm:px-6 py-4 flex flex-col gap-3.5">
@@ -2046,6 +2049,7 @@ const installments2026WebActions: WebActionItem[] = [
         يشمل جميع الدفعات لعامي 2024 و 2025
       </p>
     </div>
+      </div>
 
     {/* حقل البحث */}
     <div className="relative w-full">
@@ -2059,78 +2063,7 @@ const installments2026WebActions: WebActionItem[] = [
       />
     </div>
 
-    {/* شبكة الأزرار: كل 2 أزرار في صف واحد */}
-         {/* ======================================================== */}
-      {/* أزرار واجهة وإجراءات أقساط 2025 (كل زرين في صف واحد) */}
-      {/* ======================================================== */}
-      <div className="grid grid-cols-2 gap-2.5 w-full my-3">
-        {/* 1. زر استيراد ملف الأقساط */}
-<label className="apk-only-actions relative flex items-center justify-center gap-1.5 px-2 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md cursor-pointer transition-all active:scale-95 text-center border border-indigo-500/30">
-<FileSpreadsheet className="w-4 h-4" />
-          <span>استيراد ملف</span>
-          <input
-            type="file"
-            accept=".xlsx, .xls"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) importFile(file, 2025);
-            }}
-          />
-        </label>
 
-        {/* 2. زر إضافة قسط جديد */}
-        <button
-          type="button"
-          onClick={() => setShowAddModal(true)}
-          className={`apk-only-actions ${BTN_COMPACT} bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-emerald-500/30`}
-        >
-          <Plus className="w-4 h-4" />
-          <span>إضافة قسط جديد</span>
-        </button>
-
-        {/* 3. زر إعدادات الطباعة */}
-        <button
-          type="button"
-          onClick={() => setShowPrintSettings(true)}
-          className={`apk-only-actions ${BTN_COMPACT} bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-amber-500/30`}
-        >
-          <Settings className="w-4 h-4" />
-          <span>إعدادات الطباعة</span>
-        </button>
-
-        {/* 4. زر طباعة التقرير */}
-        <button
-          type="button"
-          onClick={() => handlePrintReport(2025)}
-          className={`apk-only-actions ${BTN_COMPACT} bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-teal-500/30`}
-        >
-          <Printer className="w-4 h-4" />
-          <span>طباعة التقرير</span>
-        </button>
-
-        {/* 5. زر تصدير Excel التفصيلي */}
-        <button
-          type="button"
-          onClick={() => exportToExcel(2025)}
-          className={`apk-only-actions ${BTN_COMPACT} bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-blue-500/30`}
-        >
-          <FileSpreadsheet className="w-4 h-4" />
-          <span>تصدير Excel</span>
-        </button>
-
-<div className="col-span-1">
-<TabActions
- title="أقساط 2025"
-            rows={filteredRows2025}
-            columns={columns2025}
-            fileName="أقساط_2025"
-            onClear={() => clearInstallments("2025")}
-            additionalWebActions={installments2025WebActions}
-            className="w-full !p-0 !m-0"
-          />
-        </div> 
-        </div>
   {importError && (
     <div className="bg-red-50 border-r-4 border-red-500 p-3 flex items-center gap-2.5">
       <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
@@ -2323,7 +2256,7 @@ className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-
             </table>
           </div>
         </div>
-    </div>
+  
 
 {/* ========== واجهة جدول 2026 ========== */}
 <div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-xl border border-sky-100 rounded-2xl overflow-hidden">
