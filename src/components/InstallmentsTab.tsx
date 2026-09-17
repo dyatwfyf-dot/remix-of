@@ -2062,6 +2062,62 @@ const installments2026WebActions: WebActionItem[] = [
         className="w-full bg-white pl-3 pr-9 py-2.5 rounded-xl text-xs sm:text-sm border border-sky-200 outline-none focus:ring-2 focus:ring-sky-300 text-slate-800 font-semibold shadow-sm placeholder:text-gray-400 placeholder:font-normal"
       />
     </div>
+        { /* شبكة الأزرار: كل 2 أزرار في صف واحد */ }
+    <div className="grid grid-cols-2 gap-2.5 w-full my-3">
+      {/* 1. زر استيراد الملف */}
+      <label className="apk-only-actions relative flex items-center justify-center gap-1.5 px-2 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md cursor-pointer transition-all active:scale-95 text-center border border-indigo-500/30">
+        <FileSpreadsheet className={ICON_MOBILE} />
+        <span className="truncate">استيراد الملف</span>
+        <input
+          type="file"
+          accept=".xlsx,.xls"
+          onChange={(e) => importFile(e, 2025)}
+          className="absolute h-0 w-0 opacity-0 overflow-hidden"
+        />
+      </label>
+
+      {/* 2. زر تصدير Excel */}
+      <button
+        type="button"
+        onClick={() => exportToExcel(2025)}
+        className={`apk-only-actions ${BTN_COMPACT} bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-emerald-500/30`}
+      >
+        <FileSpreadsheet className={ICON_MOBILE} />
+        <span className="truncate">تصدير Excel</span>
+      </button>
+
+      {/* 3. زر طباعة تفصيلي */}
+      <button
+        type="button"
+        onClick={() => setPrintSettingsYear(2025)}
+        className={`apk-only-actions ${BTN_COMPACT} bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-amber-500/30`}
+      >
+        <Printer className={ICON_MOBILE} />
+        <span className="truncate">طباعة تفصيلي</span>
+      </button>
+
+      {/* 4. إجراءات التبويب الإضافية */}
+      <div className="col-span-1">
+        <TabActions
+          title="أقساط العام 2025"
+          rows={installments2025 || []}
+          columns={[
+            { key: "name", label: "اسم المتدرب" },
+            { key: "batch", label: "الدفعة" },
+            { key: "specialty", label: "المساق" },
+            { key: "fees", label: "الرسوم" },
+            { key: "totalPaid", label: "المسدد" },
+            { key: "remaining", label: "المتبقي" },
+          ]}
+          fileName="اقساط-2025"
+          numericKeys={["fees", "totalPaid", "remaining"]}
+          onClear={() => clearInstallments("2025")}
+          printLabel="طباعة التقرير"
+          additionalWebActions={installments2025WebActions}
+          className="w-full !p-0 !m-0"
+        />
+      </div>
+    </div>
 
 
   {importError && (
