@@ -2306,125 +2306,151 @@ className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-
           </div>
         </div>
 {/* ========== واجهة جدول 2026 ========== */}
-<div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-lg border border-sky-100 rounded-2xl overflow-hidden">
-<div className="bg-gradient-to-l from-sky-800 via-sky-600 to-sky-600 px-2 sm:px-2 py-2.5 sm:py-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2">
- <div className="min-w-0">
- <h2 className="text-lg sm: font-extrabold text-white"> 📊 سجل 
- أقساط العام الحالي 2026</h2>
-<p className="text-xs sm: font-bold text-white">بيانات المسدد والرصيد المدور لعام 2026</p>
-          </div>
-  <div className="w-full grid grid-cols-1 sm:flex gap-1 sm:gap-2 items-center">
-<div className="relative w-full ">
-<Search className="w-8 h-4 absolute right-2.5 top-2.5 text-sky-500" />
- <input type="text"
-                placeholder="بحث (الاسم، الدفعة، المساق)..."
-                value={search2026}
-                onChange={(e) => setSearch2026(e.target.value)}
-className="pl-3 pr-8 py-2 rounded-lg text-sm border border-black outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"/>
-        </div>
-<div className="apk-only-actions col-span-2 flex gap-1 w-full">
-<button
-onClick={() => setNewRowModal2026(true)}
-className="apk-only-actions w-full px-2 py-2 bg-green -800 text-black rounded-md text-sm font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1"
-            >
-<Plus className={ICON_MOBILE} /> <span>طالب جديد</span>
-</button>
+<div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-xl border border-sky-100 rounded-2xl overflow-hidden">
+  {/* الهيدر الرئيسي */}
+  <div className="bg-gradient-to-l from-sky-800 via-sky-700 to-sky-600 px-3.5 sm:px-6 py-4 flex flex-col gap-3.5">
+    
+    {/* العنوان والوصف */}
+    <div className="min-w-0">
+      <h2 className="text-white font-extrabold text-base sm:text-lg tracking-wide">
+        📊 سجل أقساط العام الحالي 2026
+      </h2>
+      <p className="text-xs text-sky-100 font-bold opacity-90 mt-0.5">
+        بيانات المسدد والرصيد المدور لعام 2026
+      </p>
+    </div>
 
-  <button
- onClick={() => setNewPaymentModal(true)}
-className="apk-only-actions w-full px-2 py-2 bg-Orange -800  text-black rounded-md text-sm font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1 truncate"
-            >
-              <span>➕ إضافة قسط</span>
-            </button>
+    {/* حقل البحث */}
+    <div className="relative w-full">
+      <Search className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-sky-500" />
+      <input
+        type="text"
+        placeholder="بحث (الاسم، الدفعة، المساق)..."
+        value={search2026}
+        onChange={(e) => setSearch2026(e.target.value)}
+        className="w-full bg-white pl-3 pr-9 py-2.5 rounded-xl text-xs sm:text-sm border border-sky-200 outline-none focus:ring-2 focus:ring-sky-300 text-slate-800 font-semibold shadow-sm placeholder:text-gray-400 placeholder:font-normal"
+      />
+    </div>
 
-            <button
-              onClick={() => setNewColModal(true)}
-  className="apk-only-actions w-full px-2 py-2 bg-white text-black rounded-md text-sm font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1"
-            >
-              <Plus className={ICON_MOBILE} /> <span>عمود جديد</span>
-            </button>
+    {/* شبكة الأزرار: كل 2 أزرار في صف واحد */}
+    <div className="grid grid-cols-2 gap-2.5 w-full">
+      
+      {/* 1. زر طالب جديد (أخضر زمردي) */}
+      <button
+        onClick={() => setNewRowModal2026(true)}
+        className={`apk-only-actions ${BTN_COMPACT} bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-emerald-500/30`}
+      >
+        <Plus className={ICON_MOBILE} />
+        <span className="truncate">طالب جديد</span>
+      </button>
 
-  <button
-    onClick={() => setCondFormatModal(true)}
-className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-bold shadow transition-colors flex items-center justify-center gap-1 ${
-  condFormatRules.length
-   ? "bg-yellow text-black animate-pulse"
-     :" hover:bg-sky-50"
-              }`}
-  title="تلوين الصفوف حسب نص معين"
-            >
-              <Palette className={ICON_MOBILE} />
-              <span>{condFormatRules.length ? `تنسيق نشط (${condFormatRules.length})` : "تنسيق شرطي"}</span>
-            </button>
+      {/* 2. زر إضافة قسط (برتقالي دافئ) */}
+      <button
+        onClick={() => setNewPaymentModal(true)}
+        className={`apk-only-actions ${BTN_COMPACT} bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-amber-500/30`}
+      >
+        <span className="truncate">➕ إضافة قسط</span>
+      </button>
 
-<label className="apk-only-actions w-full px-2 py-2 bg-white text-black rounded-md text-lg font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1 border-black">
-📥 استيراد{" "}
-<input
-  type="file"
-                accept=".xlsx,.xls"
-                onChange={(e) => importFile(e, 2026)}
-          className="absolute h-0 w-0 opacity-0 overflow-hidden"  
-              />
-            </label>
-        </div>
+      {/* 3. زر عمود جديد (تركواز/تيل) */}
+      <button
+        onClick={() => setNewColModal(true)}
+        className={`apk-only-actions ${BTN_COMPACT} bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-teal-500/30`}
+      >
+        <Plus className={ICON_MOBILE} />
+        <span className="truncate">عمود جديد</span>
+      </button>
 
-<div className="apk-only-actions col-span-3 flex gap-1 w-full">
-<button
- onClick={() => exportToExcel(2026)}
-className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-Leander text-white font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1`}
-              >
-<FileSpreadsheet className={ICON_MOBILE} /> <span>تصدير Excel</span>
-              </button>
-              <button
- onClick={() => setPrintSettingsYear(2026)}
- className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white text-blue font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1 border-black`}
-              >
-<Printer className={ICON_MOBILE} /> <span> طباعة تفصيلي</span>
-              </button>
-   <button
-  className="apk-only-actions flex-1 sm:flex-none flex items-center justify-center gap-1 px-2 py-2 text-xs bg-white text-black rounded-md font-bold shadow hover:bg-sky-50 active:scale-95 transition-all"
-                type="button"
-                onClick={handleDetailedPdf2026}
-                disabled={detailedPdfBusy2026}
- title="تنزيل تقرير الأقساط التفصيلي لعام 2026"
-              >
-                <Download className={`${ICON_MOBILE} ${detailedPdfBusy2026 ? "animate-pulse" : ""}`} />
-                <span>{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تنزيل PDF"}</span>
-              </button>
-            </div>
+      {/* 4. زر تنسيق شرطي (أصفر نابض عند التفعيل / بنفسجي عادي) */}
+      <button
+        onClick={() => setCondFormatModal(true)}
+        className={`apk-only-actions ${BTN_COMPACT} rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border ${
+          condFormatRules.length
+            ? "bg-yellow-400 text-black border-yellow-500 animate-pulse"
+            : "bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white border-purple-500/30"
+        }`}
+        title="تلوين الصفوف حسب نص معين"
+      >
+        <Palette className={ICON_MOBILE} />
+        <span className="truncate">
+          {condFormatRules.length ? `تنسيق نشط (${condFormatRules.length})` : "تنسيق شرطي"}
+        </span>
+      </button>
 
- <div className="col-span-2 w-full flex flex-wrap items-center gap-1 sm:gap-2">
-              <TabActions
-                title="أقساط العام 2026"
-                rows={(installments || []).map((r: any) => {
-                  const customValues: any = { ...r.customData };
-                  extraCols2026.forEach((col) => {
-                    if (col.type === "formula")
-                      customValues[col.name] = evaluateFormula(col.formula || "", r);
-                  });
-                  return { ...r, ...customValues };
-                })}
-                columns={[
-                  { key: "name", label: "اسم المتدرب" },
-                  { key: "batch", label: "الدفعة" },
-                  { key: "specialty", label: "المساق" },
-                  { key: "prevDue", label: "المتبقي من 2025" },
-                  { key: "fees", label: "الرسوم" },
-                  { key: "totalPaid", label: "المسدد" },
-                  { key: "remaining", label: "المتبقي" },
-                  { key: "notes", label: "الملاحظات" },
-                  ...extraCols2026.map((c) => ({ key: c.name, label: c.name })),
-                ]}
-                fileName="اقساط-2026"
-                numericKeys={["prevDue", "fees", "totalPaid", "remaining"]}
-                onClear={() => clearInstallments()}
-                printLabel="الأقساط/إجمالي"
-                additionalWebActions={installments2026WebActions}
-  className="!flex-1 min-w-auto !gap-1 sm:!gap-2 [&>button]: [&>button]:justify-center [&>button]:px-2 [&>button]:py-1 [&>button]:text-sm"
-              />
-            </div>
-          </div>
-        </div>
+      {/* 5. زر استيراد (نيلي) */}
+      <label className="apk-only-actions relative flex items-center justify-center gap-1.5 px-2 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md cursor-pointer transition-all active:scale-95 border border-indigo-500/30">
+        <span className="truncate">📥 استيراد</span>
+        <input
+          type="file"
+          accept=".xlsx,.xls"
+          onChange={(e) => importFile(e, 2026)}
+          className="absolute h-0 w-0 opacity-0 overflow-hidden"
+        />
+      </label>
+
+      {/* 6. زر تصدير Excel (أزرق ملكي) */}
+      <button
+        onClick={() => exportToExcel(2026)}
+        className={`apk-only-actions ${BTN_COMPACT} bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-blue-500/30`}
+      >
+        <FileSpreadsheet className={ICON_MOBILE} />
+        <span className="truncate">تصدير Excel</span>
+      </button>
+
+      {/* 7. زر طباعة تفصيلي (وردي/روز) */}
+      <button
+        onClick={() => setPrintSettingsYear(2026)}
+        className={`apk-only-actions ${BTN_COMPACT} bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-rose-500/30`}
+      >
+        <Printer className={ICON_MOBILE} />
+        <span className="truncate">طباعة تفصيلي</span>
+      </button>
+
+      {/* 8. زر تنزيل PDF (أحمر) */}
+      <button
+        type="button"
+        onClick={handleDetailedPdf2026}
+        disabled={detailedPdfBusy2026}
+        title="تنزيل تقرير الأقساط التفصيلي لعام 2026"
+        className={`apk-only-actions ${BTN_COMPACT} bg-red-600 hover:bg-red-700 active:bg-red-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-red-500/30 disabled:opacity-60`}
+      >
+        <Download className={`${ICON_MOBILE} ${detailedPdfBusy2026 ? "animate-pulse" : ""}`} />
+        <span className="truncate">{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تنزيل PDF"}</span>
+      </button>
+
+      {/* 9. إجراءات التبويب TabActions (ممتدة على العمودين) */}
+      <TabActions
+        title="أقساط العام 2026"
+        rows={(installments || []).map((r: any) => {
+          const customValues: any = { ...r.customData };
+          extraCols2026.forEach((col) => {
+            if (col.type === "formula")
+              customValues[col.name] = evaluateFormula(col.formula || "", r);
+          });
+          return { ...r, ...customValues };
+        })}
+        columns={[
+          { key: "name", label: "اسم المتدرب" },
+          { key: "batch", label: "الدفعة" },
+          { key: "specialty", label: "المساق" },
+          { key: "prevDue", label: "المتبقي من 2025" },
+          { key: "fees", label: "الرسوم" },
+          { key: "totalPaid", label: "المسدد" },
+          { key: "remaining", label: "المتبقي" },
+          { key: "notes", label: "الملاحظات" },
+          ...extraCols2026.map((c) => ({ key: c.name, label: c.name })),
+        ]}
+        fileName="اقساط-2026"
+        numericKeys={["prevDue", "fees", "totalPaid", "remaining"]}
+        onClear={() => clearInstallments()}
+        printLabel="الأقساط/إجمالي"
+        additionalWebActions={installments2026WebActions}
+        className="col-span-2 w-full grid grid-cols-2 gap-2.5 [&>button]:w-full [&>button]:py-2.5 [&>button]:px-2 [&>button]:rounded-xl [&>button]:font-bold [&>button]:text-xs sm:[&>button]:text-sm [&>button]:shadow-md [&>button]:transition-all active:[&>button]:scale-95 [&>button]:flex [&>button]:items-center [&>button]:justify-center [&>button:nth-child(1)]:bg-cyan-600 hover:[&>button:nth-child(1)]:bg-cyan-700 [&>button:nth-child(1)]:text-white [&>button:nth-child(2)]:bg-fuchsia-600 hover:[&>button:nth-child(2)]:bg-fuchsia-700 [&>button:nth-child(2)]:text-white"
+      />
+
+    </div>
+  </div>
+
 
   <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2026} columns={3} />
