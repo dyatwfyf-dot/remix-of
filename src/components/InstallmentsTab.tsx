@@ -2295,37 +2295,37 @@ className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-
 <div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-lg border border-sky-100 rounded-2xl overflow-hidden">
 <div className="bg-gradient-to-l from-sky-800 via-sky-600 to-sky-600 px-2 sm:px-2 py-2.5 sm:py-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2">
  <div className="min-w-0">
- <h2 className="text-base sm: text-lg sm: font-extrabold text-white">
- 📊 سجل أقساط العام الحالي 2026</h2>
-<p className="text-xs sm:text-sm font-bold text-white">بيانات المسدد والرصيد المدور لعام 2026</p>
+ <h2 className="text-lg sm: font-extrabold text-white"> 📊 سجل 
+ أقساط العام الحالي 2026</h2>
+<p className="text-xs sm: font-bold text-white">بيانات المسدد والرصيد المدور لعام 2026</p>
           </div>
-  <div className="w-full grid grid-cols-2 sm:flex gap-1 sm:gap-2 items-center">
+  <div className="w-full grid grid-cols-1 sm:flex gap-1 sm:gap-2 items-center">
 <div className="relative w-full ">
-<Search className="w-4 h-4 absolute right-2.5 top-2.5 text-sky-500" />
+<Search className="w-8 h-4 absolute right-2.5 top-2.5 text-sky-500" />
  <input type="text"
                 placeholder="بحث (الاسم، الدفعة، المساق)..."
                 value={search2026}
                 onChange={(e) => setSearch2026(e.target.value)}
-className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"
-              />
-
+className="pl-3 pr-8 py-2 rounded-lg text-sm border border-black outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"/>
+        </div>
+<div className="apk-only-actions col-span-2 flex gap-1 w-full">
 <button
 onClick={() => setNewRowModal2026(true)}
-className="apk-only-actions w-full px-2 py-1 bg-green -800 text-black rounded-md text-sm font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1"
+className="apk-only-actions w-full px-2 py-2 bg-green -800 text-black rounded-md text-sm font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1"
             >
-              <Plus className={ICON_MOBILE} /> <span>طالب جديد</span>
-            </button>
+<Plus className={ICON_MOBILE} /> <span>طالب جديد</span>
+</button>
 
-            <button
-              onClick={() => setNewPaymentModal(true)}
-              className="apk-only-actions w-full px-2 py-1 bg-Orange -800  text-black rounded-md text-sm font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1 truncate"
+  <button
+ onClick={() => setNewPaymentModal(true)}
+className="apk-only-actions w-full px-2 py-2 bg-Orange -800  text-black rounded-md text-sm font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1 truncate"
             >
               <span>➕ إضافة قسط</span>
             </button>
 
             <button
               onClick={() => setNewColModal(true)}
-  className="apk-only-actions w-full px-2 py-1 bg-white text-black rounded-md text-sm font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1"
+  className="apk-only-actions w-full px-2 py-2 bg-white text-black rounded-md text-sm font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1"
             >
               <Plus className={ICON_MOBILE} /> <span>عمود جديد</span>
             </button>
@@ -2335,43 +2335,44 @@ className="apk-only-actions w-full px-2 py-1 bg-green -800 text-black rounded-md
 className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-bold shadow transition-colors flex items-center justify-center gap-1 ${
   condFormatRules.length
    ? "bg-yellow text-black animate-pulse"
-     :"bg-red-800  text-black hover:bg-sky-50"
+     :" hover:bg-sky-50"
               }`}
-              title="تلوين الصفوف حسب نص معين"
+  title="تلوين الصفوف حسب نص معين"
             >
               <Palette className={ICON_MOBILE} />
               <span>{condFormatRules.length ? `تنسيق نشط (${condFormatRules.length})` : "تنسيق شرطي"}</span>
             </button>
 
-<label className="apk-only-actions w-full px-2 py-1 bg-white text-black rounded-md text-sm font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1">
-              📥 استيراد{" "}
-              <input
-                type="file"
+<label className="apk-only-actions w-full px-2 py-2 bg-white text-black rounded-md text-lg font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1 border-black">
+📥 استيراد{" "}
+<input
+  type="file"
                 accept=".xlsx,.xls"
                 onChange={(e) => importFile(e, 2026)}
           className="absolute h-0 w-0 opacity-0 overflow-hidden"  
               />
             </label>
+        </div>
 
-<div className="apk-only-actions col-span-2 flex gap-1 w-auto">
-              <button
-                onClick={() => exportToExcel(2026)}
-                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-Leander-800 text-white font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1`}
+<div className="apk-only-actions col-span-3 flex gap-1 w-full">
+<button
+ onClick={() => exportToExcel(2026)}
+className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-Leander text-white font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1`}
               >
-                <FileSpreadsheet className={ICON_MOBILE} /> <span>تصدير Excel</span>
+<FileSpreadsheet className={ICON_MOBILE} /> <span>تصدير Excel</span>
               </button>
               <button
-                onClick={() => setPrintSettingsYear(2026)}
-                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white text-blue font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1`}
+ onClick={() => setPrintSettingsYear(2026)}
+ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white text-blue font-bold shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1 border-black`}
               >
-                <Printer className={ICON_MOBILE} /> <span> طباعة تفصيلي</span>
+<Printer className={ICON_MOBILE} /> <span> طباعة تفصيلي</span>
               </button>
    <button
-  className="apk-only-actions flex-1 sm:flex-none flex items-center justify-center gap-1 px-2 py-1 text-xs bg-white text-sky-800 rounded-md font-bold shadow hover:bg-sky-50 active:scale-95 transition-all"
+  className="apk-only-actions flex-1 sm:flex-none flex items-center justify-center gap-1 px-2 py-2 text-xs bg-white text-black rounded-md font-bold shadow hover:bg-sky-50 active:scale-95 transition-all"
                 type="button"
                 onClick={handleDetailedPdf2026}
                 disabled={detailedPdfBusy2026}
-                title="تنزيل تقرير الأقساط التفصيلي لعام 2026"
+ title="تنزيل تقرير الأقساط التفصيلي لعام 2026"
               >
                 <Download className={`${ICON_MOBILE} ${detailedPdfBusy2026 ? "animate-pulse" : ""}`} />
                 <span>{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تنزيل PDF"}</span>
@@ -2410,7 +2411,6 @@ className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-bold shado
             </div>
           </div>
         </div>
-        </div>
 
   <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2026} columns={3} />
@@ -2419,7 +2419,7 @@ className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-bold shado
 {/* ترويسة الجدول: لون ذهبي لامع مع خط أسود غامق */}
 <thead className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900 [&>tr>th]:!text-white sticky top-0 z-20 shadow-md">
  <tr>
- <th className="text-center w-full whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25">#</th>
+ <th className="text-center w-full whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25">م</th>
 <th
 className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     onClick={() => handleSort2026("name")}
@@ -2429,7 +2429,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-white/10
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-2 !py-2 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     onClick={() => handleSort2026("batch")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2502,7 +2502,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-white/10
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
                     onClick={() => handleSort2026("remaining")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2539,16 +2539,16 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-white/10
                           key={i}
 className={`border-t border-slate-200 transition-colors ${rowBgClass}`}
                         >
-  <td className="text-center w-auto text-black font-black whitespace-nowrap !px-2 !py-2 !text-lg border-l border-black ">
+  <td className="text-center w-auto text-black font-black whitespace-nowrap !px-2 !py-2 !text-sm border-l border-black ">
                             {i + 1}
                           </td>
-<td className="text-center w-auto font-bold text-black whitespace-nowrap bg-fuchsia-50/70 !px-2 !py-2 !text-lg border-l border-slate-200">
+<td className="text-center w-auto font-bold text-black whitespace-nowrap bg-fuchsia-50/70 !px-2 !py-2 !text-sm border-l border-slate-200">
                             <input
                               value={r.name || ""}
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "name", e.target.value)
                               }
-className="w-full min-w-0 bg-transparent text-center text-black font-extrabold text-lg sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+className="w-full min-w-auto bg-transparent text-center text-black font-extrabold text-lg sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
                             />
                           </td>
   <td className="text-center w-auto text-black whitespace-nowrap bg-sky-50/70 !px-2 !py-2 !text-lg border-l border-slate-200">
@@ -2567,7 +2567,7 @@ className="w-auto bg-transparent text-center text-black font-extrabold text-sm s
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "specialty", e.target.value)
                               }
-                              className="w-auto bg-transparent text-center text-black font-extrabold text-lg sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+  className="w-auto bg-transparent text-center text-black font-extrabold text-lg sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
                               placeholder="—"
                             />
                           </td>
@@ -2652,13 +2652,13 @@ className="w-auto bg-transparent text-center text-black font-extrabold text-sm s
                             </td>
                           ))}
 
-                          <td className="text-center w-auto min-w-[90px] numeric-cell font-mono text-black font-extrabold bg-emerald-50/50 whitespace-nowrap !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center w-auto min-w-[90px] numeric-cell font-mono text-black font-extrabold bg-emerald-50/50 whitespace-nowrap !px-2 !py-2 !text-sm border-l border-slate-200">
                             {fmt(Number(r.totalPaid || 0))}
                           </td>
-                          <td className="text-center w-auto min-w-[90px] numeric-cell font-mono text-black font-extrabold bg-rose-50/40 whitespace-nowrap !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center w-auto min-w-[90px] numeric-cell font-mono text-black font-extrabold bg-rose-50/40 whitespace-nowrap !px-2 !py-2 !text-sm border-l border-slate-200">
                             {fmt(Number(r.remaining || 0))}
                           </td>
-                          <td className="text-center w-auto bg-amber-50/40 !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center w-auto bg-amber-50/40 !px-2 !py-2 !text-sm border-l border-slate-200">
                             <input
                               type="text"
                               value={r.notes || ""}
@@ -2717,17 +2717,17 @@ className="w-auto bg-transparent text-center text-black font-extrabold text-sm s
                       <td className="text-center w-auto text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300" colSpan={4}>
                         الإجماليات
                       </td>
-                      <td className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300">
+                      <td className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-sm border-l border-sky-300">
                         {fmt(Number(totals2026.prevDue || 0))}
                       </td>
-                      <td className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300">
+                      <td className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-sm border-l border-sky-300">
                         {fmt(Number(totals2026.fees || 0))}
                       </td>
 
                       {MONTHS_2026.map((m) => (
                         <td
                           key={m}
-                          className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300"
+                          className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-sm border-l border-sky-300"
                         >
                           {totals2026.months[m] > 0 ? fmt(Number(totals2026.months[m])) : "—"}
                         </td>
