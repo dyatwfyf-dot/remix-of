@@ -2034,36 +2034,33 @@ const installments2026WebActions: WebActionItem[] = [
       
   
       
-{/*  واجهة جدول 2025 */}
-
+{ /* واجهة جدول 2025 */ }
 <div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-xl border border-sky-100 rounded-2xl overflow-hidden">
-  {/* الهيدر الرئيسي */}
+  {/* الهيدر الرئيسي وتجميع الإجراءات */}
   <div className="bg-gradient-to-l from-sky-800 via-sky-700 to-sky-600 px-3.5 sm:px-6 py-4 flex flex-col gap-3.5">
-    
-    {/* العنوان والوصف */}
-    <div className="min-w-0">
-      <h2 className={`${HEADING_MOBILE} text-white font-bold text-base sm:text-lg tracking-wide`}>
-        📊 أقساط ومستندات العام 2025
+    <div>
+      <h2 className="text-lg sm:text-xl font-black text-white tracking-wide">
+        جدول أقساط 2025
       </h2>
-      <p className="text-xs text-sky-100 font-medium opacity-90 mt-0.5">
+      <p className="text-xs text-sky-100/90 font-medium mt-0.5">
         يشمل جميع الدفعات لعامي 2024 و 2025
       </p>
     </div>
-      </div>
 
     {/* حقل البحث */}
     <div className="relative w-full">
-      <Search className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-sky-500" />
+      <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
       <input
         type="text"
-        placeholder="بحث (الاسم، الدفعة، المساق)..."
+        placeholder="بحث في أقساط 2025..."
         value={search2025}
         onChange={(e) => setSearch2025(e.target.value)}
-        className="w-full bg-white pl-3 pr-9 py-2.5 rounded-xl text-xs sm:text-sm border border-sky-200 outline-none focus:ring-2 focus:ring-sky-300 text-slate-800 font-semibold shadow-sm placeholder:text-gray-400 placeholder:font-normal"
+        className="w-full pr-9 pl-3 py-2 text-xs sm:text-sm bg-white/95 text-slate-800 rounded-xl border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-slate-400 font-medium"
       />
     </div>
-        { /* شبكة الأزرار: كل 2 أزرار في صف واحد */ }
-    <div className="grid grid-cols-2 gap-2.5 w-full my-3">
+
+    {/* شبكة الأزرار: كل 2 أزرار في صف واحد */}
+    <div className="grid grid-cols-2 gap-2.5 w-full my-1">
       {/* 1. زر استيراد الملف */}
       <label className="apk-only-actions relative flex items-center justify-center gap-1.5 px-2 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md cursor-pointer transition-all active:scale-95 text-center border border-indigo-500/30">
         <FileSpreadsheet className={ICON_MOBILE} />
@@ -2118,16 +2115,15 @@ const installments2026WebActions: WebActionItem[] = [
         />
       </div>
     </div>
-
+  </div>
 
   {importError && (
     <div className="bg-red-50 border-r-4 border-red-500 p-3 flex items-center gap-2.5">
       <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
       <p className="text-xs sm:text-sm font-bold text-red-700">{importError}</p>
     </div>
-    )}
+  )}
 
-  </div>
 
 
  <div className="p-1 sm:p-3">
@@ -2312,6 +2308,8 @@ className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-
             </table>
           </div>
         </div>
+     </div>
+
   
 
 {/* ========== واجهة جدول 2026 ========== */}
