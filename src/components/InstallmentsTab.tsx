@@ -2035,285 +2035,283 @@ const installments2026WebActions: WebActionItem[] = [
   
       
 { /* واجهة جدول 2025 */ }
-<div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-xl border border-sky-100 rounded-2xl overflow-hidden">
-  {/* الهيدر الرئيسي وتجميع الإجراءات */}
-  <div className="bg-gradient-to-l from-sky-800 via-sky-700 to-sky-600 px-3.5 sm:px-6 py-4 flex flex-col gap-3.5">
-    <div>
-      <h2 className="text-lg sm:text-xl font-black text-white tracking-wide">
-        جدول أقساط 2025
-      </h2>
-      <p className="text-xs text-sky-100/90 font-medium mt-0.5">
-        يشمل جميع الدفعات لعامي 2024 و 2025
-      </p>
-    </div>
+ {/* شريط العنوان والبحث والأزرار لعام 2025 */}
+        <div className="bg-gradient-to-l from-sky-900 via-sky-800 to-sky-700 px-3 sm:px-6 py-3.5 flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
+            <h3 className={`${HEADING_MOBILE} text-white flex items-center gap-2 drop-shadow-md`}>
+              <span>جدول أقساط 2025</span>
+            </h3>
 
-    {/* حقل البحث */}
-    <div className="relative w-full">
-      <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-      <input
-        type="text"
-        placeholder="بحث في أقساط 2025..."
-        value={search2025}
-        onChange={(e) => setSearch2025(e.target.value)}
-        className="w-full pr-9 pl-3 py-2 text-xs sm:text-sm bg-white/95 text-slate-800 rounded-xl border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-slate-400 font-medium"
-      />
-    </div>
-
-    {/* شبكة الأزرار: كل 2 أزرار في صف واحد */}
-    <div className="grid grid-cols-2 gap-2.5 w-full my-1">
-      {/* 1. زر استيراد الملف */}
-      <label className="apk-only-actions relative flex items-center justify-center gap-1.5 px-2 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md cursor-pointer transition-all active:scale-95 text-center border border-indigo-500/30">
-        <FileSpreadsheet className={ICON_MOBILE} />
-        <span className="truncate">استيراد الملف</span>
-        <input
-          type="file"
-          accept=".xlsx,.xls"
-          onChange={(e) => importFile(e, 2025)}
-          className="absolute h-0 w-0 opacity-0 overflow-hidden"
-        />
-      </label>
-
-      {/* 2. زر تصدير Excel */}
-      <button
-        type="button"
-        onClick={() => exportToExcel(2025)}
-        className={`apk-only-actions ${BTN_COMPACT} bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-emerald-500/30`}
-      >
-        <FileSpreadsheet className={ICON_MOBILE} />
-        <span className="truncate">تصدير Excel</span>
-      </button>
-
-      {/* 3. زر طباعة تفصيلي */}
-      <button
-        type="button"
-        onClick={() => setPrintSettingsYear(2025)}
-        className={`apk-only-actions ${BTN_COMPACT} bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-amber-500/30`}
-      >
-        <Printer className={ICON_MOBILE} />
-        <span className="truncate">طباعة تفصيلي</span>
-      </button>
-
-      {/* 4. إجراءات التبويب الإضافية */}
-      <div className="col-span-1">
-        <TabActions
-          title="أقساط العام 2025"
-          rows={installments2025 || []}
-          columns={[
-            { key: "name", label: "اسم المتدرب" },
-            { key: "batch", label: "الدفعة" },
-            { key: "specialty", label: "المساق" },
-            { key: "fees", label: "الرسوم" },
-            { key: "totalPaid", label: "المسدد" },
-            { key: "remaining", label: "المتبقي" },
-          ]}
-          fileName="اقساط-2025"
-          numericKeys={["fees", "totalPaid", "remaining"]}
-          onClear={() => clearInstallments("2025")}
-          printLabel="طباعة التقرير"
-          additionalWebActions={installments2025WebActions}
-          className="w-full !p-0 !m-0"
-        />
-      </div>
-    </div>
-  </div>
-
-  {importError && (
-    <div className="bg-red-50 border-r-4 border-red-500 p-3 flex items-center gap-2.5">
-      <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
-      <p className="text-xs sm:text-sm font-bold text-red-700">{importError}</p>
-    </div>
-  )}
-
-
-
- <div className="p-1 sm:p-3">
- <StatsGrid stats={stats2025} columns={3} />
-          
-<div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
-<table className="installments-table w-full table-auto text-sm sm:text-base font-bold text-black">
-              <thead 
-className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900 text-white sticky top-0 z-20 shadow-md">
-   <tr>
-<th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">#</th>
-                  <th
-                    className="text-center whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-white"
-                    onClick={() => handleSort2025("name")}
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      اسم المتدرب <SortIcon sortConfig={sortConfig2025} columnKey="name" />
-                    </div>
-                  </th>
-                  <th
-                    className="text-center whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
-                    onClick={() => handleSort2025("batch")}
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      الدفعة <SortIcon sortConfig={sortConfig2025} columnKey="batch" />
-                    </div>
-                  </th>
-                  <th
-                    className="text-center whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
-                    onClick={() => handleSort2025("specialty")}
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      المساق <SortIcon sortConfig={sortConfig2025} columnKey="specialty" />
-                    </div>
-                  </th>
-                  <th
-                    className="text-center whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
-                    onClick={() => handleSort2025("fees")}
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      الرسوم <SortIcon sortConfig={sortConfig2025} columnKey="fees" />
-                    </div>
-                  </th>
-                  {MONTHS_2025.map((m) => (
-                    <th
-                      key={m}
-                      className="text-center border-l border-white/25 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
-                    >
-                      {m}
-                    </th>
-                  ))}
-                  <th
-                    className="text-center whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
-                    onClick={() => handleSort2025("totalPaid")}
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      المسدد <SortIcon sortConfig={sortConfig2025} columnKey="totalPaid" />
-                    </div>
-                  </th>
-                  <th
-                    className="text-center whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
-                    onClick={() => handleSort2025("remaining")}
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      المتبقي <SortIcon sortConfig={sortConfig2025} columnKey="remaining" />
-                    </div>
-                  </th>
-                  <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">إجراءات</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredRows2025.length === 0 ? (
-                  <tr>
-                    <td colSpan={8 + MONTHS_2025.length} className="text-center text-slate-400 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base whitespace-nowrap">
-                      لا توجد بيانات (يرجى التأكد من استيراد الملف أو تعديل البحث)
-                    </td>
-                  </tr>
-                ) : (
-                  <>
-                    {filteredRows2025.map((r: any, i: number) => {
-                      const originalIndex = (installments2025 || []).findIndex(
-                        (orig: any) => orig.name === r.name,
-                      );
-                      return (
-                        <tr
-                          key={i}
-                          className="border-t border-slate-200 hover:bg-slate-50/80 transition-colors"
-                        >
-                          <td className="text-center text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
-                            {i + 1}
-                          </td>
-                          <td className="text-center font-semibold text-black whitespace-nowrap bg-sky-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
-                            {r.name}
-                          </td>
-                          <td className="text-center text-black whitespace-nowrap bg-cyan-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
-                            {r.batch || "—"}
-                          </td>
-                          <td className="text-center text-black whitespace-nowrap bg-sky-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
-                            {r.specialty || "—"}
-                          </td>
-                          <td className="text-center numeric-cell font-mono font-semibold text-black whitespace-nowrap bg-blue-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
-                            {fmt(r.fees)}
-                          </td>
-                          {MONTHS_2025.map((m) => {
-                            const paid = Number(r.payments?.[m]) || 0;
-                            return (
-                              <td
-                                key={m}
-                                className="numeric-cell text-center bg-slate-50/50 border-l border-slate-200 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
-                              >
-                                {paid > 0 ? (
-                                  <span className="text-black font-bold numeric-cell font-mono">
-                                    {fmt(paid)}
-                                  </span>
-                                ) : (
-                                  <span className="text-slate-300">—</span>
-                                )}
-                              </td>
-                            );
-                          })}
-                          <td className="text-center numeric-cell font-mono text-black font-bold bg-emerald-50/30 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
-                            {fmt(r.totalPaid)}
-                          </td>
-                          <td className="text-center numeric-cell font-mono text-black font-bold bg-rose-50/30 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
-                            {fmt(r.remaining)}
-                          </td>
-                          <td className="text-center whitespace-nowrap flex justify-center gap-1 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
-                            <button
-                              onClick={() => {
-                                setEditRowData(r);
-                                setEditRowModal({ year: 2025, row: r, index: originalIndex });
-                              }}
-                              className="p-1 bg-sky-50 text-amber-600 rounded border border-amber-200 hover:bg-amber-500 hover:text-white transition-colors"
-                              title="تعديل الصف"
-                            >
-                              <Edit className={ICON_MOBILE} />
-                            </button>
-                            <button
-                              onClick={() => printStatement(r, 2025)}
-                              className="p-1 bg-blue-50 text-blue-600 rounded border border-blue-200 hover:bg-blue-500 hover:text-white transition-colors"
-                              title="طباعة الكشف"
-                            >
-                              <Printer className={ICON_MOBILE} />
-                            </button>
-                                <button
-                                  onClick={() => handleExportPdf(r, 2025)}
-                                  className="p-1 bg-emerald-50 text-emerald-600 rounded border border-emerald-200 hover:bg-emerald-500 hover:text-white transition-colors"
-                                  title="تنزيل PDF (متوافق مع شاومي)"
-                                >
-                                  <FileText className={ICON_MOBILE} />
-                                </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                    <tr className="border-t-2 border-sky-800 bg-sky-100/80 font-extrabold">
-                      <td className="text-center text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base" colSpan={4}>
-                        الإجماليات
-                      </td>
-                      <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
-                        {fmt(totals2025.fees)}
-                      </td>
-                      {MONTHS_2025.map((m) => (
-                        <td
-                          key={m}
-                          className="text-center numeric-cell font-mono text-black border-l border-slate-200 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
-                        >
-                          {totals2025.months[m] > 0 ? fmt(totals2025.months[m]) : "—"}
-                        </td>
-                      ))}
-                      <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
-                        {fmt(totals2025.paid)}
-                      </td>
-                      <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
-                        {fmt(totals2025.remaining)}
-                      </td>
-                      <td className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"></td>
-                    </tr>
-                  </>
-                )}
-              </tbody>
-            </table>
+            {/* مربع البحث */}
+            <div className="relative w-full sm:w-72">
+              <input
+                type="text"
+                placeholder="بحث في أسماء أو تخصصات 2025..."
+                value={search2025}
+                onChange={(e) => setSearch2025(e.target.value)}
+                className="w-full pl-8 pr-3 py-2 text-xs sm:text-sm rounded-xl border-2 border-sky-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 font-bold placeholder-slate-400 shadow-inner"
+              />
+              <Search className="w-4 h-4 text-sky-700 absolute left-2.5 top-3 pointer-events-none" />
+              {search2025 && (
+                <button
+                  type="button"
+                  onClick={() => setSearch2025("")}
+                  className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-     </div>
 
+          {/* شبكة الأزرار: كل زرين في صف بتنسيق بارز */}
+          <div className="grid grid-cols-2 gap-2.5 w-full pt-1">
+            {/* الصف 1: استيراد Excel + تصدير Excel */}
+            <label className="apk-only-actions flex items-center justify-center gap-2 px-3 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-md hover:shadow-lg border-2 border-blue-400 cursor-pointer active:scale-95 transition-all text-center">
+              <FileSpreadsheet className="w-4 h-4" />
+              <span>استيراد Excel</span>
+              <input
+                type="file"
+                accept=".xlsx, .xls"
+                className="hidden"
+                onChange={(e) => handleFileImport(e, 2025)}
+              />
+            </label>
+
+            <button
+              type="button"
+              onClick={() => exportToExcel(2025)}
+              className="flex items-center justify-center gap-2 px-3 py-2.5 bg-cyan-700 hover:bg-cyan-800 text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-md hover:shadow-lg border-2 border-cyan-400 active:scale-95 transition-all"
+            >
+              <FileSpreadsheet className="w-4 h-4" />
+              <span>تصدير Excel</span>
+            </button>
+
+            {/* الصف 2: طباعة تفصيلية + إجراءات التبويب */}
+            <button
+              type="button"
+              onClick={() => setPrintSettingsYear(2025)}
+              className="flex items-center
+justify - center gap - 2 px - 3 py - 2.5 bg - indigo - 700 hover: bg - indigo - 800 text - white rounded - xl text - xs sm: text - sm font - extrabold shadow - md hover: shadow - lg border - 2 border - indigo - 400 active: scale - 95 transition - all " >
+  <Printer className="w-4 h-4" /> <span > طباعة تفصيلية </span> </button>
   
+  <div className = "flex items-center justify-center w-full [&_button]:w-full [&_button]:h-full [&_button]:min-h-[42px] [&_button]:rounded-xl [&_button]:font-extrabold [&_button]:border-2 [&_button]:border-slate-300 [&_button]:shadow-md" >
+  <TabActions
+                title="أقساط العام 2025"
+                fileName="أقساط_العام_2025"
+                rows={installments2025 || []}
+                columns={[
+                  { key: "name", label: "اسم المتدرب" },
+                  { key: "batch", label: "الدفعة" },
+                  { key: "specialty", label: "المساق" },
+                  { key: "phone", label: "رقم الهاتف" },
+                  { key: "fees", label: "الرسوم" },
+                  ...MONTHS_2025.map((m) => ({ key: m, label: m })),
+                  { key: "totalPaid", label: "المدفوع" },
+                  { key: "remaining", label: "المتبقي" },
+                ]}
+                numericKeys={["fees", "totalPaid", "remaining"]}
+                additionalWebActions={installments2025WebActions}
+      className="w-full justify-center"/> </div> 
+      </div> 
+      </div>
+{importError && (
+          <div className="m-3 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+            <p className="text-sm text-red-700">{importError}</p>
+          </div>
+)};
+          <div className="p-1 sm:p-3">
+            <StatsGrid stats={stats2025} columns={3}/>
+            <div className="overflow-auto max-h-auto rounded-lg border border-slate-200 shadow-sm relative">
+              <table className="installments-table min-w-auto table-auto text-lg sm:text-base font-bold">
+                <thead className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900 [&>tr>th]:!text-white sticky top-0 z-20 shadow-md">
+                  <tr>
+                    <th className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25">
+                      م
+                    </th>
+                    <th
+                      className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+                      onClick={() => handleSort2025("name")}
+                    >
+                      <div className="flex items-center justify-center gap-1">
+                        اسم المتدرب <SortIcon sortConfig={sortConfig2025} columnKey="name" />
+                      </div>
+                    </th>
+                    <th
+                      className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+                      onClick={() => handleSort2025("batch")}
+                    >
+                      <div className="flex items-center justify-center gap-1">
+                        الدفعة <SortIcon sortConfig={sortConfig2025} columnKey="batch" />
+                      </div>
+                    </th>
+                    <th
+                      className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+                      onClick={() => handleSort2025("specialty")}
+                    >
+                      <div className="flex items-center justify-center gap-1">
+                        المساق <SortIcon sortConfig={sortConfig2025} columnKey="specialty" />
+                      </div>
+                    </th>
+                    <th
+                      className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+                      onClick={() => handleSort2025("fees")}
+                    >
+                      <div className="flex items-center justify-center gap-1">
+                        الرسوم <SortIcon sortConfig={sortConfig2025} columnKey="fees" />
+                      </div>
+                    </th>
+                    {MONTHS_2025.map((m) => (
+                      <th
+                        key={m}
+                        className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+                      >
+                        {m}
+                      </th>
+                    ))}
+                    <th
+                      className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+                      onClick={() => handleSort2025("totalPaid")}
+                    >
+                      <div className="flex items-center justify-center gap-1">
+                        المدفوع <SortIcon sortConfig={sortConfig2025} columnKey="totalPaid" />
+                      </div>
+                    </th>
+                    <th
+                      className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+                      onClick={() => handleSort2025("remaining")}
+                    >
+                      <div className="flex items-center justify-center gap-1">
+                        المتبقي <SortIcon sortConfig={sortConfig2025} columnKey="remaining" />
+                      </div>
+                    </th>
+                    <th className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                      إجراءات
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredRows2025.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={7 + MONTHS_2025.length}
+                        className="text-center w-auto text-slate-400 !px-3 !py-4 !text-lg whitespace-nowrap"
+                      >
+                        لا توجد بيانات (يرجى التأكد من استيراد الملف أو تعديل البحث)
+                      </td>
+                    </tr>
+                  ) : (
+                    <>
+                      {filteredRows2025.map((r: any, i: number) => {
+                        const originalIndex = (installments2025 || []).findIndex(
+                          (orig: any) => orig.name === r.name,
+                        );
 
-{/* ========== واجهة جدول 2026 ========== */}
-<div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-xl border border-sky-100 rounded-2xl overflow-hidden">
+                        return (
+                          <tr key={i} className="border-t border-slate-200 hover:bg-sky-50/40 transition-colors">
+                            <td className="text-center w-auto text-black font-black whitespace-nowrap !px-2 !py-2 !text-sm border-l border-black">
+                              {i + 1}
+                            </td>
+                            <td className="text-center w-auto font-bold text-black whitespace-nowrap bg-fuchsia-50/70 !px-2 !py-2 !text-sm border-l border-slate-200">
+                              {r.name}
+                            </td>
+                            <td className="text-center w-auto text-black whitespace-nowrap bg-sky-50/70 !px-2 !py-2 !text-sm border-l border-slate-200">
+                              {r.batch || "—"}
+                            </td>
+                            <td className="text-center w-auto text-black whitespace-nowrap bg-sky-50/60 !px-2 !py-2 !text-sm border-l border-slate-200">
+                              {r.specialty || "—"}
+                            </td>
+                            <td className="text-center w-auto numeric-cell font-black text-black font-extrabold whitespace-nowrap bg-sky-50/50 !px-2 !py-2 !text-sm border-l border-slate-200">
+                              {fmt(cleanNumber(r.fees))}
+                            </td>
+                            {MONTHS_2025.map((m) => {
+                              const paid = Number(r.payments?.[m]) || 0;
+                              return (
+                                <td
+                                  key={m}
+                                  className="numeric-cell w-auto text-center relative bg-white/40 border-l border-slate-200 whitespace-nowrap !px-2 !py-2 !text-sm"
+                                >
+                                  {paid > 0 ? (
+                                    <span className="text-black font-bold numeric-cell font-mono">
+                                      {fmt(paid)}
+                                    </span>
+                                  ) : (
+                                    <span className="text-slate-300">—</span>
+                                  )}
+                                </td>
+                              );
+                            })}
+                            <td className="text-center numeric-cell font-mono text-black font-bold bg-emerald-50/30 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
+                              {fmt(cleanNumber(r.totalPaid))}
+                            </td>
+                            <td className="text-center numeric-cell font-mono text-black font-bold bg-rose-50/30 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
+                              {fmt(cleanNumber(r.remaining))}
+                            </td>
+                            <td className="text-center whitespace-nowrap flex justify-center gap-1 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                              <button
+                                onClick={() => {
+                                  setEditRowData(r);
+                                  setEditRowModal({ year: 2025, row: r, index: originalIndex });
+                                }}
+                                className="p-1 bg-sky-50 text-amber-600 rounded border border-amber-200 hover:bg-amber-500 hover:text-white transition-colors"
+                                title="تعديل الصف"
+                              >
+                                <Edit className={ICON_MOBILE} />
+                              </button>
+                              <button
+                                onClick={() => printStatement(r, 2025)}
+                                className="p-1 bg-blue-50 text-blue-600 rounded border border-blue-200 hover:bg-blue-500 hover:text-white transition-colors"
+                                title="طباعة الكشف"
+                              >
+                                <Printer className={ICON_MOBILE} />
+                              </button>
+                              <button
+                                onClick={() => handleExportPdf(r, 2025)}
+                                className="p-1 bg-emerald-50 text-emerald-600 rounded border border-emerald-200 hover:bg-emerald-500 hover:text-white transition-colors"
+                                title="تنزيل PDF (متوافق مع شاومي)"
+                              >
+                                <FileText className={ICON_MOBILE} />
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      <tr className="border-t-2 border-sky-800 bg-sky-100/80 font-extrabold">
+                        <td
+                          className="text-center text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300"
+                          colSpan={4}
+                        >
+                          الإجماليات
+                        </td>
+                        <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-smsm:!text-base border-l border-sky-300">
+                          {fmt(totals2025.fees)}
+                        </td>
+                        {MONTHS_2025.map((m) => (
+                          <td
+                            key={m}
+                            className="text-center numeric-cell font-mono text-black border-l border-sky-300 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
+                          >
+                            {totals2025.months[m] > 0 ? fmt(totals2025.months[m]) : "—"}
+                          </td>
+                        ))}
+                        <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300">
+                          {fmt(totals2025.paid)}
+                        </td>
+                        <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300">
+                          {fmt(totals2025.remaining)}
+                        </td>
+                        <td className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"></td>
+                      </tr>
+                    </>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+    
+{/* واجهة جدول 2 */}
+<div className= "w-full bg-gradient-to-b from-sky-50/60 to-white shadow-xl border border-sky-100 rounded-2xl overflow-hidden">
   {/* الهيدر الرئيسي */}
   <div className="bg-gradient-to-l from-sky-800 via-sky-700 to-sky-600 px-3.5 sm:px-6 py-4 flex flex-col gap-3.5">
     
@@ -2425,6 +2423,8 @@ className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-
         <span className="truncate">{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تنزيل PDF"}</span>
       </button>
       </div>
+  
+
 
       {/* 9. إجراءات التبويب TabActions (ممتدة على العمودين) */}
       <TabActions
@@ -2458,6 +2458,8 @@ className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-
 
     </div>
   </div>
+
+
 
 
   <div className="p-1 sm:p-3">
