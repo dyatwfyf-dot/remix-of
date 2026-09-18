@@ -2036,7 +2036,7 @@ const installments2026WebActions: WebActionItem[] = [
       
 { /* واجهة جدول 2025 */ }
  {/* شريط العنوان والبحث والأزرار لعام 2025 */}
-        <div className="bg-gradient-to-l from-sky-900 via-sky-800 to-sky-700 px-3 sm:px-6 py-3.5 flex flex-col gap-3">
+        <div className="bg-gradient-to-l from-sky-500 via-sky-400 to-sky-300 px-3 sm:px-6 py-3.5 flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
             <h3 className={`${HEADING_MOBILE} text-white flex items-center gap-2 drop-shadow-md`}>
               <span>جدول أقساط 2025</span>
@@ -2067,7 +2067,7 @@ const installments2026WebActions: WebActionItem[] = [
           {/* شبكة الأزرار: كل زرين في صف بتنسيق بارز */}
           <div className="grid grid-cols-2 gap-2.5 w-full pt-1">
             {/* الصف 1: استيراد Excel + تصدير Excel */}
-            <label className="apk-only-actions flex items-center justify-center gap-2 px-3 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-md hover:shadow-lg border-2 border-blue-400 cursor-pointer active:scale-95 transition-all text-center">
+<label className="apk-only-actions flex items-center justify-center gap-2 px-3 py-2.5 bg-blue-900 hover:bg-blue-900 text-white rounded-xl text-xs sm:text-xm font-extrabold shadow-md hover:shadow-lg border-2 border-blue-400 cursor-pointer active:scale-95 transition-all text-center">
               <FileSpreadsheet className="w-4 h-4" />
               <span>استيراد Excel</span>
               <input
@@ -2081,9 +2081,9 @@ const installments2026WebActions: WebActionItem[] = [
             <button
               type="button"
               onClick={() => exportToExcel(2025)}
-              className="flex items-center justify-center gap-2 px-3 py-2.5 bg-cyan-700 hover:bg-cyan-800 text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-md hover:shadow-lg border-2 border-cyan-400 active:scale-95 transition-all"
+className="flex items-center justify-center gap-2 px-3 py-2.5 bg-cyan-900 hover:bg-cyan-800 text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-md hover:shadow-lg border-2 border-cyan-400 active:scale-95 transition-all"
             >
-              <FileSpreadsheet className="w-4 h-4" />
+<FileSpreadsheet className="w-4 h-4" />
               <span>تصدير Excel</span>
             </button>
 
@@ -2091,8 +2091,8 @@ const installments2026WebActions: WebActionItem[] = [
             <button
               type="button"
               onClick={() => setPrintSettingsYear(2025)}
-              className="flex items-center
-justify - center gap - 2 px - 3 py - 2.5 bg - indigo - 700 hover: bg - indigo - 800 text - white rounded - xl text - xs sm: text - sm font - extrabold shadow - md hover: shadow - lg border - 2 border - indigo - 400 active: scale - 95 transition - all " >
+className="flex item-center
+justify-center gap-2 px-3 py-2.5 bg-indigo-700 hover: bg-indigo-800 text -white rounded-xl text-xs sm: text-sm font -extrabold shadow-md hover:shadow-lg border-2 border-indigo-400 active: scale-95 transition-all" >
   <Printer className="w-4 h-4" /> <span > طباعة تفصيلية </span> </button>
   
   <div className = "flex items-center justify-center w-full [&_button]:w-full [&_button]:h-full [&_button]:min-h-[42px] [&_button]:rounded-xl [&_button]:font-extrabold [&_button]:border-2 [&_button]:border-slate-300 [&_button]:shadow-md" >
