@@ -630,7 +630,7 @@ export default function MonthlyStatementTab() {
           </div>
         </div>
         <div className="relative max-h-[72vh] overflow-auto">
-          <table ref={tableRef2} className="min-w-auto table-auto border-collapse text-lg sm:text-base text-center font-bold">
+          <table ref={tableRef2} className="min-w-max table-auto border-collapse text-sm sm:text-base text-center font-semibold">
             <thead className="bg-sky-50 text-sky-900 font-bold border-b border-black sticky top-0 z-20 shadow-sm">
               <tr>
                 <th className="border border-black text-center min-w-[96px] sm:min-w-[120px] whitespace-normal overflow-hidden !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
