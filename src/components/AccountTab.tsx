@@ -32,26 +32,15 @@ import WebActionMenu, { type WebActionItem } from "./WebActionMenu";
 import schema from "@/data/revenueTemplate.json";
 
 /* ============================================================
-   الحساب الجاري — لوحة ألوان محسنة وتنسيق موحد للخطوط والحدود
+   الحساب الجاري — لوحة ألوان مخصصة لكل كرت وبدون تكرار مع حدود سوداء
    ============================================================ */
 
-const THEME = {
-  sage: "#d7e7f0",
-  paleSage: "#eef6fb",
-  cream: "#f7fbfd",
-  warmCream: "#dcecf5",
-  accent: "#1f5f7a",
-  text: "#0f2f44",
-  muted: "#5b7d90",
-  Camel: "#2e6b8a",
-  LightBrown: "#c98a3c",
-  Lavender: "#eef6fb",
-};
+/* أحجام أيقونات وأزرار محسّنة للمحمول */
+const ICON_MOBILE = "w-5 h-5 sm:w-6 sm:h-6";
+const BTN_MOBILE = "px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-sm";
+const HEADING_MOBILE = "text-lg sm:text-2xl font-black";
 
-const ICON_MOBILE = "w-5 h-5 sm:w-6 sm:h-6 shrink-0";
-const BTN_MOBILE = "px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-sm whitespace-nowrap";
-const HEADING_MOBILE = "text-lg sm:text-xl font-black whitespace-nowrap";
-
+/* أعمدة الجدول */
 const COLS = [
   { key: "date", label: "التاريخ" },
   { key: "hafizaNo", label: "رقم الحافظة" },
@@ -109,6 +98,7 @@ const parseAmount = (val: any): number => {
   return isNaN(parsed) ? 0 : parsed;
 };
 
+/* أنماط الطباعة والالتفاف التلقائي للنصوص داخل الخلايا */
 const PRINT_STYLES = `
 @media print {
   .accounts-print-scope { background:#B4CEB6 !important; }
@@ -121,7 +111,7 @@ const PRINT_STYLES = `
     table-layout:auto!important;
   }
   .accounts-print-area thead th {
-    color: white !important;
+    color: white!important;
     font-weight: 1000 !important;
   }
   .accounts-print-area tbody td,
@@ -131,29 +121,17 @@ const PRINT_STYLES = `
   }
   .accounts-print-area th,
   .accounts-print-area td {
-    border: 2px solid #000 !important;
-    white-space: nowrap!important;
-    text-overflow: clip !important;
+    border: 1px solid #000 !important;
+    white-space: normal !important;
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
     hyphens: auto !important;
     line-height: 1.1 !important;
     padding: 2px !important;
-    font-size: 16px !important;
+    font-size: 14px !important;
     height: auto !important;
-    max-width: none !important;
+    max-width: 100% !important;
     color: #000 !important;
-  }
-  .accounts-print-area td.numeric-cell,
-  .accounts-print-area th.numeric-cell,
-  .accounts-print-area td.date-cell,
-  .accounts-print-area th.date-cell,
-  .accounts-print-area td.font-mono,
-  .accounts-print-area th.font-mono {
-    font-family: 'Times New Roman', Times, serif !important;
-    font-size: 16px !important;
-    line-height: 1.05 !important;
-    white-space: nowrap !important;
   }
 }
 `;
@@ -175,17 +153,12 @@ const Modal = ({
       className="fixed inset-0 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-4"
       dir="rtl"
     >
-      <div className="rounded-t-2xl sm:rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto border-2 border-black bg-white">
-        <div
-          className="flex justify-between items-center px-5 py-4 border-b-2 border-black sticky top-0 z-10"
-          style={{ background: THEME.LightBrown || "#c98a3c" }}
-        >
-          <h3 className={`${HEADING_MOBILE} text-[#0f2f44] flex items-center gap-2 tracking-tight`}>
-            {title}
-          </h3>
+      <div className="rounded-t-2xl sm:rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto border-2 border-black bg-[#fdfbf7]">
+        <div className="flex justify-between items-center px-5 py-4 border-b-2 border-black bg-[#4a2e35] text-white top-0 z-10">
+          <h3 className={`${HEADING_MOBILE} flex items-center gap-2 tracking-tight`}>{title}</h3>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-black/10 rounded-xl transition-colors text-[#0f2f44]"
+            className="p-2 hover:bg-black/20 rounded-xl transition-colors text-white"
             aria-label="إغلاق"
           >
             <X className={ICON_MOBILE} />
@@ -216,7 +189,7 @@ function Field({
 }) {
   return (
     <div className="w-full">
-      <label className="block text-sm font-black text-[#0f2f44] mb-1.5 mr-0.5 tracking-wide whitespace-nowrap">
+      <label className="block text-sm font-black text-white mb-1.5 mr-0.5 tracking-wide">
         {label}
       </label>
       <div className="relative flex items-center">
@@ -226,7 +199,7 @@ function Field({
           value={v}
           onChange={(e) => on(e.target.value)}
           placeholder={placeholder}
-          className={`w-full ${icon ? "pr-9" : "px-3"} pl-3 py-2 text-[15px] border-2 border-black rounded-xl outline-none focus:ring-2 focus:ring-[#0f2f44]/20 bg-white text-[#0f2f44] font-bold ${className}`}
+          className={`w-full ${icon ? "pr-9" : "px-3"} pl-3 py-2 text-[15px] border-2 border-black rounded-xl outline-none focus:ring-2 focus:ring-black/20 bg-white text-[#0f2f44] font-bold ${className}`}
         />
       </div>
     </div>
@@ -246,33 +219,20 @@ function LedgerStat({
   icon: React.ReactNode;
   style?: React.CSSProperties;
 }) {
-  const toneMap = {
-    income: { text: "text-[#1E8E5A]", chipBg: THEME.paleSage },
-    expense: { text: "text-[#D14343]", chipBg: "#FFEDEE" },
-    balance: { text: "text-[#1f5f7a]", chipBg: THEME.warmCream },
-  } as const;
-  const t = toneMap[tone];
   return (
     <div
-      className="relative rounded-2xl px-3 py-3 sm:px-4 sm:py-3.5 border-2 border-black shadow-sm"
-      style={{ background: THEME.cream, ...style }}
+      className="relative rounded-2xl px-3 py-3 sm:px-4 sm:py-4 border-2 border-black shadow-md transition-transform hover:scale-[1.01]"
+      style={style}
     >
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between">
         <div>
-          <span className="text-xs sm:text-sm font-black text-[#5b7d90] tracking-wide whitespace-nowrap">
-            {label}
-          </span>
-          <div className={`text-base sm:text-xl font-black font-mono tabular-nums numeric-cell mt-1 ${t.text}`}>
+          <span className="text-xs sm:text-sm font-black text-white/90 tracking-wide drop-shadow-sm">{label}</span>
+          <div className="text-base sm:text-2xl font-black font-mono tabular-nums numeric-cell mt-1 sm:mt-1.5 text-white drop-shadow-sm">
             {fmt(value)}
           </div>
         </div>
-        <div
-          className="p-2.5 rounded-xl border-2 border-black flex items-center justify-center shrink-0"
-          style={{ background: t.chipBg }}
-        >
-          {React.isValidElement(icon)
-            ? React.cloneElement(icon as any, { className: ICON_MOBILE })
-            : icon}
+        <div className="p-2.5 rounded-xl flex items-center justify-center bg-black/20 border border-black/30 text-white shadow-inner">
+          {React.isValidElement(icon) ? React.cloneElement(icon as any, { className: ICON_MOBILE }) : icon}
         </div>
       </div>
     </div>
@@ -280,8 +240,14 @@ function LedgerStat({
 }
 
 export default function AccountsTab() {
-  const { accounts, addAccount, updateAccount, deleteAccount, clearAccounts, hafiza = [] } =
-    useStore();
+  const {
+    accounts,
+    addAccount,
+    updateAccount,
+    deleteAccount,
+    clearAccounts,
+    hafiza = [],
+  } = useStore();
   const [form, setForm] = useState<FormType>(emptyForm);
   const [editingRow, setEditingRow] = useState<any | null>(null);
 
@@ -453,7 +419,9 @@ export default function AccountsTab() {
   const currentBalance = totalIncome - totalExpense;
 
   const filteredWithBalance = useMemo(() => {
-    const isOpeningRow = (row: any) => String(row.description ?? "").includes("رصيد افتتاحي");
+    const isOpeningRow = (row: any) =>
+      String(row.description ?? "").includes("رصيد افتتاحي");
+
     const openingRow = accounts.find(isOpeningRow);
     const base = openingRow ? Number(openingRow.income) || 0 : 0;
     const displayedRows = filtered.filter((r) => !isOpeningRow(r));
@@ -593,16 +561,14 @@ export default function AccountsTab() {
       label: "مطابقة شاملة ٢٠٢٦",
       icon: Zap,
       onSelect: handleSyncFromHafiza,
-      className:
-        "flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#0f4a5c] bg-gradient-to-r from-[#f4fbff] via-[#d9f0f7] to-[#b9e6f0] border-2 border-black shadow-sm hover:brightness-105 transition-all duration-200 whitespace-nowrap",
     },
     {
       label: "استيراد Excel",
       icon: FileSpreadsheet,
       onSelect: () => undefined,
       content: (
-        <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#7a2a1a] bg-gradient-to-r from-[#fff6f5] via-[#ffd9d3] to-[#ffb8ac] border-2 border-black shadow-sm hover:brightness-105 transition-all duration-200 whitespace-nowrap">
-          <FileSpreadsheet className={`${ICON_MOBILE} text-[#7a2a1a]`} />
+        <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white bg-[#5c2a1a] border-2 border-black shadow-sm hover:bg-[#4a1a0a] transition-all duration-200">
+          <FileSpreadsheet className={`${ICON_MOBILE} text-white`} />
           <span>استيراد Excel</span>
           <input
             type="file"
@@ -622,92 +588,73 @@ export default function AccountsTab() {
     >
       <style>{PRINT_STYLES}</style>
 
-      {/* شريط العنوان */}
-      <div
-        className="accounts-print-hide flex items-center justify-between border-2 border-black p-3.5 rounded-xl"
-        style={{
-          background: "linear-gradient(135deg, #f2fbfa 0%, #d4f0ec 45%, #b3e4dd 100%)",
-        }}
-      >
+      {/* شريط العنوان - كرت 1 (لون: عنابي ملكي) */}
+      <div className="accounts-print-hide flex items-center justify-between border-2 border-black p-4 rounded-2xl bg-[#4a2e35] shadow-lg">
         <div>
-          <h1 className={`${HEADING_MOBILE} text-[#0f4a44] font-black tracking-tight`}>
+          <h1 className={`${HEADING_MOBILE} text-white tracking-tight`}>
             الحساب الجاري
           </h1>
-          <p className="text-xs text-[#5c6b4a] font-black tracking-wide mt-0.5">
+          <p className="text-xs text-[#f3e5ab] font-bold tracking-wide mt-0.5">
             سجل الحركات المالية المُرحّلة
           </p>
         </div>
 
-        <div className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border-2 border-black shadow-sm whitespace-nowrap">
-          <Landmark className={`${ICON_MOBILE} text-[#0f4a44]`} />
-          <span className="text-sm text-[#0f4a44] font-black">عدد القيود</span>
-          <span className="text-[#2c3e50] font-mono text-base tabular-nums font-black">
-            {accounts.length}
-          </span>
+        <div className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#2a1b20] border-2 border-black shadow-sm text-white">
+          <Landmark className={`${ICON_MOBILE} text-[#f3e5ab]`} />
+          <span className="text-sm font-bold">عدد القيود:</span>
+          <span className="font-mono text-base tabular-nums font-black text-[#f3e5ab]">{accounts.length}</span>
         </div>
       </div>
-
-      {/* بطاقات الإجماليات */}
-      <div className="accounts-print-hide grid grid-cols-1 sm:grid-cols-3 gap-3">
+{/* ===== بطاقا
+ت الإجماليا
+(كرت 2, 3, 4 بألوان مختلفة كلياً وبدونتكرار وبحدود سوداء) ===== */}
+      <div className="accounts-print-hide grid grid-cols-2 sm:grid-cols-2 gap-2">
+        {/* إجمالي الإيرادات (أخضر زمردي داكن) */}
         <LedgerStat
           label="إجمالي الإيرادات"
-          style={{
-            background: "linear-gradient(135deg, #fffdf5 0%, #fff3c4 45%, #ffe985 100%)",
-            borderColor: "#000",
-            color: "#7a5c00",
-          }}
+          style={{ background: "#1b4d3e" }}
           value={totalIncome}
           tone="income"
-          icon={<ArrowUpRight className="text-[#7a5c00]" />}
+          icon={<ArrowUpRight className="text-white" />}
         />
 
+        {/* إجمالي المصروفات (أحمر قرمزي داكن) */}
         <LedgerStat
           label="إجمالي المصروفات"
-          style={{
-            background: "linear-gradient(135deg, #fff6f5 0%, #ffd9d3 45%, #ffb8ac 100%)",
-            borderColor: "#000",
-            color: "#7a2a1a",
-          }}
+          style={{ background: "#5c1d24" }}
           value={totalExpense}
           tone="expense"
-          icon={<ArrowDownLeft className="text-[#7a2a1a]" />}
+          icon={<ArrowDownLeft className="text-white" />}
         />
 
+        {/* الرصيد الحالي (أزرق بحري داكن) */}
         <LedgerStat
           label="الرصيد الحالي"
-          style={{
-            background: "linear-gradient(135deg, #f4fbff 0%, #d9f0f7 45%, #b9e6f0 100%)",
-            borderColor: "#000",
-            color: "#0f4a5c",
-          }}
+          style={{ background: "#1b365d" }}
           value={currentBalance}
           tone="balance"
-          icon={<Wallet className="text-[#0f4a5c]" />}
+          icon={<Wallet className="text-white" />}
         />
       </div>
 
-      {/* التقارير الدورية */}
+      {/* ===== التقارير الدورية (كرت 5 بلون برونزي / خشبي دافئ) ===== */}
       <div
-        className="accounts-print-hide w-full rounded-2xl overflow-hidden border-2 border-black shadow-sm"
-        style={{
-          background: "linear-gradient(135deg, #f4fff2 0%, #d7f5cf 45%, #b8ecae 100%)",
-        }}
+        className="accounts-print-hide w-full rounded-2xl overflow-hidden border-2 border-black shadow-md bg-[#614529]"
       >
         <div
-          className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b-2 border-black"
-          style={{ background: "#f5f5dc" }}
+          className="px-4 py-3.5 flex flex-wrap justify-between items-center gap-3 border-b-2 border-black bg-[#4e341f]"
         >
           <div>
-            <h2 className="text-base font-black text-[#1a2a3a] tracking-wide whitespace-nowrap">
+            <h2 className="text-base font-black text-white tracking-wide">
               تقارير الحساب الدورية
             </h2>
-            <p className="text-xs text-[#5c2a1a] font-bold mt-1 whitespace-nowrap">
+            <p className="text-xs text-[#f3e5ab] font-bold mt-0.5">
               اختر الربع أو النصف أو السنة ثم صدّر التقرير
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <label className="text-xs font-black text-[#1a2a3a] whitespace-nowrap">
+          <div className="flex flex-wrap items-end gap-2 text-center">
+            <label className="text-xs font-black text-white">
               نوع التقرير
               <select
                 value={accountReportMode}
@@ -716,7 +663,7 @@ export default function AccountsTab() {
                   setAccountReportMode(nextMode);
                   setAccountReportPeriod(1);
                 }}
-                className="block mt-1 px-2.5 py-2 border-2 border-black bg-[#1a2a3a] text-[#d2b48c] text-xs font-black rounded-lg outline-none cursor-pointer"
+                className="block mt-1 px-2 py-2 border-2 border-black bg-white text-[#0f2f44] text-xs font-bold rounded-lg outline-none"
               >
                 <option value="quarter">ربع سنوي</option>
                 <option value="halfYear">نصف سنوي</option>
@@ -725,12 +672,12 @@ export default function AccountsTab() {
             </label>
 
             {accountReportMode !== "year" && (
-              <label className="text-xs font-black text-[#1a2a3a] whitespace-nowrap">
+              <label className="text-xs font-black text-white">
                 الفترة
                 <select
                   value={accountReportPeriod}
                   onChange={(e) => setAccountReportPeriod(Number(e.target.value))}
-                  className="block mt-1 px-2.5 py-2 border-2 border-black bg-[#1a2a3a] text-[#d2b48c] text-xs font-black rounded-lg outline-none cursor-pointer"
+                  className="block mt-1 px-3 py-2 border-2 border-black bg-white text-[#0f2f44] text-xs font-bold rounded-lg outline-none"
                 >
                   {accountReportMode === "quarter" ? (
                     <>
@@ -749,152 +696,137 @@ export default function AccountsTab() {
               </label>
             )}
 
-            <label className="text-xs font-black text-[#1a2a3a] whitespace-nowrap">
+            <label className="text-xs font-black text-white">
               السنة
               <input
                 type="number"
                 value={accountReportYear}
                 onChange={(e) => setAccountReportYear(Number(e.target.value) || accountReportYear)}
-                className="block mt-1 w-24 px-2 py-2 border-2 border-black bg-[#1a2a3a] text-[#d2b48c] text-xs font-black font-mono text-center rounded-lg outline-none"
+                className="block mt-1 w-24 px-2 py-2 border-2 border-black bg-white text-[#0f2f44] text-xs font-bold font-mono text-center rounded-lg outline-none"
               />
             </label>
 
-            <div className="text-xs font-black text-[#5c2a1a] px-3 py-2 bg-[#d2b48c] rounded-lg border-2 border-black whitespace-nowrap mt-5 sm:mt-0">
+            <div className="text-xs font-black text-[#4e341f] px-3 py-2.5 bg-[#f3e5ab] rounded-lg border-2 border-black">
               {accountReportLabel}
             </div>
 
-            <div className="mt-5 sm:mt-0">
-              <TabActions
-                title={`تقرير الحساب الجاري - ${accountReportLabel}`}
-                rows={accountReportRows}
-                columns={COLS.filter((c) => c.key !== "revenueKey")}
-                fileName={`الحساب-الجاري-${accountReportYear}`}
-                numericKeys={["hafizaAmount", "income", "expense", "balance"]}
-                pdfLayout="wide-centered"
-              />
-            </div>
+            <TabActions
+              title={`تقرير الحساب الجاري - ${accountReportLabel}`}
+              rows={accountReportRows}
+              columns={COLS.filter((c) => c.key !== "revenueKey")}
+              fileName={`الحساب-الجاري-${accountReportYear}`}
+              numericKeys={["hafizaAmount", "income", "expense", "balance"]}
+              pdfLayout="wide-centered"
+            />
           </div>
         </div>
       </div>
 
-      {/* لوحة القيد اليدوي والمطابقة */}
+      {/* ===== لوحة القيد اليدوي والمطابقة (كرت 6 بلون رمادي فولاذي / بترولي داكن) ===== */}
       <div
-        className="accounts-print-hide w-full rounded-2xl overflow-hidden border-2 border-black shadow-sm"
-        style={{
-          background: "linear-gradient(135deg, #fef9f2 0%, #fbe8cf 45%, #f5d3a3 100%)",
-        }}
+        className="accounts-print-hide w-full rounded-2xl overflow-hidden border-2 border-black shadow-md bg-[#233d4d]"
       >
         <div
-          className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b-2 border-black"
-          style={{ background: "#f5f5dc" }}
+          className="px-4 py-3.5 flex flex-wrap justify-between items-center gap-3 border-b-2 border-black bg-[#1b303c]"
         >
           <div className="flex items-center gap-2.5">
-            <div
-              className="p-2 rounded-lg border-2 border-black"
-              style={{ background: "#c98a3c", color: "#ffffff" }}
-            >
+            <div className="p-2 rounded-lg border-2 border-black bg-[#12222b] text-white">
               <Plus className={ICON_MOBILE} />
             </div>
-            <h2 className="text-sm sm:text-base font-black tracking-wide text-[#1a2a3a] whitespace-nowrap">
+            <h2 className="text-xl sm:text-base font-black tracking-wide text-white">
               قيد جديد أو ترحيل مطابقة من الحوافظ
             </h2>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
-            <div className="web-only-actions">
-              <WebActionMenu
-                label="إجراءات الإدخال والمطابقة"
-                actions={accountEntryWebActions}
+          <div className="web-only-actions">
+            <WebActionMenu
+              label="إجراءات الإدخال والمطابقة"
+              actions={accountEntryWebActions}
+            />
+          </div>
+
+          <div className="apk-only-actions flex items-center gap-2.5 flex-wrap">
+            <button
+              onClick={handleSyncFromHafiza}
+              className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full font-black border-2 border-black shadow-sm transition-all bg-[#fe7f2d] text-white hover:bg-[#e06d22]`}
+            >
+              <Zap className={`${ICON_MOBILE} text-white`} />
+              <span className="text-sm">مطابقة شاملة ٢٠٢٦</span>
+            </button>
+
+            <label
+              className={`${BTN_MOBILE} relative flex items-center justify-center gap-2 rounded-full border-2 border-black px-3 py-2 cursor-pointer font-black shadow-sm bg-[#33658a] text-white hover:bg-[#28506f]`}
+            >
+              <FileSpreadsheet className={`${ICON_MOBILE} text-white`} />
+              <span>استيراد إكسل</span>
+              <input
+                type="file"
+                accept=".xlsx, .xls, .csv"
+                onChange={handleImportExcel}
+                className="absolute h-0 w-0 opacity-0 overflow-hidden"
               />
-            </div>
-
-            <div className="apk-only-actions flex items-center gap-2 flex-wrap">
-              <button
-                onClick={handleSyncFromHafiza}
-                className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-xl font-black border-2 border-black shadow-sm transition-all bg-gradient-to-r from-[#f4fbff] to-[#b9e6f0] text-[#0f4a5c]`}
-              >
-                <Zap className={`${ICON_MOBILE} text-[#0f4a5c]`} />
-                <span>مطابقة شاملة ٢٠٢٦</span>
-              </button>
-
-              <label
-                className={`${BTN_MOBILE} relative flex items-center justify-center gap-2 rounded-xl border-2 border-black px-4 py-2 cursor-pointer font-black shadow-sm bg-gradient-to-r from-[#d2b48c] to-[#e6d7c3] text-[#1a2a3a]`}
-              >
-                <FileSpreadsheet className={`${ICON_MOBILE} text-[#1a2a3a]`} />
-                <span>استيراد إكسل</span>
-                <input
-                  type="file"
-                  accept=".xlsx, .xls, .csv"
-                  onChange={handleImportExcel}
-                  className="absolute h-0 w-0 opacity-0 overflow-hidden"
-                />
-              </label>
-            </div>
+            </label>
           </div>
         </div>
 
         <div className="p-3 sm:p-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 items-end">
+          <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 items-end">
             <Field
               label="التاريخ"
               type="date"
-              icon={<Calendar className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
+              icon={<Calendar className={`${ICON_MOBILE} text-[#233d4d]`} />}
               v={form.date}
               on={(v) => setForm({ ...form, date: v })}
-              className="bg-[#f5f5dc] text-[#1a2a3a] font-black border-2 border-black"
             />
             <Field
               label="رقم الحافظة"
-              icon={<Hash className={`${ICON_MOBILE} text-[#722f37]`} />}
+              icon={<Hash className={`${ICON_MOBILE} text-[#233d4d]`} />}
               v={form.hafizaNo}
               on={(v) => setForm({ ...form, hafizaNo: v })}
-              className="bg-[#e6d7c3] text-[#1a2a3a] font-black border-2 border-black"
+              placeholder="رقم الحافظة..."
             />
             <Field
               label="رقم الإشعار"
-              icon={<Hash className={`${ICON_MOBILE} text-[#c5a059]`} />}
+              icon={<Hash className={`${ICON_MOBILE} text-[#233d4d]`} />}
               v={form.notifyNo}
               on={(v) => setForm({ ...form, notifyNo: v })}
-              className="bg-[#f5f5dc] text-[#1a2a3a] font-black border-2 border-black"
+              placeholder="رقم الإشعار..."
             />
             <Field
               label="تاريخ التوريد"
               type="date"
-              icon={<Calendar className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
+              icon={<Calendar className={`${ICON_MOBILE} text-[#233d4d]`} />}
               v={form.notifyDate}
               on={(v) => setForm({ ...form, notifyDate: v })}
-              className="bg-[#e6d7c3] text-[#1a2a3a] font-black border-2 border-black"
             />
             <Field
               label="رقم الشيك"
-              icon={<Ticket className={`${ICON_MOBILE} text-[#722f37]`} />}
+              icon={<Ticket className={`${ICON_MOBILE} text-[#233d4d]`} />}
               v={form.checkNo}
               on={(v) => setForm({ ...form, checkNo: v })}
-              className="bg-[#f5f5dc] text-[#1a2a3a] font-black border-2 border-black"
+              placeholder="رقم الشيك..."
             />
             <Field
               label="تاريخ الشيك"
               type="date"
-              icon={<Calendar className={`${ICON_MOBILE} text-[#c5a059]`} />}
+              icon={<Calendar className={`${ICON_MOBILE} text-[#233d4d]`} />}
               v={form.checkDate}
               on={(v) => setForm({ ...form, checkDate: v })}
-              className="bg-[#e6d7c3] text-[#1a2a3a] font-black border-2 border-black"
             />
-
-            <div className="sm:col-span-2 lg:col-span-3">
-              <label className="block text-[15px] font-black mb-1.5 mr-0.5 tracking-wide text-[#1a2a3a] whitespace-nowrap">
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-black text-white mb-1.5 mr-0.5 tracking-wide">
                 البيان والشرح
               </label>
               <div className="relative flex items-center">
                 <span className="absolute right-3 z-10">
-                  <FileText className={`${ICON_MOBILE} text-[#722f37]`} />
+                  <FileText className={`${ICON_MOBILE} text-[#233d4d]`} />
                 </span>
                 <input
                   list="account-descriptions"
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   placeholder="اكتب أو اختر البيان..."
-                  className="w-full pr-9 pl-3 py-2 text-[15px] border-2 border-black rounded-xl outline-none shadow-sm bg-[#f5f5dc] text-[#1a2a3a] font-black"
+                  className="w-full pr-9 pl-3 py-2 text-[15px] border-2 border-black rounded-xl outline-none shadow-sm bg-white text-[#0f2f44] font-bold"
                 />
               </div>
               <datalist id="account-descriptions">
@@ -908,54 +840,52 @@ export default function AccountsTab() {
 
             <Field
               label="التخصص الطبي"
-              icon={<Stethoscope className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
+              icon={<Stethoscope className={`${ICON_MOBILE} text-[#233d4d]`} />}
               v={form.specialty}
               on={(v) => setForm({ ...form, specialty: v })}
-              className="bg-[#e6d7c3] text-[#1a2a3a] font-black border-2 border-black"
+              placeholder="التخصص..."
             />
             <Field
               label="الاسم الكامل"
-              icon={<User className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
+              icon={<User className={`${ICON_MOBILE} text-[#233d4d]`} />}
               v={form.name}
               on={(v) => setForm({ ...form, name: v })}
               placeholder="اسم المتدرب..."
-              className="bg-[#f5f5dc] text-[#1a2a3a] font-black border-2 border-black"
             />
+
             <Field
               label="مبلغ الحافظة"
               type="number"
-              icon={<span className="text-xs text-[#1a2a3a] font-black">ر.ي</span>}
+              icon={<span className="text-xs text-[#233d4d] font-black">ر.ي</span>}
               v={form.hafizaAmount}
               on={(v) => setForm({ ...form, hafizaAmount: v })}
-              className="font-mono tabular-nums numeric-cell bg-[#e6d7c3] text-[#1a2a3a] font-black border-2 border-black"
+              placeholder="0.00"
             />
             <Field
               label="الإيرادات"
               type="number"
-              icon={<span className="text-xs text-[#c5a059] font-black">ر.ي</span>}
+              icon={<span className="text-xs text-[#233d4d] font-black">ر.ي</span>}
               v={form.income}
               on={(v) => setForm({ ...form, income: v })}
               placeholder="0.00"
-              className="text-[#c5a059] font-black font-mono tabular-nums numeric-cell bg-[#f5f5dc] border-2 border-black"
             />
             <Field
               label="المصروفات"
               type="number"
-              icon={<span className="text-xs text-[#722f37] font-black">ر.ي</span>}
+              icon={<span className="text-xs text-[#233d4d] font-black">ر.ي</span>}
               v={form.expense}
               on={(v) => setForm({ ...form, expense: v })}
               placeholder="0.00"
-              className="text-[#722f37] font-black font-mono tabular-nums numeric-cell bg-[#e6d7c3] border-2 border-black"
             />
 
-            <div className="sm:col-span-2 lg:col-span-3">
-              <label className="flex items-center gap-1.5 text-[15px] font-black mb-1.5 mr-0.5 tracking-wide text-[#1a2a3a] whitespace-nowrap">
-                <Link className={`${ICON_MOBILE} text-[#c5a059]`} /> ربط بدليل هيكل الإيرادات
+            <div className="sm:col-span-2">
+              <label className="flex items-center gap-1 text-sm font-black text-white mb-1.5 mr-0.5 tracking-wide">
+                <Link className={`${ICON_MOBILE} text-[#f3e5ab]`} /> ربط بدليل هيكل الإيرادات
               </label>
               <select
                 value={form.revenueKey}
                 onChange={(e) => setForm({ ...form, revenueKey: e.target.value })}
-                className="w-full px-3 py-2 text-[15px] border-2 border-black rounded-xl outline-none shadow-sm bg-[#f5f5dc] text-[#1a2a3a] font-black cursor-pointer"
+                className="w-full px-2 py-2 text-[15px] border-2 border-black rounded-xl outline-none shadow-sm bg-white text-[#0f2f44] font-bold"
               >
                 <option value="">-- بدون ربط --</option>
                 {revenueTypes.map((t) => (
@@ -967,42 +897,37 @@ export default function AccountsTab() {
             </div>
           </div>
 
-          <div className="flex gap-2 pt-4 mt-4 border-t-2 border-black">
+          <div className="flex gap-2 pt-3 mt-3 border-t-2 border-black">
             <button
               onClick={submit}
-              className={`${BTN_MOBILE} flex-1 flex items-center justify-center gap-2 rounded-xl font-black border-2 border-black shadow-sm transition-all bg-gradient-to-r from-[#f4fff2] to-[#b8ecae] text-[#2f5c1a]`}
+              className={`${BTN_MOBILE} flex-0 flex items-center justify-center gap-2 rounded-xl font-black border-2 border-black shadow-sm transition-all bg-[#2a9d8f] text-white hover:bg-[#21867a]`}
             >
-              <Save className={`${ICON_MOBILE} text-[#2f5c1a]`} /> <span>ترحيل القيد</span>
+              <Save className={`${ICON_MOBILE} text-white`} /> <span>ترحيل القيد</span>
             </button>
             <button
               onClick={() => setForm(emptyForm)}
-              className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-xl border-2 border-black font-black shadow-sm transition-all bg-[#f5f5dc] text-[#722f37]`}
+              className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-xl border-2 border-black font-black shadow-sm transition-all bg-[#e76f51] text-white hover:bg-[#d55f41]`}
             >
-              <Eraser className={`${ICON_MOBILE} text-[#722f37]`} /> <span>مسح</span>
+              <Eraser className={`${ICON_MOBILE} text-white`} /> <span>مسح</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* جدول القيود */}
-      <div
-        className="accounts-print-area w-full rounded-2xl overflow-hidden border-2 border-black shadow-sm bg-white"
-      >
-        <div
-          className="accounts-print-hide px-3 py-3 sm:px-5 sm:py-3.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2 border-b-2 border-black"
-          style={{ background: THEME.cream }}
-        >
+      {/* ===== جدول القيود (كرت 7 بلون أبيض ناصع مع حدود سوداء وتنسيق الالتفاف التلقائي للخلايا) ===== */}
+      <div className="accounts-print-area w-auto rounded-2xl overflow-hidden border-2 border-black shadow-md bg-white">
+        <div className="accounts-print-hide px-3 py-3 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2 border border-1-black bg-[#f4f1ea]">
           <div className="flex items-center gap-2.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#1E8E5A] animate-pulse"></div>
-            <h2 className="text-xs sm:text-sm font-black text-[#0f2f44] tracking-wide whitespace-nowrap">
+            <div className="w-3 h-3 rounded-full bg-[#2a9d8f] animate-pulse border border-1-black"></div>
+            <h2 className="text-lg sm:text-sm font-black text-[#0f2f44] tracking-wide">
               سجل حركات الحساب الجاري ({accounts.length})
             </h2>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="grid grid-cols-2 sm:flex gap-1 sm:gap-2 w-auto">
             {Object.values(filters).some(Boolean) && (
               <button
                 onClick={clearFilters}
-                className="px-3 py-1.5 bg-black/5 hover:bg-black/10 text-[#0f2f44] border-2 border-black rounded-xl text-xs font-black transition-colors whitespace-nowrap"
+                className="px-2 py-1 bg-black/10 hover:bg-black/20 text-[#0f2f44] rounded-full text-xs font-bold transition-colors"
               >
                 مسح مرشحات التصفية
               </button>
@@ -1015,111 +940,102 @@ export default function AccountsTab() {
               numericKeys={["hafizaAmount", "income", "expense", "balance"]}
               pdfLayout="wide-centered"
               onClear={clearAccounts}
+              className="col-span-2 w-auto"
             />
           </div>
         </div>
 
-        <div className="p-2 sm:p-3">
-          <div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-xl border-2 border-black">
-            <table className="min-w-max table-auto text-sm text-center font-bold border-collapse border-2 border-black">
-              <thead
-                className="sticky top-0 z-20 text-[#0f2f44] font-black text-[15px]"
-                style={{ background: THEME.warmCream }}
-              >
+        <div className="p-1.5 sm:p-3">
+          <div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-xl border border-black">
+            <table className="w-auto table-auto text-sm text-center font-semibold border-collapse border border-1-black">
+              <thead className="sticky top-0 z-20 text-white font-black text-[15px] bg-[#343a40]">
                 <tr>
-                  <th className="border-2 border-black text-center w-12 sticky top-0 z-20 px-2 py-2 whitespace-nowrap">
-                    م
-                  </th>
+                  <th className="border-2 border-black text-center w-auto sticky top-0 z-20 px-2 py-2 whitespace-nowrap">م</th>
                   {COLS.map((c) => (
                     <th
                       key={c.key}
-                      className="border-2 border-black cursor-pointer hover:bg-[#cfe4ef] transition-colors select-none sticky top-0 z-20 px-2.5 py-2 whitespace-nowrap"
+                      className="border-2 border-black cursor-pointer hover:bg-black/20 transition-colors select-none sticky top-0 z-20 px-2 py-2"
                       onClick={() => toggleSort(c.key)}
                     >
-                      <div className="flex items-center justify-center gap-1.5 whitespace-nowrap">
+                      <div className="flex items-center justify-center gap-1.5">
                         <span>{c.label}</span>
-                        <span className="text-[14px] text-[#1f5f7a] font-mono">
+                        <span className="text-[13px] text-[#f3e5ab] font-mono">
                           {sortIndicator(sortKey === c.key, sortDir)}
                         </span>
                       </div>
                     </th>
                   ))}
-                  <th className="border-2 border-black text-center sticky top-0 z-20 px-2.5 py-2 whitespace-nowrap">
-                    إجراءات
-                  </th>
+                  <th className="border-2 border-black text-center sticky top-0 z-20 px-2 py-2 whitespace-nowrap">إجراءات</th>
                 </tr>
-                <tr className="accounts-print-hide" style={{ background: THEME.cream }}>
-                  <th className="border-2 border-black px-2 py-1.5 whitespace-nowrap"></th>
+                <tr className="accounts-print-hide bg-[#e9ecef]">
+                  <th className="border-2 border-black px-1 py-1.5 whitespace-nowrap"></th>
                   {COLS.map((c) => (
-                    <th key={c.key} className="border-2 border-black px-2 py-1.5 whitespace-nowrap">
+                    <th key={c.key} className="border-2 border-black px-1.5 py-1.5">
                       <input
                         value={filters[c.key] || ""}
                         onChange={(e) => setFilter(c.key, e.target.value)}
                         placeholder="تصفية..."
-                        className="w-20 px-2 py-1 text-xs border-2 border-black rounded-lg bg-white text-[#0f2f44] outline-none font-black transition-colors"
+                        className="w-auto px-2 py-1 text-xs border-2 border-black rounded bg-white text-[#0f2f44] outline-none font-bold"
                       />
                     </th>
                   ))}
-                  <th className="border-2 border-black px-2 py-1.5 whitespace-nowrap"></th>
+                  <th className="border-2 border-black px-1.5 py-1.5"></th>
                 </tr>
               </thead>
 
-              <tbody className="text-[#0f2f44] font-black">
+              <tbody className="text-[#0f2f44] font-bold">
                 {filteredWithBalance.length === 0 ? (
                   <tr>
                     <td
                       colSpan={COLS.length + 2}
-                      className="text-center font-black border-2 border-black bg-white px-3 py-4 text-sm whitespace-nowrap"
+                      className="text-center font-black border-2 border-black bg-white px-2 py-4 text-sm"
                     >
                       لا توجد بيانات تطابق مرشحات البحث.
                     </td>
                   </tr>
                 ) : (
                   filteredWithBalance.map((acc, index) => (
-                    <tr
-                      key={acc.id}
-                      className="odd:bg-white even:bg-[#f4fafd] hover:bg-[#e3f0f7] transition-colors group"
-                    >
-                      <td className="border-2 border-black text-center font-mono tabular-nums numeric-cell px-2 py-2 text-sm whitespace-nowrap">
+                    <tr key={acc.id} className="odd:bg-white even:bg-[#f8f9fa] hover:bg-[#e2ece9] transition-colors group">
+                      <td className="border border-black text-center font-bold tabular-nums px-2 py-2 text-lg whitespace-nowrap">
                         {index + 1}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell text-center px-2.5 py-2 text-sm whitespace-nowrap">
+                      <td className="border border-1-black font-bold tabular-nums text-center px-2 py-2 text-lg whitespace-nowrap">
                         {acc.date}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell font-black text-center px-2.5 py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-bold tabular-nums font-black text-center px-2 py-2 text-lg whitespace-nowrap">
                         {acc.hafizaNo || "—"}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell text-center px-2.5 py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-bold tabular-nums text-center px-2 py-2 text-lg whitespace-nowrap">
                         {acc.notifyNo || "—"}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell text-center px-2.5 py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-bold tabular-nums text-center px-2 py-2 text-lg whitespace-nowrap">
                         {acc.notifyDate || "—"}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell text-center px-2.5 py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-mono tabular-nums text-center px-2 py-2 text-lg whitespace-nowrap">
                         {acc.checkNo || "—"}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell text-center px-2.5 py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-mono tabular-nums text-center px-2 py-2 text-lg whitespace-nowrap">
                         {acc.checkDate || "—"}
                       </td>
-                      <td className="border-2 border-black px-2.5 py-2 text-sm whitespace-nowrap text-right">
+                      <td className="border border-black px-3 py-2 text-lg text-center whitespace-nowrap break-words w-auto ">
                         {acc.description || "—"}
                       </td>
-                      <td className="border-2 border-black px-2.5 py-2 text-sm whitespace-nowrap text-right">
+                      <td className="border border-black px-3 py-2 text-lg text-center whitespace-nowrap break-words max-w-auto">
                         {acc.specialty || "—"}
                       </td>
-                      <td className="border-2 border-black font-black px-2.5 py-2 text-sm whitespace-nowrap text-right">
+                      <td className="border border-black px-3 py-2 text-sm font-black text-center whitespace-nowrap break-words max-w-auto">
                         {acc.name || "—"}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell text-center px-2.5 py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-mono tabular-nums text-center px-2 py-2 text-lg whitespace-nowrap">
                         {Number(acc.hafizaAmount) > 0 ? fmt(Number(acc.hafizaAmount)) : "—"}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#1E8E5A]/[0.08] px-2.5 py-2 text-sm whitespace-nowrap text-[#1E8E5A]">
+                      <td className="border border-black font-mono tabular-nums font-black text-center bg-[#d8f3dc] text-[#1b4332] px-2 py-2 text-sm whitespace-nowrap">
                         {Number(acc.income) > 0 ? fmt(Number(acc.income)) : "—"}
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#D14343]/[0.08] px-2.5 py-2 text-sm whitespace-nowrap text-[#D14343]">
+                      <td className="border border-black font-mono tabular-nums font-black text-center bg-[#ffdadb] text-[#780000] px-2 py-2 text-sm whitespace-nowrap">
                         {Number(acc.expense) > 0 ? fmt(Number(acc.expense)) : "—"}
                       </td>
-                      <td className="accounts-print-hide border-2 border-black text-center px-2 py-2 whitespace-nowrap">
+                      <td className="accounts-print-hide border border-black text-center px-2 py-2 text-sm whitespace-nowrap">
                         <select
                           value={acc.revenueKey || ""}
                           onChange={(e) => {
@@ -1127,7 +1043,7 @@ export default function AccountsTab() {
                             updateAccount(acc.id, { ...acc, revenueKey: newKey || undefined });
                             toast.success("تم ربط رمز الإيراد بنجاح");
                           }}
-                          className="w-full px-2 py-1.5 text-xs font-black text-[#7C3AED] bg-[#7C3AED]/10 border-2 border-black rounded-lg outline-none cursor-pointer whitespace-nowrap"
+                          className="w-full p-1 text-xs font-black text-[#5a189a] bg-[#5a189a]/10 border border-black rounded outline-none cursor-pointer"
                         >
                           <option value="">— ربط الرمز —</option>
                           {revenueTypes.map((t) => (
@@ -1137,14 +1053,14 @@ export default function AccountsTab() {
                           ))}
                         </select>
                       </td>
-                      <td className="border-2 border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#1f5f7a]/[0.08] px-2.5 py-2 text-sm whitespace-nowrap text-[#1f5f7a]">
+                      <td className="border border-black font-mono tabular-nums font-black text-center bg-[#caf0f8] text-[#03045e] px-2 py-2 text-sm whitespace-nowrap">
                         {fmt(acc.balance)}
                       </td>
-                      <td className="accounts-print-hide border-2 border-black text-center px-2 py-2 whitespace-nowrap">
+                      <td className="accounts-print-hide border border-black text-center px-2 py-2 text-sm whitespace-nowrap">
                         <div className="flex justify-center gap-1.5">
                           <button
                             onClick={() => setEditingRow(acc)}
-                            className="p-1.5 text-[#1E8E5A] hover:bg-[#1E8E5A]/10 border-2 border-black rounded-lg transition-colors"
+                            className="p-1.5 bg-[#2a9d8f]/20 text-[#2a9d8f] hover:bg-[#2a9d8f]/30 rounded-lg transition-colors border border-1-black"
                             aria-label="تعديل"
                           >
                             <Edit className={ICON_MOBILE} />
@@ -1153,7 +1069,7 @@ export default function AccountsTab() {
                             onClick={() => {
                               if (confirm("هل أنت متأكد من الحذف؟")) deleteAccount(acc.id);
                             }}
-                            className="p-1.5 text-[#D14343] hover:bg-[#D14343]/10 border-2 border-black rounded-lg transition-colors"
+                            className="p-2 bg-[#e76f51] text-[#e76f51] hover:bg-[#e76f51]/30 rounded-lg transition-colors border border-1-black"
                             aria-label="حذف"
                           >
                             <Trash2 className={ICON_MOBILE} />
@@ -1166,24 +1082,21 @@ export default function AccountsTab() {
               </tbody>
               {filteredWithBalance.length > 0 && (
                 <tfoot>
-                  <tr className="bg-[#E7E2D8]">
-                    <td
-                      colSpan={10}
-                      className="border-2 border-black text-left font-black px-3 py-2.5 text-sm whitespace-nowrap"
-                    >
-                      رصيد الإقفال النهائي
+                  <tr className="bg-[#e9ecef] font-black">
+                    <td colSpan={10} className="border-2 border-black text-center px-3 py-2 text-sm whitespace-nowrap">
+                      رصيد الإقفال الإجمالي
                     </td>
-                    <td className="border-2 border-black font-mono tabular-nums numeric-cell font-black text-center px-2.5 py-2.5 text-sm whitespace-nowrap">
+                    <td className="border-2 border-black font-mono tabular-nums text-center px-2 py-2 text-sm whitespace-nowrap">
                       {fmt(totalIncome)}
                     </td>
-                    <td className="border-2 border-black font-mono tabular-nums numeric-cell font-black text-center px-2.5 py-2.5 text-sm whitespace-nowrap">
+                    <td className="border-2 border-black font-mono tabular-nums text-center px-2 py-2 text-sm whitespace-nowrap">
                       {fmt(totalExpense)}
                     </td>
-                    <td className="border-2 border-black px-2 py-2.5 whitespace-nowrap"></td>
-                    <td className="border-2 border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#1f5f7a]/15 px-2.5 py-2.5 text-sm whitespace-nowrap text-[#1f5f7a]">
+                    <td className="border-2 border-black px-2 py-2 text-sm whitespace-nowrap"></td>
+                    <td className="border-2 border-black font-mono tabular-nums text-center bg-[#caf0f8] text-[#03045e] px-2 py-2 text-sm whitespace-nowrap">
                       {fmt(currentBalance)}
                     </td>
-                    <td className="accounts-print-hide border-2 border-black px-2 py-2.5 whitespace-nowrap"></td>
+                    <td className="accounts-print-hide border-2 border-black px-2 py-2 text-sm whitespace-nowrap"></td>
                   </tr>
                 </tfoot>
               )}
@@ -1200,117 +1113,98 @@ export default function AccountsTab() {
       >
         {editingRow && (
           <form onSubmit={handleEditSave} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-2 gap-2">
               <div>
-                <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide whitespace-nowrap">
-                  التاريخ
-                </label>
+                <label className="block text-sm font-black text-black mb-1 tracking-wide">التاريخ</label>
                 <input
                   type="date"
                   value={editingRow.date}
                   onChange={(e) => setEditingRow({ ...editingRow, date: e.target.value })}
-                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-white text-[#0f2f44] font-black"
+className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-creme text-[#0f2f44] font-bold"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide whitespace-nowrap">
-                  رقم الحافظة
-                </label>
+                <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide">رقم الحافظة</label>
                 <input
                   value={editingRow.hafizaNo}
                   onChange={(e) => setEditingRow({ ...editingRow, hafizaNo: e.target.value })}
-                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-white text-[#0f2f44] font-black"
+                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-white text-[#0f2f44] font-bold"
                 />
               </div>
               <div>
-                <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide whitespace-nowrap">
-                  رقم الإشعار
-                </label>
+                <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide">رقم الإشعار</label>
                 <input
                   value={editingRow.notifyNo}
                   onChange={(e) => setEditingRow({ ...editingRow, notifyNo: e.target.value })}
-                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-white text-[#0f2f44] font-black"
+                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-white text-[#0f2f44] font-bold"
                 />
               </div>
               <div>
-                <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide whitespace-nowrap">
-                  تاريخ التوريد
-                </label>
+                <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide">تاريخ التوريد</label>
                 <input
                   type="date"
                   value={editingRow.notifyDate}
                   onChange={(e) => setEditingRow({ ...editingRow, notifyDate: e.target.value })}
-                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-white text-[#0f2f44] font-black"
+                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-white text-[#0f2f44] font-bold"
                 />
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide whitespace-nowrap">
-                  البيان والشرح
-                </label>
+                <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide">البيان والشرح</label>
                 <input
                   value={editingRow.description}
                   onChange={(e) => setEditingRow({ ...editingRow, description: e.target.value })}
-                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-white text-[#0f2f44] font-black"
+                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-white text-[#0f2f44] font-bold"
                 />
               </div>
               <div>
-                <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide whitespace-nowrap">
-                  الاسم
-                </label>
+                <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide">الاسم</label>
                 <input
                   value={editingRow.name}
                   onChange={(e) => setEditingRow({ ...editingRow, name: e.target.value })}
-                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-white text-[#0f2f44] font-black"
+                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-white text-[#0f2f44] font-bold"
                 />
               </div>
               <div>
-                <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide whitespace-nowrap">
-                  مبلغ الحافظة
-                </label>
+                <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide">التخصص</label>
                 <input
-                  type="number"
-                  value={editingRow.hafizaAmount}
-                  onChange={(e) => setEditingRow({ ...editingRow, hafizaAmount: e.target.value })}
-                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-white text-[#0f2f44] font-black font-mono tabular-nums numeric-cell"
+                  value={editingRow.specialty}
+                  onChange={(e) => setEditingRow({ ...editingRow, specialty: e.target.value })}
+                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-white text-[#0f2f44] font-bold"
                 />
               </div>
               <div>
-                <label className="block text-sm font-black text-[#1E8E5A] mb-1 tracking-wide whitespace-nowrap">
-                  الإيرادات
-                </label>
+                <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide">الإيرادات</label>
                 <input
                   type="number"
                   value={editingRow.income}
                   onChange={(e) => setEditingRow({ ...editingRow, income: e.target.value })}
-                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl bg-[#1E8E5A]/10 text-[#1E8E5A] font-black outline-none font-mono tabular-nums numeric-cell"
+                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-white text-[#0f2f44] font-bold font-mono"
                 />
               </div>
               <div>
-                <label className="block text-sm font-black text-[#D14343] mb-1 tracking-wide whitespace-nowrap">
-                  المصروفات
-                </label>
+                <label className="block text-sm font-black text-[#0f2f44] mb-1 tracking-wide">المصروفات</label>
                 <input
                   type="number"
                   value={editingRow.expense}
                   onChange={(e) => setEditingRow({ ...editingRow, expense: e.target.value })}
-                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl bg-[#D14343]/10 text-[#D14343] font-black outline-none font-mono tabular-nums numeric-cell"
+                  className="w-full p-2 text-[15px] border-2 border-black rounded-xl outline-none bg-white text-[#0f2f44] font-bold font-mono"
                 />
               </div>
             </div>
-            <div className="flex justify-end gap-3 pt-4 border-t-2 border-black">
+            <div className="flex gap-2 pt-4 border-t border-black">
+              <button
+                type="submit"
+                className="flex-1 py-2.5 bg-[#2a9d8f] text-white font-black rounded-xl border-2 border-black shadow-sm hover:bg-[#21867a]"
+              >
+                حفظ التعديلات
+              </button>
               <button
                 type="button"
                 onClick={() => setEditingRow(null)}
-                className="px-4 py-2 bg-black/5 text-[#0f2f44] border-2 border-black rounded-xl font-black text-sm hover:bg-black/10 whitespace-nowrap"
+                className="py-2.5 px-4 bg-[#e76f51] text-white font-black rounded-xl border-2 border-black shadow-sm hover:bg-[#d55f41]"
               >
                 إلغاء
-              </button>
-              <button
-                type="submit"
-                className="px-5 py-2 bg-[#0f2f44] text-white border-2 border-black rounded-xl font-black text-sm hover:bg-[#1a4a66] whitespace-nowrap"
-              >
-                حفظ التعديلات
               </button>
             </div>
           </form>

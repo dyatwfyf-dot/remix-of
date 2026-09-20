@@ -71,14 +71,14 @@ export default function TabActions({
         margin: 6mm; }
         @media print {
           * { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          body { margin: 0; padding: 4mm 6mm; color: #000 !important; font-weight:bold; }
+          body { margin: 0; padding: 4mm 6mm; color: #000 !important; font-weight: 600; }
           th, td { 
-        color: #000 !important; font-weight:bold; }
+        color: #000 !important; font-weight: 700; }
         }
       </style>
     `;
 
-const html = `<!doctype html><html lang="ar" dir="rtl"><head>${head}</head><body>
+    const html = `<!doctype html><html lang="ar" dir="rtl"><head>${head}</head><body>
       ${reportLetterheadHtml()}
       ${tableHtml()}
       <script>

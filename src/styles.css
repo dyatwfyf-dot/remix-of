@@ -28,7 +28,7 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
   font-family: "Mohammad Bold Art";
   src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
   font-style: normal;
-  font-weight: bold;
+  font-weight: 500;
   font-display: swap;
 }
 
@@ -36,7 +36,7 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
   font-family: "Mohammad Bold Art";
 src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
   font-style: normal;
-  font-weight: bold;
+  font-weight: 800 900;
   font-display: swap;
 }
 
@@ -44,7 +44,7 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
   font-family: "Mohammad Bold Art";
 src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
   font-style: normal;
-  font-weight: bold;
+  font-weight: 400 900;
   font-display: swap;
 }
 
@@ -67,10 +67,10 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
 }
 
 :root {
-  --font-ui: "Cairo";
+  --font-ui: "Mohammad Bold Art";
   --font-display: "Al Qabas Bold", "Noto Kufi Arabic", "Noto Sans Arabic", "Cairo", sans-serif;
   --font-heading: "Al Qabas Bold", "Noto Kufi Arabic", "Noto Sans Arabic", "Cairo", sans-serif;
-  --font-data: "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif;
+  --font-data: "Times New Roman", "Noto Sans Arabic", "Segoe UI", sans-serif;
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -114,38 +114,38 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
 
   /* الخلفية العامة */
   --background: oklch(0.955 0.020 235);
-  --foreground: oklch(0.10 0.02 240);
+  --foreground: oklch(0.24 0.035 240);
 
   /* البطاقات والحاويات */
   --card: oklch(0.995 0.004 235);
-  --card-foreground: oklch(0.10 0.02 240);
+  --card-foreground: oklch(0.20 0.03 240);
 
   /* اللون الأساسي (Primary) */
-  --primary: var(--ice-700);
+  --primary: var(--ice-600);
   --primary-foreground: oklch(0.99 0.005 235);
 
   /* اللون الثانوي (Secondary) */
-  --secondary: var(--ice-300);
-  --secondary-foreground: oklch(0.15 0.03 235);
+  --secondary: var(--ice-200);
+  --secondary-foreground: oklch(0.28 0.04 235);
 
   /* العناصر الباهتة (Muted) */
-  --muted: oklch(0.905 0.024 235);
-  --muted-foreground: oklch(0.25 0.03 238);
+  --muted: oklch(0.925 0.024 235);
+  --muted-foreground: oklch(0.44 0.035 238);
 
   /* التمييز (Accent) */
-  --accent: var(--ice-500);
-  --accent-foreground: oklch(0.10 0.02 240);
+  --accent: var(--ice-400);
+  --accent-foreground: oklch(0.20 0.03 240);
 
   /* الحالات الخاصة */
-  --destructive: oklch(0.55 0.17 22);
+  --destructive: oklch(0.60 0.16 22);
   --destructive-foreground: oklch(0.99 0.01 22);
-  --success: oklch(0.50 0.12 175);
+  --success: oklch(0.60 0.11 175);
   --success-foreground: oklch(0.99 0.01 175);
 
   /* الحدود وحقول الإدخال وحلقة التركيز */
-  --border: 1px solid black; 
+  --border: oklch(0.885 0.038 235);
   --input: oklch(0.985 0.010 235);
-  --ring: var(--ice-600);
+  --ring: var(--ice-400);
   }
 
   
@@ -164,13 +164,13 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
 
     color: var(--color-foreground);
     font-family: var(--font-ui);
-    font-weight: 900;
+    font-weight: 700;
     letter-spacing: 0;
     min-height: 100dvh;
     overscroll-behavior-y: none;
     -webkit-tap-highlight-color: transparent;
   }
-  h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 900; letter-spacing: 0 }
+  h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 800; letter-spacing: 0 }
 
   /* نظام الخطوط المرئي: نص عربي واضح وعناوين قوية وأرقام سهلة القراءة */
   .font-tajawal,
@@ -221,13 +221,13 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
     تنسيق مرن يتكيف مع حجم A4 الأفقي ويسمح باحتواء النصف التلقائي للنصوص.
   */
   table {
-    width:100% !important;
+    width: 100% !important;
     border-collapse: collapse;
-    table-layout:auto !important;
+    table-layout: auto !important;
     font-feature-settings: "tnum" 1, "lnum" 1;
   }
   th {
-    font-weight:bold;
+    font-weight: 1000;
   }
 
   /* احتواء تلقائي للنصوص والكلمات لجميع الخلايا مع السماح بالالتفاف المرن */
@@ -237,11 +237,10 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
     vertical-align: middle;
     white-space: normal; /* السماح بالتفاف النصوص الطويلة تلقائياً */
     overflow-wrap: break-word !important; /* كسر الكلمات الطويلة عند الحاجة لمنع التمدد الزائد */
-    word-break:normal !important;
+    word-break: normal !important;
     padding: 5px 6px !important;
     line-height: 1.3;
-    font-size: 13px;
-    font-weight:bolder;
+    font-size: clamp(14px, 1vw, 14px);
     border: 1px solid #000 !important;
   }
 
@@ -257,8 +256,7 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
     border: 1px solid #000 !important;
   }
 
-  .font-mono { font-family: var(--font-data); font-weight:bold; 
-  font-variant-numeric: tabular-nums; }
+  .font-mono { font-family: var(--font-data); font-weight: 600; font-variant-numeric: tabular-nums; }
   button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
   
   /* منع الزوم التلقائي في الشاشات الصغيرة عند التركيز */
@@ -282,17 +280,17 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
   .safe-pad-top { padding-top: max(0.5rem, env(safe-area-inset-top)); }
   
   .a4-landscape-page {
-    width:100%;
-    padding:5px;
+    width: 100%;
+    padding: 5px;
     margin: 0;
   }
 
   table { 
-    font-size:16px; 
+    font-size: 16px; 
   }
   table th, table td {
-    padding:3px 4px !important;
-    font-size:14px;
+    padding: 3px 4px !important;
+    font-size: clamp(14px, 2.8vw, 16px);
   }
   table input { font-size: 14px; padding: 3px 4px; }
 }
@@ -308,16 +306,16 @@ table td.font-mono,
 table th.font-mono,
 table .tabular-nums,
 table input[type="number"] {
-  font-family:var(--font-data) !important;
-  font-size:14px!important;
+  font-family: var(--font-data) !important;
+  font-size: clamp(14px, 2vw, 16px) !important;
   line-height: 1.5 !important;
-  color:#000!important;
-  font-weight:bolder !important;
-  white-space:nowrap !important; /* حماية الأرقام والتواريخ من الانقسام */
-  overflow:visible !important;
-  overflow-wrap:normal !important;
-  word-break:keep-all !important;
-  hyphens:none !important;
+  color: #000 !important;
+  font-weight: 1000 !important;
+  white-space: nowrap !important; /* حماية الأرقام والتواريخ من الانقسام */
+  overflow: visible !important;
+  overflow-wrap: normal !important;
+  word-break: keep-all !important;
+  hyphens: none !important;
 }
 
 table td.numeric-cell :where(span, div, input, button),
@@ -328,15 +326,15 @@ table td.compact-cell :where(span, div, input, button),
 table th.compact-cell :where(span, div, input, button),
 table td.font-mono :where(span, div, input, button),
 table th.font-mono :where(span, div, input, button) {
-  font-family:inherit !important;
-  font-size:inherit !important;
-  line-height:inherit !important;
-  white-space:nowrap !important;
-  overflow-wrap:normal !important;
-  word-break:keep-all !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  white-space: nowrap !important;
+  overflow-wrap: normal !important;
+  word-break: keep-all !important;
 }
 
-@media (max-width:640px) {
+@media (max-width: 640px) {
   table td.numeric-cell,
   table th.numeric-cell,
   table td.date-cell,
@@ -347,12 +345,11 @@ table th.font-mono :where(span, div, input, button) {
   table th.font-mono,
   table .tabular-nums,
   table input[type="number"] {
-    font-size:14px !important;
-    font-weight:bolder !important;
+    font-size: clamp(16px, 2vw, 18px) !important;
   }
 }
 
-/* توحيد نصوص ومحتويات الجداول للون الأسود الغامق */
+/* توحيد نصوص ومحتويات الجداول للون الأسود الداكن */
 table th :where(span, div, p, label, strong, b, small, a),
 table td :where(span, div, p, label, strong, b, small, a),
 table th input,
@@ -364,7 +361,7 @@ table td textarea,
 table th button,
 table td button {
   color: #000 !important;
-  font-weight: bolder !important;
+  font-weight: 700 !important;
 }
 
 /* منع الحقول الداخلية من تجاوز عرض الخلية */
@@ -416,9 +413,7 @@ table td > * {
 /* مقياس شاشات الهواتف (شاومي ~390px): خطوط متوسطة متوازنة وأزرار مريحة للمس */
 @media screen and (max-width: 640px) {
   .apk-tabs-ui {
-    font-family: var(--font-ui);
     font-size: 14px;
-    font-weight: 900;
   }
 
   .apk-tabs-ui h1 { font-size: 1.18rem !important; line-height: 1.35 !important; }
@@ -582,9 +577,9 @@ table td > * {
   width: auto !important;
   min-width: 0 !important;
   max-width: none !important;
-  white-space: nowrap !important;
-  overflow-wrap: normal !important;
-  word-break: keep-all !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
   hyphens: none !important;
   vertical-align: middle !important;
 }
@@ -607,18 +602,16 @@ table td > * {
 /* ===== تبويبات الكشوف (الإيرادات، الحساب الشهري، المصروفات، سجل الاستخدامات) ===== */
 /* هوية عصرية: أزرق بترولي عميق + لمسة نحاسية، واحتواء تلقائي للأعمدة بدون التفاف النصوص */
 .sheet-tabs-ui {
-  --sheet-ink: #081b2b;
-  --sheet-brand: #164b63;
-  --sheet-accent: #a36d2a;
+  --sheet-ink: #0f2f44;
+  --sheet-brand: #1f5f7a;
+  --sheet-accent: #c98a3c;
   color: var(--sheet-ink);
-  font-family: var(--font-ui);
-  font-weight: 900;
   letter-spacing: 0.1px;
 }
 
 .sheet-tabs-ui :where(h1, h2, h3, h4) {
   letter-spacing: 0.2px;
-  font-weight: 1000;
+  font-weight: 800;
 }
 
 /* الجداول: عرض تلقائي للأعمدة وارتفاع تلقائي للصفوف مع التفاف النص الطويل. */
@@ -632,14 +625,13 @@ table td > * {
   width: auto !important;
   min-width: 0 !important;
   height: auto !important;
-  white-space: nowrap !important;
-  overflow-wrap: normal !important;
-  word-break: keep-all !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
   hyphens: none !important;
   padding: 6px 9px !important;
   font-size: clamp(13px, 3.3vw, 14.5px) !important;
   line-height: 1.35 !important;
-  font-weight: 900;
 }
 
 .sheet-tabs-ui :where(table th, table td) * {
@@ -651,20 +643,20 @@ table td > * {
 }
 
 .sheet-tabs-ui thead th {
-  font-weight: 1000 !important;
+  font-weight: 900 !important;
   letter-spacing: 0.2px;
 }
 
 /* الأزرار: أحجام مريحة للمس على شاشات شاومي */
 .sheet-tabs-ui :where(button, [role="button"], label.cursor-pointer) {
   border-radius: 0.75rem !important;
-  font-weight: 900 !important;
+  font-weight: 800 !important;
   min-height: 40px;
 }
 
 .sheet-tabs-ui :where(input, select) {
   border-radius: 0.65rem !important;
-  font-weight: 900;
+  font-weight: 700;
 }
 
 /* ضبط دقيق لمحتوى التبويبات على هواتف شاومي/أندرويد بعرض يقارب 390px. */

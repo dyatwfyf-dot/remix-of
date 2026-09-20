@@ -8,7 +8,6 @@ export type WebActionItem = {
   disabled?: boolean;
   destructive?: boolean;
   content?: ReactNode;
-  className?: string;
 };
 
 type Props = {

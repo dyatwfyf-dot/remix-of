@@ -149,7 +149,7 @@ const downloadDetailedHtmlPdf = async ({
         font-family: "Mohammad Bold Art";
         src: url("${window.location.origin}/MohammadBoldArt-Regular.ttf") format("truetype");
         font-style: normal;
-        font-weight:1000;
+        font-weight: 400 1000;
         font-display: block;
       }
       @font-face {
@@ -1703,7 +1703,7 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
       body {
         font-family: "Times New Roman", "Noto Naskh Arabic", "Cairo", Tahoma, sans-serif;
         color: #111827;
-        font-size: 14.5px;
+        font-size: 12.5px;
         line-height: 1.35;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
@@ -1735,8 +1735,8 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
         color: #fff;
         cursor: pointer;
         font-family: Cairo, Arial, sans-serif;
-        font-size: 14px;
-        font-weight:bold;
+        font-size: 12pt;
+        font-weight: 800;
         padding: 2mm 4mm;
       }
       .print-toolbar button:hover { background: #115e59; }
@@ -1778,8 +1778,8 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
       text-align: center;
       box-sizing: border-box;
     }
-    .info-lbl { font-size: 13px; line-height: 1.15; font-weight: bolder; color:black; text-align: center; }
-    .info-val { font-size: 13px; line-height: 1.15; font-weight: bolder; margin-top: 1mm; overflow-wrap: anywhere; }
+    .info-lbl { font-size: 11pt; line-height: 1.15; font-weight: 800; color:black; text-align: center; }
+    .info-val { font-size: 10.5pt; line-height: 1.15; font-weight: 800; margin-top: 1mm; overflow-wrap: anywhere; }
 
     table {
       table-layout: auto;
@@ -1791,11 +1791,11 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
       break-inside: avoid;
     }
     th, td {
-      border: 1px solid #000;
+      border: 0.75pt solid #000;
       text-align: center;
       vertical-align: middle;
       padding: 2.2mm 2mm;
-      font-size: 13px;
+      font-size: 10.5pt;
       line-height: 1.25;
       white-space: normal;
       overflow: hidden;
@@ -1805,23 +1805,23 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
       hyphens: auto;
     }
     th { background: #0f766e; color:white!important; font-weight: 900; }
-    td { color: #000 !important; font-weight: bolder; }
-    .lbl { text-align: center; font-weight: bold; }
-    .num { font-family: "Times New Roman", Times, serif; font-weight:bold; font-size: 13pt; font-variant-numeric: tabular-nums; direction: ltr; }
+    td { color: #000 !important; font-weight: 700; }
+    .lbl { text-align: center; font-weight: 800; }
+    .num { font-family: "Times New Roman", Times, serif; font-weight: 800; font-size: 10.5pt; font-variant-numeric: tabular-nums; direction: ltr; }
     .row-fees td { background: #eff6ff; }
     .row-due-old td { background: #fef3c7; color: #000 !important; }
-    .row-total-due td { background: #fee2e2; color: #000 !important; font-weight: bold; }
+    .row-total-due td { background: #fee2e2; color: #000 !important; font-weight: 800; }
     .row-paid td { color: #000 !important; }
-    .row-total-paid td { background: #d1fae5; color: #000 !important; font-weight:bold; }
-    .row-final td { background: #fee2e2; font-size: 13px; font-weight: bold; color: #000 !important; border-top: 1pt solid #000; }
+    .row-total-paid td { background: #d1fae5; color: #000 !important; font-weight: 800; }
+    .row-final td { background: #fee2e2; font-size: 11pt; font-weight: 800; color: #000 !important; border-top: 1pt solid #000; }
     .foot {
       margin-top: 6mm;
       display: flex;
       justify-content: space-between;
       gap: 8mm;
-      font-size: 12px;
+      font-size: 9pt;
       line-height: 1.3;
-      font-weight:bold;
+      font-weight: 700;
       page-break-inside: avoid;
       break-inside: avoid;
     }
