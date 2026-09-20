@@ -63,7 +63,7 @@ export const tablePrintStyles = `
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { margin: 0; padding: 0; }
   body {
-    font-family: 'Cairo';
+    font-family: 'Cairo', 'Tajawal', Tahoma, Arial, sans-serif;
     padding: 3mm 4mm;
     color: #000 !important;
     direction: rtl;
@@ -97,9 +97,9 @@ export const tablePrintStyles = `
   /* احتواء تلقائي كامل للجدول وتوسيط تام للمحتوى */
   table {
     width: 100%;
-    max-width:auto;
+    max-width: 100%;
     border-collapse: collapse;
-    table-layout:auto !important;
+    table-layout: auto !important;
     font-size: clamp(13px, 1.05vw, 13px);
   }
   
@@ -230,7 +230,7 @@ align-items: center !important;     /* توسيط عمودي للعنصر الد
     max-width: 100%;
     height: 100%;
     max-height: 100%;
-    object-fit: content;
+    object-fit: fill;
     object-position: top;
     image-rendering: auto;
     margin: 0;

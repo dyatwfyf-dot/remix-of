@@ -3,211 +3,187 @@
  * تُطبّق على واجهة التطبيق والتبويبات والحقول والأزرار.
  */
 
-/* دعم لكل من apk-tabs-ui و sheet-tabs-ui (تبويبات وورقة الطباعة)
-   بحيث تتحول المساحات البيضاء إلى تدرجات فاتحة لامعة غير أبيض صريح. */
-
-.apk-tabs-ui,
-.sheet-tabs-ui {
+.apk-tabs-ui {
   --surface-bg: #e8f7ff;
-  --surface-bg-2: #f6f3ff;
-  --surface-mint: #eafbf5;
-  --surface-blue: #eaf8ff;
-  --surface-purple: #f3efff;
-  --surface-pink: #fff2f9;
-  --surface-gold: #fff9e6;
-  --surface-border: rgba(76, 145, 181, .18);
+  --surface-bg-2: #f1ecff;
+  --surface-mint: #e2fbf3;
+  --surface-blue: #dff4ff;
+  --surface-purple: #ece5ff;
+  --surface-pink: #ffe7f3;
+  --surface-gold: #fff1cf;
+  --surface-border: rgba(76, 145, 181, .24);
   --surface-text: #24485d;
   --surface-primary: #4b9fc2;
   --surface-primary-2: #78c8df;
   background:
-    radial-gradient(900px 420px at 5% -10%, rgba(174, 231, 255, .6), transparent 65%),
-    radial-gradient(800px 420px at 100% 10%, rgba(236, 216, 255, .45), transparent 65%),
-    linear-gradient(135deg, var(--surface-bg) 0%, var(--surface-bg-2) 52%, var(--surface-mint) 100%) !important;
+    radial-gradient(900px 420px at 5% -10%, rgba(174, 231, 255, .75), transparent 65%),
+    radial-gradient(800px 420px at 100% 10%, rgba(221, 207, 255, .65), transparent 65%),
+    linear-gradient(135deg, #e8f7ff 0%, #f4efff 52%, #e7fbf4 100%) !important;
   color: var(--surface-text);
 }
 
-/* البطاقات والمساحات البيضاء تصبح ألواناً فاتحة لامعة (شامل لكل حالات bg-white داخل المساحات الموحدة) */
+/* البطاقات والمساحات البيضاء تصبح ألواناً فاتحة لامعة */
 .apk-tabs-ui [class~="bg-white"],
 .apk-tabs-ui [class~="bg-white/90"],
 .apk-tabs-ui [class~="bg-white/80"],
 .apk-tabs-ui [class~="bg-white/70"],
 .apk-tabs-ui [class~="bg-white/60"],
-.apk-tabs-ui [class~="bg-white/50"],
-.sheet-tabs-ui [class~="bg-white"],
-.sheet-tabs-ui [class~="bg-white/90"],
-.sheet-tabs-ui [class~="bg-white/80"],
-.sheet-tabs-ui [class~="bg-white/70"],
-.sheet-tabs-ui [class~="bg-white/60"],
-.sheet-tabs-ui [class~="bg-white/50"] {
-  background: linear-gradient(145deg, rgba(245, 253, 255, .96), rgba(249, 244, 255, .94)) !important;
+.apk-tabs-ui [class~="bg-white/50"] {
+  background: linear-gradient(145deg, rgba(225, 246, 255, .96), rgba(239, 232, 255, .94)) !important;
   border-color: var(--surface-border) !important;
-  color: var(--surface-text) !important;
 }
 
-/* إضافة قواعد لاستهداف كلاسات Tailwind التي تحتوي على الشرطية (مثل bg-white/90) */
-.apk-tabs-ui .bg-white\/:90,
-.sheet-tabs-ui .bg-white\/:90 {
-  background: linear-gradient(145deg, rgba(245, 253, 255, .92), rgba(247, 243, 255, .9)) !important;
-}
-
-/* البطاقات العامة (rounded) */
+/* البطاقات العامة */
 .apk-tabs-ui .rounded-xl,
-.apk-tabs-ui .rounded-2xl,
-.sheet-tabs-ui .rounded-xl,
-.sheet-tabs-ui .rounded-2xl {
+.apk-tabs-ui .rounded-2xl {
   border-color: color-mix(in srgb, var(--surface-border) 90%, transparent) !important;
 }
 
 /* الحقول والقوائم المنسدلة ومربعات النص */
 .apk-tabs-ui input:not([type="checkbox"]):not([type="radio"]),
 .apk-tabs-ui select,
-.apk-tabs-ui textarea,
-.sheet-tabs-ui input:not([type="checkbox"]):not([type="radio"]),
-.sheet-tabs-ui select,
-.sheet-tabs-ui textarea {
+.apk-tabs-ui textarea {
   color: #24485d !important;
-  background: linear-gradient(145deg, #f0fbff, #f3efff) !important;
-  border-color: rgba(76, 145, 181, .28) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.76), 0 3px 10px rgba(65, 128, 158, .06) !important;
+  background: linear-gradient(145deg, #e4f7ff, #eee9ff) !important;
+  border-color: rgba(76, 145, 181, .34) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.72), 0 3px 10px rgba(65, 128, 158, .07) !important;
 }
 
 .apk-tabs-ui input::placeholder,
-.apk-tabs-ui textarea::placeholder,
-.sheet-tabs-ui input::placeholder,
-.sheet-tabs-ui textarea::placeholder {
+.apk-tabs-ui textarea::placeholder {
   color: #648496 !important;
   opacity: 1;
 }
 
 .apk-tabs-ui input:focus,
 .apk-tabs-ui select:focus,
-.apk-tabs-ui textarea:focus,
-.sheet-tabs-ui input:focus,
-.sheet-tabs-ui select:focus,
-.sheet-tabs-ui textarea:focus {
+.apk-tabs-ui textarea:focus {
   outline: none !important;
   border-color: #68b8d5 !important;
-  box-shadow: 0 0 0 3px rgba(104, 184, 213, .12), inset 0 1px 0 rgba(255,255,255,.86) !important;
+  box-shadow: 0 0 0 3px rgba(104, 184, 213, .18), inset 0 1px 0 rgba(255,255,255,.8) !important;
 }
 
-/* الأزرار الأساسية تصبح سماوية لامعة بدلاً من الأبيض */
-.apk-tabs-ui button:not([class*="bg-gradient"]):not([class*="bg-primary"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-emerald"]):not([class*="bg-orange"]):not([class*="bg-yellow"]):not([class*="bg-amber"]):not([class*="bg-blue"]):not([class*="bg-sky"]):not([class*="bg-slate"]),
-.sheet-tabs-ui button:not([class*="bg-gradient"]):not([class*="bg-primary"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-emerald"]):not([class*="bg-orange"]):not([class*="bg-yellow"]):not([class*="bg-amber"]):not([class*="bg-blue"]):not([class*="bg-sky"]):not([class*="bg-slate"]) {
+/* الأزرار: لون أساسي سماوي/بنفسجي لامع بدلاً من الأبيض */
+.apk-tabs-ui button:not([class*="bg-gradient"]):not([class*="bg-primary"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-emerald"]):not([class*="bg-orange"]):not([class*="bg-yellow"]):not([class*="bg-amber"]):not([class*="bg-purple"]):not([class*="bg-violet"]):not([class*="bg-pink"]):not([class*="bg-sky"]):not([class*="bg-blue"]) {
   color: #2c5a70 !important;
-  background: linear-gradient(145deg, #eef9ff, #f6f1ff) !important;
-  border-color: rgba(76, 145, 181, .22) !important;
-  box-shadow: 0 4px 12px rgba(66,126,156,.08), inset 0 1px 0 rgba(255,255,255,.86) !important;
+  background: linear-gradient(145deg, #e1f5ff, #eee8ff) !important;
+  border-color: rgba(76, 145, 181, .28) !important;
+  box-shadow: 0 4px 12px rgba(66, 126, 156, .10), inset 0 1px 0 rgba(255,255,255,.8) !important;
 }
 
-.apk-tabs-ui button:not([disabled]):not([class*="bg-gradient"]):hover,
-.sheet-tabs-ui button:not([disabled]):not([class*="bg-gradient"]):hover {
-  background: linear-gradient(145deg, #e6f5fe, #efe9ff) !important;
+.apk-tabs-ui button:not([disabled]):not([class*="bg-gradient"]):hover {
+  background: linear-gradient(145deg, #d5f0fc, #e6ddff) !important;
   transform: translateY(-1px);
 }
 
-/* الحفاظ على أزرار الألوان المعرّفة لتكون أكثر إشراقاً */
+/* الأزرار الملونة الموجودة مسبقاً تصبح أكثر إشراقاً وتناسقاً */
 .apk-tabs-ui button[class*="bg-blue"],
-.apk-tabs-ui button[class*="bg-sky"],
-.sheet-tabs-ui button[class*="bg-blue"],
-.sheet-tabs-ui button[class*="bg-sky"] {
+.apk-tabs-ui button[class*="bg-sky"] {
   color: #fff !important;
   background: linear-gradient(135deg, #55a9ca, #7ccfe4) !important;
   border-color: rgba(255,255,255,.45) !important;
-  box-shadow: 0 7px 18px rgba(63,151,188,.18), inset 0 1px 0 rgba(255,255,255,.42) !important;
+  box-shadow: 0 7px 18px rgba(63, 151, 188, .22), inset 0 1px 0 rgba(255,255,255,.42) !important;
+}
+
+.apk-tabs-ui button[class*="bg-green"],
+.apk-tabs-ui button[class*="bg-emerald"] {
+  color: #fff !important;
+  background: linear-gradient(135deg, #49b99a, #7edfc0) !important;
+  border-color: rgba(255,255,255,.42) !important;
+  box-shadow: 0 7px 18px rgba(55, 158, 126, .20) !important;
+}
+
+.apk-tabs-ui button[class*="bg-red"] {
+  color: #fff !important;
+  background: linear-gradient(135deg, #e47d9a, #f2a6bd) !important;
+  border-color: rgba(255,255,255,.42) !important;
+  box-shadow: 0 7px 18px rgba(203, 88, 119, .18) !important;
+}
+
+.apk-tabs-ui button[class*="bg-orange"],
+.apk-tabs-ui button[class*="bg-amber"],
+.apk-tabs-ui button[class*="bg-yellow"] {
+  color: #694b16 !important;
+  background: linear-gradient(135deg, #ffe0a0, #fff0c5) !important;
+  border-color: rgba(215, 158, 62, .28) !important;
+}
+
+.apk-tabs-ui button[class*="bg-purple"],
+.apk-tabs-ui button[class*="bg-violet"],
+.apk-tabs-ui button[class*="bg-pink"] {
+  color: #fff !important;
+  background: linear-gradient(135deg, #9d8be1, #c9a9ef) !important;
+  border-color: rgba(255,255,255,.42) !important;
+  box-shadow: 0 7px 18px rgba(126, 96, 181, .20) !important;
 }
 
 /* الجداول */
-.apk-tabs-ui table,
-.sheet-tabs-ui table {
+.apk-tabs-ui table {
   border-color: var(--surface-border) !important;
-  background: linear-gradient(180deg, rgba(234, 248, 255, .6), rgba(245, 241, 255, .5)) !important;
+  background: rgba(228, 247, 255, .55) !important;
 }
 
 .apk-tabs-ui thead,
-.apk-tabs-ui th,
-.sheet-tabs-ui thead,
-.sheet-tabs-ui th {
-  background: linear-gradient(135deg, #e6f8ff, #efe7ff) !important;
+.apk-tabs-ui th {
+  background: linear-gradient(135deg, #ccefff, #e2d8ff) !important;
   color: #244b61 !important;
 }
 
-.apk-tabs-ui tbody tr:nth-child(even),
-.sheet-tabs-ui tbody tr:nth-child(even) {
-  background: rgba(239, 235, 255, .35) !important;
+.apk-tabs-ui tbody tr:nth-child(even) {
+  background: rgba(239, 235, 255, .45) !important;
 }
 
-.apk-tabs-ui tbody tr:hover,
-.sheet-tabs-ui tbody tr:hover {
-  background: rgba(211, 242, 255, .65) !important;
+.apk-tabs-ui tbody tr:hover {
+  background: rgba(211, 242, 255, .75) !important;
 }
 
-.apk-tabs-ui td,
-.sheet-tabs-ui td {
-  border-color: rgba(86, 145, 174, .12) !important;
+.apk-tabs-ui td {
+  border-color: rgba(86, 145, 174, .16) !important;
 }
 
-/* شرائح وبدائل للخلفيات الخفيفة */
+/* شرائح الاختيار والبطاقات الصغيرة */
 .apk-tabs-ui [class*="bg-slate-100"],
 .apk-tabs-ui [class*="bg-gray-100"],
-.apk-tabs-ui [class*="bg-zinc-100"],
-.sheet-tabs-ui [class*="bg-slate-100"],
-.sheet-tabs-ui [class*="bg-gray-100"],
-.sheet-tabs-ui [class*="bg-zinc-100"] {
-  background: linear-gradient(145deg, #eef8ff, #f2ebff) !important;
+.apk-tabs-ui [class*="bg-zinc-100"] {
+  background: linear-gradient(145deg, #e1f5fc, #ece7ff) !important;
   border-color: var(--surface-border) !important;
 }
 
 .apk-tabs-ui [class*="bg-slate-50"],
 .apk-tabs-ui [class*="bg-gray-50"],
-.apk-tabs-ui [class*="bg-zinc-50"],
-.sheet-tabs-ui [class*="bg-slate-50"],
-.sheet-tabs-ui [class*="bg-gray-50"],
-.sheet-tabs-ui [class*="bg-zinc-50"] {
-  background: linear-gradient(145deg, #f6fdff, #f7f2ff) !important;
+.apk-tabs-ui [class*="bg-zinc-50"] {
+  background: linear-gradient(145deg, #e9f9ff, #f0ebff) !important;
 }
 
-/* الظلال والتأثيرات العامة */
+/* الحاويات الداخلية ذات التدرج الهادئ */
 .apk-tabs-ui .shadow-sm,
 .apk-tabs-ui .shadow-md,
-.apk-tabs-ui .shadow-lg,
-.sheet-tabs-ui .shadow-sm,
-.sheet-tabs-ui .shadow-md,
-.sheet-tabs-ui .shadow-lg {
-  box-shadow: 0 7px 22px rgba(65,121,151,.08), inset 0 1px 0 rgba(255,255,255,.86) !important;
+.apk-tabs-ui .shadow-lg {
+  box-shadow: 0 7px 22px rgba(65, 121, 151, .10), inset 0 1px 0 rgba(255,255,255,.68) !important;
 }
 
 /* تحسين ألوان النصوص الرمادية لتناسب الخلفيات الجديدة */
 .apk-tabs-ui [class*="text-slate-500"],
 .apk-tabs-ui [class*="text-gray-500"],
-.apk-tabs-ui [class*="text-zinc-500"],
-.sheet-tabs-ui [class*="text-slate-500"],
-.sheet-tabs-ui [class*="text-gray-500"],
-.sheet-tabs-ui [class*="text-zinc-500"] {
+.apk-tabs-ui [class*="text-zinc-500"] {
   color: #5e7b8b !important;
 }
 
 .apk-tabs-ui [class*="text-slate-600"],
 .apk-tabs-ui [class*="text-gray-600"],
-.apk-tabs-ui [class*="text-zinc-600"],
-.sheet-tabs-ui [class*="text-slate-600"],
-.sheet-tabs-ui [class*="text-gray-600"],
-.sheet-tabs-ui [class*="text-zinc-600"] {
+.apk-tabs-ui [class*="text-zinc-600"] {
   color: #426476 !important;
 }
 
 @media (max-width: 640px) {
   .apk-tabs-ui input:not([type="checkbox"]):not([type="radio"]),
   .apk-tabs-ui select,
-  .apk-tabs-ui textarea,
-  .sheet-tabs-ui input:not([type="checkbox"]):not([type="radio"]),
-  .sheet-tabs-ui select,
-  .sheet-tabs-ui textarea {
+  .apk-tabs-ui textarea {
     min-height: 40px;
     border-radius: 12px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .apk-tabs-ui button,
-  .sheet-tabs-ui button { transition: none !important; }
+  .apk-tabs-ui button { transition: none !important; }
 }

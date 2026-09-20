@@ -8,95 +8,95 @@ import { importInstallmentsInWorker } from "@/lib/excelImportWorkerClient";
 import { toast } from "sonner";
 import { useTableControls } from "@/hooks/useTableControls";
 import {
- X,
- Printer,
- AlertCircle,
- Search,
- ArrowUpDown,
- ArrowUp,
- ArrowDown,
- Edit,
- Plus,
- Trash,
- Palette,
- Settings,
- FileSpreadsheet,
- FileText,
- Image as ImageIcon,
- Download,
+  X,
+  Printer,
+  AlertCircle,
+  Search,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Edit,
+  Plus,
+  Trash,
+  Palette,
+  Settings,
+  FileSpreadsheet,
+  FileText,
+  Image as ImageIcon,
+  Download,
 } from "lucide-react";
 import TabActions from "./TabActions";
 import { noteRowClass, noteRowCss } from "@/lib/notesColors";
 import type { WebActionItem } from "./WebActionMenu";
 import PrintSettingsModal, {
- DEFAULT_PRINT_SETTINGS,
- marginToCss,
- type InstallmentsPrintSettings,
+  DEFAULT_PRINT_SETTINGS,
+  marginToCss,
+  type InstallmentsPrintSettings,
 } from "./PrintSettingsModal";
 import { openPrintDocument } from "@/lib/printDocument";
 import { useReportDate } from "@/lib/reportDate";
 import { reportLetterheadHtml } from "@/lib/printTableHtml";
 import { saveBlobToInternalStorage } from "@/lib/nativeFileStorage";
 import {
- addReportHeader,
- appendRows,
- createExcelWorkbook,
- downloadWorkbook,
- formatWorksheet,
- getExcelPalette,
- loadReportLetterhead,
+  addReportHeader,
+  appendRows,
+  createExcelWorkbook,
+  downloadWorkbook,
+  formatWorksheet,
+  getExcelPalette,
+  loadReportLetterhead,
 } from "@/lib/excelExport";
 
 const MONTHS_2025 = [
- "يونيو 2024",
- "يوليو 2024",
- "أغسطس 2024",
- "مارس 2025",
- "ابريل 2025",
- "مايو 2025",
- "يونيو 2025",
- "يوليو 2025",
- "أغسطس 2025",
- "سبتمبر 2025",
- "أكتوبر 2025",
- "نوفمبر2025",
- "ديسمبر2025",
+  "يونيو 2024",
+  "يوليو 2024",
+  "أغسطس 2024",
+  "مارس 2025",
+  "ابريل 2025",
+  "مايو 2025",
+  "يونيو 2025",
+  "يوليو 2025",
+  "أغسطس 2025",
+  "سبتمبر 2025",
+  "أكتوبر 2025",
+  "نوفمبر2025",
+  "ديسمبر2025",
 ];
 
 const MONTHS_2026 = [
- "يناير",
- "فبراير",
- "مارس",
- "ابريل",
- "مايو",
- "يونيو",
- "يوليو",
- "اغسطس",
- "سبتمبر",
- "اكتوبر ",
- "نوفمبر",
- "ديسمبر",
+  "يناير",
+  "فبراير",
+  "مارس",
+  "ابريل",
+  "مايو",
+  "يونيو",
+  "يوليو",
+  "اغسطس",
+  "سبتمبر",
+  "اكتوبر ",
+  "نوفمبر",
+  "ديسمبر",
 ];
 
 // دالة تنظيف الأرقام واستخراج القيم العددية
 const cleanNumber = (val: any): number => {
- if (!val || isNaN(Number(String(val).replace(/[^0-9.-]/g, "")))) return 0;
- return Number(String(val).replace(/[^0-9.-]/g, "")) || 0;
+  if (!val || isNaN(Number(String(val).replace(/[^0-9.-]/g, "")))) return 0;
+  return Number(String(val).replace(/[^0-9.-]/g, "")) || 0;
 };
 
 const escapeHtml = (value: any): string =>
- String(value ?? "")
- .replace(/&/g, "&amp;")
- .replace(/</g, "&lt;")
- .replace(/>/g, "&gt;")
- .replace(/"/g, "&quot;")
- .replace(/'/g, "&#39;");
+  String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 
 const safePdfFileName = (value: any): string =>
- String(value || "متدرب")
- .replace(/[\\/:*?"<>|]/g, "-")
- .replace(/\s+/g, "_")
- .trim() || "متدرب";
+  String(value || "متدرب")
+    .replace(/[\\/:*?"<>|]/g, "-")
+    .replace(/\s+/g, "_")
+    .trim() || "متدرب";
 
 /* ==========================
    ثوابت تنسيق عامة للموبايل
@@ -112,39 +112,39 @@ const HEADING_MOBILE = "text-lg sm:text-xl font-extrabold";
  * (لم أصِحح المنطق — فقط تأكدت أن حجم إطار الطباعة مناسب عند التحميل)
  */
 const downloadDetailedHtmlPdf = async ({
- title,
- body,
- css,
- fileName,
- pageSize,
- orientation,
+  title,
+  body,
+  css,
+  fileName,
+  pageSize,
+  orientation,
 }: {
- title: string;
- body: string;
- css: string;
- fileName: string;
- pageSize: "A4" | "A3";
- orientation: "portrait" | "landscape";
-}): Promise < void > => {
- const pageWidthPx = orientation === "landscape" ? 1600 : 1132;
- const frame = document.createElement("iframe");
- frame.setAttribute("aria-hidden", "true");
- frame.style.position = "fixed";
- frame.style.left = "-10000px";
- frame.style.top = "0";
- frame.style.width = `${pageWidthPx}px`;
- frame.style.height = "800px";
- frame.style.border = "0";
- frame.style.opacity = "0";
- frame.style.pointerEvents = "none";
- document.body.appendChild(frame);
- 
- try {
-  const fdoc = frame.contentDocument;
-  if (!fdoc) throw new Error("تعذر إنشاء مساحة PDF");
-  
-  fdoc.open();
-  const fontFaces = `
+  title: string;
+  body: string;
+  css: string;
+  fileName: string;
+  pageSize: "A4" | "A3";
+  orientation: "portrait" | "landscape";
+}): Promise<void> => {
+  const pageWidthPx = orientation === "landscape" ? 1600 : 1132;
+  const frame = document.createElement("iframe");
+  frame.setAttribute("aria-hidden", "true");
+  frame.style.position = "fixed";
+  frame.style.left = "-10000px";
+  frame.style.top = "0";
+  frame.style.width = `${pageWidthPx}px`;
+  frame.style.height = "800px";
+  frame.style.border = "0";
+  frame.style.opacity = "0";
+  frame.style.pointerEvents = "none";
+  document.body.appendChild(frame);
+
+  try {
+    const fdoc = frame.contentDocument;
+    if (!fdoc) throw new Error("تعذر إنشاء مساحة PDF");
+
+    fdoc.open();
+    const fontFaces = `
       @font-face {
         font-family: "Mohammad Bold Art";
         src: url("${window.location.origin}/MohammadBoldArt-Regular.ttf") format("truetype");
@@ -167,8 +167,8 @@ const downloadDetailedHtmlPdf = async ({
         font-display: block;
       }
     `;
-  
-  fdoc.write(`<!doctype html>
+
+    fdoc.write(`<!doctype html>
       <html lang="ar" dir="rtl">
         <head>
           <meta charset="utf-8" />
@@ -268,137 +268,137 @@ const downloadDetailedHtmlPdf = async ({
           <div class="pdf-download-root">${reportLetterheadHtml()}${body}</div>
         </body>
       </html>`);
-  fdoc.close();
-  
-  const images = Array.from(fdoc.images);
-  await Promise.all(
-   images.map(
-    (image) =>
-    image.complete ?
-    Promise.resolve() :
-    new Promise < void > ((resolve) => {
-     const done = () => resolve();
-     image.addEventListener("load", done, { once: true });
-     image.addEventListener("error", done, { once: true });
-     window.setTimeout(done, 2500);
-    }),
-   ),
-  );
-  if ((fdoc as any).fonts?.ready) {
-   await Promise.race([
-    (fdoc as any).fonts.ready,
-    new Promise((resolve) => window.setTimeout(resolve, 3000)),
-   ]);
-  }
-  await new Promise((resolve) => window.setTimeout(resolve, 120));
-  
-  const page = fdoc.querySelector(".pdf-download-root") as HTMLElement | null;
-  if (!page) throw new Error("تعذر العثور على محتوى التقرير");
-  frame.style.height = `${Math.max(page.scrollHeight + 80, 800)}px`;
-  
-  const [{ default: html2canvas }, { default: JsPDF }] = await Promise.all([
-   import("html2canvas"),
-   import("jspdf"),
-  ]);
-  const scale = 3;
-  const pdf = new JsPDF({
-   unit: "mm",
-   format: pageSize.toLowerCase() as "a4" | "a3",
-   orientation,
-   compress: true,
-  });
-  const pageWidthMm = pdf.internal.pageSize.getWidth();
-  const pageHeightMm = pdf.internal.pageSize.getHeight();
-  // هوامش ضيقة حتى يستغل جدول الأقساط كامل عرض صفحة PDF.
-  const marginMm = 3;
-  const imageWidthMm = pageWidthMm - marginMm * 2;
-  const table = page.querySelector("table");
-  const tableBody = table?.tBodies[0];
-  const sourceRows = tableBody ? Array.from(tableBody.rows) : [];
-  const totalRow = sourceRows.find((row) => row.classList.contains("total-row"));
-  const detailRows = sourceRows.filter((row) => row !== totalRow);
-  const rowChunkSize = orientation === "landscape" ? 28 : 18;
-  const chunks: HTMLTableRowElement[][] = [];
-  
-  if (detailRows.length) {
-   for (let index = 0; index < detailRows.length; index += rowChunkSize) {
-    chunks.push(detailRows.slice(index, index + rowChunkSize));
-   }
-  } else {
-   chunks.push([]);
-  }
-  
-  let firstPage = true;
-  for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex += 1) {
-   const pageClone = page.cloneNode(true) as HTMLElement;
-   const cloneBody = pageClone.querySelector("table tbody");
-   if (cloneBody) {
-    cloneBody.replaceChildren();
-    chunks[chunkIndex].forEach((row) => cloneBody.appendChild(row.cloneNode(true)));
-    if (totalRow && chunkIndex === chunks.length - 1) {
-     cloneBody.appendChild(totalRow.cloneNode(true));
+    fdoc.close();
+
+    const images = Array.from(fdoc.images);
+    await Promise.all(
+      images.map(
+        (image) =>
+          image.complete
+            ? Promise.resolve()
+            : new Promise<void>((resolve) => {
+                const done = () => resolve();
+                image.addEventListener("load", done, { once: true });
+                image.addEventListener("error", done, { once: true });
+                window.setTimeout(done, 2500);
+              }),
+      ),
+    );
+    if ((fdoc as any).fonts?.ready) {
+      await Promise.race([
+        (fdoc as any).fonts.ready,
+        new Promise((resolve) => window.setTimeout(resolve, 3000)),
+      ]);
     }
-   }
-   
-   const holder = fdoc.createElement("div");
-   holder.style.cssText = `position:absolute;left:0;top:0;width:${pageWidthPx}px;background:#fff;`;
-   holder.appendChild(pageClone);
-   fdoc.body.appendChild(holder);
-   await new Promise((resolve) => window.setTimeout(resolve, 40));
-   const canvas = await html2canvas(pageClone, {
-    scale,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    width: pageWidthPx,
-    height: Math.max(pageClone.scrollHeight, 1),
-    windowWidth: pageWidthPx,
-    windowHeight: Math.max(pageClone.scrollHeight + 80, 800),
-    scrollX: 0,
-    scrollY: 0,
-   });
-   holder.remove();
-   
-   const pixelsPerMm = canvas.width / imageWidthMm;
-   const maxImageHeightMm = pageHeightMm - marginMm * 2;
-   const imageHeightMm = Math.min(maxImageHeightMm, canvas.height / pixelsPerMm);
-   if (!firstPage) pdf.addPage(pageSize.toLowerCase() as "a4" | "a3", orientation);
-   firstPage = false;
-   pdf.addImage(
-    canvas.toDataURL("image/png"),
-    "PNG",
-    marginMm,
-    marginMm,
-    imageWidthMm,
-    imageHeightMm,
-    undefined,
-    "FAST",
-   );
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+
+    const page = fdoc.querySelector(".pdf-download-root") as HTMLElement | null;
+    if (!page) throw new Error("تعذر العثور على محتوى التقرير");
+    frame.style.height = `${Math.max(page.scrollHeight + 80, 800)}px`;
+
+    const [{ default: html2canvas }, { default: JsPDF }] = await Promise.all([
+      import("html2canvas"),
+      import("jspdf"),
+    ]);
+    const scale = 3;
+    const pdf = new JsPDF({
+      unit: "mm",
+      format: pageSize.toLowerCase() as "a4" | "a3",
+      orientation,
+      compress: true,
+    });
+    const pageWidthMm = pdf.internal.pageSize.getWidth();
+    const pageHeightMm = pdf.internal.pageSize.getHeight();
+    // هوامش ضيقة حتى يستغل جدول الأقساط كامل عرض صفحة PDF.
+    const marginMm = 3;
+    const imageWidthMm = pageWidthMm - marginMm * 2;
+    const table = page.querySelector("table");
+    const tableBody = table?.tBodies[0];
+    const sourceRows = tableBody ? Array.from(tableBody.rows) : [];
+    const totalRow = sourceRows.find((row) => row.classList.contains("total-row"));
+    const detailRows = sourceRows.filter((row) => row !== totalRow);
+    const rowChunkSize = orientation === "landscape" ? 28 : 18;
+    const chunks: HTMLTableRowElement[][] = [];
+
+    if (detailRows.length) {
+      for (let index = 0; index < detailRows.length; index += rowChunkSize) {
+        chunks.push(detailRows.slice(index, index + rowChunkSize));
+      }
+    } else {
+      chunks.push([]);
+    }
+
+    let firstPage = true;
+    for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex += 1) {
+      const pageClone = page.cloneNode(true) as HTMLElement;
+      const cloneBody = pageClone.querySelector("table tbody");
+      if (cloneBody) {
+        cloneBody.replaceChildren();
+        chunks[chunkIndex].forEach((row) => cloneBody.appendChild(row.cloneNode(true)));
+        if (totalRow && chunkIndex === chunks.length - 1) {
+          cloneBody.appendChild(totalRow.cloneNode(true));
+        }
+      }
+
+      const holder = fdoc.createElement("div");
+      holder.style.cssText = `position:absolute;left:0;top:0;width:${pageWidthPx}px;background:#fff;`;
+      holder.appendChild(pageClone);
+      fdoc.body.appendChild(holder);
+      await new Promise((resolve) => window.setTimeout(resolve, 40));
+      const canvas = await html2canvas(pageClone, {
+        scale,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        width: pageWidthPx,
+        height: Math.max(pageClone.scrollHeight, 1),
+        windowWidth: pageWidthPx,
+        windowHeight: Math.max(pageClone.scrollHeight + 80, 800),
+        scrollX: 0,
+        scrollY: 0,
+      });
+      holder.remove();
+
+      const pixelsPerMm = canvas.width / imageWidthMm;
+      const maxImageHeightMm = pageHeightMm - marginMm * 2;
+      const imageHeightMm = Math.min(maxImageHeightMm, canvas.height / pixelsPerMm);
+      if (!firstPage) pdf.addPage(pageSize.toLowerCase() as "a4" | "a3", orientation);
+      firstPage = false;
+      pdf.addImage(
+        canvas.toDataURL("image/png"),
+        "PNG",
+        marginMm,
+        marginMm,
+        imageWidthMm,
+        imageHeightMm,
+        undefined,
+        "FAST",
+      );
+    }
+
+    const blob = pdf.output("blob");
+    const internalUri = await saveBlobToInternalStorage(blob, fileName);
+    if (internalUri) {
+      toast.success("تم حفظ تقرير الأقساط داخل تخزين التطبيق");
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+  } finally {
+    frame.remove();
   }
-  
-  const blob = pdf.output("blob");
-  const internalUri = await saveBlobToInternalStorage(blob, fileName);
-  if (internalUri) {
-   toast.success("تم حفظ تقرير الأقساط داخل تخزين التطبيق");
-   return;
-  }
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = fileName;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1500);
- } finally {
-  frame.remove();
- }
 };
 
 // شبكة إحصائيات علوية بتصميم عصري
-const StatsGrid = ({ stats, columns = 3 }: { stats: any[];columns ? : number }) => {
-const colClass = columns === 4 ? "grid-cols-4" : "grid-cols-3";
-return (
- <div className={`grid ${colClass} gap-1.5 sm:gap-2 mb-3 sm:mb-4`}>
+const StatsGrid = ({ stats, columns = 3 }: { stats: any[]; columns?: number }) => {
+  const colClass = columns === 4 ? "grid-cols-4" : "grid-cols-3";
+  return (
+    <div className={`grid ${colClass} gap-1.5 sm:gap-2 mb-3 sm:mb-4`}>
       {stats.map((stat, idx) => (
         <div
           key={idx}
@@ -415,27 +415,26 @@ return (
             </div>
           </div>
         </div>
-))
-}
-</div>
-);
+      ))}
+    </div>
+  );
 };
 
 // مكوّن النافذة المنبثقة العامة
 const Modal = ({
- title,
- isOpen,
- onClose,
- children,
+  title,
+  isOpen,
+  onClose,
+  children,
 }: {
- title: string;
- isOpen: boolean;
- onClose: () => void;
- children: React.ReactNode;
+  title: string;
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
 }) => {
- if (!isOpen) return null;
- return (
-  <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50 p-2 sm:p-4">
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50 p-2 sm:p-4">
       <div
         className="bg-white rounded-t-2xl sm:rounded-2xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto"
         dir="rtl"
@@ -449,625 +448,626 @@ const Modal = ({
         <div className="p-3 sm:p-4 space-y-3">{children}</div>
       </div>
     </div>
- );
+  );
 };
 
 // أيقونة الفرز للأعمدة
 const SortIcon = ({
- sortConfig,
- columnKey,
+  sortConfig,
+  columnKey,
 }: {
- sortConfig: { key: string;direction: "asc" | "desc" } | null;
- columnKey: string;
+  sortConfig: { key: string; direction: "asc" | "desc" } | null;
+  columnKey: string;
 }) => {
- if (sortConfig?.key !== columnKey) return <ArrowUpDown className="w-3 h-3 text-white/70" />;
- return sortConfig.direction === "asc" ? (
-  <ArrowUp className="w-3 h-3 text-emerald-300" />
- ) : (
-  <ArrowDown className="w-3 h-3 text-emerald-300" />
- );
+  if (sortConfig?.key !== columnKey) return <ArrowUpDown className="w-3 h-3 text-white/70" />;
+  return sortConfig.direction === "asc" ? (
+    <ArrowUp className="w-3 h-3 text-emerald-300" />
+  ) : (
+    <ArrowDown className="w-3 h-3 text-emerald-300" />
+  );
 };
 
 export default function InstallmentsTab() {
- const {
-  installments,
-  installments2025,
-  clearInstallments,
-  installmentCustomColumns2026,
-  installmentConditionalRules2026,
-  setInstallmentCustomColumns2026,
-  setInstallmentConditionalRules2026,
- } = useStore() as any;
- const { reportDate, reportDateLabel } = useReportDate();
- 
- const [paymentModal, setPaymentModal] = useState < { row: any;month: string } | null > (null);
- const [payAmount, setPayAmount] = useState("");
- const [newPaymentModal, setNewPaymentModal] = useState(false);
- const [newStudentName, setNewStudentName] = useState("");
- const [newStudentAmount, setNewStudentAmount] = useState("");
- const [newStudentMonth, setNewStudentMonth] = useState("");
- const [editPaymentModal, setEditPaymentModal] = useState < {
-  row: any;
-  month: string;
-  amount: number;
- } | null > (null);
- const [editAmount, setEditAmount] = useState("");
- const [nameSuggestions, setNameSuggestions] = useState < string[] > ([]);
- const [showSuggestions, setShowSuggestions] = useState(false);
- const [, setHoveredCell] = useState < string | null > (null);
- const [importError, setImportError] = useState < string | null > (null);
- const [printSettingsYear, setPrintSettingsYear] = useState < number | null > (null);
- const [detailedPdfBusy2026, setDetailedPdfBusy2026] = useState(false);
- 
- const [search2025, setSearch2025] = useState("");
- const [search2026, setSearch2026] = useState("");
- 
- const [sortConfig2025, setSortConfig2025] = useState < {
-  key: string;
-  direction: "asc" | "desc";
- } | null > (null);
- const [sortConfig2026, setSortConfig2026] = useState < {
-  key: string;
-  direction: "asc" | "desc";
- } | null > (null);
- 
- const [editRowModal, setEditRowModal] = useState < {
-  year: number;
-  row: any;
-  index: number;
- } | null > (null);
- const [editRowData, setEditRowData] = useState < any > ({});
- 
- const extraCols2026 = (installmentCustomColumns2026 || []) as InstallmentCustomColumn[];
- const [newColModal, setNewColModal] = useState(false);
- const [newColName, setNewColName] = useState("");
- const [newColType, setNewColType] = useState < "text" | "select" | "formula" > ("text");
- const [newColOptions, setNewColOptions] = useState("");
- const [newColFormula, setNewColFormula] = useState("");
- 
- const [editColModal, setEditColModal] = useState < {
-  oldName: string;
-  name: string;
-  type: "text" | "select" | "formula";
-  options: string;
-  formula: string;
- } | null > (null);
- 
- const [condFormatModal, setCondFormatModal] = useState(false);
- const [condFormatParams, setCondFormatParams] = useState({ text: "", color: "bg-sky-100" });
- const condFormatRules = (installmentConditionalRules2026 || []) as Array < {
-  text: string;
-  color: string;
- } > ;
- 
- const [newRowModal2026, setNewRowModal2026] = useState(false);
- const [newRowData2026, setNewRowData2026] = useState({
-  name: "",
-  batch: "",
-  specialty: "",
-  prevDue: 0,
-  fees: 0,
- });
- 
- const controls2026 = useTableControls(installments || [], [
-  "name",
-  "batch",
-  "specialty",
-  "fees",
-  "prevDue",
-  "totalPaid",
-  "remaining",
- ]);
- const controls2025 = useTableControls(installments2025 || [], [
-  "name",
-  "batch",
-  "specialty",
-  "fees",
-  "totalPaid",
-  "remaining",
- ]);
- 
- const evaluateFormula = (formula: string, row: any) => {
-  if (!formula) return "";
-  try {
-   let parsedFormula = formula;
-   const variables: Record < string, number > = {
-    fees: cleanNumber(row.fees),
-    prevDue: cleanNumber(row.prevDue),
-    totalPaid: cleanNumber(row.totalPaid),
-    remaining: cleanNumber(row.remaining),
-   };
-   
-   extraCols2026.forEach((col) => {
-    if (col.type !== "formula") {
-     variables[col.name] = cleanNumber(row.customData?.[col.name]);
-    }
-   });
-   
-   Object.keys(variables).forEach((key) => {
-    const regex = new RegExp(`\\b${key}\\b`, "g");
-    parsedFormula = parsedFormula.replace(regex, variables[key].toString());
-   });
-   
-   const result = new Function(`return ${parsedFormula}`)();
-   return isNaN(result) ? "خطأ" : Number(result).toFixed(2);
-  } catch (e) {
-   return "صيغة غير صالحة";
-  }
- };
- 
- const getConditionalRowClass = (row: any) => {
-  const searchableValues = [
-   row.name,
-   row.batch,
-   row.specialty,
-   row.prevDue,
-   row.fees,
-   row.totalPaid,
-   row.remaining,
-   ...Object.values(row.payments || {}),
-   ...Object.values(row.customData || {}),
-  ].map((val) => String(val ?? "").toLowerCase());
-  
-  const matchedRule = condFormatRules.find((rule) => {
-   const term = rule.text.trim().toLowerCase();
-   return term.length > 0 && searchableValues.some((value) => value.includes(term));
+  const {
+    installments,
+    installments2025,
+    clearInstallments,
+    installmentCustomColumns2026,
+    installmentConditionalRules2026,
+    setInstallmentCustomColumns2026,
+    setInstallmentConditionalRules2026,
+  } = useStore() as any;
+  const { reportDate, reportDateLabel } = useReportDate();
+
+  const [paymentModal, setPaymentModal] = useState<{ row: any; month: string } | null>(null);
+  const [payAmount, setPayAmount] = useState("");
+  const [newPaymentModal, setNewPaymentModal] = useState(false);
+  const [newStudentName, setNewStudentName] = useState("");
+  const [newStudentAmount, setNewStudentAmount] = useState("");
+  const [newStudentMonth, setNewStudentMonth] = useState("");
+  const [editPaymentModal, setEditPaymentModal] = useState<{
+    row: any;
+    month: string;
+    amount: number;
+  } | null>(null);
+  const [editAmount, setEditAmount] = useState("");
+  const [nameSuggestions, setNameSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [, setHoveredCell] = useState<string | null>(null);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [printSettingsYear, setPrintSettingsYear] = useState<number | null>(null);
+  const [detailedPdfBusy2026, setDetailedPdfBusy2026] = useState(false);
+
+  const [search2025, setSearch2025] = useState("");
+  const [search2026, setSearch2026] = useState("");
+
+  const [sortConfig2025, setSortConfig2025] = useState<{
+    key: string;
+    direction: "asc" | "desc";
+  } | null>(null);
+  const [sortConfig2026, setSortConfig2026] = useState<{
+    key: string;
+    direction: "asc" | "desc";
+  } | null>(null);
+
+  const [editRowModal, setEditRowModal] = useState<{
+    year: number;
+    row: any;
+    index: number;
+  } | null>(null);
+  const [editRowData, setEditRowData] = useState<any>({});
+
+  const extraCols2026 = (installmentCustomColumns2026 || []) as InstallmentCustomColumn[];
+  const [newColModal, setNewColModal] = useState(false);
+  const [newColName, setNewColName] = useState("");
+  const [newColType, setNewColType] = useState<"text" | "select" | "formula">("text");
+  const [newColOptions, setNewColOptions] = useState("");
+  const [newColFormula, setNewColFormula] = useState("");
+
+  const [editColModal, setEditColModal] = useState<{
+    oldName: string;
+    name: string;
+    type: "text" | "select" | "formula";
+    options: string;
+    formula: string;
+  } | null>(null);
+
+  const [condFormatModal, setCondFormatModal] = useState(false);
+  const [condFormatParams, setCondFormatParams] = useState({ text: "", color: "bg-sky-100" });
+  const condFormatRules = (installmentConditionalRules2026 || []) as Array<{
+    text: string;
+    color: string;
+  }>;
+
+  const [newRowModal2026, setNewRowModal2026] = useState(false);
+  const [newRowData2026, setNewRowData2026] = useState({
+    name: "",
+    batch: "",
+    specialty: "",
+    prevDue: 0,
+    fees: 0,
   });
-  
-  return matchedRule?.color || "hover:bg-slate-50/80";
- };
- 
- const addConditionalRule = () => {
-  if (!condFormatParams.text.trim()) return toast.error("يرجى إدخال نص الشرط");
-  setInstallmentConditionalRules2026([
-   ...condFormatRules,
-   { ...condFormatParams, text: condFormatParams.text.trim() },
+
+  const controls2026 = useTableControls(installments || [], [
+    "name",
+    "batch",
+    "specialty",
+    "fees",
+    "prevDue",
+    "totalPaid",
+    "remaining",
   ]);
-  setCondFormatParams({ text: "", color: "bg-sky-100" });
-  toast.success("تمت إضافة قاعدة التنسيق");
- };
- 
- const deleteConditionalRule = (index: number) => {
-  setInstallmentConditionalRules2026(condFormatRules.filter((_, i) => i !== index));
- };
- 
- const filteredRows2025 = useMemo(() => {
-  let result = controls2025.rows || [];
-  if (search2025) {
-   const term = search2025.toLowerCase();
-   result = result.filter(
-    (r: any) =>
-    (r.name && r.name.toLowerCase().includes(term)) ||
-    (r.batch && String(r.batch).toLowerCase().includes(term)) ||
-    (r.specialty && r.specialty.toLowerCase().includes(term)),
-   );
-  }
-  if (sortConfig2025) {
-   result = [...result].sort((a: any, b: any) => {
-    let aVal = a[sortConfig2025.key];
-    let bVal = b[sortConfig2025.key];
-    if (["fees", "totalPaid", "remaining"].includes(sortConfig2025.key)) {
-     aVal = cleanNumber(aVal);
-     bVal = cleanNumber(bVal);
-    } else {
-     aVal = aVal ? String(aVal).toLowerCase() : "";
-     bVal = bVal ? String(bVal).toLowerCase() : "";
+  const controls2025 = useTableControls(installments2025 || [], [
+    "name",
+    "batch",
+    "specialty",
+    "fees",
+    "totalPaid",
+    "remaining",
+  ]);
+
+  const evaluateFormula = (formula: string, row: any) => {
+    if (!formula) return "";
+    try {
+      let parsedFormula = formula;
+      const variables: Record<string, number> = {
+        fees: cleanNumber(row.fees),
+        prevDue: cleanNumber(row.prevDue),
+        totalPaid: cleanNumber(row.totalPaid),
+        remaining: cleanNumber(row.remaining),
+      };
+
+      extraCols2026.forEach((col) => {
+        if (col.type !== "formula") {
+          variables[col.name] = cleanNumber(row.customData?.[col.name]);
+        }
+      });
+
+      Object.keys(variables).forEach((key) => {
+        const regex = new RegExp(`\\b${key}\\b`, "g");
+        parsedFormula = parsedFormula.replace(regex, variables[key].toString());
+      });
+
+      const result = new Function(`return ${parsedFormula}`)();
+      return isNaN(result) ? "خطأ" : Number(result).toFixed(2);
+    } catch (e) {
+      return "صيغة غير صالحة";
     }
-    if (aVal < bVal) return sortConfig2025.direction === "asc" ? -1 : 1;
-    if (aVal > bVal) return sortConfig2025.direction === "asc" ? 1 : -1;
-    return 0;
-   });
-  }
-  return result;
- }, [controls2025.rows, search2025, sortConfig2025]);
- 
- const filteredRows2026 = useMemo(() => {
-  let result = controls2026.rows || [];
-  if (search2026) {
-   const term = search2026.toLowerCase();
-   result = result.filter(
-    (r: any) =>
-    (r.name && r.name.toLowerCase().includes(term)) ||
-    (r.batch && String(r.batch).toLowerCase().includes(term)) ||
-    (r.specialty && r.specialty.toLowerCase().includes(term)) ||
-    (r.customData &&
-     Object.values(r.customData).some((val) => String(val).toLowerCase().includes(term))),
-   );
-  }
-  if (sortConfig2026) {
-   result = [...result].sort((a: any, b: any) => {
-    let aVal = a[sortConfig2026.key];
-    let bVal = b[sortConfig2026.key];
-    if (["prevDue", "fees", "totalPaid", "remaining"].includes(sortConfig2026.key)) {
-     aVal = cleanNumber(aVal);
-     bVal = cleanNumber(bVal);
-    } else {
-     aVal = aVal ? String(aVal).toLowerCase() : "";
-     bVal = bVal ? String(bVal).toLowerCase() : "";
+  };
+
+  const getConditionalRowClass = (row: any) => {
+    const searchableValues = [
+      row.name,
+      row.batch,
+      row.specialty,
+      row.prevDue,
+      row.fees,
+      row.totalPaid,
+      row.remaining,
+      ...Object.values(row.payments || {}),
+      ...Object.values(row.customData || {}),
+    ].map((val) => String(val ?? "").toLowerCase());
+
+    const matchedRule = condFormatRules.find((rule) => {
+      const term = rule.text.trim().toLowerCase();
+      return term.length > 0 && searchableValues.some((value) => value.includes(term));
+    });
+
+    return matchedRule?.color || "hover:bg-slate-50/80";
+  };
+
+  const addConditionalRule = () => {
+    if (!condFormatParams.text.trim()) return toast.error("يرجى إدخال نص الشرط");
+    setInstallmentConditionalRules2026([
+      ...condFormatRules,
+      { ...condFormatParams, text: condFormatParams.text.trim() },
+    ]);
+    setCondFormatParams({ text: "", color: "bg-sky-100" });
+    toast.success("تمت إضافة قاعدة التنسيق");
+  };
+
+  const deleteConditionalRule = (index: number) => {
+    setInstallmentConditionalRules2026(condFormatRules.filter((_, i) => i !== index));
+  };
+
+  const filteredRows2025 = useMemo(() => {
+    let result = controls2025.rows || [];
+    if (search2025) {
+      const term = search2025.toLowerCase();
+      result = result.filter(
+        (r: any) =>
+          (r.name && r.name.toLowerCase().includes(term)) ||
+          (r.batch && String(r.batch).toLowerCase().includes(term)) ||
+          (r.specialty && r.specialty.toLowerCase().includes(term)),
+      );
     }
-    if (aVal < bVal) return sortConfig2026.direction === "asc" ? -1 : 1;
-    if (aVal > bVal) return sortConfig2026.direction === "asc" ? 1 : -1;
-    return 0;
-   });
-  }
-  return result;
- }, [controls2026.rows, search2026, sortConfig2026]);
- 
- const handleSort2025 = (key: string) => {
-  let direction: "asc" | "desc" = "asc";
-  if (sortConfig2025 && sortConfig2025.key === key && sortConfig2025.direction === "asc")
-   direction = "desc";
-  setSortConfig2025({ key, direction });
- };
- 
- const handleSort2026 = (key: string) => {
-  let direction: "asc" | "desc" = "asc";
-  if (sortConfig2026 && sortConfig2026.key === key && sortConfig2026.direction === "asc")
-   direction = "desc";
-  setSortConfig2026({ key, direction });
- };
- 
- const totals2025 = useMemo(
-  () => ({
-   fees: (filteredRows2025 || []).reduce((s, r) => s + cleanNumber(r.fees), 0),
-   paid: (filteredRows2025 || []).reduce((s, r) => s + cleanNumber(r.totalPaid), 0),
-   remaining: (filteredRows2025 || []).reduce((s, r) => s + cleanNumber(r.remaining), 0),
-   months: MONTHS_2025.reduce((acc, m) => {
-    acc[m] = (filteredRows2025 || []).reduce((s, r) => s + cleanNumber(r.payments?.[m]), 0);
-    return acc;
-   }, {} as Record < string, number > ),
-  }),
-  [filteredRows2025],
- );
- 
- const totals2026 = useMemo(
-  () => ({
-   prevDue: (filteredRows2026 || []).reduce((s, r) => s + cleanNumber(r.prevDue), 0),
-   fees: (filteredRows2026 || []).reduce((s, r) => s + cleanNumber(r.fees), 0),
-   paid: (filteredRows2026 || []).reduce((s, r) => s + cleanNumber(r.totalPaid), 0),
-   remaining: (filteredRows2026 || []).reduce((s, r) => s + cleanNumber(r.remaining), 0),
-   months: MONTHS_2026.reduce((acc, m) => {
-    acc[m] = (filteredRows2026 || []).reduce((s, r) => s + cleanNumber(r.payments?.[m]), 0);
-    return acc;
-   }, {} as Record < string, number > ),
-  }),
-  [filteredRows2026],
- );
- 
- const allNames = useMemo(() => {
-  const n1 = (installments2025 || []).map((s: any) => s.name);
-  const n2 = (installments || []).map((s: any) => s.name);
-  return [...new Set([...n1, ...n2])];
- }, [installments2025, installments]);
- 
- const handleNameChange = (val: string) => {
-  setNewStudentName(val);
-  setShowSuggestions(val.length > 0);
-  setNameSuggestions(
-   val.length > 0 ? allNames.filter((n) => n.toLowerCase().includes(val.toLowerCase())) : [],
+    if (sortConfig2025) {
+      result = [...result].sort((a: any, b: any) => {
+        let aVal = a[sortConfig2025.key];
+        let bVal = b[sortConfig2025.key];
+        if (["fees", "totalPaid", "remaining"].includes(sortConfig2025.key)) {
+          aVal = cleanNumber(aVal);
+          bVal = cleanNumber(bVal);
+        } else {
+          aVal = aVal ? String(aVal).toLowerCase() : "";
+          bVal = bVal ? String(bVal).toLowerCase() : "";
+        }
+        if (aVal < bVal) return sortConfig2025.direction === "asc" ? -1 : 1;
+        if (aVal > bVal) return sortConfig2025.direction === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+    return result;
+  }, [controls2025.rows, search2025, sortConfig2025]);
+
+  const filteredRows2026 = useMemo(() => {
+    let result = controls2026.rows || [];
+    if (search2026) {
+      const term = search2026.toLowerCase();
+      result = result.filter(
+        (r: any) =>
+          (r.name && r.name.toLowerCase().includes(term)) ||
+          (r.batch && String(r.batch).toLowerCase().includes(term)) ||
+          (r.specialty && r.specialty.toLowerCase().includes(term)) ||
+          (r.customData &&
+            Object.values(r.customData).some((val) => String(val).toLowerCase().includes(term))),
+      );
+    }
+    if (sortConfig2026) {
+      result = [...result].sort((a: any, b: any) => {
+        let aVal = a[sortConfig2026.key];
+        let bVal = b[sortConfig2026.key];
+        if (["prevDue", "fees", "totalPaid", "remaining"].includes(sortConfig2026.key)) {
+          aVal = cleanNumber(aVal);
+          bVal = cleanNumber(bVal);
+        } else {
+          aVal = aVal ? String(aVal).toLowerCase() : "";
+          bVal = bVal ? String(bVal).toLowerCase() : "";
+        }
+        if (aVal < bVal) return sortConfig2026.direction === "asc" ? -1 : 1;
+        if (aVal > bVal) return sortConfig2026.direction === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+    return result;
+  }, [controls2026.rows, search2026, sortConfig2026]);
+
+  const handleSort2025 = (key: string) => {
+    let direction: "asc" | "desc" = "asc";
+    if (sortConfig2025 && sortConfig2025.key === key && sortConfig2025.direction === "asc")
+      direction = "desc";
+    setSortConfig2025({ key, direction });
+  };
+
+  const handleSort2026 = (key: string) => {
+    let direction: "asc" | "desc" = "asc";
+    if (sortConfig2026 && sortConfig2026.key === key && sortConfig2026.direction === "asc")
+      direction = "desc";
+    setSortConfig2026({ key, direction });
+  };
+
+  const totals2025 = useMemo(
+    () => ({
+      fees: (filteredRows2025 || []).reduce((s, r) => s + cleanNumber(r.fees), 0),
+      paid: (filteredRows2025 || []).reduce((s, r) => s + cleanNumber(r.totalPaid), 0),
+      remaining: (filteredRows2025 || []).reduce((s, r) => s + cleanNumber(r.remaining), 0),
+      months: MONTHS_2025.reduce((acc, m) => {
+        acc[m] = (filteredRows2025 || []).reduce((s, r) => s + cleanNumber(r.payments?.[m]), 0);
+        return acc;
+      }, {} as Record<string, number>),
+    }),
+    [filteredRows2025],
   );
- };
- 
- const updateInstallments = (list: any[]) => useStore.setState({ installments: list });
- const updateInstallments2025 = (list: any[]) => useStore.setState({ installments2025: list });
- 
- // تصدير ملف Excel مصحح ومكتمل
- const exportToExcel = async (year: number) => {
-  try {
-   const monthsList = year === 2025 ? MONTHS_2025 : MONTHS_2026;
-   const rows = year === 2025 ? filteredRows2025 : filteredRows2026;
-   const extraCols = year === 2026 ? extraCols2026 : [];
-   
-   const headers =
-    year === 2025 ?
-    ["#", "اسم المتدرب", "الدفعة", "المساق", "الرسوم", ...monthsList, "المسدد", "المتبقي"] :
-    [
-     "#",
-     "اسم المتدرب",
-     "الدفعة",
-     "المساق",
-     "المتبقي من 2025",
-     "الرسوم",
-     ...monthsList,
-     ...extraCols.map((c) => c.name),
-     "مسدد 2026",
-     "الرصيد المتبقي",
-     "الحالة",
-    ];
-   
-   const data = rows.map((row: any, i: number) => {
-    if (year === 2025) {
-     return [
-      i + 1,
-      row.name || "",
-      row.batch || "",
-      row.specialty || "",
-      row.fees || 0,
-      ...monthsList.map((m) => row.payments?.[m] || 0),
-      row.totalPaid || 0,
-      row.remaining || 0,
-     ];
+
+  const totals2026 = useMemo(
+    () => ({
+      prevDue: (filteredRows2026 || []).reduce((s, r) => s + cleanNumber(r.prevDue), 0),
+      fees: (filteredRows2026 || []).reduce((s, r) => s + cleanNumber(r.fees), 0),
+      paid: (filteredRows2026 || []).reduce((s, r) => s + cleanNumber(r.totalPaid), 0),
+      remaining: (filteredRows2026 || []).reduce((s, r) => s + cleanNumber(r.remaining), 0),
+      months: MONTHS_2026.reduce((acc, m) => {
+        acc[m] = (filteredRows2026 || []).reduce((s, r) => s + cleanNumber(r.payments?.[m]), 0);
+        return acc;
+      }, {} as Record<string, number>),
+    }),
+    [filteredRows2026],
+  );
+
+  const allNames = useMemo(() => {
+    const n1 = (installments2025 || []).map((s: any) => s.name);
+    const n2 = (installments || []).map((s: any) => s.name);
+    return [...new Set([...n1, ...n2])];
+  }, [installments2025, installments]);
+
+  const handleNameChange = (val: string) => {
+    setNewStudentName(val);
+    setShowSuggestions(val.length > 0);
+    setNameSuggestions(
+      val.length > 0 ? allNames.filter((n) => n.toLowerCase().includes(val.toLowerCase())) : [],
+    );
+  };
+
+  const updateInstallments = (list: any[]) => useStore.setState({ installments: list });
+  const updateInstallments2025 = (list: any[]) => useStore.setState({ installments2025: list });
+
+  // تصدير ملف Excel مصحح ومكتمل
+  const exportToExcel = async (year: number) => {
+    try {
+      const monthsList = year === 2025 ? MONTHS_2025 : MONTHS_2026;
+      const rows = year === 2025 ? filteredRows2025 : filteredRows2026;
+      const extraCols = year === 2026 ? extraCols2026 : [];
+
+      const headers =
+        year === 2025
+          ? ["#", "اسم المتدرب", "الدفعة", "المساق", "الرسوم", ...monthsList, "المسدد", "المتبقي"]
+          : [
+              "#",
+              "اسم المتدرب",
+              "الدفعة",
+              "المساق",
+              "المتبقي من 2025",
+              "الرسوم",
+              ...monthsList,
+              ...extraCols.map((c) => c.name),
+              "مسدد 2026",
+              "الرصيد المتبقي",
+              "الحالة",
+            ];
+
+      const data = rows.map((row: any, i: number) => {
+        if (year === 2025) {
+          return [
+            i + 1,
+            row.name || "",
+            row.batch || "",
+            row.specialty || "",
+            row.fees || 0,
+            ...monthsList.map((m) => row.payments?.[m] || 0),
+            row.totalPaid || 0,
+            row.remaining || 0,
+          ];
+        }
+        const status = row.remaining <= 0 ? "له" : "عليه";
+        return [
+          i + 1,
+          row.name || "",
+          row.batch || "",
+          row.specialty || "",
+          row.prevDue || 0,
+          row.fees || 0,
+          ...monthsList.map((m) => row.payments?.[m] || 0),
+          ...extraCols.map((col) => {
+            if (col.type === "formula") return evaluateFormula(col.formula || "", row);
+            return row.customData?.[col.name] || "";
+          }),
+          row.totalPaid || 0,
+          row.remaining || 0,
+          status,
+        ];
+      });
+
+      const totalRow =
+        year === 2025
+          ? [
+              "الإجمالي", "", "", "", totals2025.fees,
+              ...monthsList.map((m) => totals2025.months[m] || 0),
+              totals2025.paid, totals2025.remaining,
+            ]
+          : [
+              "الإجمالي", "", "", "", totals2026.prevDue, totals2026.fees,
+              ...monthsList.map((m) => totals2026.months[m] || 0),
+              ...extraCols.map(() => ""), totals2026.paid, totals2026.remaining, "",
+            ];
+
+      const workbook = await createExcelWorkbook();
+      const worksheet = workbook.addWorksheet(`أقساط ${year}`, { views: [{ rightToLeft: true }] });
+      const imageId = await loadReportLetterhead(workbook);
+      const dataStartRow = addReportHeader(workbook, worksheet, {
+        title: `أقساط العام ${year}`,
+        reportDateLabel,
+        recordCount: rows.length,
+        totalColumns: headers.length,
+        palette: getExcelPalette(`أقساط العام ${year}`),
+      }, imageId);
+      appendRows(worksheet, [headers, ...data, totalRow], dataStartRow);
+      formatWorksheet(worksheet, {
+        headerRow: dataStartRow,
+        totalRows: [dataStartRow + data.length + 1],
+        palette: getExcelPalette(`أقساط العام ${year}`),
+        maxColumnWidth: 28,
+      });
+      await downloadWorkbook(workbook, `جدول_أقساط_${year}_${reportDate}.xlsx`);
+      toast.success("تم تصدير ملف Excel بنجاح");
+    } catch (error) {
+      console.error("Installments Excel export error:", error);
+      toast.error("حدث خطأ أثناء تصدير ملف Excel");
     }
-    const status = row.remaining <= 0 ? "له" : "عليه";
-    return [
-     i + 1,
-     row.name || "",
-     row.batch || "",
-     row.specialty || "",
-     row.prevDue || 0,
-     row.fees || 0,
-     ...monthsList.map((m) => row.payments?.[m] || 0),
-     ...extraCols.map((col) => {
-      if (col.type === "formula") return evaluateFormula(col.formula || "", row);
-      return row.customData?.[col.name] || "";
-     }),
-     row.totalPaid || 0,
-     row.remaining || 0,
-     status,
+  };
+
+  // خيارات الأعمدة المتاحة في نافذة إعدادات الطباعة
+  const printColumnOptions = (year: number) => {
+    const monthsList = year === 2025 ? MONTHS_2025 : MONTHS_2026;
+    const opts: { key: string; label: string }[] = [
+      { key: "batch", label: "الدفعة" },
+      { key: "specialty", label: "المساق" },
     ];
-   });
-   
-   const totalRow =
-    year === 2025 ?
-    [
-     "الإجمالي", "", "", "", totals2025.fees,
-     ...monthsList.map((m) => totals2025.months[m] || 0),
-     totals2025.paid, totals2025.remaining,
-    ] :
-    [
-     "الإجمالي", "", "", "", totals2026.prevDue, totals2026.fees,
-     ...monthsList.map((m) => totals2026.months[m] || 0),
-     ...extraCols.map(() => ""), totals2026.paid, totals2026.remaining, "",
-    ];
-   
-   const workbook = await createExcelWorkbook();
-   const worksheet = workbook.addWorksheet(`أقساط ${year}`, { views: [{ rightToLeft: true }] });
-   const imageId = await loadReportLetterhead(workbook);
-   const dataStartRow = addReportHeader(workbook, worksheet, {
-    title: `أقساط العام ${year}`,
-    reportDateLabel,
-    recordCount: rows.length,
-    totalColumns: headers.length,
-    palette: getExcelPalette(`أقساط العام ${year}`),
-   }, imageId);
-   appendRows(worksheet, [headers, ...data, totalRow], dataStartRow);
-   formatWorksheet(worksheet, {
-    headerRow: dataStartRow,
-    totalRows: [dataStartRow + data.length + 1],
-    palette: getExcelPalette(`أقساط العام ${year}`),
-    maxColumnWidth: 28,
-   });
-   await downloadWorkbook(workbook, `جدول_أقساط_${year}_${reportDate}.xlsx`);
-   toast.success("تم تصدير ملف Excel بنجاح");
-  } catch (error) {
-   console.error("Installments Excel export error:", error);
-   toast.error("حدث خطأ أثناء تصدير ملف Excel");
-  }
- };
- 
- // خيارات الأعمدة المتاحة في نافذة إعدادات الطباعة
- const printColumnOptions = (year: number) => {
-  const monthsList = year === 2025 ? MONTHS_2025 : MONTHS_2026;
-  const opts: { key: string;label: string } [] = [
-   { key: "batch", label: "الدفعة" },
-   { key: "specialty", label: "المساق" },
-  ];
-  if (year === 2026) opts.push({ key: "prevDue", label: "مدور 2025" });
-  opts.push({ key: "fees", label: "الرسوم" });
-  monthsList.forEach((m) => opts.push({ key: `month:${m}`, label: m.trim() }));
-  if (year === 2026)
-   extraCols2026.forEach((c) => opts.push({ key: `col:${c.name}`, label: c.name }));
-  opts.push({ key: "totalPaid", label: "إجمالي المسدد" });
-  opts.push({ key: "remaining", label: "الرصيد المتبقي" });
-  if (year === 2026) {
-   opts.push({ key: "status", label: "الحالة" });
-   opts.push({ key: "notes", label: "الملاحظات" });
-  }
-  return opts;
- };
- 
- 
- const exportToPDF = async (
+    if (year === 2026) opts.push({ key: "prevDue", label: "مدور 2025" });
+    opts.push({ key: "fees", label: "الرسوم" });
+    monthsList.forEach((m) => opts.push({ key: `month:${m}`, label: m.trim() }));
+    if (year === 2026)
+      extraCols2026.forEach((c) => opts.push({ key: `col:${c.name}`, label: c.name }));
+    opts.push({ key: "totalPaid", label: "إجمالي المسدد" });
+    opts.push({ key: "remaining", label: "الرصيد المتبقي" });
+    if (year === 2026) {
+      opts.push({ key: "status", label: "الحالة" });
+      opts.push({ key: "notes", label: "الملاحظات" });
+    }
+    return opts;
+  };
+
+
+const exportToPDF = async (
   year: number,
   settings: InstallmentsPrintSettings = DEFAULT_PRINT_SETTINGS,
-  options: { download ? : boolean } = {},
- ): Promise < void > => {
+  options: { download?: boolean } = {},
+): Promise<void> => {
   try {
-   const monthsList = year === 2025 ? MONTHS_2025 : MONTHS_2026;
-   const rows = year === 2025 ? filteredRows2025 : filteredRows2026;
-   const extraCols = year === 2026 ? extraCols2026 : [];
-   const date = reportDateLabel;
-   const hidden = new Set(settings.hiddenColumns || []);
-   
-   type PrintCol = {
-    key: string;
-    label: string;
-    cell: (row: any, i: number) => string;
-    total ? : () => string;
-    wide ? : boolean;
-    tone ? : "paid" | "due" | "fees" | "plain";
-   };
-   
-   const sum = (fn: (r: any) => any) =>
-    (rows || []).reduce((s: number, r: any) => s + cleanNumber(fn(r)), 0);
-   
-   const allCols: PrintCol[] = [];
-   allCols.push({
-    key: "idx",
-    label: "م",
-    cell: (_r, i) => String(i + 1),
-   });
-   allCols.push({
-    key: "name",
-    label: "اسم المتدرب",
-    cell: (r) => escapeHtml(r.name || ""),
-    wide: true,
-   });
-   allCols.push({ key: "batch", label: "الدفعة", cell: (r) => escapeHtml(r.batch || "—") });
-   allCols.push({
-    key: "specialty",
-    label: "المساق",
-    cell: (r) => escapeHtml(r.specialty || "—"),
-    wide: true,
-   });
-   if (year === 2026) {
+    const monthsList = year === 2025 ? MONTHS_2025 : MONTHS_2026;
+    const rows = year === 2025 ? filteredRows2025 : filteredRows2026;
+    const extraCols = year === 2026 ? extraCols2026 : [];
+    const date = reportDateLabel;
+    const hidden = new Set(settings.hiddenColumns || []);
+
+    type PrintCol = {
+      key: string;
+      label: string;
+      cell: (row: any, i: number) => string;
+      total?: () => string;
+      wide?: boolean;
+      tone?: "paid" | "due" | "fees" | "plain";
+    };
+
+    const sum = (fn: (r: any) => any) =>
+      (rows || []).reduce((s: number, r: any) => s + cleanNumber(fn(r)), 0);
+
+    const allCols: PrintCol[] = [];
     allCols.push({
-     key: "prevDue",
-     label: "مدور 2025",
-     cell: (r) => fmt(cleanNumber(r.prevDue)),
-     total: () => fmt(sum((r) => r.prevDue)),
-     tone: "due",
-    });
-   }
-   allCols.push({
-    key: "fees",
-    label: "الرسوم",
-    cell: (r) => fmt(cleanNumber(r.fees)),
-    total: () => fmt(sum((r) => r.fees)),
-    tone: "fees",
-   });
-   monthsList.forEach((m) => {
-    allCols.push({
-     key: `month:${m}`,
-     label: m.trim(),
-     cell: (r) => (cleanNumber(r.payments?.[m]) ? fmt(cleanNumber(r.payments[m])) : "—"),
-     total: () => {
-      const t = sum((r) => r.payments?.[m]);
-      return t > 0 ? fmt(t) : "—";
-     },
-    });
-   });
-   extraCols.forEach((col) => {
-    allCols.push({
-     key: `col:${col.name}`,
-     label: col.name,
-     cell: (r) =>
-      col.type === "formula" ?
-      escapeHtml(evaluateFormula(col.formula || "", r)) :
-      escapeHtml(r.customData?.[col.name] || "—"),
-     total: col.type === "formula" ?
-      () => {
-       const t = (rows || []).reduce(
-        (s: number, r: any) => s + cleanNumber(evaluateFormula(col.formula || "", r)),
-        0,
-       );
-       return t !== 0 ? fmt(t) : "—";
-      } :
-      undefined,
-    });
-   });
-   allCols.push({
-    key: "totalPaid",
-    label: "إجمالي المسدد",
-    cell: (r) => fmt(cleanNumber(r.totalPaid)),
-    total: () => fmt(sum((r) => r.totalPaid)),
-    tone: "paid",
-   });
-   allCols.push({
-    key: "remaining",
-    label: "الرصيد المتبقي",
-    cell: (r) => fmt(cleanNumber(r.remaining)),
-    total: () => fmt(sum((r) => r.remaining)),
-    tone: "due",
-   });
-   if (year === 2026) {
-    allCols.push({
-     key: "status",
-     label: "الحالة",
-     cell: (r) => (cleanNumber(r.remaining) <= 0 ? "له" : "عليه"),
+      key: "idx",
+      label: "م",
+      cell: (_r, i) => String(i + 1),
     });
     allCols.push({
-     key: "notes",
-     label: "الملاحظات",
-     cell: (r) => escapeHtml(r.notes || "—"),
-     wide: true,
+      key: "name",
+      label: "اسم المتدرب",
+      cell: (r) => escapeHtml(r.name || ""),
+      wide: true,
     });
-   }
-   
-   const cols = allCols.filter((c) => !hidden.has(c.key));
-   
-   // ملاءمة تلقائية لعرض الصفحة حسب الحجم والاتجاه
-   const pageWidthMm =
-    settings.pageSize === "A3" ?
-    settings.orientation === "landscape" ?
-    420 :
-    297 :
-    settings.orientation === "landscape" ?
-    297 :
-    210;
-   const marginMm = settings.margin === "narrow" ? 8 : settings.margin === "wide" ? 26 : 14;
-   const usableWidthMm = pageWidthMm - marginMm;
-   const widthUnits = cols.reduce((s, c) => s + (c.wide ? 2.4 : 1), 0);
-   const unitMm = usableWidthMm / Math.max(1, widthUnits);
-   const autoFont = Math.max(5, Math.min(11, unitMm * 1.25));
-   const fontSizePx = settings.fontMode === "manual" ? settings.fontSize : autoFont;
-   const headerFontSizePx = fontSizePx + 0.4;
-   
-   const fitStyle = (text: any, base = fontSizePx) => {
-    const len = String(text ?? "").replace(/<[^>]*>/g, "").length;
-    const steps = Math.max(0, Math.ceil(Math.max(0, len - 16) / 10));
-    const final = Math.max(5, base - Math.min(3.5, steps * 0.7));
-    return `font-size:${final.toFixed(2)}px`;
-   };
-   
-   const colGroup = `<colgroup>${cols
+    allCols.push({ key: "batch", label: "الدفعة", cell: (r) => escapeHtml(r.batch || "—") });
+    allCols.push({
+      key: "specialty",
+      label: "المساق",
+      cell: (r) => escapeHtml(r.specialty || "—"),
+      wide: true,
+    });
+    if (year === 2026) {
+      allCols.push({
+        key: "prevDue",
+        label: "مدور 2025",
+        cell: (r) => fmt(cleanNumber(r.prevDue)),
+        total: () => fmt(sum((r) => r.prevDue)),
+        tone: "due",
+      });
+    }
+    allCols.push({
+      key: "fees",
+      label: "الرسوم",
+      cell: (r) => fmt(cleanNumber(r.fees)),
+      total: () => fmt(sum((r) => r.fees)),
+      tone: "fees",
+    });
+    monthsList.forEach((m) => {
+      allCols.push({
+        key: `month:${m}`,
+        label: m.trim(),
+        cell: (r) => (cleanNumber(r.payments?.[m]) ? fmt(cleanNumber(r.payments[m])) : "—"),
+        total: () => {
+          const t = sum((r) => r.payments?.[m]);
+          return t > 0 ? fmt(t) : "—";
+        },
+      });
+    });
+    extraCols.forEach((col) => {
+      allCols.push({
+        key: `col:${col.name}`,
+        label: col.name,
+        cell: (r) =>
+          col.type === "formula"
+            ? escapeHtml(evaluateFormula(col.formula || "", r))
+            : escapeHtml(r.customData?.[col.name] || "—"),
+        total:
+          col.type === "formula"
+            ? () => {
+                const t = (rows || []).reduce(
+                  (s: number, r: any) => s + cleanNumber(evaluateFormula(col.formula || "", r)),
+                  0,
+                );
+                return t !== 0 ? fmt(t) : "—";
+              }
+            : undefined,
+      });
+    });
+    allCols.push({
+      key: "totalPaid",
+      label: "إجمالي المسدد",
+      cell: (r) => fmt(cleanNumber(r.totalPaid)),
+      total: () => fmt(sum((r) => r.totalPaid)),
+      tone: "paid",
+    });
+    allCols.push({
+      key: "remaining",
+      label: "الرصيد المتبقي",
+      cell: (r) => fmt(cleanNumber(r.remaining)),
+      total: () => fmt(sum((r) => r.remaining)),
+      tone: "due",
+    });
+    if (year === 2026) {
+      allCols.push({
+        key: "status",
+        label: "الحالة",
+        cell: (r) => (cleanNumber(r.remaining) <= 0 ? "له" : "عليه"),
+      });
+      allCols.push({
+        key: "notes",
+        label: "الملاحظات",
+        cell: (r) => escapeHtml(r.notes || "—"),
+        wide: true,
+      });
+    }
+
+    const cols = allCols.filter((c) => !hidden.has(c.key));
+
+    // ملاءمة تلقائية لعرض الصفحة حسب الحجم والاتجاه
+    const pageWidthMm =
+      settings.pageSize === "A3"
+        ? settings.orientation === "landscape"
+          ? 420
+          : 297
+        : settings.orientation === "landscape"
+          ? 297
+          : 210;
+    const marginMm = settings.margin === "narrow" ? 8 : settings.margin === "wide" ? 26 : 14;
+    const usableWidthMm = pageWidthMm - marginMm;
+    const widthUnits = cols.reduce((s, c) => s + (c.wide ? 2.4 : 1), 0);
+    const unitMm = usableWidthMm / Math.max(1, widthUnits);
+    const autoFont = Math.max(5, Math.min(11, unitMm * 1.25));
+    const fontSizePx = settings.fontMode === "manual" ? settings.fontSize : autoFont;
+    const headerFontSizePx = fontSizePx + 0.4;
+
+    const fitStyle = (text: any, base = fontSizePx) => {
+      const len = String(text ?? "").replace(/<[^>]*>/g, "").length;
+      const steps = Math.max(0, Math.ceil(Math.max(0, len - 16) / 10));
+      const final = Math.max(5, base - Math.min(3.5, steps * 0.7));
+      return `font-size:${final.toFixed(2)}px`;
+    };
+
+    const colGroup = `<colgroup>${cols
       .map(
         (c) =>
           `<col style="width:${(((c.wide ? 2.4 : 1) / widthUnits) * 100).toFixed(3)}%" />`,
       )
       .join("")}</colgroup>`;
-   
-   const thead = `<tr>${cols
+
+    const thead = `<tr>${cols
       .map((c) => `<th class="c-${c.key.replace(/[^a-zA-Z]/g, "")}">${escapeHtml(c.label)}</th>`)
       .join("")}</tr>`;
-   
-   const tbody = (rows || [])
-    .map((r: any, i: number) => {
-     const tds = cols
-      .map((c) => {
-       const v = c.cell(r, i);
-       const toneClass = c.tone ? ` t-${c.tone}` : "";
-       const statusClass =
-        c.key === "status" ? (cleanNumber(r.remaining) <= 0 ? " s-ok" : " s-bad") : "";
-       return `<td class="${c.wide ? "wrap" : ""}${toneClass}${statusClass}" style="${fitStyle(v)}"><span class="cell-content">${v}</span></td>`;
+
+    const tbody = (rows || [])
+      .map((r: any, i: number) => {
+        const tds = cols
+          .map((c) => {
+            const v = c.cell(r, i);
+            const toneClass = c.tone ? ` t-${c.tone}` : "";
+            const statusClass =
+              c.key === "status" ? (cleanNumber(r.remaining) <= 0 ? " s-ok" : " s-bad") : "";
+            return `<td class="${c.wide ? "wrap" : ""}${toneClass}${statusClass}" style="${fitStyle(v)}"><span class="cell-content">${v}</span></td>`;
+          })
+          .join("");
+        return `<tr class="${noteRowClass(r.notes)}">${tds}</tr>`;
       })
       .join("");
-     return `<tr class="${noteRowClass(r.notes)}">${tds}</tr>`;
-    })
-    .join("");
-   
-   const totalRow = settings.showTotals ?
-    `<tr class="total-row">${cols
+
+    const totalRow = settings.showTotals
+      ? `<tr class="total-row">${cols
           .map((c, idx) => {
             if (c.key === "idx") return `<td><span class="cell-content">—</span></td>`;
             if (idx === 1) return `<td class="wrap"><span class="cell-content">الإجمالي</span></td>`;
             return `<td style="${fitStyle("")}"><span class="cell-content">${c.total ? c.total() : ""}</span></td>`;
           })
-          .join("")}</tr>` :
-    "";
-   
-   const colorTokens = settings.colored ?
-    {
-     head: "#0f766e",
-     headText: "#ffffff",
-     totals: "#ccfbf1",
-     fees: "#eff6ff",
-     paid: "#ecfdf5",
-     due: "#fff7ed",
-     accent: "#0d9488",
-    } :
-    {
-     head: "#ffffff",
-     headText: "#ffffff",
-     zebra: "#ffffff",
-     totals: "#f2f2f2",
-     fees: "#ffffff",
-     paid: "#ffffff",
-     due: "#ffffff",
-     accent: "#000000",
-    };
-   
-   const reportCss = `
+          .join("")}</tr>`
+      : "";
+
+    const colorTokens = settings.colored
+      ? {
+          head: "#0f766e",
+          headText: "#ffffff",
+          totals: "#ccfbf1",
+          fees: "#eff6ff",
+          paid: "#ecfdf5",
+          due: "#fff7ed",
+          accent: "#0d9488",
+        }
+      : {
+          head: "#ffffff",
+          headText: "#ffffff",
+          zebra: "#ffffff",
+          totals: "#f2f2f2",
+          fees: "#ffffff",
+          paid: "#ffffff",
+          due: "#ffffff",
+          accent: "#000000",
+        };
+
+ const reportCss = `
       html, body { 
       margin: 0 !important;
      padding: 0!important; 
@@ -1244,8 +1244,8 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
         tr { page-break-inside: avoid; }
       }
     `;
-   
-   const body = `
+
+    const body = `
       ${
         settings.showHeader
           ? `<div class="doc-header">
@@ -1270,431 +1270,433 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
         <span>التوقيع: ________________</span>
       </div>
     `;
-   
-   if (options.download) {
-    await downloadDetailedHtmlPdf({
-     title: `تقرير_الأقساط_والمدفوعات_${year}_${reportDate}`,
-     body,
-     css: reportCss,
-     pageSize: settings.pageSize,
-     orientation: settings.orientation,
-     fileName: `${safePdfFileName(`اقساط-${year}-تفصيلي-${reportDate}`)}.pdf`,
-    });
-    toast.success(`تم تنزيل تقرير الأقساط التفصيلي لعام ${year}`);
-    return;
-   }
-   
-   const ok = await openPrintDocument({
-    title: `تقرير_الأقساط_والمدفوعات_${year}_${reportDate}`,
-    body,
-    css: reportCss,
-    pageSize: settings.pageSize,
-    orientation: settings.orientation,
-    margin: marginToCss(settings.margin),
-    autoPrint: false,
-   });
-   
-   if (ok) {
-    toast.success("تم فتح التقرير — اختر «حفظ كـ PDF» للحصول على ملف عالي الجودة");
-   } else {
-    toast.error("تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة");
-   }
-  } catch (error) {
-   toast.error("فشل إنشاء التقرير");
-  }
- };
- 
- 
- const saveRowEdit = (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!editRowModal) return;
-  
-  if (editRowModal.year === 2025) {
-   const list = [...(installments2025 || [])];
-   const updatedRow = {
-    ...editRowData,
-    remaining: Math.max(0, cleanNumber(editRowData.fees) - cleanNumber(editRowData.totalPaid)),
-   };
-   list[editRowModal.index] = updatedRow;
-   updateInstallments2025(list);
-  } else {
-   const list = [...(installments || [])];
-   const updatedRow = {
-    ...editRowData,
-    remaining: Math.max(
-     0,
-     (cleanNumber(editRowData.prevDue) + cleanNumber(editRowData.fees)) - cleanNumber(editRowData.totalPaid),
-    ),
-   };
-   list[editRowModal.index] = updatedRow;
-   updateInstallments(list);
-  }
-  
-  toast.success("تم تحديث البيانات بنجاح");
-  setEditRowModal(null);
- };
- 
- const addCustomColumn = (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!newColName.trim()) return;
-  if (extraCols2026.some((c) => c.name === newColName))
-   return toast.error("اسم العمود موجود مسبقاً");
-  
-  setInstallmentCustomColumns2026([
-   ...extraCols2026,
-   {
-    name: newColName,
-    type: newColType,
-    options: newColType === "select" ? newColOptions.split(",").map((s) => s.trim()) : [],
-    formula: newColType === "formula" ? newColFormula : "",
-   },
-  ]);
-  
-  toast.success(`تم إضافة العمود: ${newColName}`);
-  setNewColModal(false);
-  setNewColName("");
-  setNewColType("text");
-  setNewColOptions("");
-  setNewColFormula("");
- };
- 
- const saveCustomColumnEdit = (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!editColModal) return;
-  
-  if (
-   editColModal.name !== editColModal.oldName &&
-   extraCols2026.some((c) => c.name === editColModal.name)
-  ) {
-   return toast.error("اسم العمود موجود مسبقاً");
-  }
-  
-  const updatedCols = extraCols2026.map((c) => {
-   if (c.name === editColModal.oldName) {
-    return {
-     name: editColModal.name,
-     type: editColModal.type,
-     options: editColModal.type === "select" ?
-      editColModal.options.split(",").map((s) => s.trim()) :
-      [],
-     formula: editColModal.type === "formula" ? editColModal.formula : "",
-    };
-   }
-   return c;
-  });
-  
-  if (editColModal.oldName !== editColModal.name) {
-   const list = [...(installments || [])];
-   list.forEach((row) => {
-    if (row.customData && row.customData[editColModal.oldName] !== undefined) {
-     row.customData[editColModal.name] = row.customData[editColModal.oldName];
-     delete row.customData[editColModal.oldName];
+
+    if (options.download) {
+      await downloadDetailedHtmlPdf({
+        title: `تقرير_الأقساط_والمدفوعات_${year}_${reportDate}`,
+        body,
+        css: reportCss,
+        pageSize: settings.pageSize,
+        orientation: settings.orientation,
+        fileName: `${safePdfFileName(`اقساط-${year}-تفصيلي-${reportDate}`)}.pdf`,
+      });
+      toast.success(`تم تنزيل تقرير الأقساط التفصيلي لعام ${year}`);
+      return;
     }
-   });
-   updateInstallments(list);
+
+    const ok = await openPrintDocument({
+      title: `تقرير_الأقساط_والمدفوعات_${year}_${reportDate}`,
+      body,
+      css: reportCss,
+      pageSize: settings.pageSize,
+      orientation: settings.orientation,
+      margin: marginToCss(settings.margin),
+      autoPrint: false,
+    });
+
+    if (ok) {
+      toast.success("تم فتح التقرير — اختر «حفظ كـ PDF» للحصول على ملف عالي الجودة");
+    } else {
+      toast.error("تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة");
+    }
+  } catch (error) {
+    toast.error("فشل إنشاء التقرير");
   }
+};
+
   
-  setInstallmentCustomColumns2026(updatedCols);
-  setEditColModal(null);
-  toast.success("تم تعديل العمود بنجاح");
- };
- 
- const deleteCustomColumn = (colName: string) => {
-  if (!confirm(`هل أنت متأكد من حذف العمود "${colName}"؟`)) return;
-  setInstallmentCustomColumns2026(extraCols2026.filter((c) => c.name !== colName));
-  setEditColModal(null);
-  toast.success("تم حذف العمود");
- };
- 
- const recalculate2026Row = (row: any) => {
-  const payments = { ...(row.payments || {}) };
-  const totalPaid = MONTHS_2026.reduce((sum, m) => sum + (Number(payments[m]) || 0), 0);
-  return {
-   ...row,
-   payments,
-   totalPaid,
-   remaining: Math.max(0, (cleanNumber(row.prevDue) + cleanNumber(row.fees)) - totalPaid),
+  const saveRowEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editRowModal) return;
+
+    if (editRowModal.year === 2025) {
+      const list = [...(installments2025 || [])];
+      const updatedRow = {
+        ...editRowData,
+        remaining: Math.max(0, cleanNumber(editRowData.fees) - cleanNumber(editRowData.totalPaid)),
+      };
+      list[editRowModal.index] = updatedRow;
+      updateInstallments2025(list);
+    } else {
+      const list = [...(installments || [])];
+      const updatedRow = {
+        ...editRowData,
+        remaining: Math.max(
+          0,
+          (cleanNumber(editRowData.prevDue) + cleanNumber(editRowData.fees)) - cleanNumber(editRowData.totalPaid),
+        ),
+      };
+      list[editRowModal.index] = updatedRow;
+      updateInstallments(list);
+    }
+
+    toast.success("تم تحديث البيانات بنجاح");
+    setEditRowModal(null);
   };
- };
- 
- const update2026CellValue = (rowIndex: number, key: string, value: string) => {
-  if (rowIndex < 0) return;
-  const list = [...(installments || [])];
-  const current = { ...list[rowIndex] };
-  const numericKeys = ["prevDue", "fees", "totalPaid", "remaining"];
-  const nextValue: any = numericKeys.includes(key) ? cleanNumber(value) : value;
-  list[rowIndex] =
-   (key === "prevDue" || key === "fees") ?
-   recalculate2026Row({ ...current, [key]: nextValue }) :
-   { ...current, [key]: nextValue };
-  updateInstallments(list);
- };
- 
- const update2026PaymentValue = (rowIndex: number, month: string, value: string) => {
-  if (rowIndex < 0) return;
-  const list = [...(installments || [])];
-  const row = { ...list[rowIndex], payments: { ...(list[rowIndex]?.payments || {}) } };
-  row.payments[month] = cleanNumber(value);
-  list[rowIndex] = recalculate2026Row(row);
-  updateInstallments(list);
- };
- 
- const updateCustomColValue = (rowIndex: number, colName: string, value: string) => {
-  const list = [...(installments || [])];
-  const row = { ...list[rowIndex], customData: { ...(list[rowIndex]?.customData || {}) } };
-  row.customData[colName] = value;
-  list[rowIndex] = row;
-  updateInstallments(list);
- };
- 
- const deleteRow2026 = (rowIndex: number, name: string) => {
-  if (rowIndex < 0) return;
-  if (!confirm(`هل أنت متأكد من حذف صف المتدرب "${name}" من جدول 2026؟`)) return;
-  updateInstallments((installments || []).filter((_: any, i: number) => i !== rowIndex));
-  toast.success("تم حذف الصف");
- };
- 
- const addNewRow2026 = (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!newRowData2026.name) return toast.error("يرجى إدخال اسم المتدرب");
-  
-  const payments = MONTHS_2026.reduce((acc, m) => ({ ...acc, [m]: 0 }), {} as any);
-  const newRec = {
-   name: newRowData2026.name,
-   batch: newRowData2026.batch,
-   specialty: newRowData2026.specialty,
-   fees: Number(newRowData2026.fees) || 0,
-   prevDue: Number(newRowData2026.prevDue) || 0,
-   totalPaid: 0,
-   remaining: Number(newRowData2026.prevDue) || 0,
-   notes: "",
-   phone: "",
-   payments,
-   customData: {},
+
+  const addCustomColumn = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newColName.trim()) return;
+    if (extraCols2026.some((c) => c.name === newColName))
+      return toast.error("اسم العمود موجود مسبقاً");
+
+    setInstallmentCustomColumns2026([
+      ...extraCols2026,
+      {
+        name: newColName,
+        type: newColType,
+        options: newColType === "select" ? newColOptions.split(",").map((s) => s.trim()) : [],
+        formula: newColType === "formula" ? newColFormula : "",
+      },
+    ]);
+
+    toast.success(`تم إضافة العمود: ${newColName}`);
+    setNewColModal(false);
+    setNewColName("");
+    setNewColType("text");
+    setNewColOptions("");
+    setNewColFormula("");
   };
-  
-  updateInstallments([...(installments || []), newRec]);
-  toast.success("تم إضافة الصف بنجاح");
-  setNewRowModal2026(false);
-  setNewRowData2026({ name: "", batch: "", specialty: "", prevDue: 0, fees: 0 });
- };
- 
- const addPayment = (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!paymentModal || !payAmount) return toast.error("يرجى إدخال المبلغ");
-  const amount = Number(payAmount) || 0;
-  if (amount <= 0) return toast.error("مبلغ غير صحيح");
-  const list = [...(installments || [])];
-  const updated = list.map((s) => {
-   if (s.name !== paymentModal.row.name) return s;
-   const payments = {
-    ...s.payments,
-    [paymentModal.month]: (Number(s.payments[paymentModal.month]) || 0) + amount,
-   };
-   const totalPaid = MONTHS_2026.reduce((sum, m) => sum + (Number(payments[m]) || 0), 0);
-   return {
-    ...s,
-    payments,
-    totalPaid,
-    remaining: Math.max(0, (cleanNumber(s.prevDue) + cleanNumber(s.fees)) - totalPaid),
-   };
-  });
-  updateInstallments(updated);
-  toast.success(`تم تسجيل دفعة ${fmt(amount)}`);
-  setPaymentModal(null);
-  setPayAmount("");
- };
- 
- const addNewPayment = (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!newStudentName || !newStudentAmount || !newStudentMonth)
-   return toast.error("يرجى إدخال جميع البيانات");
-  const amount = Number(newStudentAmount) || 0;
-  if (amount <= 0) return toast.error("مبلغ غير صحيح");
-  const list = [...(installments || [])];
-  const exist = list.find((s) => s.name === newStudentName);
-  if (exist) {
-   const updated = list.map((s) => {
-    if (s.name !== newStudentName) return s;
-    const payments = {
-     ...s.payments,
-     [newStudentMonth]: (Number(s.payments[newStudentMonth]) || 0) + amount,
-    };
+
+  const saveCustomColumnEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editColModal) return;
+
+    if (
+      editColModal.name !== editColModal.oldName &&
+      extraCols2026.some((c) => c.name === editColModal.name)
+    ) {
+      return toast.error("اسم العمود موجود مسبقاً");
+    }
+
+    const updatedCols = extraCols2026.map((c) => {
+      if (c.name === editColModal.oldName) {
+        return {
+          name: editColModal.name,
+          type: editColModal.type,
+          options:
+            editColModal.type === "select"
+              ? editColModal.options.split(",").map((s) => s.trim())
+              : [],
+          formula: editColModal.type === "formula" ? editColModal.formula : "",
+        };
+      }
+      return c;
+    });
+
+    if (editColModal.oldName !== editColModal.name) {
+      const list = [...(installments || [])];
+      list.forEach((row) => {
+        if (row.customData && row.customData[editColModal.oldName] !== undefined) {
+          row.customData[editColModal.name] = row.customData[editColModal.oldName];
+          delete row.customData[editColModal.oldName];
+        }
+      });
+      updateInstallments(list);
+    }
+
+    setInstallmentCustomColumns2026(updatedCols);
+    setEditColModal(null);
+    toast.success("تم تعديل العمود بنجاح");
+  };
+
+  const deleteCustomColumn = (colName: string) => {
+    if (!confirm(`هل أنت متأكد من حذف العمود "${colName}"؟`)) return;
+    setInstallmentCustomColumns2026(extraCols2026.filter((c) => c.name !== colName));
+    setEditColModal(null);
+    toast.success("تم حذف العمود");
+  };
+
+  const recalculate2026Row = (row: any) => {
+    const payments = { ...(row.payments || {}) };
     const totalPaid = MONTHS_2026.reduce((sum, m) => sum + (Number(payments[m]) || 0), 0);
     return {
-     ...s,
-     payments,
-     totalPaid,
-     remaining: Math.max(0, (cleanNumber(s.prevDue) + cleanNumber(s.fees)) - totalPaid),
+      ...row,
+      payments,
+      totalPaid,
+      remaining: Math.max(0, (cleanNumber(row.prevDue) + cleanNumber(row.fees)) - totalPaid),
     };
-   });
-   updateInstallments(updated);
-  } else {
-   const payments = MONTHS_2026.reduce(
-    (acc, m) => ({ ...acc, [m]: m === newStudentMonth ? amount : 0 }), {} as any,
-   );
-   const newRec = {
-    name: newStudentName,
-    batch: "",
-    specialty: "",
-    fees: 0,
-    prevDue: 0,
-    totalPaid: amount,
-    remaining: Math.max(0, 0 - amount),
-    notes: "",
-    phone: "",
-    payments,
-   };
-   updateInstallments([...list, newRec]);
-  }
-  toast.success(`تم إضافة دفعة ${fmt(amount)}`);
-  setNewPaymentModal(false);
-  setNewStudentName("");
-  setNewStudentAmount("");
-  setNewStudentMonth("");
- };
- 
- const editPayment = (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!editPaymentModal || !editAmount)
-   return;
-  const newAmount = Number(editAmount) || 0;
-  const list = [...(installments || [])];
-  const updated = list.map((s) => {
-   if (s.name !== editPaymentModal.row.name) return s;
-   const payments = { ...s.payments, [editPaymentModal.month]: newAmount };
-   const totalPaid = MONTHS_2026.reduce((sum, m) => sum + (Number(payments[m]) || 0), 0);
-   return {
-    ...s,
-    payments,
-    totalPaid,
-    remaining: Math.max(0, (cleanNumber(s.prevDue) + cleanNumber(s.fees)) - totalPaid),
-   };
-  });
-  updateInstallments(updated);
-  toast.success("تم تعديل القسط");
-  setEditPaymentModal(null);
-  setEditAmount("");
- };
- 
- const deletePayment = (row: any, month: string) => {
-  if (!confirm(`حذف قسط شهر ${month}؟`)) return;
-  const list = [...(installments || [])];
-  const updated = list.map((s) => {
-   if (s.name !== row.name) return s;
-   const payments = { ...s.payments, [month]: 0 };
-   const totalPaid = MONTHS_2026.reduce((sum, m) => sum + (Number(payments[m]) || 0), 0);
-   return {
-    ...s,
-    payments,
-    totalPaid,
-    remaining: Math.max(0, (cleanNumber(s.prevDue) + cleanNumber(s.fees)) - totalPaid),
-   };
-  });
-  updateInstallments(updated);
-  toast.success(`تم حذف قسط شهر ${month}`);
-  if (editPaymentModal) setEditPaymentModal(null);
- };
- 
- const importFile = async (e: React.ChangeEvent < HTMLInputElement > , year: 2025 | 2026) => {
-  const input = e.target;
-  const file = input.files?.[0];
-  if (!file) return;
-  try {
-   // ملاحظة: لا نصفّر قيمة الحقل قبل القراءة — بعض متصفحات أندرويد/شاومي
-   // تُبطل الملف عند التصفير فتخرج النتيجة فارغة بدون خطأ.
-   const formattedData = await importInstallmentsInWorker(file, year);
-   if (!formattedData?.length) {
-    const msg =
-     "لم يتم العثور على أسماء متدربين في الملف — تأكد من وجود عمود «اسم المتدرب» في الصف الأول.";
-    setImportError(msg);
-    toast.error(msg);
+  };
+
+  const update2026CellValue = (rowIndex: number, key: string, value: string) => {
+    if (rowIndex < 0) return;
+    const list = [...(installments || [])];
+    const current = { ...list[rowIndex] };
+    const numericKeys = ["prevDue", "fees", "totalPaid", "remaining"];
+    const nextValue: any = numericKeys.includes(key) ? cleanNumber(value) : value;
+    list[rowIndex] =
+      (key === "prevDue" || key === "fees")
+        ? recalculate2026Row({ ...current, [key]: nextValue })
+        : { ...current, [key]: nextValue };
+    updateInstallments(list);
+  };
+
+  const update2026PaymentValue = (rowIndex: number, month: string, value: string) => {
+    if (rowIndex < 0) return;
+    const list = [...(installments || [])];
+    const row = { ...list[rowIndex], payments: { ...(list[rowIndex]?.payments || {}) } };
+    row.payments[month] = cleanNumber(value);
+    list[rowIndex] = recalculate2026Row(row);
+    updateInstallments(list);
+  };
+
+  const updateCustomColValue = (rowIndex: number, colName: string, value: string) => {
+    const list = [...(installments || [])];
+    const row = { ...list[rowIndex], customData: { ...(list[rowIndex]?.customData || {}) } };
+    row.customData[colName] = value;
+    list[rowIndex] = row;
+    updateInstallments(list);
+  };
+
+  const deleteRow2026 = (rowIndex: number, name: string) => {
+    if (rowIndex < 0) return;
+    if (!confirm(`هل أنت متأكد من حذف صف المتدرب "${name}" من جدول 2026؟`)) return;
+    updateInstallments((installments || []).filter((_: any, i: number) => i !== rowIndex));
+    toast.success("تم حذف الصف");
+  };
+
+  const addNewRow2026 = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newRowData2026.name) return toast.error("يرجى إدخال اسم المتدرب");
+
+    const payments = MONTHS_2026.reduce((acc, m) => ({ ...acc, [m]: 0 }), {} as any);
+    const newRec = {
+      name: newRowData2026.name,
+      batch: newRowData2026.batch,
+      specialty: newRowData2026.specialty,
+      fees: Number(newRowData2026.fees) || 0,
+      prevDue: Number(newRowData2026.prevDue) || 0,
+      totalPaid: 0,
+      remaining: Number(newRowData2026.prevDue) || 0,
+      notes: "",
+      phone: "",
+      payments,
+      customData: {},
+    };
+
+    updateInstallments([...(installments || []), newRec]);
+    toast.success("تم إضافة الصف بنجاح");
+    setNewRowModal2026(false);
+    setNewRowData2026({ name: "", batch: "", specialty: "", prevDue: 0, fees: 0 });
+  };
+
+  const addPayment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!paymentModal || !payAmount) return toast.error("يرجى إدخال المبلغ");
+    const amount = Number(payAmount) || 0;
+    if (amount <= 0) return toast.error("مبلغ غير صحيح");
+    const list = [...(installments || [])];
+    const updated = list.map((s) => {
+      if (s.name !== paymentModal.row.name) return s;
+      const payments = {
+        ...s.payments,
+        [paymentModal.month]: (Number(s.payments[paymentModal.month]) || 0) + amount,
+      };
+      const totalPaid = MONTHS_2026.reduce((sum, m) => sum + (Number(payments[m]) || 0), 0);
+      return {
+        ...s,
+        payments,
+        totalPaid,
+        remaining: Math.max(0, (cleanNumber(s.prevDue) + cleanNumber(s.fees)) - totalPaid),
+      };
+    });
+    updateInstallments(updated);
+    toast.success(`تم تسجيل دفعة ${fmt(amount)}`);
+    setPaymentModal(null);
+    setPayAmount("");
+  };
+
+  const addNewPayment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newStudentName || !newStudentAmount || !newStudentMonth)
+      return toast.error("يرجى إدخال جميع البيانات");
+    const amount = Number(newStudentAmount) || 0;
+    if (amount <= 0) return toast.error("مبلغ غير صحيح");
+    const list = [...(installments || [])];
+    const exist = list.find((s) => s.name === newStudentName);
+    if (exist) {
+      const updated = list.map((s) => {
+        if (s.name !== newStudentName) return s;
+        const payments = {
+          ...s.payments,
+          [newStudentMonth]: (Number(s.payments[newStudentMonth]) || 0) + amount,
+        };
+        const totalPaid = MONTHS_2026.reduce((sum, m) => sum + (Number(payments[m]) || 0), 0);
+        return {
+          ...s,
+          payments,
+          totalPaid,
+          remaining: Math.max(0, (cleanNumber(s.prevDue) + cleanNumber(s.fees)) - totalPaid),
+        };
+      });
+      updateInstallments(updated);
+    } else {
+      const payments = MONTHS_2026.reduce(
+        (acc, m) => ({ ...acc, [m]: m === newStudentMonth ? amount : 0 }),
+        {} as any,
+      );
+      const newRec = {
+        name: newStudentName,
+        batch: "",
+        specialty: "",
+        fees: 0,
+        prevDue: 0,
+        totalPaid: amount,
+        remaining: Math.max(0, 0 - amount),
+        notes: "",
+        phone: "",
+        payments,
+      };
+      updateInstallments([...list, newRec]);
+    }
+    toast.success(`تم إضافة دفعة ${fmt(amount)}`);
+    setNewPaymentModal(false);
+    setNewStudentName("");
+    setNewStudentAmount("");
+    setNewStudentMonth("");
+  };
+
+  const editPayment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editPaymentModal || !editAmount)
     return;
-   }
-   if (year === 2025) {
-    useStore.setState({ installments2025: formattedData });
-   } else {
-    useStore.setState({ installments: formattedData });
-   }
-   
-   toast.success(`تم استيراد ${formattedData.length} سجلاً للعام ${year} بنجاح!`);
-   setImportError(null);
-  } catch (error) {
-   console.error(`[Excel] Installments ${year} import failed`, error);
-   const detail = error instanceof Error ? error.message : String(error);
-   setImportError(`حدث خطأ في قراءة الملف: ${detail}`);
-   toast.error("فشل استيراد الملف");
-  } finally {
-   input.value = "";
-  }
- };
- 
- const getStatusText = (rem: number) =>
-  rem <= 0 ?
-  { text: "له", color: "text-emerald-800", bg: "bg-emerald-50" } :
-  { text: "عليه", color: "text-rose-800", bg: "bg-rose-50" };
- 
- // تم تعديل هذه الدالة لتتوافق بشكل أفضل مع صيغة حفظ PDF واللغة العربية
- const generateAccountStatement = (row: any, year: number) => {
-  // 1. تحديد قائمة الأشهر بناءً على السنة المختارة
-  const monthsList = year === 2025 ? MONTHS_2025 : MONTHS_2026;
-  
-  // 2. تنظيف وتحويل الرسوم والمستحقات السابقة إلى أرقام صحيحة
-  const fees = cleanNumber(row?.fees);
-  const prevDue = cleanNumber(row?.prevDue);
-  
-  // 3. حساب إجمالي المدفوعات عبر المرور على قائمة الأشهر
-  const totalPaid = monthsList.reduce((sum, month) => {
-   const payment = Number(row?.payments?.[month]) || 0;
-   return sum + payment;
-  }, 0);
-  // 4. حساب إجمالي المستحق:
-  // إذا      كانت السنة 2026 يتم إضاف المتب.   قي السابق إلى الرسوم الحالية، وإلا تُحسب الرسوم فقط.
-  const dueTotal = year === 2026 ? fees + 0 : prevDue;
-  // 5. حساب المبلغ المتبقي
-  const remaining = dueTotal - totalPaid;
-  
-  // استخراج اسم آمن ليستخدمه المتصفح كاسم افتراضي عند الحفظ PDF
-  const safeName = safePdfFileName(row.name);
-  
-  const paidRows = monthsList
-   .map((m) => {
-    const amount = Number(row.payments?.[m]) || 0;
-    if (amount <= 0) return "";
-    return `
+    const newAmount = Number(editAmount) || 0;
+    const list = [...(installments || [])];
+    const updated = list.map((s) => {
+      if (s.name !== editPaymentModal.row.name) return s;
+      const payments = { ...s.payments, [editPaymentModal.month]: newAmount };
+      const totalPaid = MONTHS_2026.reduce((sum, m) => sum + (Number(payments[m]) || 0), 0);
+      return {
+        ...s,
+        payments,
+        totalPaid,
+        remaining: Math.max(0, (cleanNumber(s.prevDue) + cleanNumber(s.fees)) - totalPaid),
+      };
+    });
+    updateInstallments(updated);
+    toast.success("تم تعديل القسط");
+    setEditPaymentModal(null);
+    setEditAmount("");
+  };
+
+  const deletePayment = (row: any, month: string) => {
+    if (!confirm(`حذف قسط شهر ${month}؟`)) return;
+    const list = [...(installments || [])];
+    const updated = list.map((s) => {
+      if (s.name !== row.name) return s;
+      const payments = { ...s.payments, [month]: 0 };
+      const totalPaid = MONTHS_2026.reduce((sum, m) => sum + (Number(payments[m]) || 0), 0);
+      return {
+        ...s,
+        payments,
+        totalPaid,
+        remaining: Math.max(0, (cleanNumber(s.prevDue) + cleanNumber(s.fees)) - totalPaid),
+      };
+    });
+    updateInstallments(updated);
+    toast.success(`تم حذف قسط شهر ${month}`);
+    if (editPaymentModal) setEditPaymentModal(null);
+  };
+
+  const importFile = async (e: React.ChangeEvent<HTMLInputElement>, year: 2025 | 2026) => {
+    const input = e.target;
+    const file = input.files?.[0];
+    if (!file) return;
+    try {
+      // ملاحظة: لا نصفّر قيمة الحقل قبل القراءة — بعض متصفحات أندرويد/شاومي
+      // تُبطل الملف عند التصفير فتخرج النتيجة فارغة بدون خطأ.
+      const formattedData = await importInstallmentsInWorker(file, year);
+      if (!formattedData?.length) {
+        const msg =
+          "لم يتم العثور على أسماء متدربين في الملف — تأكد من وجود عمود «اسم المتدرب» في الصف الأول.";
+        setImportError(msg);
+        toast.error(msg);
+        return;
+      }
+      if (year === 2025) {
+        useStore.setState({ installments2025: formattedData });
+      } else {
+        useStore.setState({ installments: formattedData });
+      }
+
+      toast.success(`تم استيراد ${formattedData.length} سجلاً للعام ${year} بنجاح!`);
+      setImportError(null);
+    } catch (error) {
+      console.error(`[Excel] Installments ${year} import failed`, error);
+      const detail = error instanceof Error ? error.message : String(error);
+      setImportError(`حدث خطأ في قراءة الملف: ${detail}`);
+      toast.error("فشل استيراد الملف");
+    } finally {
+      input.value = "";
+    }
+  };
+
+
+  const getStatusText = (rem: number) =>
+    rem <= 0
+      ? { text: "له", color: "text-emerald-800", bg: "bg-emerald-50" }
+      : { text: "عليه", color: "text-rose-800", bg: "bg-rose-50" };
+
+    // تم تعديل هذه الدالة لتتوافق بشكل أفضل مع صيغة حفظ PDF واللغة العربية
+  const generateAccountStatement = (row: any, year: number) => {
+    // 1. تحديد قائمة الأشهر بناءً على السنة المختارة
+    const monthsList = year === 2025 ? MONTHS_2025 : MONTHS_2026;
+
+    // 2. تنظيف وتحويل الرسوم والمستحقات السابقة إلى أرقام صحيحة
+    const fees = cleanNumber(row?.fees);
+    const prevDue = cleanNumber(row?.prevDue);
+
+    // 3. حساب إجمالي المدفوعات عبر المرور على قائمة الأشهر
+    const totalPaid = monthsList.reduce((sum, month) => {
+      const payment = Number(row?.payments?.[month]) || 0;
+      return sum + payment;
+    }, 0);
+
+    // 4. حساب إجمالي المستحق:
+    // إذا كانت السنة 2026 يتم إضافة المتبقي السابق إلى الرسوم الحالية، وإلا تُحسب الرسوم فقط.
+    const dueTotal = year === 2026 ? prevDue + 0 : fees;
+
+    // 5. حساب المبلغ المتبقي
+    const remaining = dueTotal - totalPaid;
+
+    // استخراج اسم آمن ليستخدمه المتصفح كاسم افتراضي عند الحفظ PDF
+    const safeName = safePdfFileName(row.name);
+
+    const paidRows = monthsList
+      .map((m) => {
+        const amount = Number(row.payments?.[m]) || 0;
+        if (amount <= 0) return "";
+        return `
           <tr>
             <td class="lbl">سداد شهر ${escapeHtml(m)}</td>
             <td class="num">${escapeHtml(fmt(amount))}</td>
           </tr>`;
-   })
-   .join("");
-  
-  const infoCard = (label: string, value: string) =>
-   `<div class="info-box">
+      })
+      .join("");
+
+    const infoCard = (label: string, value: string) =>
+      `<div class="info-box">
         <div class="info-lbl">${escapeHtml(label)}</div>
         <div class="info-val">${escapeHtml(value || "—")}</div>
       </div>`;
-  
-  const prevRow =
-   year === 2026 ?
-   `<tr class="row-due-old">
-  <td class="lbl">
-المتبق علية من
-العام 2025 (مدور)
- </td>
-<td class="num">${escapeHtml(fmt(prevDue))}</td>
-        </tr>` :
-   "";
-  
-  const remainingLabel =
-   remaining > 0 ?
-   "الرصيد المتبقي (عليه)" :
-   remaining < 0 ?
-   "الرصيد الإضافي (له)" :
-   "الحالة: تم السداد بالكامل";
-  
-  // ضبط أحجام كروت المعلومات والطباعة (أصغر وأكثر إحكاماً)
-  const statementCss = `
+
+    const prevRow =
+      year === 2026
+        ? `<tr class="row-due-old">
+          <td class="lbl">متبقي من العام 2025 (مدور)</td>
+          <td class="num">${escapeHtml(fmt(prevDue))}</td>
+        </tr>`
+        : "";
+
+    const remainingLabel =
+      remaining > 0
+        ? "الرصيد المتبقي (عليه)"
+        : remaining < 0
+          ? "الرصيد الإضافي (له)"
+          : "الحالة: تم السداد بالكامل";
+
+    // ضبط أحجام كروت المعلومات والطباعة (أصغر وأكثر إحكاماً)
+    const statementCss = `
       @page { size: A4 portrait; margin: 8mm; }
       * { box-sizing: border-box; }
       html, body { width: 100%;  margin: 0; padding: 0; }
@@ -1751,7 +1753,7 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
 
  .statement-title {
   text-align: center;
-  font-size: 15pt;
+  font-size: 18pt;
   font-weight: 900;
   color: #0f766e;
   margin: 0 0 6px;
@@ -1835,33 +1837,30 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
       }
     }
     `;
-  
-  const body = `
+
+    const body = `
       <div class="container">
         <div class="page-frame">
    <h2 class="statement-title">كشف حساب متدرب — للعام ${year}م</h2>
- <div class="info-grid">
- ${infoCard("اسم المتدرب", row.name)}
- ${infoCard("الدفعة", row.batch)}
+          <div class="info-grid">
+            ${infoCard("اسم المتدرب", row.name)}
+            ${infoCard("الدفعة", row.batch)}
             ${infoCard("المساق", row.specialty)}
             ${infoCard("رقم الهاتف", row.phone)}
           </div>
           <table>
-      <thead>
-   <tr>
-   <th style="width: 60%">البيان</th>
-<th style="width: 40%">المبلغ</th>
-       </tr>
+            <thead>
+              <tr>
+                <th style="width: 60%">البيان</th>
+                <th style="width: 40%">المبلغ</th>
+              </tr>
             </thead>
-      <tbody>
-<tr class="row-fees"><td class="lbl">إجمالي رسوم الدراسة </td><td class="num">
-${escapeHtml(fmt(fees))}</td></tr>
+            <tbody>
+              <tr class="row-fees"><td class="lbl">إجمالي الرسوم المستحقة</td><td class="num">${escapeHtml(fmt(fees))}</td></tr>
               ${prevRow}
- <tr class="row-total-due"><td class="lbl">إجمالي المبلغ المطلوب</td><td class="num">
- ${escapeHtml(fmt(dueTotal))}</td></tr>
+              <tr class="row-total-due"><td class="lbl">إجمالي المبلغ المطلوب</td><td class="num">${escapeHtml(fmt(dueTotal))}</td></tr>
               ${paidRows}
-  <tr class="row-total-paid"><td class="lbl">إجمالي المسدد (له)</td><td class="num">
-  ${escapeHtml(fmt(totalPaid))}</td></tr>
+              <tr class="row-total-paid"><td class="lbl">إجمالي المسدد (له)</td><td class="num">${escapeHtml(fmt(totalPaid))}</td></tr>
               <tr class="row-final"><td class="lbl">${escapeHtml(remainingLabel)}</td><td class="num">${escapeHtml(fmt(Math.abs(remaining)))}</td></tr>
             </tbody>
           </table>
@@ -1872,106 +1871,110 @@ ${escapeHtml(fmt(fees))}</td></tr>
         </div>
       </div>
     `;
-  
-  return {
-   title: `كشف_حساب_${safeName}_${year}_${reportDate}`,
-   body,
-   css: statementCss,
+
+    return {
+      title: `كشف_حساب_${safeName}_${year}_${reportDate}`,
+      body,
+      css: statementCss,
+    };
   };
- };
- 
- 
- // فتح كشف الحساب في نافذة طباعة عالية الجودة (يمكن حفظه كـ PDF)
- const handleExportPdf = async (row: any, year: number) => {
-  const { title, body, css } = generateAccountStatement(row, year);
-  const ok = await openPrintDocument({
-   title,
-   body,
-   css,
-   pageSize: "A4",
-   orientation: "portrait",
-   margin: "8mm",
-   letterheadPlacement: "top",
-   autoPrint: false,
-  });
-  if (ok) {
-   toast.success("اختر «حفظ كـ PDF» من نافذة الطباعة للحصول على ملف واضح");
-  } else {
-   toast.error("تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة");
-  }
- };
- 
- // وظيفة الطباعة
- const printStatement = (row: any, year: number) => {
-  void handleExportPdf(row, year);
- };
- 
- const stats2025 = [
- {
-  label: "إجمالي الرسوم التقديرية",
-  value: fmt(totals2025.fees),
-  bgClass: "bg-white",
-  borderClass: "border-sky-100",
-  accentClass: "bg-sky-500",
- },
- {
-  label: "إجمالي الأقساط المسددة",
-  value: fmt(totals2025.paid),
-  bgClass: "bg-emerald-50/70",
-  borderClass: "border-emerald-100",
-  accentClass: "bg-emerald-500",
- },
- {
-  label: "إجمالي المتبقي",
-  value: fmt(totals2025.remaining),
-  bgClass: "bg-orange-50/70",
-  borderClass: "border-orange-100",
-  accentClass: "bg-orange-500",
- }, ];
- 
- const stats2026 = [
- {
-  label: "المدور (متبقي 2025)",
-  value: fmt(totals2026.prevDue),
-  bgClass: "bg-white",
-  borderClass: "border-sky-100",
-  accentClass: "bg-sky-600",
- },
- {
-  label: "إجمالي مسدد 2026",
-  value: fmt(totals2026.paid),
-  bgClass: "bg-emerald-50/70",
-  borderClass: "border-emerald-100",
-  accentClass: "bg-emerald-500",
- },
- {
-  label: "صافي الرصيد المتبقي",
-  value: fmt(totals2026.remaining),
-  bgClass: "bg-orange-50/70",
-  borderClass: "border-orange-100",
-  accentClass: "bg-orange-500",
- }, ];
- 
- const handleDetailedPdf2026 = async () => {
-  if (detailedPdfBusy2026) return;
-  if (!filteredRows2026.length) {
-   toast.error("لا توجد بيانات للتصدير");
-   return;
-  }
-  setDetailedPdfBusy2026(true);
-  try {
-   await exportToPDF(2026, { ...DEFAULT_PRINT_SETTINGS }, { download: true });
-  } finally {
-   setDetailedPdfBusy2026(false);
-  }
- };
- 
- const installments2025WebActions: WebActionItem[] = [
-  {
-   label: "استيراد Excel",
-   onSelect: () => undefined,
-   content: (
-    <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold text-slate-700 hover:bg-slate-100">
+
+  // فتح كشف الحساب في نافذة طباعة عالية الجودة (يمكن حفظه كـ PDF)
+  const handleExportPdf = async (row: any, year: number) => {
+    const { title, body, css } = generateAccountStatement(row, year);
+    const ok = await openPrintDocument({
+      title,
+      body,
+      css,
+      pageSize: "A4",
+      orientation: "portrait",
+      margin: "8mm",
+      letterheadPlacement: "top",
+      autoPrint: false,
+    });
+    if (ok) {
+      toast.success("اختر «حفظ كـ PDF» من نافذة الطباعة للحصول على ملف واضح");
+    } else {
+      toast.error("تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة");
+    }
+  };
+
+  // وظيفة الطباعة
+  const printStatement = (row: any, year: number) => {
+    void handleExportPdf(row, year);
+  };
+
+  const stats2025 = [
+    {
+label: 
+"إجمالي الرسوم التقديرية",
+      value: fmt(totals2025.fees),
+      bgClass: "bg-white",
+      borderClass: "border-sky-100",
+      accentClass: "bg-sky-500",
+    },
+    {
+      label: "إجمالي الأقساط المسددة",
+      value: fmt(totals2025.paid),
+      bgClass: "bg-emerald-50/70",
+      borderClass: "border-emerald-100",
+      accentClass: "bg-emerald-500",
+    },
+    {
+      label: 
+"إجمالي المتبقي",
+      value: fmt(totals2025.remaining),
+      bgClass: "bg-orange-50/70",
+      borderClass: "border-orange-100",
+      accentClass: "bg-orange-500",
+    },
+  ];
+
+  const stats2026 = [
+    {
+      label: "المدور (متبقي 2025)",
+      value: fmt(totals2026.prevDue),
+      bgClass: "bg-white",
+      borderClass: "border-sky-100",
+      accentClass: "bg-sky-600",
+    },
+    {
+      label: "إجمالي مسدد 2026",
+      value: fmt(totals2026.paid),
+      bgClass: "bg-emerald-50/70",
+      borderClass: "border-emerald-100",
+      accentClass: "bg-emerald-500",
+    },
+    {
+      label: 
+  "صافي الرصيد المتبقي",
+      value: fmt(totals2026.remaining),
+      bgClass: "bg-orange-50/70",
+      borderClass: "border-orange-100",
+      accentClass: "bg-orange-500",
+    },
+  ];
+
+  const handleDetailedPdf2026 = async () => {
+    if (detailedPdfBusy2026) return;
+    if (!filteredRows2026.length) {
+      toast.error("لا توجد بيانات للتصدير");
+      return;
+    }
+    setDetailedPdfBusy2026(true);
+    try {
+      await exportToPDF(2026, { ...DEFAULT_PRINT_SETTINGS }, { download: true });
+    } finally {
+      setDetailedPdfBusy2026(false);
+    }
+  };
+
+const installments2025WebActions: WebActionItem[] = [
+    {
+      label: "استيراد Excel",
+      onSelect: () => undefined,
+      content: (
+        <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold text-slate-700 hover:bg-slate-100">
           <span>استيراد Excel</span>
           <input
             type="file"
@@ -1980,26 +1983,26 @@ ${escapeHtml(fmt(fees))}</td></tr>
             className="absolute h-0 w-0 opacity-0 overflow-hidden"
           />
         </label>
-   ),
-  },
-  { label: "تصدير Excel التفصيلي", icon: FileSpreadsheet, onSelect: () => exportToExcel(2025) },
-  { label: "طباعة تفصيلية", icon: Printer, onSelect: () => setPrintSettingsYear(2025) },
- ];
- 
- const installments2026WebActions: WebActionItem[] = [
+      ),
+    },
+    { label: "تصدير Excel التفصيلي", icon: FileSpreadsheet, onSelect: () => exportToExcel(2025) },
+    { label: "طباعة تفصيلية", icon: Printer, onSelect: () => setPrintSettingsYear(2025) },
+  ];
+
+const installments2026WebActions: WebActionItem[] = [
   {
-   label: condFormatRules.length ? `تنسيق نشط (${condFormatRules.length})` : "تنسيق شرطي",
-   icon: Palette,
-   onSelect: () => setCondFormatModal(true),
+    label: condFormatRules.length ? `تنسيق نشط (${condFormatRules.length})` : "تنسيق شرطي",
+    icon: Palette,
+    onSelect: () => setCondFormatModal(true),
   },
   { label: "طالب جديد", icon: Plus, onSelect: () => setNewRowModal2026(true) },
   { label: "عمود جديد", icon: Plus, onSelect: () => setNewColModal(true) },
   { label: "إضافة قسط", icon: Plus, onSelect: () => setNewPaymentModal(true) },
   {
-   label: "استيراد Excel",
-   onSelect: () => undefined,
-   content: (
-    <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold text-slate-700 hover:bg-slate-100">
+    label: "استيراد Excel",
+    onSelect: () => undefined,
+    content: (
+      <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold text-slate-700 hover:bg-slate-100">
           <span>استيراد Excel</span>
           <input
             type="file"
@@ -2008,463 +2011,411 @@ ${escapeHtml(fmt(fees))}</td></tr>
             className="absolute h-0 w-0 opacity-0 overflow-hidden"
           />
         </label>
-   ),
+    ),
   },
   { label: "تصدير Excel التفصيلي", icon: FileSpreadsheet, onSelect: () => exportToExcel(2026) },
   { label: "طباعة تفصيلية", icon: Printer, onSelect: () => setPrintSettingsYear(2026) },
   {
-   label: detailedPdfBusy2026 ?
-    
-    "جارٍ التحضير…" : "تنزيل PDF التفصيلي",
-   icon: Download,
-   onSelect: handleDetailedPdf2026,
-   disabled: detailedPdfBusy2026,
+    label: detailedPdfBusy2026 ?
+      
+      "جارٍ التحضير…" : "تنزيل PDF التفصيلي",
+    icon: Download,
+    onSelect: handleDetailedPdf2026,
+    disabled: detailedPdfBusy2026,
   },
- ];
- 
- return (
-  <div className="w-full space-y-4 sm:space-y-6 p-0" dir="rtl">
-      
-  
-      
-{ /* واجهة جدول 2025 */ }
- {/* شريط العنوان والبحث والأزرار لعام 2025 */}
-<div className="bg-gradient-to-l from-sky-200 via-sky-400 to-white-100 px-3 sm:px-6 py-3.5 flex flex-col gap-3">
-          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
-            <h3 className={`${HEADING_MOBILE} text-white flex items-center gap-2 drop-shadow-md`}>
-              <span>جدول أقساط 2025</span>
-            </h3>
+];
 
-            {/* مربع البحث */}
-            <div className="relative w-full sm:w-72">
+  return (
+    <div className="w-full space-y-4 sm:space-y-6 p-0" dir="rtl">
+      
+{/* ========== واجهة جدول 2025 ========== */}
+      <div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-lg border border-sky-100 rounded-2xl overflow-hidden">
+        <div className="bg-gradient-to-l from-sky-800 via-sky-600 to-sky-600 px-2 sm:px-6 py-2.5 sm:py-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2">
+          <div className="min-w-0">
+            <h2 className={`${HEADING_MOBILE} text-white`}>
+ 
+ 📊 أقساط ومستندات 
+ العام 2025
+            </h2>
+            <p className="text-xs text-sky-100">يشمل جميع الدفعات لعامي 2024 و 2025</p>
+          </div>
+          <div className="w-full sm:w-auto grid grid-cols-2 sm:flex gap-1.5 sm:gap-2 items-center">
+            <div className="relative w-full sm:w-auto">
+              <Search className="w-4 h-4 absolute right-2.5 top-2.5 text-sky-500" />
               <input
                 type="text"
-                placeholder="بحث في أسماء أو تخصصات 2025..."
+                placeholder="بحث (الاسم، الدفعة، المساق)..."
                 value={search2025}
                 onChange={(e) => setSearch2025(e.target.value)}
-                className="w-full pl-8 pr-3 py-2 text-xs sm:text-sm rounded-xl border-2 border-sky-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 font-bold placeholder-slate-400 shadow-inner"
+                className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"
               />
-              <Search className="w-4 h-4 text-sky-700 absolute left-2.5 top-3 pointer-events-none" />
-              {search2025 && (
-                <button
-                  type="button"
-                  onClick={() => setSearch2025("")}
-                  className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
             </div>
-          </div>
+<label className="apk-only-actions relative w-full px-1.5 sm:px-2 py-1 sm:py-1 bg-white text-sky-700 rounded-lg text-xs sm:text-xs font-bold cursor-pointer hover:bg-sky-50 shadow text-center">
+  📥 استيراد الملف{" "}
+  <input
+    type="file"
+    accept=".xlsx,.xls"
+    onChange={(e) => importFile(e, 2025)}
+    className="absolute h-0 w-0 opacity-0 overflow-hidden"
+  />
+</label>
 
-          {/* شبكة الأزرار: كل زرين في صف بتنسيق بارز */}
-<div className="grid grid-cols-2 gap-2 w-full pt-1">
-            {/* الصف 1: استيراد Excel + تصدير Excel */}
-<label className="apk-only-actions flex item-center justify-center gap-2 px-2 py-2 bg-blue text-white rounded-xl text-xs font-extrabold shadow-md hover:shadow-lg border-2 border-blue-400 cursor-pointer active:scale-95 transition-all text-center">
-              <FileSpreadsheet className="w-4 h-4" />
-              <span>استيراد Excel</span>
+
+            <div className="apk-only-actions col-span-2 flex gap-1 w-full sm:w-auto">
+              <button
+                onClick={() => exportToExcel(2025)}
+                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
+              >
+                <FileSpreadsheet className={ICON_MOBILE} /> <span className="hidden sm:inline">Excel</span>
+              </button>
+              <button
+                onClick={() => setPrintSettingsYear(2025)}
+                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white/95 text-sky-800 rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`}
+              >
+                <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة</span>
+              </button>
+            </div>
+
+            <TabActions
+              title="أقساط العام 2025"
+              rows={installments2025 || []}
+              columns={[
+                { key: "name", label: "اسم المتدرب" },
+                { key: "batch", label: "الدفعة" },
+                { key: "specialty", label: "المساق" },
+                { key: "fees", label: "الرسوم" },
+                { key: "totalPaid", label: "المسدد" },
+                { key: "remaining", label: "المتبقي" },
+              ]}
+              fileName="اقساط-2025"
+              numericKeys={["fees", "totalPaid", "remaining"]}
+              onClear={() => clearInstallments("2025")}
+              printLabel="الأقساط/إجمالي"
+              additionalWebActions={installments2025WebActions}
+              className="col-span-2 w-full !grid !grid-cols-2 sm:!flex !gap-1 sm:!gap-2 [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-2 sm:[&>button]:py-1"
+            />
+          </div>
+        </div>
+
+        {importError && (
+          <div className="bg-red-50 border-b border-red-200 p-3 flex gap-2">
+            <AlertCircle className="w-5 h-5 text-red-600" />
+            <p className="text-sm text-red-700">{importError}</p>
+          </div>
+        )}
+
+        <div className="p-1 sm:p-3">
+          <StatsGrid stats={stats2025} columns={3} />
+          <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
+            <table className="installments-table min-w-auto table-auto text-lg sm:text-base font-bold">
+              <thead className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900  [&>tr>th]:!text-white sticky top-0 z-20 shadow-md">
+                <tr>
+                  <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">#</th>
+                  <th
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
+                    onClick={() => handleSort2025("name")}
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      اسم المتدرب <SortIcon sortConfig={sortConfig2025} columnKey="name" />
+                    </div>
+                  </th>
+                  <th
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
+                    onClick={() => handleSort2025("batch")}
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      الدفعة <SortIcon sortConfig={sortConfig2025} columnKey="batch" />
+                    </div>
+                  </th>
+                  <th
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
+                    onClick={() => handleSort2025("specialty")}
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      المساق <SortIcon sortConfig={sortConfig2025} columnKey="specialty" />
+                    </div>
+                  </th>
+                  <th
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
+                    onClick={() => handleSort2025("fees")}
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      الرسوم <SortIcon sortConfig={sortConfig2025} columnKey="fees" />
+                    </div>
+                  </th>
+                  {MONTHS_2025.map((m) => (
+                    <th
+                      key={m}
+                      className="text-center border-l border-white/25 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
+                    >
+                      {m}
+                    </th>
+                  ))}
+                  <th
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
+                    onClick={() => handleSort2025("totalPaid")}
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      المسدد <SortIcon sortConfig={sortConfig2025} columnKey="totalPaid" />
+                    </div>
+                  </th>
+                  <th
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
+                    onClick={() => handleSort2025("remaining")}
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      المتبقي <SortIcon sortConfig={sortConfig2025} columnKey="remaining" />
+                    </div>
+                  </th>
+                  <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRows2025.length === 0 ? (
+                  <tr>
+                    <td colSpan={8 + MONTHS_2025.length} className="text-center text-slate-400 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base whitespace-nowrap">
+                      لا توجد بيانات (يرجى التأكد من استيراد الملف أو تعديل البحث)
+                    </td>
+                  </tr>
+                ) : (
+                  <>
+                    {filteredRows2025.map((r: any, i: number) => {
+                      const originalIndex = (installments2025 || []).findIndex(
+                        (orig: any) => orig.name === r.name,
+                      );
+                      return (
+                        <tr
+                          key={i}
+                          className="border-t border-slate-200 hover:bg-slate-50/80 transition-colors"
+                        >
+                          <td className="text-center text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                            {i + 1}
+                          </td>
+                          <td className="text-center font-semibold text-black whitespace-nowrap bg-sky-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                            {r.name}
+                          </td>
+                          <td className="text-center text-black whitespace-nowrap bg-cyan-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                            {r.batch || "—"}
+                          </td>
+                          <td className="text-center text-black whitespace-nowrap bg-sky-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                            {r.specialty || "—"}
+                          </td>
+                          <td className="text-center numeric-cell font-mono font-semibold text-black whitespace-nowrap bg-blue-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                            {fmt(r.fees)}
+                          </td>
+                          {MONTHS_2025.map((m) => {
+                            const paid = Number(r.payments?.[m]) || 0;
+                            return (
+                              <td
+                                key={m}
+                                className="numeric-cell text-center bg-slate-50/50 border-l border-slate-200 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
+                              >
+                                {paid > 0 ? (
+                                  <span className="text-black font-bold numeric-cell font-mono">
+                                    {fmt(paid)}
+                                  </span>
+                                ) : (
+                                  <span className="text-slate-300">—</span>
+                                )}
+                              </td>
+                            );
+                          })}
+                          <td className="text-center numeric-cell font-mono text-black font-bold bg-emerald-50/30 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                            {fmt(r.totalPaid)}
+                          </td>
+                          <td className="text-center numeric-cell font-mono text-black font-bold bg-rose-50/30 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                            {fmt(r.remaining)}
+                          </td>
+                          <td className="text-center whitespace-nowrap flex justify-center gap-1 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                            <button
+                              onClick={() => {
+                                setEditRowData(r);
+                                setEditRowModal({ year: 2025, row: r, index: originalIndex });
+                              }}
+                              className="p-1 bg-sky-50 text-amber-600 rounded border border-amber-200 hover:bg-amber-500 hover:text-white transition-colors"
+                              title="تعديل الصف"
+                            >
+                              <Edit className={ICON_MOBILE} />
+                            </button>
+                            <button
+                              onClick={() => printStatement(r, 2025)}
+                              className="p-1 bg-blue-50 text-blue-600 rounded border border-blue-200 hover:bg-blue-500 hover:text-white transition-colors"
+                              title="طباعة الكشف"
+                            >
+                              <Printer className={ICON_MOBILE} />
+                            </button>
+                                <button
+                                  onClick={() => handleExportPdf(r, 2025)}
+                                  className="p-1 bg-emerald-50 text-emerald-600 rounded border border-emerald-200 hover:bg-emerald-500 hover:text-white transition-colors"
+                                  title="تنزيل PDF (متوافق مع شاومي)"
+                                >
+                                  <FileText className={ICON_MOBILE} />
+                                </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    <tr className="border-t-2 border-sky-800 bg-sky-100/80 font-extrabold">
+                      <td className="text-center text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base" colSpan={4}>
+                        الإجماليات
+                      </td>
+                      <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                        {fmt(totals2025.fees)}
+                      </td>
+                      {MONTHS_2025.map((m) => (
+                        <td
+                          key={m}
+                          className="text-center numeric-cell font-mono text-black border-l border-slate-200 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
+                        >
+                          {totals2025.months[m] > 0 ? fmt(totals2025.months[m]) : "—"}
+                        </td>
+                      ))}
+                      <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                        {fmt(totals2025.paid)}
+                      </td>
+                      <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                        {fmt(totals2025.remaining)}
+                      </td>
+                      <td className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"></td>
+                    </tr>
+                  </>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+{/* ========== واجهة جدول 2026 ========== */}
+      <div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-lg border border-sky-100 rounded-2xl overflow-hidden">
+        <div className="bg-gradient-to-l from-sky-800 via-sky-600 to-sky-600 px-2 sm:px-6 py-2.5 sm:py-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2">
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-lg sm:text-xl font-extrabold text-white">
+              📊 سجل أقساط العام الحالي 2026
+            </h2>
+            <p className="text-xs sm:text-sm font-bold text-white">بيانات المسدد والرصيد المدور لعام 2026</p>
+          </div>
+          <div className="w-full grid grid-cols-2 sm:flex gap-1.5 sm:gap-2 items-center">
+            <button
+              onClick={() => setCondFormatModal(true)}
+              className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-extrabold shadow transition-colors flex items-center justify-center gap-1 ${
+                condFormatRules.length
+                  ? "bg-yellow-400 text-yellow-900 animate-pulse"
+                  : "bg-white/20 text-white hover:bg-white/30"
+              }`}
+              title="تلوين الصفوف حسب نص معين"
+            >
+              <Palette className={ICON_MOBILE} />
+              <span className="hidden sm:inline">{condFormatRules.length ? `تنسيق نشط (${condFormatRules.length})` : "تنسيق شرطي"}</span>
+            </button>
+
+            <div className="relative w-full sm:w-auto">
+              <Search className="w-4 h-4 absolute right-2.5 top-2.5 text-yellow-500" />
+              <input type="text"
+                placeholder="بحث (الاسم، الدفعة، المساق)..."
+                value={search2026}
+                onChange={(e) => setSearch2026(e.target.value)}
+                className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-yellow-600 shadow-sm"
+              />
+            </div>
+      
+            <button
+              onClick={() => setNewRowModal2026(true)}
+              className="apk-only-actions w-full px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-sm font-bold shadow hover:bg-blue-200 transition-colors flex items-center justify-center gap-1"
+            >
+              <Plus className={ICON_MOBILE} /> <span className="hidden sm:inline">طالب جديد</span>
+            </button>
+
+            <button
+              onClick={() => setNewColModal(true)}
+              className="apk-only-actions w-full px-2 py-1 bg-amber-100 text-amber-800 rounded-md text-sm font-bold shadow hover:bg-amber-200 transition-colors flex items-center justify-center gap-1"
+            >
+              <Plus className={ICON_MOBILE} /> <span className="hidden sm:inline">عمود جديد</span>
+            </button>
+
+            <button
+              onClick={() => setNewPaymentModal(true)}
+              className="apk-only-actions w-full px-2 py-1 bg-white/20 text-white rounded-md text-sm font-bold shadow hover:bg-white/30 transition-colors truncate"
+            >
+              <span>➕ إضافة قسط</span>
+            </button>
+    
+            <label className="apk-only-actions w-full px-2 py-1 bg-white text-sky-700 rounded-md text-sm font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors">
+              📥 استيراد{" "}
               <input
                 type="file"
-                accept=".xlsx, .xls"
-                className="hidden"
-                onChange={(e) => handleFileImport(e, 2025)}
+                accept=".xlsx,.xls"
+                onChange={(e) => importFile(e, 2026)}
+          className="absolute h-0 w-0 opacity-0 overflow-hidden"  
               />
             </label>
 
-            <button
-              type="button"
-              onClick={() => exportToExcel(2025)}
-className="flex item-center justify-center gap-2 px-2 py-2 bg-cyan text-white rounded-xl text-xs font-extrabold shadow-md hover:shadow-lg border-2 border-cyan-400 active:scale-95 transition-all"
-            >
-<FileSpreadsheet className="w-4 h-4" />
-              <span>تصدير Excel</span>
-            </button>
+            <div className="apk-only-actions col-span-2 flex gap-1 w-full sm:w-auto">
+              <button
+                onClick={() => exportToExcel(2026)}
+                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
+              >
+                <FileSpreadsheet className={ICON_MOBILE} /> <span className="hidden sm:inline">Excel</span>
+              </button>
+              <button
+                onClick={() => setPrintSettingsYear(2026)}
+                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white/95 text-sky-800 rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`}
+              >
+                <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة</span>
+              </button>
+            </div>
 
-            {/* الصف 2: طباعة تفصيلية + إجراءات التبويب */}
-            <button
-              type="button"
-              onClick={() => setPrintSettingsYear(2025)}
-className="flex item-center
-justify-center gap-2 px-2 py-2 bg-indigo-800 text -white rounded-xl text-xs font-extrabold shadow-md hover:shadow-lg border-2 border-indigo-400 active: scale-95 transition-all" >
-  <Printer className="w-4 h-4" /> <span > طباعة تفصيلية </span> </button>
-  
-  <div className = "flex items-center justify-center w-full [&_button]:w-full [&_button]:h-full [&_button]:min-h-[30px] [&_button]:rounded-xl [&_button]:font-extrabold [&_button]:border-2 [&_button]:border-black [&_button]:shadow-md" >
-  <TabActions
-                title="أقساط العام 2025"
-                fileName="أقساط_العام_2025"
-                rows={installments2025 || []}
+            <div className="col-span-2 w-full flex flex-wrap items-center gap-1 sm:gap-2">
+              <TabActions
+                title="أقساط العام 2026"
+                rows={(installments || []).map((r: any) => {
+                  const customValues: any = { ...r.customData };
+                  extraCols2026.forEach((col) => {
+                    if (col.type === "formula")
+                      customValues[col.name] = evaluateFormula(col.formula || "", r);
+                  });
+                  return { ...r, ...customValues };
+                })}
                 columns={[
                   { key: "name", label: "اسم المتدرب" },
                   { key: "batch", label: "الدفعة" },
                   { key: "specialty", label: "المساق" },
-                  { key: "phone", label: "رقم الهاتف" },
+                  { key: "prevDue", label: "المتبقي من 2025" },
                   { key: "fees", label: "الرسوم" },
-                  ...MONTHS_2025.map((m) => ({ key: m, label: m })),
-                  { key: "totalPaid", label: "المدفوع" },
+                  { key: "totalPaid", label: "المسدد" },
                   { key: "remaining", label: "المتبقي" },
+                  { key: "notes", label: "الملاحظات" },
+                  ...extraCols2026.map((c) => ({ key: c.name, label: c.name })),
                 ]}
-                numericKeys={["fees", "totalPaid", "remaining"]}
-                additionalWebActions={installments2025WebActions}
-      className="w-full justify-center"/> </div> 
-      </div> 
-      </div>
-{importError && (
-          <div className="m-3 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
-            <p className="text-sm text-red-700">{importError}</p>
-          </div>
-)};
-          <div className="p-1 sm:p-3">
-            <StatsGrid stats={stats2025} columns={3}/>
-            <div className="overflow-auto max-h-auto rounded-lg border border-slate-200 shadow-sm relative">
-              <table className="installments-table min-w-auto table-auto text-lg sm:text-base font-bold">
-                <thead className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900 [&>tr>th]:!text-white sticky top-0 z-20 shadow-md">
-                  <tr>
-                    <th className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25">
-                      م
-                    </th>
-                    <th
-                      className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
-                      onClick={() => handleSort2025("name")}
-                    >
-                      <div className="flex items-center justify-center gap-1">
-                        اسم المتدرب <SortIcon sortConfig={sortConfig2025} columnKey="name" />
-                      </div>
-                    </th>
-                    <th
-                      className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
-                      onClick={() => handleSort2025("batch")}
-                    >
-                      <div className="flex items-center justify-center gap-1">
-                        الدفعة <SortIcon sortConfig={sortConfig2025} columnKey="batch" />
-                      </div>
-                    </th>
-                    <th
-                      className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
-                      onClick={() => handleSort2025("specialty")}
-                    >
-                      <div className="flex items-center justify-center gap-1">
-                        المساق <SortIcon sortConfig={sortConfig2025} columnKey="specialty" />
-                      </div>
-                    </th>
-                    <th
-                      className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
-                      onClick={() => handleSort2025("fees")}
-                    >
-                      <div className="flex items-center justify-center gap-1">
-                        الرسوم <SortIcon sortConfig={sortConfig2025} columnKey="fees" />
-                      </div>
-                    </th>
-                    {MONTHS_2025.map((m) => (
-                      <th
-                        key={m}
-                        className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
-                      >
-                        {m}
-                      </th>
-                    ))}
-                    <th
-                      className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
-                      onClick={() => handleSort2025("totalPaid")}
-                    >
-                      <div className="flex items-center justify-center gap-1">
-                        المدفوع <SortIcon sortConfig={sortConfig2025} columnKey="totalPaid" />
-                      </div>
-                    </th>
-                    <th
-                      className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
-                      onClick={() => handleSort2025("remaining")}
-                    >
-                      <div className="flex items-center justify-center gap-1">
-                        المتبقي <SortIcon sortConfig={sortConfig2025} columnKey="remaining" />
-                      </div>
-                    </th>
-                    <th className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
-                      إجراءات
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredRows2025.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan={7 + MONTHS_2025.length}
-                        className="text-center w-auto text-slate-400 !px-3 !py-4 !text-lg whitespace-nowrap"
-                      >
-                        لا توجد بيانات (يرجى التأكد من استيراد الملف أو تعديل البحث)
-                      </td>
-                    </tr>
-                  ) : (
-                    <>
-                      {filteredRows2025.map((r: any, i: number) => {
-                        const originalIndex = (installments2025 || []).findIndex(
-                          (orig: any) => orig.name === r.name,
-                        );
-
-                        return (
-                          <tr key={i} className="border-t border-slate-200 hover:bg-sky-50/40 transition-colors">
-                            <td className="text-center w-auto text-black font-black whitespace-nowrap !px-2 !py-2 !text-sm border-l border-black">
-                              {i + 1}
-                            </td>
-                            <td className="text-center w-auto font-bold text-black whitespace-nowrap bg-fuchsia-50/70 !px-2 !py-2 !text-sm border-l border-slate-200">
-                              {r.name}
-                            </td>
-                            <td className="text-center w-auto text-black whitespace-nowrap bg-sky-50/70 !px-2 !py-2 !text-sm border-l border-slate-200">
-                              {r.batch || "—"}
-                            </td>
-                            <td className="text-center w-auto text-black whitespace-nowrap bg-sky-50/60 !px-2 !py-2 !text-sm border-l border-slate-200">
-                              {r.specialty || "—"}
-                            </td>
-                            <td className="text-center w-auto numeric-cell font-black text-black font-extrabold whitespace-nowrap bg-sky-50/50 !px-2 !py-2 !text-sm border-l border-slate-200">
-                              {fmt(cleanNumber(r.fees))}
-                            </td>
-                            {MONTHS_2025.map((m) => {
-                              const paid = Number(r.payments?.[m]) || 0;
-                              return (
-                                <td
-                                  key={m}
-                                  className="numeric-cell w-auto text-center relative bg-white/40 border-l border-slate-200 whitespace-nowrap !px-2 !py-2 !text-sm"
-                                >
-                                  {paid > 0 ? (
-                                    <span className="text-black font-bold numeric-cell font-mono">
-                                      {fmt(paid)}
-                                    </span>
-                                  ) : (
-                                    <span className="text-slate-300">—</span>
-                                  )}
-                                </td>
-                              );
-                            })}
-                            <td className="text-center numeric-cell font-mono text-black font-bold bg-emerald-50/30 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
-                              {fmt(cleanNumber(r.totalPaid))}
-                            </td>
-                            <td className="text-center numeric-cell font-mono text-black font-bold bg-rose-50/30 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
-                              {fmt(cleanNumber(r.remaining))}
-                            </td>
-                            <td className="text-center whitespace-nowrap flex justify-center gap-1 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
-                              <button
-                                onClick={() => {
-                                  setEditRowData(r);
-                                  setEditRowModal({ year: 2025, row: r, index: originalIndex });
-                                }}
-                                className="p-1 bg-sky-50 text-amber-600 rounded border border-amber-200 hover:bg-amber-500 hover:text-white transition-colors"
-                                title="تعديل الصف"
-                              >
-                                <Edit className={ICON_MOBILE} />
-                              </button>
-                              <button
-                                onClick={() => printStatement(r, 2025)}
-                                className="p-1 bg-blue-50 text-blue-600 rounded border border-blue-200 hover:bg-blue-500 hover:text-white transition-colors"
-                                title="طباعة الكشف"
-                              >
-                                <Printer className={ICON_MOBILE} />
-                              </button>
-                              <button
-                                onClick={() => handleExportPdf(r, 2025)}
-                                className="p-1 bg-emerald-50 text-emerald-600 rounded border border-emerald-200 hover:bg-emerald-500 hover:text-white transition-colors"
-                                title="تنزيل PDF (متوافق مع شاومي)"
-                              >
-                                <FileText className={ICON_MOBILE} />
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                      <tr className="border-t-2 border-sky-800 bg-sky-100/80 font-extrabold">
-                        <td
-                          className="text-center text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300"
-                          colSpan={4}
-                        >
-                          الإجماليات
-                        </td>
-                        <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-smsm:!text-base border-l border-sky-300">
-                          {fmt(totals2025.fees)}
-                        </td>
-                        {MONTHS_2025.map((m) => (
-                          <td
-                            key={m}
-                            className="text-center numeric-cell font-mono text-black border-l border-sky-300 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
-                          >
-                            {totals2025.months[m] > 0 ? fmt(totals2025.months[m]) : "—"}
-                          </td>
-                        ))}
-                        <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300">
-                          {fmt(totals2025.paid)}
-                        </td>
-                        <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300">
-                          {fmt(totals2025.remaining)}
-                        </td>
-                        <td className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"></td>
-                      </tr>
-                    </>
-                  )}
-                </tbody>
-              </table>
+                fileName="اقساط-2026"
+                numericKeys={["prevDue", "fees", "totalPaid", "remaining"]}
+                onClear={() => clearInstallments()}
+                printLabel="الأقساط/إجمالي"
+                additionalWebActions={installments2026WebActions}
+                className="!flex-1 min-w-0 !gap-1 sm:!gap-2 [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-2 [&>button]:py-1 [&>button]:text-sm"
+              />
+              <button
+                className="apk-only-actions flex items-center gap-1 px-3 py-1 bg-[#10528e] text-white rounded-md text-sm font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all"
+                type="button"
+                onClick={handleDetailedPdf2026}
+                disabled={detailedPdfBusy2026}
+                title="تنزيل تقرير الأقساط التفصيلي لعام 2026"
+              >
+                <Download className={`${ICON_MOBILE} ${detailedPdfBusy2026 ? "animate-pulse" : ""}`} />
+                <span className="hidden sm:inline">{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تنزيل PDF"}</span>
+              </button>
             </div>
           </div>
-    
-{/* واجهة جدول 2 */}
-<div className= "w-full bg-gradient-to-b from-sky-50/60 to-white shadow-xl border border-sky-100 rounded-2xl overflow-hidden">
-  {/* الهيدر الرئيسي */}
-  <div className="bg-gradient-to-l from-sky-800 via-sky-700 to-sky-600 px-3.5 sm:px-6 py-4 flex flex-col gap-3.5">
-    
-    {/* العنوان والوصف */}
-    <div className="min-w-0">
-      <h2 className="text-white font-extrabold text-base sm:text-lg tracking-wide">
-        📊 سجل أقساط العام الحالي 2026
-      </h2>
-      <p className="text-xs text-sky-100 font-bold opacity-90 mt-0.5">
-        بيانات المسدد والرصيد المدور لعام 2026
-      </p>
-    </div>
-
-    {/* حقل البحث */}
-    <div className="relative w-full">
-      <Search className="w-8 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-sky-500" />
-      <input
- type="text"
- placeholder="بحث (الاسم، الدفعة، المساق)..."
-        value={search2026}
-        onChange={(e) => setSearch2026(e.target.value)}
- className="w-full bg-white pl-3 pr-9 py-2.5 rounded-xl text-xs sm:text-sm border border-sky-200 outline-none focus:ring-2 focus:ring-sky-300 text-slate-800 font-semibold shadow-sm placeholder:text-gray-400 placeholder:font-normal"
-      />
-    </div>
-
-    {/* شبكة الأزرار: كل 2 أزرار في صف واحد */}
-  <div className="grid grid-cols-2 gap-2 w-full">
-      
-      {/* 1. زر طالب جديد (أخضر زمردي) */}
-      <button
-        onClick={() => setNewRowModal2026(true)}
- className={`apk-only-actions ${BTN_COMPACT} bg-emerald hover:bg-emerald-700 active: text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-black `}
-      >
-  <Plus className={ICON_MOBILE} />
- <span className="truncate">طالب جديد</span>
-      </button>
-
-      {/* 2. زر إضافة قسط (برتقالي دافئ) */}
-<button
- onClick={() => setNewPaymentModal(true)}
-className={`apk-only-actions ${BTN_COMPACT} bg-amber-600 hover:bg-amber-700 active:bg-gold text-black rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-black`}
-      >
-    <span className="truncate">➕ إضافة قسط</span>
-      </button>
-
-      {/* 3. زر عمود جديد (تركواز/تيل) */}
-      <button
-        onClick={() => setNewColModal(true)}
-        className={`apk-only-actions ${BTN_COMPACT} bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-teal-500/30`}
-      >
-        <Plus className={ICON_MOBILE} />
-        <span className="truncate">عمود جديد</span>
-      </button>
-
-      {/* 4. زر تنسيق شرطي (أصفر نابض عند التفعيل / بنفسجي عادي) */}
-      <button
-        onClick={() => setCondFormatModal(true)}
-        className={`apk-only-actions ${BTN_COMPACT} rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border ${
-          condFormatRules.length
-            ? "bg-yellow-400 text-black border-yellow-500 animate-pulse"
-            : "bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white border-purple-500/30"
-        }`}
-        title="تلوين الصفوف حسب نص معين"
-      >
-        <Palette className={ICON_MOBILE} />
-        <span className="truncate">
-          {condFormatRules.length ? `تنسيق نشط (${condFormatRules.length})` : "تنسيق شرطي"}
-        </span>
-      </button>
-
-      {/* 5. زر استيراد (نيلي) */}
-      <label className="apk-only-actions relative flex items-center justify-center gap-1.5 px-2 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md cursor-pointer transition-all active:scale-95 border border-indigo-500/30">
-        <span className="truncate">📥 استيراد</span>
-        <input
-          type="file"
-          accept=".xlsx,.xls"
-          onChange={(e) => importFile(e, 2026)}
-          className="absolute h-0 w-0 opacity-0 overflow-hidden"
-        />
-      </label>
-
-      {/* 6. زر تصدير Excel (أزرق ملكي) */}
-      <button
-        onClick={() => exportToExcel(2026)}
-        className={`apk-only-actions ${BTN_COMPACT} bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-blue-500/30`}
-      >
-        <FileSpreadsheet className={ICON_MOBILE} />
-        <span className="truncate">تصدير Excel</span>
-      </button>
-
-      {/* 7. زر طباعة تفصيلي (وردي/روز) */}
-      <button
-        onClick={() => setPrintSettingsYear(2026)}
-        className={`apk-only-actions ${BTN_COMPACT} bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-rose-500/30`}
-      >
-        <Printer className={ICON_MOBILE} />
-        <span className="truncate">طباعة تفصيلي</span>
-      </button>
-
-      {/* 8. زر تنزيل PDF (أحمر) */}
-      <button
-        type="button"
-        onClick={handleDetailedPdf2026}
-        disabled={detailedPdfBusy2026}
-        title="تنزيل تقرير الأقساط التفصيلي لعام 2026"
-        className={`apk-only-actions ${BTN_COMPACT} bg-red-600 hover:bg-red-700 active:bg-red-800 text-white rounded-xl py-2.5 px-2 font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-red-500/30 disabled:opacity-60`}
-      >
-        <Download className={`${ICON_MOBILE} ${detailedPdfBusy2026 ? "animate-pulse" : ""}`} />
-        <span className="truncate">{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تنزيل PDF"}</span>
-      </button>
-      </div>
-  
-
-
-      {/* 9. إجراءات التبويب TabActions (ممتدة على العمودين) */}
-      <TabActions
-        title="أقساط العام 2026"
-        rows={(installments || []).map((r: any) => {
-          const customValues: any = { ...r.customData };
-          extraCols2026.forEach((col) => {
-            if (col.type === "formula")
-              customValues[col.name] = evaluateFormula(col.formula || "", r);
-          });
-          return { ...r, ...customValues };
-        })}
-        columns={[
-          { key: "name", label: "اسم المتدرب" },
-          { key: "batch", label: "الدفعة" },
-          { key: "specialty", label: "المساق" },
-          { key: "prevDue", label: "المتبقي من 2025" },
-          { key: "fees", label: "الرسوم" },
-          { key: "totalPaid", label: "المسدد" },
-          { key: "remaining", label: "المتبقي" },
-          { key: "notes", label: "الملاحظات" },
-          ...extraCols2026.map((c) => ({ key: c.name, label: c.name })),
-        ]}
-        fileName="اقساط-2026"
-        numericKeys={["prevDue", "fees", "totalPaid", "remaining"]}
-        onClear={() => clearInstallments()}
-        printLabel="الأقساط/إجمالي"
-        additionalWebActions={installments2026WebActions}
-        className="col-span-2 w-full grid grid-cols-2 gap-2.5 [&>button]:w-full [&>button]:py-2.5 [&>button]:px-2 [&>button]:rounded-xl [&>button]:font-bold [&>button]:text-xs sm:[&>button]:text-sm [&>button]:shadow-md [&>button]:transition-all active:[&>button]:scale-95 [&>button]:flex [&>button]:items-center [&>button]:justify-center [&>button:nth-child(1)]:bg-cyan-600 hover:[&>button:nth-child(1)]:bg-cyan-700 [&>button:nth-child(1)]:text-white [&>button:nth-child(2)]:bg-fuchsia-600 hover:[&>button:nth-child(2)]:bg-fuchsia-700 [&>button:nth-child(2)]:text-white"
-      />
-
-    </div>
-  </div>
-
-
-
-
-  <div className="p-1 sm:p-3">
+        </div>
+        <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2026} columns={3} />
- <div className="overflow-auto max-h-auto rounded-lg border border-slate-200 shadow-sm relative">
- <table className="installments-table w-full table-auto text-sm sm:text-base font-bold text-black">
-{/* ترويسة الجدول: لون ذهبي لامع مع خط أسود غامق */}
-<thead className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900 [&>tr>th]:!text-white sticky top-0 z-20 shadow-md">
- <tr>
- <th className="text-center w-full whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25">م</th>
-<th
-className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+          <div className="overflow-auto max-h-auto rounded-lg border border-slate-200 shadow-sm relative">
+            <table className="installments-table min-w-auto w-auto table-auto text-lg font-extrabold text-black">
+              {/* ترويسة الجدول: لون ذهبي لامع مع خط أسود غامق */}
+              <thead className="bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500 font-extrabold border-b-2 border-sky-700 text-black sticky top-0 z-20 shadow-md">
+                <tr>
+                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30">#</th>
+                  <th
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("name")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2472,7 +2423,7 @@ className="text-center w-full whitespace-nowrap cursor-pointer hover:bg-white/10
                     </div>
                   </th>
                   <th
-className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-2 !py-2 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("batch")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2480,7 +2431,7 @@ className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("specialty")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2488,7 +2439,7 @@ className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("prevDue")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2496,7 +2447,7 @@ className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("fees")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2506,7 +2457,7 @@ className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10
                   {MONTHS_2026.map((m) => (
                     <th
                       key={m}
-                      className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+                      className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
                     >
                       {m.trim()}
                     </th>
@@ -2514,7 +2465,7 @@ className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10
                   {extraCols2026.map((col) => (
                     <th
                       key={col.name}
-                      className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+                      className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
                     >
                       <div className="flex items-center justify-center gap-1">
                         {col.name}
@@ -2528,7 +2479,7 @@ className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10
                               formula: col.formula || "",
                             })
                           }
-                          className="p-0.5 bg-white/10 hover:bg-white/20 rounded transition-all"
+                          className="p-0.5 bg-black/10 hover:bg-black/20 rounded transition-all"
                           title="تعديل أو حذف العمود"
                         >
                           <Settings className={ICON_MOBILE} />
@@ -2537,7 +2488,7 @@ className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10
                     </th>
                   ))}
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("totalPaid")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2545,16 +2496,16 @@ className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10
                     </div>
                   </th>
                   <th
-className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25"
+                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("remaining")}
                   >
                     <div className="flex items-center justify-center gap-1">
                       الرصيد المتبقي <SortIcon sortConfig={sortConfig2026} columnKey="remaining" />
                     </div>
                   </th>
-                  <th className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25">الملاحظات</th>
-                  <th className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-white/25">حالة</th>
-                  <th className="text-center w-auto whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">إجراءات</th>
+                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30">الملاحظات</th>
+                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30">حالة</th>
+                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black">إجراءات</th>
                 </tr>
               </thead>
               <tbody>
@@ -2580,27 +2531,27 @@ className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-white/10
                       return (
                         <tr
                           key={i}
-className={`border-t border-slate-200 transition-colors ${rowBgClass}`}
+                          className={`border-t border-slate-200 transition-colors ${rowBgClass}`}
                         >
-  <td className="text-center w-auto text-black font-black whitespace-nowrap !px-2 !py-2 !text-sm border-l border-black ">
+                          <td className="text-center w-auto text-black font-mono whitespace-nowrap !px-2 !py-2 !text-lg border-l border-slate-200">
                             {i + 1}
                           </td>
-<td className="text-center w-auto font-bold text-black whitespace-nowrap bg-fuchsia-50/70 !px-2 !py-2 !text-sm border-l border-slate-200">
+                          <td className="text-center w-auto font-bold text-black whitespace-nowrap bg-fuchsia-50/70 !px-2 !py-2 !text-lg border-l border-slate-200">
                             <input
                               value={r.name || ""}
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "name", e.target.value)
                               }
-className="w-full min-w-auto bg-transparent text-center text-black font-extrabold text-lg sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-full min-w-[140px] bg-transparent text-center text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
                             />
                           </td>
-  <td className="text-center w-auto text-black whitespace-nowrap bg-sky-50/70 !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center w-auto text-black whitespace-nowrap bg-sky-50/70 !px-2 !py-2 !text-lg border-l border-slate-200">
                             <input
                               value={r.batch || ""}
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "batch", e.target.value)
                               }
-className="w-auto bg-transparent text-center text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-full min-w-[90px] bg-transparent text-center text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
                               placeholder="—"
                             />
                           </td>
@@ -2610,7 +2561,7 @@ className="w-auto bg-transparent text-center text-black font-extrabold text-sm s
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "specialty", e.target.value)
                               }
-  className="w-auto bg-transparent text-center text-black font-extrabold text-lg sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-full min-w-[110px] bg-transparent text-center text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
                               placeholder="—"
                             />
                           </td>
@@ -2622,10 +2573,10 @@ className="w-auto bg-transparent text-center text-black font-extrabold text-sm s
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "prevDue", e.target.value)
                               }
-                              className="w-auto bg-transparent text-center font-black text-black font-extrabold text-lg sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-full min-w-[100px] bg-transparent text-center font-mono text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
                             />
                           </td>
-                          <td className="text-center w-auto numeric-cell font-black text-black font-extrabold whitespace-nowrap bg-sky-50/50 !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center w-auto numeric-cell font-mono text-black font-extrabold whitespace-nowrap bg-sky-50/50 !px-2 !py-2 !text-lg border-l border-slate-200">
                             <input
                               type="text"
                               inputMode="decimal"
@@ -2633,7 +2584,7 @@ className="w-auto bg-transparent text-center text-black font-extrabold text-sm s
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "fees", e.target.value)
                               }
-                              className="w-auto bg-transparent text-center font-black text-black font-extrabold text-lg sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-full min-w-[90px] bg-transparent text-center font-mono text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
                             />
                           </td>
                           {MONTHS_2026.map((m) => {
@@ -2653,7 +2604,7 @@ className="w-auto bg-transparent text-center text-black font-extrabold text-sm s
                                   onChange={(e) =>
                                     update2026PaymentValue(originalIndex, m, e.target.value)
                                   }
-                                  className="w-auto bg-transparent text-center numeric-cell font-black text-black font-extrabold text-lg sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                                  className="w-full min-w-[70px] bg-transparent text-center numeric-cell font-mono text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
                                   placeholder="—"
                                 />
                               </td>
@@ -2678,7 +2629,7 @@ className="w-auto bg-transparent text-center text-black font-extrabold text-sm s
                                   ))}
                                 </select>
                               ) : col.type === "formula" ? (
-                                <div className="text-center w-auto numeric-cell font-mono text-sm font-extrabold text-yellow-700 bg-white/50 py-1 rounded">
+                                <div className="text-center min-w-[70px] numeric-cell font-mono text-sm font-extrabold text-yellow-700 bg-white/50 py-1 rounded">
                                   {fmt(Number(evaluateFormula(col.formula || "", r) || 0))}
                                 </div>
                               ) : (
@@ -2695,13 +2646,13 @@ className="w-auto bg-transparent text-center text-black font-extrabold text-sm s
                             </td>
                           ))}
 
-                          <td className="text-center w-auto min-w-[90px] numeric-cell font-mono text-black font-extrabold bg-emerald-50/50 whitespace-nowrap !px-2 !py-2 !text-sm border-l border-slate-200">
+                          <td className="text-center w-auto min-w-[90px] numeric-cell font-mono text-black font-extrabold bg-emerald-50/50 whitespace-nowrap !px-2 !py-2 !text-lg border-l border-slate-200">
                             {fmt(Number(r.totalPaid || 0))}
                           </td>
-                          <td className="text-center w-auto min-w-[90px] numeric-cell font-mono text-black font-extrabold bg-rose-50/40 whitespace-nowrap !px-2 !py-2 !text-sm border-l border-slate-200">
+                          <td className="text-center w-auto min-w-[90px] numeric-cell font-mono text-black font-extrabold bg-rose-50/40 whitespace-nowrap !px-2 !py-2 !text-lg border-l border-slate-200">
                             {fmt(Number(r.remaining || 0))}
                           </td>
-                          <td className="text-center w-auto bg-amber-50/40 !px-2 !py-2 !text-sm border-l border-slate-200">
+                          <td className="text-center w-auto bg-amber-50/40 !px-2 !py-2 !text-lg border-l border-slate-200">
                             <input
                               type="text"
                               value={r.notes || ""}
@@ -2760,17 +2711,17 @@ className="w-auto bg-transparent text-center text-black font-extrabold text-sm s
                       <td className="text-center w-auto text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300" colSpan={4}>
                         الإجماليات
                       </td>
-                      <td className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-sm border-l border-sky-300">
+                      <td className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300">
                         {fmt(Number(totals2026.prevDue || 0))}
                       </td>
-                      <td className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-sm border-l border-sky-300">
+                      <td className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300">
                         {fmt(Number(totals2026.fees || 0))}
                       </td>
 
                       {MONTHS_2026.map((m) => (
                         <td
                           key={m}
-                          className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-sm border-l border-sky-300"
+                          className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300"
                         >
                           {totals2026.months[m] > 0 ? fmt(Number(totals2026.months[m])) : "—"}
                         </td>
@@ -2800,6 +2751,7 @@ className="w-auto bg-transparent text-center text-black font-extrabold text-sm s
             </table>
           </div>
         </div>
+      </div>
 
 
       {/* ========== النوافذ المنبثقة ========== */}
@@ -3430,5 +3382,5 @@ className="w-auto bg-transparent text-center text-black font-extrabold text-sm s
         onPrint={(s) => exportToPDF(printSettingsYear ?? 2026, s)}
       />
     </div>
- );
+  );
 }
