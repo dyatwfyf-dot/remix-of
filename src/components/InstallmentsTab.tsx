@@ -149,7 +149,7 @@ const downloadDetailedHtmlPdf = async ({
         font-family: "Mohammad Bold Art";
         src: url("${window.location.origin}/MohammadBoldArt-Regular.ttf") format("truetype");
         font-style: normal;
-        font-weight:1000;
+        font-weight: 400 1000;
         font-display: block;
       }
       @font-face {
@@ -1703,7 +1703,7 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
       body {
         font-family: "Times New Roman", "Noto Naskh Arabic", "Cairo", Tahoma, sans-serif;
         color: #111827;
-        font-size: 14.5px;
+        font-size: 12.5px;
         line-height: 1.35;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
@@ -1735,8 +1735,8 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
         color: #fff;
         cursor: pointer;
         font-family: Cairo, Arial, sans-serif;
-        font-size: 14px;
-        font-weight:bold;
+        font-size: 12pt;
+        font-weight: 800;
         padding: 2mm 4mm;
       }
       .print-toolbar button:hover { background: #115e59; }
@@ -1778,8 +1778,8 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
       text-align: center;
       box-sizing: border-box;
     }
-    .info-lbl { font-size: 13px; line-height: 1.15; font-weight: bolder; color:black; text-align: center; }
-    .info-val { font-size: 13px; line-height: 1.15; font-weight: bolder; margin-top: 1mm; overflow-wrap: anywhere; }
+    .info-lbl { font-size: 11pt; line-height: 1.15; font-weight: 800; color:black; text-align: center; }
+    .info-val { font-size: 10.5pt; line-height: 1.15; font-weight: 800; margin-top: 1mm; overflow-wrap: anywhere; }
 
     table {
       table-layout: auto;
@@ -1791,11 +1791,11 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
       break-inside: avoid;
     }
     th, td {
-      border: 1px solid #000;
+      border: 0.75pt solid #000;
       text-align: center;
       vertical-align: middle;
       padding: 2.2mm 2mm;
-      font-size: 13px;
+      font-size: 10.5pt;
       line-height: 1.25;
       white-space: normal;
       overflow: hidden;
@@ -1805,23 +1805,23 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
       hyphens: auto;
     }
     th { background: #0f766e; color:white!important; font-weight: 900; }
-    td { color: #000 !important; font-weight: bolder; }
-    .lbl { text-align: center; font-weight: bold; }
-    .num { font-family: "Times New Roman", Times, serif; font-weight:bold; font-size: 13pt; font-variant-numeric: tabular-nums; direction: ltr; }
+    td { color: #000 !important; font-weight: 700; }
+    .lbl { text-align: center; font-weight: 800; }
+    .num { font-family: "Times New Roman", Times, serif; font-weight: 800; font-size: 10.5pt; font-variant-numeric: tabular-nums; direction: ltr; }
     .row-fees td { background: #eff6ff; }
     .row-due-old td { background: #fef3c7; color: #000 !important; }
-    .row-total-due td { background: #fee2e2; color: #000 !important; font-weight: bold; }
+    .row-total-due td { background: #fee2e2; color: #000 !important; font-weight: 800; }
     .row-paid td { color: #000 !important; }
-    .row-total-paid td { background: #d1fae5; color: #000 !important; font-weight:bold; }
-    .row-final td { background: #fee2e2; font-size: 13px; font-weight: bold; color: #000 !important; border-top: 1pt solid #000; }
+    .row-total-paid td { background: #d1fae5; color: #000 !important; font-weight: 800; }
+    .row-final td { background: #fee2e2; font-size: 11pt; font-weight: 800; color: #000 !important; border-top: 1pt solid #000; }
     .foot {
       margin-top: 6mm;
       display: flex;
       justify-content: space-between;
       gap: 8mm;
-      font-size: 12px;
+      font-size: 9pt;
       line-height: 1.3;
-      font-weight:bold;
+      font-weight: 700;
       page-break-inside: avoid;
       break-inside: avoid;
     }
@@ -2107,7 +2107,7 @@ const installments2026WebActions: WebActionItem[] = [
         <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2025} columns={3} />
           <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
-            <table className="installments-table min-w-auto table-auto text-lg sm:text-base font-bold">
+            <table className="installments-table min-w-max table-auto text-sm sm:text-base font-semibold">
               <thead className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900  [&>tr>th]:!text-white sticky top-0 z-20 shadow-md">
                 <tr>
                   <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">#</th>
@@ -2409,7 +2409,7 @@ const installments2026WebActions: WebActionItem[] = [
         <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2026} columns={3} />
           <div className="overflow-auto max-h-auto rounded-lg border border-slate-200 shadow-sm relative">
-            <table className="installments-table min-w-auto w-auto table-auto text-lg font-extrabold text-black">
+            <table className="installments-table min-w-full w-max table-auto text-sm font-extrabold text-black">
               {/* ترويسة الجدول: لون ذهبي لامع مع خط أسود غامق */}
               <thead className="bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500 font-extrabold border-b-2 border-sky-700 text-black sticky top-0 z-20 shadow-md">
                 <tr>

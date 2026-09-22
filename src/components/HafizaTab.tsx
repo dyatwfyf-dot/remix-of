@@ -7,12 +7,25 @@ import ImportButton from "./ImportButton";
 import { useTableControls, sortIndicator } from "@/hooks/useTableControls";
 import {
   X,
+  Plus,
   Trash2,
+  Search,
   Save,
   Eraser,
+  CheckSquare,
+  Calendar,
+  Hash,
+  FileText,
+  User,
+  Sparkles,
   Wallet,
+  Filter,
+  CreditCard,
+  ScrollText,
 } from "lucide-react";
 import TabActions from "./TabActions";
+import WebActionMenu, { type WebActionItem } from "./WebActionMenu";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -26,6 +39,10 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
+// palette inspired by the provided image (top -> bottom)
+const PALETTE = ["#6A4C93", "#1982C4", "#8AC926", "#FFCA3A", "#FF595E"];
+
+// table columns
 const COLS = [
   { key: "name", label: "الاسم" },
   { key: "batch", label: "الدفعة" },
@@ -64,10 +81,6 @@ const empty: Form = {
   notifyNo: "",
   notifyAmount: "",
 };
-
-const INPUT_CLS =
-  "w-full border-2 border-black rounded-lg px-3 py-2 text-sm bg-white text-black font-bold focus:ring-2 focus:ring-sky-300 focus:border-sky-500 outline-none";
-const LABEL_CLS = "block text-sm font-black text-black mb-1";
 
 export default function HafizaTab() {
   const { trainees, hafiza, addHafiza, deleteHafiza, clearHafiza, addTrainee, updateHafiza } =
@@ -149,6 +162,17 @@ export default function HafizaTab() {
     toast.success("تم مسح جميع سجلات الحوافظ بنجاح");
   };
 
+  const handleCopyAmountsToNotify = () => {
+    if (filtered.length === 0) {
+      toast.error("لا توجد سجلات حالية لنقل مبالغها");
+      return;
+    }
+    filtered.forEach((row) => {
+      updateHafiza(row.id, { ...row, notifyAmount: Number(row.hafizaAmount) || 0 });
+    });
+    toast.success(`تمت تسوية ونسخ المبالغ لـ (${filtered.length}) سجل بنجاح!`);
+  };
+
   const handleCellClick = (rowId: string, colKey: string, currentVal: unknown) => {
     setActiveCell({ rowId, colKey });
     setCellValue(String(currentVal ?? ""));
@@ -169,279 +193,310 @@ export default function HafizaTab() {
     toast.success("تم تحديث الخلية تلقائياً");
   };
 
-  return (
-    <div className="w-full min-h-screen p-2 sm:p-4 bg-gradient-to-b from-sky-50 to-white text-black font-sans" dir="rtl">
-      <div className="w-full space-y-4">
+  const hafizaWebActions: WebActionItem[] = [
+    {
+      label: "إضافة حافظة",
+      icon: Plus,
+      onSelect: () => setShowForm(true),
+      disabled: showForm,
+    },
+    {
+      label: "استيراد Excel",
+      onSelect: () => undefined,
+      content: (
+        <div className="flex w-full items-center rounded-lg hover:brightness-95" style={{ border: "1px solid #000" }}>
+          <ImportButton kind="hafiza" />
+        </div>
+      ),
+    },
+    {
+      label: "مسح البيانات",
+      icon: Trash2,
+      onSelect: handleClearHafiza,
+      disabled: hafiza.length === 0,
+      destructive: true,
+    },
+  ];
 
-        {/* HEADER CARD */}
-        <div className="p-4 sm:p-6 rounded-2xl shadow-lg border-2 border-black bg-gradient-to-l from-sky-700 via-sky-600 to-sky-500">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+  return (
+    <div
+      className="w-full min-h-screen p-2 sm:p-3"
+      dir="rtl"
+      style={{
+        background: `linear-gradient(180deg, ${PALETTE[0]} 0%, ${PALETTE[1]} 22%, ${PALETTE[2]} 44%, ${PALETTE[3]} 66%, ${PALETTE[4]} 100%)`,
+        WebkitFontSmoothing: "antialiased",
+      }}
+    >
+      <div className="mb-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-3" />
+
+      {/* الهيدر الرئيسي */}
+      <div
+        className="rounded-xl p-3 mb-3"
+        style={{
+          background: "rgba(255,255,255,0.92)",
+          border: "1px solid #000",
+          boxShadow: "0 6px 18px rgba(0,0,0,0.12)",
+        }}
+      >
+        <div className="flex items-center gap-3">
+          <span
+            className="p-2 rounded-lg flex items-center justify-center"
+            style={{ background: "#fff", border: "1px solid #000" }}
+          >
+            <Wallet className="w-5 h-5 text-black" />
+          </span>
+          <div>
+            <h1 className="text-lg font-bold text-black">لوحة الحوافظ التوريد</h1>
+            <p className="text-xs text-slate-700 mt-1">عرض سريع متوافق مع شاشات الهواتف</p>
+          </div>
+        </div>
+      </div>
+
+      {/* شريط الإجراءات والأزرار المفككة */}
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2.5 bg-white/90 p-2.5 rounded-xl border border-black shadow-sm">
+        
+        {/* القائمة المنسدلة والاستيراد */}
+        <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+          <WebActionMenu label="إجراءات الحوافظ" actions={hafizaWebActions} />
+          
+          <div className="flex items-center rounded-lg overflow-hidden border border-black bg-white hover:bg-slate-50 transition-colors">
+            <ImportButton kind="hafiza" />
+          </div>
+        </div>
+
+        {/* الأزرار المباشرة السريعة */}
+        <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+          <Button
+            onClick={handleCopyAmountsToNotify}
+            className="flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg font-bold text-black border border-black shadow-sm hover:brightness-95 transition-all"
+            style={{ background: PALETTE[3] }}
+          >
+            <CheckSquare className="w-4 h-4 ml-1.5 inline-block" />
+            نسخ مبالغ للحوالة
+          </Button>
+
+          <Button
+            onClick={() => setShowForm((s) => !s)}
+            className="flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg font-bold text-white border border-black shadow-sm hover:brightness-95 transition-all"
+            style={{ background: PALETTE[2] }}
+          >
+            <Plus className="w-4 h-4 ml-1.5 inline-block" />
+            {showForm ? "إخفاء النموذج" : "إضافة / إظهار النموذج"}
+          </Button>
+
+          <Button
+            variant="destructive"
+            onClick={handleClearHafiza}
+            disabled={hafiza.length === 0}
+            className="flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg font-bold border border-black shadow-sm disabled:opacity-50"
+            style={{ background: PALETTE[4] }}
+          >
+            <Trash2 className="w-4 h-4 ml-1.5 inline-block" />
+            مسح الكل
+          </Button>
+        </div>
+
+      </div>
+
+      {/* نموذج إضافة حافظة */}
+      <div className={`transition-all duration-300 ${showForm ? "max-h-[1400px]" : "max-h-0 overflow-hidden"}`}>
+        <Card
+          className="mb-3"
+          style={{
+            background: "rgba(255,255,255,0.96)",
+            border: "1px solid #000",
+            borderRadius: 14,
+            boxShadow: "0 8px 24px rgba(0,0,0,0.14)",
+            padding: 12,
+          }}
+        >
+          <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
-              <span className="p-2.5 rounded-xl bg-white/20 border-2 border-black flex items-center justify-center">
-                <Wallet className="w-6 h-6 text-white" />
-              </span>
+              <div
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 12,
+                  background: PALETTE[1],
+                  display: "grid",
+                  placeItems: "center",
+                }}
+              >
+                <Plus className="w-5 h-5 text-white" />
+              </div>
               <div>
-                <h1 className="text-lg font-black text-white">إدارة الحوافظ والتوريد</h1>
-                <p className="text-xs font-bold text-sky-100 mt-0.5">تسجيل ومتابعة الحوافظ المالية والإشعارات</p>
+                <h3 className="text-lg font-bold text-black">إضافة حافظة</h3>
+                <p className="text-xs text-slate-700 mt-1">صفين من الحقول — مناسب للشاشات الصغيرة</p>
               </div>
             </div>
+          </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <div className="flex items-center justify-center h-9 px-3 rounded-lg bg-white border-2 border-black hover:bg-sky-50 transition-colors">
-                <ImportButton kind="hafiza" />
+          <CardContent>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-sm font-semibold text-black block mb-1">الاسم الكامل *</label>
+                <div className="relative">
+                  <div style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "#fff", padding: 6, borderRadius: 8, border: "1px solid #000" }}>
+                    <User className="w-4 h-4 text-black" />
+                  </div>
+                  <Input
+                    value={nameQuery}
+                    onChange={(e) => {
+                      setNameQuery(e.target.value);
+                      setForm({ ...form, name: e.target.value });
+                      setShowSugg(true);
+                    }}
+                    onFocus={() => setShowSugg(true)}
+                    onBlur={() => setTimeout(() => setShowSugg(false), 200)}
+                    placeholder="ابحث أو اكتب..."
+                    className="pr-10 bg-white text-black border border-black rounded-md h-9 text-sm"
+                  />
+                </div>
+
+                {showSugg && nameSuggestions.length > 0 && (
+                  <ul style={{ position: "absolute", zIndex: 60, left: 0, right: 0, marginTop: 6, background: "#fff", border: "1px solid #000", borderRadius: 10, maxHeight: 200, overflow: "auto" }}>
+                    {nameSuggestions.map((t) => (
+                      <li key={t.name + t.batch}>
+                        <button type="button" onMouseDown={() => pickName(t)} className="w-full text-right px-3 py-2 hover:bg-slate-50 flex flex-col">
+                          <span className="font-bold text-sm text-black">{t.name}</span>
+                          <span className="text-xs text-slate-600">{t.specialty} — {t.batch}</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
+
+              <FieldDark label="الدفعة" icon={<Sparkles className="w-4 h-4 text-black" />} v={form.batch} on={(v) => setForm({ ...form, batch: v })} />
+              <FieldDark label="التخصص" icon={<FileText className="w-4 h-4 text-black" />} v={form.specialty} on={(v) => setForm({ ...form, specialty: v })} />
+              <FieldDark label="التاريخ" type="date" icon={<Calendar className="w-4 h-4 text-black" />} v={form.date} on={(v) => setForm({ ...form, date: v })} />
+              <FieldDark label="رقم الحافظة" icon={<Hash className="w-4 h-4 text-black" />} v={form.hafizaNo} on={(v) => setForm({ ...form, hafizaNo: v })} />
+              <FieldDark label="مبلغ الحافظة" type="number" icon={<CreditCard className="w-4 h-4 text-black" />} v={form.hafizaAmount} on={(v) => setForm({ ...form, hafizaAmount: v })} />
+
+              <div>
+                <label className="text-xs font-semibold text-black mb-1 block">البيان</label>
+                <div className="relative">
+                  <div style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "#fff", padding: 6, borderRadius: 8, border: "1px solid rgba(0,0,0,0.15)" }}>
+                    <ScrollText className="w-4 h-4 text-black" />
+                  </div>
+                  <Input
+                    list="hafiza-descriptions"
+                    value={form.description}
+                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    placeholder="اكتب أو اختر..."
+                    className="bg-white text-black border border-black rounded-md h-9 text-sm px-2"
+                  />
+                </div>
+                <datalist id="hafiza-descriptions">
+                  {Array.from(new Set([...DESCRIPTIONS, ...hafiza.map((h) => h.description).filter(Boolean)])).map((d) => (
+                    <option key={d} value={d} />
+                  ))}
+                </datalist>
+              </div>
+
+              <FieldDark label="تاريخ التوريد" type="date" icon={<Calendar className="w-4 h-4 text-black" />} v={form.notifyDate} on={(v) => setForm({ ...form, notifyDate: v })} />
+              <FieldDark label="رقم الاشعار" icon={<Hash className="w-4 h-4 text-black" />} v={form.notifyNo} on={(v) => setForm({ ...form, notifyNo: v })} />
+              <FieldDark label="مبلغ التوريد" type="number" icon={<CreditCard className="w-4 h-4 text-black" />} v={form.notifyAmount} on={(v) => setForm({ ...form, notifyAmount: v })} />
+            </div>
+
+            <div className="mt-4 flex items-center gap-3 justify-end pt-2" style={{ borderTop: "1px solid rgba(0,0,0,0.12)" }}>
+              <Button onClick={submit} className="px-4 py-2 rounded-full font-bold" style={{ background: PALETTE[2], color: "#fff", border: "1px solid #000" }}>
+                <Save className="w-4 h-4 ml-1" /> حفظ
+              </Button>
               <Button
-                size="sm"
-                variant="destructive"
-                onClick={handleClearHafiza}
-                disabled={hafiza.length === 0}
-                className="h-9 font-black text-xs rounded-lg bg-red-600 text-white border-2 border-black hover:bg-red-700"
+                variant="outline"
+                onClick={() => {
+                  setForm(empty);
+                  setNameQuery("");
+                }}
+                className="px-4 py-2 rounded-full font-bold"
+                style={{ background: PALETTE[4], color: "#fff", border: "1px solid #000" }}
               >
-                <Trash2 className="w-4 h-4 ml-1 inline-block" />
-                مسح الكل
+                <Eraser className="w-4 h-4" /> مسح
               </Button>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
+      </div>
 
-        {/* FORM CARD */}
-        <div className="p-4 sm:p-6 rounded-2xl shadow-sm border-2 border-black bg-white">
-          <h3 className="text-sm font-black text-black mb-4 pb-2 border-b-2 border-black">إضافة حافظة جديدة</h3>
-
-          <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
-
-            {/* NAME */}
-            <div className="relative">
-              <label className={LABEL_CLS}>الاسم الكامل *</label>
-              <Input
-                value={nameQuery}
-                onChange={(e) => {
-                  setNameQuery(e.target.value);
-                  setForm({ ...form, name: e.target.value });
-                  setShowSugg(true);
-                }}
-                onFocus={() => setShowSugg(true)}
-                onBlur={() => setTimeout(() => setShowSugg(false), 200)}
-                placeholder="ابحث أو اكتب الاسم..."
-                className={INPUT_CLS}
-              />
-              {showSugg && nameSuggestions.length > 0 && (
-                <ul className="absolute z-50 left-0 right-0 mt-1 bg-white border-2 border-black rounded-lg shadow-lg max-h-48 overflow-auto">
-                  {nameSuggestions.map((t) => (
-                    <li key={t.name + t.batch}>
-                      <button
-                        type="button"
-                        onMouseDown={() => pickName(t)}
-                        className="w-full text-right px-3 py-2 hover:bg-sky-50 flex flex-col border-b border-slate-200 last:border-0"
-                      >
-                        <span className="font-black text-sm text-black">{t.name}</span>
-                        <span className="text-xs font-bold text-slate-600">{t.specialty} — {t.batch}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
+      {/* جدول كشف القيود */}
+      <Card style={{ border: "1px solid #000", borderRadius: 14, background: "rgba(255,255,255,0.94)", boxShadow: "0 8px 20px rgba(0,0,0,0.12)" }}>
+        <CardHeader style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+          <div className="flex items-center gap-3">
+            <div style={{ width: 44, height: 44, borderRadius: 10, background: PALETTE[1], display: "grid", placeItems: "center" }}>
+              <FileText className="w-5 h-5 text-white" />
             </div>
-
-            {/* BATCH */}
             <div>
-              <label className={LABEL_CLS}>الدفعة</label>
-              <Input
-                value={form.batch}
-                onChange={(e) => setForm({ ...form, batch: e.target.value })}
-                placeholder="الدفعة..."
-                className={INPUT_CLS}
-              />
+              <CardTitle className="text-lg font-bold text-black">كشف القيود</CardTitle>
+              <CardDescription className="text-xs text-slate-700">عرض وتدقيق كافة حوافظ التوريد</CardDescription>
             </div>
-
-            {/* SPECIALTY */}
-            <div>
-              <label className={LABEL_CLS}>التخصص</label>
-              <Input
-                value={form.specialty}
-                onChange={(e) => setForm({ ...form, specialty: e.target.value })}
-                placeholder="التخصص..."
-                className={INPUT_CLS}
-              />
-            </div>
-
-            {/* DATE */}
-            <div>
-              <label className={LABEL_CLS}>التاريخ</label>
-              <Input
-                type="date"
-                value={form.date}
-                onChange={(e) => setForm({ ...form, date: e.target.value })}
-                className={INPUT_CLS}
-              />
-            </div>
-
-            {/* HAFIZA NO */}
-            <div>
-              <label className={LABEL_CLS}>رقم الحافظة *</label>
-              <Input
-                value={form.hafizaNo}
-                onChange={(e) => setForm({ ...form, hafizaNo: e.target.value })}
-                placeholder="رقم الحافظة..."
-                className={INPUT_CLS}
-              />
-            </div>
-
-            {/* HAFIZA AMOUNT */}
-            <div>
-              <label className={LABEL_CLS}>مبلغ الحافظة</label>
-              <Input
-                type="number"
-                value={form.hafizaAmount}
-                onChange={(e) => setForm({ ...form, hafizaAmount: e.target.value })}
-                placeholder="0.00"
-                className={INPUT_CLS}
-              />
-            </div>
-
-            {/* DESCRIPTION */}
-            <div>
-              <label className={LABEL_CLS}>البيان</label>
-              <Input
-                list="hafiza-descriptions"
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                placeholder="اختر أو اكتب البيان..."
-                className={INPUT_CLS}
-              />
-              <datalist id="hafiza-descriptions">
-                {Array.from(new Set([...DESCRIPTIONS, ...hafiza.map((h) => h.description).filter(Boolean)])).map((d) => (
-                  <option key={d} value={d} />
-                ))}
-              </datalist>
-            </div>
-
-            {/* NOTIFY DATE */}
-            <div>
-              <label className={LABEL_CLS}>تاريخ التوريد</label>
-              <Input
-                type="date"
-                value={form.notifyDate}
-                onChange={(e) => setForm({ ...form, notifyDate: e.target.value })}
-                className={INPUT_CLS}
-              />
-            </div>
-
-            {/* NOTIFY NO */}
-            <div>
-              <label className={LABEL_CLS}>رقم الاشعار</label>
-              <Input
-                value={form.notifyNo}
-                onChange={(e) => setForm({ ...form, notifyNo: e.target.value })}
-                placeholder="رقم الاشعار..."
-                className={INPUT_CLS}
-              />
-            </div>
-
-            {/* NOTIFY AMOUNT */}
-            <div>
-              <label className={LABEL_CLS}>مبلغ التوريد</label>
-              <Input
-                type="number"
-                value={form.notifyAmount}
-                onChange={(e) => setForm({ ...form, notifyAmount: e.target.value })}
-                placeholder="0.00"
-                className={INPUT_CLS}
-              />
-            </div>
-
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 mt-5 pt-4 border-t-2 border-black">
-            <Button onClick={submit} className="w-full bg-sky-600 hover:bg-sky-700 text-white font-black rounded-lg px-4 py-2 text-sm transition-colors shadow-sm border-2 border-black">
-              <Save className="w-4 h-4 ml-1.5" /> حفظ السجل
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setForm(empty);
-                setNameQuery("");
-              }}
-              className="w-full bg-white hover:bg-slate-100 text-black font-black rounded-lg px-4 py-2 text-sm transition-colors border-2 border-black"
-            >
-              <Eraser className="w-4 h-4 ml-1.5" /> مسح الحقول
-            </Button>
-          </div>
-        </div>
-
-        {/* TABLE CARD */}
-        <div className="p-4 sm:p-6 rounded-2xl shadow-sm border-2 border-black bg-white">
-          <div className="flex items-center justify-between mb-4 pb-2 border-b-2 border-black">
-            <div className="flex items-center gap-3">
-              <h2 className="text-lg font-black text-black">كشف القيود الحالية</h2>
-              <Badge variant="secondary" className="bg-sky-600 text-white border-2 border-black font-black">
-                {filtered.length} سجل
-              </Badge>
-            </div>
-            <div className="flex items-center gap-0">
-              <TabActions title="حوافظ التوريد" rows={hafiza} columns={COLS} fileName="حوافظ-التوريد" pdfLayout="wide-centered" />
+            <div style={{ marginLeft: 12 }}>
+              <Badge style={{ background: PALETTE[0], color: "#fff", border: "1px solid #000" }}>{filtered.length} سجل</Badge>
             </div>
           </div>
 
-          <div className="flex items-center gap-1 mb-0">
+          <div style={{ marginTop: 8 }} className="flex gap-2 items-center">
             <input
               value={filters.name || ""}
               onChange={(e) => setFilter("name", e.target.value)}
-              placeholder="بحث سريع بالاسم..."
-              className="flex-0 px-2 py-2 h-9 rounded-lg text-sm font-bold border-2 border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-sky-300"
+              placeholder="بحث بالاسم..."
+              className="px-2 py-1 rounded-full"
+              style={{ border: "1px solid #000", width: 180 }}
             />
+            <Button size="sm" onClick={handleCopyAmountsToNotify} style={{ background: PALETTE[3], color: "#000", border: "1px solid #000" }}>
+              <CheckSquare className="w-4 h-4" />
+            </Button>
             {Object.values(filters).some(Boolean) && (
-              <Button variant="outline" size="sm" onClick={clearFilters} className="h-9 px-1 text-xs font-black text-black bg-white border-2 border-black">
-                <X className="w-3 h-3.5 ml-1" />
-                إلغاء الفلترة
+              <Button variant="ghost" size="sm" onClick={clearFilters} style={{ border: "1px solid #000" }}>
+                <X className="w-4 h-4" />
               </Button>
             )}
+            <div style={{ marginLeft: "auto" }}>
+              <TabActions title="حوافظ التوريد" rows={hafiza} columns={COLS} fileName="حوافظ-التوريد" pdfLayout="wide-centered" />
+            </div>
           </div>
+        </CardHeader>
 
-          <div className="overflow-x-auto border-2 border-black rounded-xl bg-white mt-3">
-            <Table className="w-auto table-auto border-collapse text-center text-black">
-              <TableHeader>
-                <tr className="border-b-2 border-black bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500 text-black">
-                  <th className="px-2 py-2 text-lg font-black text-center whitespace-nowrap">#</th>
-                  {COLS.map((c) => {
-                    const isNumOrDate = ["date", "hafizaNo", "hafizaAmount", "notifyDate", "notifyNo", "notifyAmount"].includes(c.key);
-                    return (
-                      <th key={c.key} className={`px-2 py-2 text-lg font-black ${isNumOrDate ? "whitespace-nowrap w-auto" : ""}`}>
-                        <div className="flex flex-col gap-1.5 py-1">
-                          <button onClick={() => toggleSort(c.key)} className="flex items-center gap-1 hover:text-sky-900 transition-colors font-black">
-                            <span>{c.label}</span>
-                            {sortIndicator(sortKey === c.key, sortDir)}
-                          </button>
+        <CardContent>
+          <div className="w-full overflow-auto max-h-[72vh] rounded-lg">
+            <Table>
+              <TableHeader style={{ background: PALETTE[0], color: "#fff" }}>
+                <TableRow>
+                  <TableHead>#</TableHead>
+                  {COLS.map((c) => (
+                    <TableHead key={c.key}>
+                      <div className="flex flex-col items-center">
+                        <button onClick={() => toggleSort(c.key)} className="flex items-center gap-1 text-xs">
+                          <span className="font-semibold">{c.label}</span>
+                          {sortIndicator(sortKey === c.key, sortDir)}
+                        </button>
+                        <div style={{ marginTop: 6 }}>
                           <input
                             value={filters[c.key] || ""}
                             onChange={(e) => setFilter(c.key, e.target.value)}
                             placeholder="فلتر..."
-                            className="w-20 px-2 py-1 rounded text-xs font-bold border border-black text-black focus:outline-none focus:border-sky-600 bg-white"
+                            className="px-1 py-1 rounded-full"
+                            style={{ width: 92, border: "1px solid rgba(0,0,0,0.12)" }}
                           />
                         </div>
-                      </th>
-                    );
-                  })}
-                  <th className="px-2 py-2 text-lg font-black text-center whitespace-nowrap w-auto">إجراءات</th>
-                </tr>
+                      </div>
+                    </TableHead>
+                  ))}
+                  <TableHead>إجراءات</TableHead>
+                </TableRow>
               </TableHeader>
 
-              <TableBody className="divide-y divide-slate-200 bg-white">
+              <TableBody>
                 {filtered.map((row, idx) => (
-                  <TableRow key={row.id} className="hover:bg-sky-50 transition-colors">
-                    <TableCell className="text-center text-slate-600 font-bold whitespace-nowrap">{idx + 1}</TableCell>
+                  <TableRow key={row.id} style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                    <TableCell>{idx + 1}</TableCell>
                     {COLS.map((c) => {
                       const isEditing = activeCell?.rowId === row.id && activeCell?.colKey === c.key;
                       const val = (row as any)[c.key];
                       const isMoney = c.key === "hafizaAmount" || c.key === "notifyAmount";
-                      const isNumOrDate = ["date", "hafizaNo", "hafizaAmount", "notifyDate", "notifyNo", "notifyAmount"].includes(c.key);
 
                       return (
-                        <TableCell
-                          key={c.key}
-                          onClick={() => !isEditing && handleCellClick(row.id, c.key, val)}
-                          className={`cursor-pointer ${isNumOrDate ? "whitespace-nowrap" : ""}`}
-                        >
+                        <TableCell key={c.key} onClick={() => !isEditing && handleCellClick(row.id, c.key, val)}>
                           {isEditing ? (
                             <Input
                               autoFocus
@@ -449,56 +504,87 @@ export default function HafizaTab() {
                               onChange={(e) => setCellValue(e.target.value)}
                               onBlur={() => handleCellSave(row as Record<string, unknown> & { id: string })}
                               onKeyDown={(e) => e.key === "Enter" && handleCellSave(row as Record<string, unknown> & { id: string })}
-                              className="h-8 text-lg bg-white text-center border-sky-500 ring-2 ring-sky-200 text-black font-bold"
+                              className="h-8 text-sm bg-white"
+                              style={{ border: "2px solid rgba(0,0,0,0.12)", textAlign: "center" }}
                             />
                           ) : (
-                            <span className={`block w-auto ${isMoney ? "font-black text-black" : "font-bold text-black"}`}>
-                              {isMoney ? fmt(Number(val) || 0) : String(val ?? "—")}
+                            <span style={{ display: "inline-block", minWidth: 64 }}>
+                              {isMoney ? fmt(Number(val) || 0) : String(val ?? "")}
                             </span>
                           )}
                         </TableCell>
                       );
                     })}
-                    <TableCell className="text-center whitespace-nowrap">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          if (confirm("هل أنت متأكد من حذف هذا السجل؟")) deleteHafiza(row.id);
-                        }}
-                        className="h-8 w-8 text-red-600 hover:bg-red-50 hover:text-red-700"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                    <TableCell>
+                      <div className="flex items-center justify-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            if (confirm("هل أنت متأكد من حذف هذا السجل؟")) deleteHafiza(row.id);
+                          }}
+                          style={{ border: "1px solid #000" }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
-
-                {filtered.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={COLS.length + 2} className="h-32 text-center text-slate-500 font-bold">
-                      لا توجد بيانات مطابقة
-                    </TableCell>
-                  </TableRow>
-                )}
               </TableBody>
 
               {filtered.length > 0 && (
-                <TableFooter className="bg-sky-50 border-t-2 border-black">
+                <TableFooter>
                   <TableRow>
-                    <TableCell className="text-center font-black text-black whitespace-nowrap">∑</TableCell>
-                    <TableCell className="font-black text-black whitespace-nowrap" colSpan={5}>إجمالي النتائج الحالية</TableCell>
-                    <TableCell className="font-mono font-black text-black whitespace-nowrap">{fmt(totalHafizaAmount)}</TableCell>
-                    <TableCell colSpan={3}></TableCell>
-                    <TableCell className="font-mono font-black text-black whitespace-nowrap">{fmt(totalNotifyAmount)}</TableCell>
+                    <TableCell>∑</TableCell>
+                    <TableCell>إجمالي الصفحة</TableCell>
+                    <TableCell colSpan={5}></TableCell>
+                    <TableCell style={{ textAlign: "center", fontFamily: "monospace", fontWeight: 700 }}>{fmt(totalHafizaAmount)}</TableCell>
+                    <TableCell colSpan={4}></TableCell>
+                    <TableCell style={{ textAlign: "center", fontFamily: "monospace", fontWeight: 700 }}>{fmt(totalNotifyAmount)}</TableCell>
                     <TableCell></TableCell>
                   </TableRow>
                 </TableFooter>
               )}
             </Table>
           </div>
-        </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
 
+function FieldDark({
+  label,
+  v,
+  on,
+  type = "text",
+  icon,
+  className = "",
+}: {
+  label: string;
+  v: string;
+  on: (v: string) => void;
+  type?: string;
+  icon?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className="w-full">
+      <label className="text-sm font-bold text-black mb-1 block">{label}</label>
+      <div className="relative">
+        {icon && (
+          <div style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", zIndex: 10, background: "#fff", padding: 6, border: "1px solid #000", borderRadius: 8 }}>
+            {icon}
+          </div>
+        )}
+        <Input
+          type={type}
+          value={v}
+          onChange={(e) => on(e.target.value)}
+          className={`${icon ? "pr-10" : "px-2"} bg-white text-slate-900 rounded-md h-9 text-sm ${className}`}
+          style={{ border: "1px solid #000" }}
+        />
       </div>
     </div>
   );

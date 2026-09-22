@@ -357,7 +357,7 @@ export default function ExpensesTab() {
           إجمالي الاستخدامات — ملخص حسب الأبواب
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-auto table-auto border-collapse text-sm sm:text-base">
+          <table className="w-full min-w-max table-auto border-collapse text-sm sm:text-base">
             <thead className="font-bold text-xs">
               <tr>
                 <TH rowSpan={2} cls="bg-slate-200 text-slate-800 text-center w-1/4">
@@ -482,7 +482,7 @@ export default function ExpensesTab() {
       <div className="space-y-0" dir="rtl">
         <div className="w-full max-w-full overflow-hidden rounded-lg border border-black bg-white shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-auto table-auto border-collapse text-lg sm:text-base">
+            <table className="w-full min-w-[720px] table-auto border-collapse text-sm sm:text-base">
               <thead className="sticky top-0 z-10 font-bold text-xs">
                 <tr>
                   {/* تغيير تنسيق الرأس ليكون متوسط النص بدلاً من المحاذاة لليمين فقط */}

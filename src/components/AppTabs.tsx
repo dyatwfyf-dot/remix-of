@@ -642,7 +642,7 @@ const AppTabs: React.FC = () => {
       </div>  
   
       <div className="w-full overflow-x-auto rounded-2xl border border-[#bcd6e4] bg-white shadow-sm" style={{ maxHeight: "70vh" }}>  
-        <table className="w-auto table-auto text-center border-collapse">
+        <table className="w-max table-auto text-center border-collapse">
           <thead className="sticky top-0 z-10 bg-white" dangerouslySetInnerHTML={{ __html: THEAD_HTML }}>  
           </thead>  
           
