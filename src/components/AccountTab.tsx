@@ -133,9 +133,6 @@ const PRINT_STYLES = `
     color: #000 !important;
     font-weight: 800 !important;
   }
-  label {
-   color:"#f5f5dc"; 
-  }
   .accounts-print-area th,
   .accounts-print-area td {
     border: 1px solid #000 !important;
@@ -670,7 +667,7 @@ export default function AccountsTab() {
  {/*شريط العنوان */}
 <div className="accounts-print-hide flex items-center justify-between border border-black p-3 rounded-xl bg-gradient-to-r from-[#1a2a3a] to-[#2a6b6a]">
   <div>
-    <h1 className={`${HEADING_MOBILE} text-[#f5f5dc] text-xl font-bold tracking-tight`}>
+    <h1 className={`${HEADING_MOBILE} text-[#f5f5dc] text-sm font-bold tracking-tight`}>
       الحساب الجاري
     </h1>
     <p className="text-xs text-[#d2b48c] font-bold tracking-wide mt-0.5">
@@ -869,7 +866,8 @@ export default function AccountsTab() {
 
   <div className="p-2 sm:p-5">
     {/* شبكة الحقول - حقلين في كل سطر */}
-  <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-3 items-end">
+    <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-3 items-end">
+      {/* السطر الأول */}
       <Field
         label="التاريخ"
         type="date"
