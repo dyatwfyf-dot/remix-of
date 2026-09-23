@@ -2391,13 +2391,13 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-800 text-white rounded-m
                 additionalWebActions={installments2026WebActions}
                 className="!flex-1 min-w-0 !gap-1 sm:!gap-2 [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-2 [&>button]:py-1 [&>button]:text-sm"
               />
-              <button
-                className="apk-only-actions flex items-center gap-1 px-3 py-1 bg-[#10528e] text-white rounded-md text-sm font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all"
+ <button
+className="apk-only-actions flex items-center gap-1 px-3 py-1 bg-[#10528e] text-white rounded-md text-sm font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all"
                 type="button"
                 onClick={handleDetailedPdf2026}
                 disabled={detailedPdfBusy2026}
                 title="تنزيل تقرير الأقساط التفصيلي لعام 2026"
-              >
+      >  تنزيل تفصيلي pdf
                 <Download className={`${ICON_MOBILE} ${detailedPdfBusy2026 ? "animate-pulse" : ""}`} />
                 <span className="hidden sm:inline">{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تنزيل PDF"}</span>
               </button>
