@@ -2061,7 +2061,7 @@ const installments2026WebActions: WebActionItem[] = [
 </label>
 
 
-<div className="apk-only-actions col-span-2 flex gap-1 w-full sm:w-auto">
+<div className="apk-only-actions col-span-2 flex gap-1 w-full">
 <button
  onClick={() => exportToExcel(2025)}
 className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-teal-400 text-black-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
@@ -2093,7 +2093,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
               onClear={() => clearInstallments("2025")}
               printLabel="الأقساط/إجمالي"
               additionalWebActions={installments2025WebActions}
- className="col-span-2 w-full grid !grid-cols-2 sm:!flex !gap-1 sm:!gap-2 [&>button]:min-w-auto [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-2 sm:[&>button]:py-1"
+ className="col-span-2 w-auto grid !grid-cols-2 sm:!flex !gap-1 sm:!gap-2 [&>button]:min-w-auto [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-1 sm:[&>button]:py-1"
             />
           </div>
         </div>
@@ -2105,9 +2105,9 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
           </div>
         )}
 
-        <div className="p-1 sm:p-3">
-          <StatsGrid stats={stats2025} columns={3} />
-          <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
+ <div className="p-1 sm:p-3">
+<StatsGrid stats={stats2025} columns={3} />
+<div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
             <table className="installments-table min-w-max table-auto text-sm sm:text-base font-semibold">
               <thead className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900  [&>tr>th]:!text-white sticky top-0 z-20 shadow-md">
                 <tr>
@@ -2361,7 +2361,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-800 text-white rounded-m
               </button>
             </div>
 
-<div className="col-span-2 w-auto flex items-center gap-1">
+<div className="w-full flex items-center gap-1">
               <TabActions
                 title="أقساط العام 2026"
                 rows={(installments || []).map((r: any) => {
@@ -2388,7 +2388,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-800 text-white rounded-m
                 onClear={() => clearInstallments()}
                 printLabel="الأقساط/إجمالي"
                 additionalWebActions={installments2026WebActions}
-className="col-span-2 w-full !grid !grid-cols-2 sm:!flex !gap-1 sm:!gap-2 [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-2 sm:[&>button]:py-1 [&>button]:text-sm"/> 
+className="col-span-2 w-auto !grid !grid-cols-2 sm:!flex !gap-1 sm:!gap-2 [&>button]:min-w-auto [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-1 sm:[&>button]:py-1 [&>button]:text-sm"/> 
  <button
 className="apk-only-actions flex items-center gap-1 px-3 py-1 bg-[#10528e] text-white rounded-md text-sm font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all"
                 type="button"
