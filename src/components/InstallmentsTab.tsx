@@ -2436,7 +2436,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
           <StatsGrid stats={stats2026} columns={3} />
   
           <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
-<table className="installments-table w-auto min-w-auto table-auto text-xs sm:text-base font-semibold">
+<table className="installments-table w-auto min-w-max table-auto text-xs sm:text-base font-semibold">
 <thead className="bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500 font-extrabold border-b-2 border-sky-700 text-black sticky top-0 z-20 shadow-md">
                 <tr>
  <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-xl sm:!text-base text-black border-l border-sky-700/30">#</th>
