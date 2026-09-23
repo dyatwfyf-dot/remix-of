@@ -2317,7 +2317,6 @@ condFormatRules.length?
                 onChange={(e) => setSearch2026(e.target.value)}
 className="pl-3 pr-8 py-2 rounded-lg text-sm border border-black outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-white shadow-sm"
               />
-            </div>
       <button
  onClick={() => setNewRowModal2026(true)}
  className="apk-only-actions w-full px-2 py-1 bg-blue-900 text-white rounded-md text-xs font-bold shadow hover:bg-blue-200 transition-colors flex items-center justify-center gap-1"
@@ -2346,6 +2345,7 @@ accept=".xlsx,.xls"
  onChange={(e) => importFile(e, 2026)}
 className="absolute h-0 w-0 opacity-0 overflow-hidden"/>
  </label>
+</div>
 
 <div className="apk-only-actions grid grid-cols-2 gap-1 w-full">
 <button
@@ -2362,10 +2362,10 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-800 text-white rounded-m
             </div>
 
 
-<div className="w-full grid grid-cols-2 flex gap-1">
-              <TabActions
-                title="أقساط العام 2026"
-                rows={(installments || []).map((r: any) => {
+<div className="w-full flex gap-1">
+<TabActions
+ title="أقساط العام 2026"
+ rows={(installments || []).map((r: any) => {
                   const customValues: any = { ...r.customData };
                   extraCols2026.forEach((col) => {
                     if (col.type === "formula")
@@ -2389,16 +2389,16 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-800 text-white rounded-m
                 onClear={() => clearInstallments()}
                 printLabel="الأقساط/إجمالي"
                 additionalWebActions={installments2026WebActions}
-className="col-span-2 w-auto !grid !grid-cols-2 sm:!flex !gap-1 sm:!gap-1 [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-1 sm:[&>button]:py-1 [&>button]:text-sm"/> 
+className="col-span-2 w-full !grid !grid-cols-2 sm:!flex !gap-1 sm:!gap-1 [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-1 sm:[&>button]:py-1 [&>button]:text-sm"/> 
  <button
-className="apk-only-actions flex items-center gap-1 px-3 py-1 bg-[#10528e] text-white rounded-md text-sm font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all"
-                type="button"
-                onClick={handleDetailedPdf2026}
-                disabled={detailedPdfBusy2026}
-                title="تنزيل تقرير الأقساط التفصيلي لعام 2026"
+className="apk-only-actions flex gap-1 px-3 py-1 bg-[#10528e] text-white rounded-md text-sm font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all"
+type="button"
+ onClick={handleDetailedPdf2026}
+disabled={detailedPdfBusy2026}
+title="تنزيل تقرير الأقساط التفصيلي لعام 2026"
       >  تنزيل تفصيلي pdf
-                <Download className={`${ICON_MOBILE} ${detailedPdfBusy2026 ? "animate-pulse" : ""}`} />
-                <span className="hidden sm:inline">{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تنزيل PDF"}</span>
+<Download className={`${ICON_MOBILE} ${detailedPdfBusy2026 ? "animate-pulse" : ""}`} />
+.<span className="hidden sm:inline">{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تنزيل PDF"}</span>
               </button>
             </div>
           </div>
