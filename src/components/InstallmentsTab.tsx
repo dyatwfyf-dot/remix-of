@@ -2750,6 +2750,8 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
               </tbody>
             </table>
           </div>
+          </div>
+          </div>
 
 
       {/* ========== النوافذ المنبثقة ========== */}
