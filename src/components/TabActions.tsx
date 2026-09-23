@@ -183,44 +183,44 @@ export default function TabActions({
 
   return (
     <>
-      <div className={`web-only-actions ${webClassName}`}>
+<div className={`web-only-actions ${webClassName}`}>
         <WebActionMenu label={`إجراءات ${title}`} actions={webActions} className="w-full sm:w-auto" />
       </div>
-      <div className={`apk-only-actions flex flex-wrap gap-2 ${className}`}>
-        <button
+<div className={`apk-only-actions flex flex-wrap gap-2 ${className}`}>
+<button
           onClick={handlePrint}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-[#10528e] border border-[#10528e]/30 rounded-lg text-xs font-bold shadow-sm hover:bg-blue-50 active:scale-95 transition-all cursor-pointer"
-          title="طباعة هذا التبويب"
+className="flex item-center gap-1.5 px-3 py-1.5 bg-white text-[#10528e] border border-[#10528e]/30 rounded-lg text-xs font-bold shadow-sm hover:bg-blue-50 active:scale-95 transition-all cursor-pointer"
+title="طباعة هذا التبويب"
         >
           <Printer className="w-4 h-4" /> {printLabel}
         </button>
-        <button
-          onClick={handleDownloadPdf}
-          disabled={pdfBusy}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10528e] text-white rounded-lg text-xs font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-wait"
-          title="تنزيل PDF بنفس تنسيق الطباعة"
-        >
+ <button
+onClick={handleDownloadPdf}
+disabled={pdfBusy}
+className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10528e] text-white rounded-lg text-xs font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-wait"
+ title="تنزيل PDF بنفس تنسيق الطباعة"
+        > تنزيل pdf
           {pdfBusy ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" /> جارٍ التحضير…
+<Loader2 className="w-4 h-4 animate-spin" /> جارٍ التحضير…
             </>
           ) : (
             <>
-              <Download className="w-4 h-4" /> تنزيل PDF
+<Download className="w-4 h-4" /> تنزيل PDF
             </>
           )}
         </button>
         <button
-          onClick={handleExcel}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700 active:scale-95 transition-all cursor-pointer"
+onClick={handleExcel}
+ className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700 active:scale-95 transition-all cursor-pointer"
           title="تصدير إلى Excel"
         >
-          <FileSpreadsheet className="w-4 h-4" /> تصدير Excel
+          <FileSpreadsheet className="w-4 h-4" /> تصدير Excel اجماليات
         </button>
         {onClear && (
-          <button
-            onClick={handleClear}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-rose-700 active:scale-95 transition-all cursor-pointer"
+<button
+ onClick={handleClear}
+ className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-rose-700 active:scale-95 transition-all cursor-pointer"
             title="مسح بيانات هذا التبويب"
           >
             <Trash2 className="w-4 h-4" /> مسح البيانات

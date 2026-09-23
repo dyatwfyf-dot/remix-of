@@ -2093,14 +2093,15 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
               onClear={() => clearInstallments("2025")}
               printLabel="الأقساط/إجمالي"
               additionalWebActions={installments2025WebActions}
- className="col-span-2 w-full flex gap-1 sm:!gap-2 [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-2 sm:[&>button]:py-1"
+ className="col-span-3 w-full flex gap-1 
+ [&>button]:min-w-auto [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-2 sm:[&>button]:py-1"
             />
           </div>
         </div>
 
         {importError && (
  <div className="bg-red-50 border-b border-red-200 p-3 flex gap-2">
-            <AlertCircle className="w-5 h-5 text-red-600" />
+<AlertCircle className="w-5 h-5 text-red-600" />
             <p className="text-sm text-red-700">{importError}</p>
           </div>
         )}
