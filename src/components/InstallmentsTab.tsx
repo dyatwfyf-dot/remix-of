@@ -2436,7 +2436,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
           <StatsGrid stats={stats2026} columns={3} />
   
           <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
-<table className="installments-table w-auto min-w-max table-auto text-xs sm:text-base font-semibold">
+<table className="installments-table w-auto min-w-auto table-auto text-xs sm:text-base font-semibold">
 <thead className="bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500 font-extrabold border-b-2 border-sky-700 text-black sticky top-0 z-20 shadow-md">
                 <tr>
  <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-xl sm:!text-base text-black border-l border-sky-700/30">#</th>
@@ -2493,7 +2493,7 @@ className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transit
                       key={col.name}
                       className="text-center border-l border-sky-700/30 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black"
                     >
-                      <div className="flex items-center justify-center gap-1">
+ <div className="flex items-center justify-center gap-1">
                         {col.name}
                         <button
                           onClick={() =>
@@ -2539,7 +2539,7 @@ className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transit
                   <tr>
                     <td
                       colSpan={11 + MONTHS_2026.length + extraCols2026.length}
-                      className="text-center text-slate-400 !px-1 !py-4 !text-sm sm:!text-base whitespace-nowrap"
+                      className="text-center text-slate-400 !px1 !py-1 !text-sm sm:!text-base whitespace-nowrap"
                     >
                       لا توجد بيانات (يرجى التأكد من استيراد الملف أو تعديل البحث)
                     </td>
@@ -2567,7 +2567,7 @@ className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transit
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "name", e.target.value)
                               }
-                              className="w-auto min-w-auto bg-transparent text-center text-black font-bold !text-sm sm:!text-base outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1"
+                              className="w-auto min-w-max bg-transparent text-center text-black font-bold !text-sm sm:!text-base outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1"
                             />
                           </td>
                           <td className="text-center text-black whitespace-nowrap bg-sky-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
