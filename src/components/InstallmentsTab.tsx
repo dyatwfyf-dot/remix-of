@@ -2384,6 +2384,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
         <span>طباعة تفصيلية</span>
       </button>
             </div>
+            </div>
 
       {/* السطر 5: مكون الإجراءات المجمعة + تنزيل تفصيلي PDF */}
       <div className="w-full">
@@ -2432,7 +2433,6 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
         <span>{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تنزيل PDF"}</span>
       </button>
     </div>
-  </div>
 
 
 <div className="p-1 sm:p-3">
