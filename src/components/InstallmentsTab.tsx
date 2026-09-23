@@ -2037,20 +2037,20 @@ const installments2026WebActions: WebActionItem[] = [
  📊 أقساط ومستندات 
  العام 2025
             </h2>
-            <p className="text-xs text-sky-100">يشمل جميع الدفعات لعامي 2024 و 2025</p>
+ <p className="text-lg text-sky-100">يشمل جميع الدفعات لعامي 2024 و 2025</p>
           </div>
-          <div className="w-full sm:w-auto grid grid-cols-2 sm:flex gap-1.5 sm:gap-2 items-center">
-            <div className="relative w-full sm:w-auto">
-              <Search className="w-4 h-4 absolute right-2.5 top-2.5 text-sky-500" />
+<div className="w-full sm:w-auto grid grid-cols-2 sm:flex gap-1.5 sm:gap-2 items-center">
+ <div className="relative w-full sm:w-auto">
+<Search className="w-8 h-4 absolute right-2.5 top-2.5 text-sky-500" />
               <input
                 type="text"
                 placeholder="بحث (الاسم، الدفعة، المساق)..."
                 value={search2025}
                 onChange={(e) => setSearch2025(e.target.value)}
-                className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"
+ className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"
               />
             </div>
-<label className="apk-only-actions relative w-full px-1.5 sm:px-2 py-1 sm:py-1 bg-white text-sky-700 rounded-lg text-xs sm:text-xs font-bold cursor-pointer hover:bg-sky-50 shadow text-center">
+<label className="apk-only-actions relative w-full px-2 sm:px-2 py-2 sm:py-2 bg-white text-sky-700 rounded-lg text-xs sm:text-xs font-bold cursor-pointer hover:bg-sky-50 shadow text-center">
   📥 استيراد الملف{" "}
   <input
     type="file"
@@ -2061,18 +2061,18 @@ const installments2026WebActions: WebActionItem[] = [
 </label>
 
 
-            <div className="apk-only-actions col-span-2 flex gap-1 w-full sm:w-auto">
-              <button
-                onClick={() => exportToExcel(2025)}
-                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
+<div className="apk-only-actions col-span-2 flex gap-1 w-full sm:w-auto">
+<button
+ onClick={() => exportToExcel(2025)}
+className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-teal-400 text-black-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
               >
-                <FileSpreadsheet className={ICON_MOBILE} /> <span className="hidden sm:inline">Excel</span>
+                <FileSpreadsheet className={ICON_MOBILE} /> <span className="hidden sm:inline">Excel تصدير الي </span>
               </button>
               <button
                 onClick={() => setPrintSettingsYear(2025)}
-                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white/95 text-sky-800 rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`}
+className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`}
               >
-                <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة</span>
+                <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة تفصيلية</span>
               </button>
             </div>
 
