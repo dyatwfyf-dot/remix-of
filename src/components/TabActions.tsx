@@ -199,7 +199,7 @@ onClick={handleDownloadPdf}
 disabled={pdfBusy}
 className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10528e] text-white rounded-lg text-xs font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-wait"
  title="تنزيل PDF بنفس تنسيق الطباعة"
-        > تنزيل pdf
+        >
           {pdfBusy ? (
             <>
 <Loader2 className="w-4 h-4 animate-spin" /> جارٍ التحضير…
@@ -213,9 +213,9 @@ className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10528e] text-white rounded
         <button
 onClick={handleExcel}
  className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700 active:scale-95 transition-all cursor-pointer"
-          title="تصدير إلى Excel"
+ title="تصدير إلى Excel اجماليات"
         >
-          <FileSpreadsheet className="w-4 h-4" /> تصدير Excel اجماليات
+          <FileSpreadsheet className="w-4 h-4" />
         </button>
         {onClear && (
 <button

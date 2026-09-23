@@ -2316,26 +2316,26 @@ condFormatRules.length?
                 placeholder="بحث (الاسم، الدفعة، المساق)..."
                 value={search2026}
                 onChange={(e) => setSearch2026(e.target.value)}
-className="pl-3 pr-8 py-2 rounded-lg text-sm border border-black outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-yellow-600 shadow-sm"
+className="pl-3 pr-8 py-2 rounded-lg text-sm border border-black outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-white shadow-sm"
               />
             </div>
       <button
  onClick={() => setNewRowModal2026(true)}
- className="apk-only-actions w-full px-2 py-1 bg-blue-100 text-white rounded-md text-xs font-bold shadow hover:bg-blue-200 transition-colors flex items-center justify-center gap-1"
+ className="apk-only-actions w-full px-2 py-1 bg-blue-900 text-white rounded-md text-xs font-bold shadow hover:bg-blue-200 transition-colors flex items-center justify-center gap-1"
             >اضافة طالب جديد
               <Plus className={ICON_MOBILE} /> <span className="hidden sm:inline">طالب جديد</span>
             </button>
 
             <button
               onClick={() => setNewColModal(true)}
-className="apk-only-actions w-full px-2 py-1 bg-amber-800 text-black rounded-md text-xs font-bold shadow hover:bg-amber-200 transition-colors flex items-center justify-center gap-1"
+className="apk-only-actions w-full px-2 py-1 bg-amber-800 text-white rounded-md text-xs font-bold shadow hover:bg-amber-200 transition-colors flex items-center justify-center gap-1"
             >اضافة عمود جديد
               <Plus className={ICON_MOBILE} /> <span className="hidden sm:inline">عمود جديد</span>
             </button>
 
             <button
               onClick={() => setNewPaymentModal(true)}
-className="apk-only-actions w-full px-2 py-1 bg-teal-700 text-white rounded-md text-xs font-bold shadow hover:bg-white/30 transition-colors truncate">
+className="apk-only-actions w-full px-2 py-1 bg-red-700 text-white rounded-md text-xl font-bold shadow hover:bg-white/30 transition-colors truncate">
 <span>➕ إضافة قسط</span>
 </button>
     
@@ -2351,12 +2351,12 @@ className="absolute h-0 w-0 opacity-0 overflow-hidden"/>
 <div className="apk-only-actions col-span-2 flex gap-1 w-full">
 <button
 onClick={() => exportToExcel(2026)}
-className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}>
+className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}>تصدير الي EXCEL 
 <FileSpreadsheet className={ICON_MOBILE} /> <span className="hidden sm:inline">Excel</span>
               </button>
        <button
                 onClick={() => setPrintSettingsYear(2026)}
-                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white/95 text-sky-800 rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`}
+className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-800 text-white rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`}
               >طباعة تفصيلية
                 <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة</span>
               </button>
