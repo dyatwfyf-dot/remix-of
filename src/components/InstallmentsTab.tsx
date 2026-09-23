@@ -2347,7 +2347,7 @@ accept=".xlsx,.xls"
 className="absolute h-0 w-0 opacity-0 overflow-hidden"/>
  </label>
 
-<div className="apk-only-actions col-span-2 flex gap-1 w-full">
+<div className="apk-only-actions grid grid-cols-2 gap-1 w-full">
 <button
 onClick={() => exportToExcel(2026)}
 className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}>تصدير الي EXCEL 
@@ -2361,7 +2361,8 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-800 text-white rounded-m
               </button>
             </div>
 
-<div className="w-full flex items-center gap-1">
+
+<div className="w-full grid grid-cols-2 flex gap-1">
               <TabActions
                 title="أقساط العام 2026"
                 rows={(installments || []).map((r: any) => {
@@ -2388,7 +2389,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-800 text-white rounded-m
                 onClear={() => clearInstallments()}
                 printLabel="الأقساط/إجمالي"
                 additionalWebActions={installments2026WebActions}
-className="col-span-2 w-auto !grid !grid-cols-2 sm:!flex !gap-1 sm:!gap-2 [&>button]:min-w-auto [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-1 sm:[&>button]:py-1 [&>button]:text-sm"/> 
+className="col-span-2 w-auto !grid !grid-cols-2 sm:!flex !gap-1 sm:!gap-1 [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-1 sm:[&>button]:py-1 [&>button]:text-sm"/> 
  <button
 className="apk-only-actions flex items-center gap-1 px-3 py-1 bg-[#10528e] text-white rounded-md text-sm font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all"
                 type="button"
@@ -2402,7 +2403,8 @@ className="apk-only-actions flex items-center gap-1 px-3 py-1 bg-[#10528e] text-
             </div>
           </div>
         </div>
-        <div className="p-1 sm:p-3">
+
+<div className="p-1 sm:p-3">
           <StatsGrid stats={stats2026} columns={3} />
   
           <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
