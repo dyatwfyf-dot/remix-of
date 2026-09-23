@@ -2039,7 +2039,7 @@ const installments2026WebActions: WebActionItem[] = [
             </h2>
  <p className="text-lg text-sky-100">يشمل جميع الدفعات لعامي 2024 و 2025</p>
           </div>
-<div className="w-full sm:w-auto grid grid-cols-2 sm:flex gap-1.5 sm:gap-2 items-center">
+<div className="w-full sm:w-auto grid grid-cols-1 sm:flex gap-1.5 sm:gap-2 items-center">
  <div className="relative w-full sm:w-auto">
 <Search className="w-8 h-4 absolute right-2.5 top-2.5 text-sky-500" />
               <input
@@ -2065,19 +2065,20 @@ const installments2026WebActions: WebActionItem[] = [
 <button
  onClick={() => exportToExcel(2025)}
 className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-teal-400 text-black-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
-              >
-                <FileSpreadsheet className={ICON_MOBILE} /> <span className="hidden sm:inline">Excel تصدير الي </span>
+  >تصدير الي اكسل
+<FileSpreadsheet className={ICON_MOBILE} /> 
+<span className="hidden sm:inline">Excel تصدير الي 
+</span>
               </button>
               <button
                 onClick={() => setPrintSettingsYear(2025)}
-className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`}
-              >
-                <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة تفصيلية</span>
+className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`} >طباعة تفصيلية
+ <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة تفصيلية</span>
               </button>
             </div>
 
-            <TabActions
-              title="أقساط العام 2025"
+<TabActions
+ title="أقساط العام 2025"
               rows={installments2025 || []}
               columns={[
                 { key: "name", label: "اسم المتدرب" },
@@ -2092,13 +2093,13 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
               onClear={() => clearInstallments("2025")}
               printLabel="الأقساط/إجمالي"
               additionalWebActions={installments2025WebActions}
-              className="col-span-2 w-full !grid !grid-cols-2 sm:!flex !gap-1 sm:!gap-2 [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-2 sm:[&>button]:py-1"
+ className="col-span-2 w-full flex gap-1 sm:!gap-2 [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-2 sm:[&>button]:py-1"
             />
           </div>
         </div>
 
         {importError && (
-          <div className="bg-red-50 border-b border-red-200 p-3 flex gap-2">
+ <div className="bg-red-50 border-b border-red-200 p-3 flex gap-2">
             <AlertCircle className="w-5 h-5 text-red-600" />
             <p className="text-sm text-red-700">{importError}</p>
           </div>
