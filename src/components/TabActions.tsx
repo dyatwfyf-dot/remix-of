@@ -186,7 +186,7 @@ export default function TabActions({
 <div className={`web-only-actions ${webClassName}`}>
         <WebActionMenu label={`إجراءات ${title}`} actions={webActions} className="w-full sm:w-auto" />
       </div>
-<div className={`apk-only-actions col-span-2 flex flex-wrap gap-2 ${className}`}>
+<div className={`apk-only-actions flex gap-2 ${className}`}>
 <button
           onClick={handlePrint}
 className="flex item-center gap-1.5 px-3 py-1.5 bg-white text-[#10528e] border border-[#10528e]/30 rounded-lg text-xs font-bold shadow-sm hover:bg-blue-50 active:scale-95 transition-all cursor-pointer"

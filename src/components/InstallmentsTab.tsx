@@ -2362,7 +2362,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-800 text-white rounded-m
               </button>
             </div>
 
-<div className="col-span-2 w-full flex flex-wrap items-center gap-1 sm:gap-2">
+<div className="col-span-2 w-auto flex items-center gap-1">
               <TabActions
                 title="أقساط العام 2026"
                 rows={(installments || []).map((r: any) => {
