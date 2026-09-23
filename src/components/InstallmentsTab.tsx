@@ -2410,14 +2410,14 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
         </div>
         <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2026} columns={3} />
-          <div className="overflow-auto max-h-auto rounded-lg border border-slate-200 shadow-sm relative">
-            <table className="installments-table min-w-full w-max table-auto text-sm font-extrabold text-black">
-              {/* ترويسة الجدول: لون ذهبي لامع مع خط أسود غامق */}
+  
+          <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
+            <table className="installments-table min-w-max table-auto text-sm sm:text-base font-semibold">
               <thead className="bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500 font-extrabold border-b-2 border-sky-700 text-black sticky top-0 z-20 shadow-md">
                 <tr>
-                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30">#</th>
+                  <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30">#</th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("name")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2425,7 +2425,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("batch")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2433,7 +2433,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("specialty")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2441,7 +2441,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("prevDue")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2449,7 +2449,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("fees")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2459,7 +2459,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                   {MONTHS_2026.map((m) => (
                     <th
                       key={m}
-                      className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                      className="text-center border-l border-sky-700/30 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black"
                     >
                       {m.trim()}
                     </th>
@@ -2467,7 +2467,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                   {extraCols2026.map((col) => (
                     <th
                       key={col.name}
-                      className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                      className="text-center border-l border-sky-700/30 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black"
                     >
                       <div className="flex items-center justify-center gap-1">
                         {col.name}
@@ -2490,7 +2490,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                     </th>
                   ))}
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("totalPaid")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2498,16 +2498,16 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("remaining")}
                   >
                     <div className="flex items-center justify-center gap-1">
                       الرصيد المتبقي <SortIcon sortConfig={sortConfig2026} columnKey="remaining" />
                     </div>
                   </th>
-                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30">الملاحظات</th>
-                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30">حالة</th>
-                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black">إجراءات</th>
+                  <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30">الملاحظات</th>
+                  <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30">حالة</th>
+                  <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black">إجراءات</th>
                 </tr>
               </thead>
               <tbody>
@@ -2515,8 +2515,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                   <tr>
                     <td
                       colSpan={11 + MONTHS_2026.length + extraCols2026.length}
-
-                      className="text-center w-auto text-slate-400 !px-3 !py-4 !text-lg whitespace-nowrap"
+                      className="text-center text-slate-400 !px-1 !py-4 !text-sm sm:!text-base whitespace-nowrap"
                     >
                       لا توجد بيانات (يرجى التأكد من استيراد الملف أو تعديل البحث)
                     </td>
@@ -2535,39 +2534,39 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                           key={i}
                           className={`border-t border-slate-200 transition-colors ${rowBgClass}`}
                         >
-                          <td className="text-center w-auto text-black font-mono whitespace-nowrap !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center text-black font-mono whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             {i + 1}
                           </td>
-                          <td className="text-center w-auto font-bold text-black whitespace-nowrap bg-fuchsia-50/70 !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center font-bold text-black whitespace-nowrap bg-fuchsia-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             <input
                               value={r.name || ""}
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "name", e.target.value)
                               }
-                              className="w-full min-w-[140px] bg-transparent text-center text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-full min-w-0 bg-transparent text-center text-black font-bold !text-sm sm:!text-base outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1"
                             />
                           </td>
-                          <td className="text-center w-auto text-black whitespace-nowrap bg-sky-50/70 !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center text-black whitespace-nowrap bg-sky-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             <input
                               value={r.batch || ""}
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "batch", e.target.value)
                               }
-                              className="w-full min-w-[90px] bg-transparent text-center text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-full min-w-0 bg-transparent text-center text-black font-semibold !text-sm sm:!text-base outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1"
                               placeholder="—"
                             />
                           </td>
-                          <td className="text-center w-auto text-black whitespace-nowrap bg-sky-50/60 !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center text-black whitespace-nowrap bg-sky-50/60 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             <input
                               value={r.specialty || ""}
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "specialty", e.target.value)
                               }
-                              className="w-full min-w-[110px] bg-transparent text-center text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-full min-w-0 bg-transparent text-center text-black font-semibold !text-sm sm:!text-base outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1"
                               placeholder="—"
                             />
                           </td>
-                          <td className="text-center w-auto numeric-cell font-mono text-black font-extrabold bg-sky-50/40 whitespace-nowrap !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center numeric-cell font-mono text-black font-semibold bg-sky-50/40 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             <input
                               type="text"
                               inputMode="decimal"
@@ -2575,10 +2574,10 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "prevDue", e.target.value)
                               }
-                              className="w-full min-w-[100px] bg-transparent text-center font-mono text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-full min-w-0 bg-transparent text-center font-mono text-black font-semibold !text-sm sm:!text-base outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1"
                             />
                           </td>
-                          <td className="text-center w-auto numeric-cell font-mono text-black font-extrabold whitespace-nowrap bg-sky-50/50 !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center numeric-cell font-mono text-black font-semibold whitespace-nowrap bg-sky-50/50 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             <input
                               type="text"
                               inputMode="decimal"
@@ -2586,7 +2585,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "fees", e.target.value)
                               }
-                              className="w-full min-w-[90px] bg-transparent text-center font-mono text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-full min-w-0 bg-transparent text-center font-mono text-black font-semibold !text-sm sm:!text-base outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1"
                             />
                           </td>
                           {MONTHS_2026.map((m) => {
@@ -2595,7 +2594,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                             return (
                               <td
                                 key={m}
-                                className="numeric-cell w-auto text-center relative bg-white/40 border-l border-slate-200 hover:bg-yellow-50 cursor-pointer group transition-colors whitespace-nowrap !px-2 !py-2"
+                                className="numeric-cell text-center relative bg-white/40 border-l border-slate-200 hover:bg-yellow-50 cursor-pointer group transition-colors whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
                                 onMouseEnter={() => setHoveredCell(cellId)}
                                 onMouseLeave={() => setHoveredCell(null)}
                               >
@@ -2606,7 +2605,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                                   onChange={(e) =>
                                     update2026PaymentValue(originalIndex, m, e.target.value)
                                   }
-                                  className="w-full min-w-[70px] bg-transparent text-center numeric-cell font-mono text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                                  className="w-full min-w-0 bg-transparent text-center numeric-cell font-mono text-black font-semibold !text-sm sm:!text-base outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1"
                                   placeholder="—"
                                 />
                               </td>
@@ -2614,10 +2613,10 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                           })}
 
                           {extraCols2026.map((col) => (
-                            <td key={col.name} className="border-l w-auto border-slate-200 !px-2 !py-2 !text-lg whitespace-nowrap">
+                            <td key={col.name} className="border-l border-slate-200 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base whitespace-nowrap">
                               {col.type === "select" ? (
                                 <select
-                                  className="w-full min-w-[90px] text-center text-black font-extrabold bg-transparent outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1 text-sm"
+                                  className="w-full min-w-0 text-center text-black font-semibold bg-transparent outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 !text-sm sm:!text-base"
                                   value={r.customData?.[col.name] || ""}
                                   onChange={(e) =>
                                     updateCustomColValue(originalIndex, col.name, e.target.value)
@@ -2631,13 +2630,13 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                                   ))}
                                 </select>
                               ) : col.type === "formula" ? (
-                                <div className="text-center min-w-[70px] numeric-cell font-mono text-sm font-extrabold text-yellow-700 bg-white/50 py-1 rounded">
+                                <div className="text-center min-w-0 numeric-cell font-mono !text-sm sm:!text-base font-semibold text-yellow-700 bg-white/50 px-1 rounded">
                                   {fmt(Number(evaluateFormula(col.formula || "", r) || 0))}
                                 </div>
                               ) : (
                                 <input
                                   type="text"
-                                  className="w-full min-w-[100px] text-center text-black font-extrabold bg-transparent outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1 text-sm"
+                                  className="w-full min-w-0 text-center text-black font-semibold bg-transparent outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 !text-sm sm:!text-base"
                                   value={r.customData?.[col.name] || ""}
                                   onChange={(e) =>
                                     updateCustomColValue(originalIndex, col.name, e.target.value)
@@ -2648,82 +2647,82 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                             </td>
                           ))}
 
-                          <td className="text-center w-auto min-w-[90px] numeric-cell font-mono text-black font-extrabold bg-emerald-50/50 whitespace-nowrap !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center numeric-cell font-mono text-black font-bold bg-emerald-50/50 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             {fmt(Number(r.totalPaid || 0))}
                           </td>
-                          <td className="text-center w-auto min-w-[90px] numeric-cell font-mono text-black font-extrabold bg-rose-50/40 whitespace-nowrap !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center numeric-cell font-mono text-black font-bold bg-rose-50/40 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             {fmt(Number(r.remaining || 0))}
                           </td>
-                          <td className="text-center w-auto bg-amber-50/40 !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center bg-amber-50/40 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200 whitespace-nowrap">
                             <input
                               type="text"
                               value={r.notes || ""}
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "notes", e.target.value)
                               }
-                              className="w-full min-w-[120px] bg-transparent text-center text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-full min-w-0 bg-transparent text-center text-black font-medium !text-sm sm:!text-base outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1"
                               placeholder="—"
                             />
                           </td>
 
-                          <td className="text-center w-auto whitespace-nowrap !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             <span
-                              className={`px-3 py-1 rounded-full !text-sm font-extrabold ${status.bg} ${status.color}`}
+                              className={`px-2 py-0.5 rounded-full !text-xs sm:!text-sm font-bold ${status.bg} ${status.color}`}
                             >
                               {status.text}
                             </span>
                           </td>
-                          <td className="text-center w-auto whitespace-nowrap flex justify-center gap-2 !px-2 !py-2 !text-lg">
+                          <td className="text-center whitespace-nowrap flex justify-center gap-1 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
                             <button
                               onClick={() => {
                                 setEditRowData(r);
                                 setEditRowModal({ year: 2026, row: r, index: originalIndex });
                               }}
-                              className="p-1.5 bg-sky-50 text-amber-600 rounded border border-amber-200 hover:bg-amber-500 hover:text-white transition-colors"
+                              className="p-1 bg-sky-50 text-amber-600 rounded border border-amber-200 hover:bg-amber-500 hover:text-white transition-colors"
                               title="تعديل الصف"
                             >
-                              <Edit className={ICON_TAP} />
+                              <Edit className={ICON_MOBILE} />
                             </button>
                             <button
                               onClick={() => printStatement(r, 2026)}
-                              className="p-1.5 bg-blue-50 text-blue-600 rounded border border-blue-200 hover:bg-blue-500 hover:text-white transition-colors"
+                              className="p-1 bg-blue-50 text-blue-600 rounded border border-blue-200 hover:bg-blue-500 hover:text-white transition-colors"
                               title="طباعة الكشف"
                             >
-                              <Printer className={ICON_TAP} />
+                              <Printer className={ICON_MOBILE} />
                             </button>
                             <button
                               onClick={() => handleExportPdf(r, 2026)}
-                              className="p-1.5 bg-emerald-50 text-emerald-600 rounded border border-emerald-200 hover:bg-emerald-500 hover:text-white transition-colors"
+                              className="p-1 bg-emerald-50 text-emerald-600 rounded border border-emerald-200 hover:bg-emerald-500 hover:text-white transition-colors"
                               title="تنزيل PDF (متوافق مع شاومي)"
                             >
-                              <FileText className={ICON_TAP} />
+                              <FileText className={ICON_MOBILE} />
                             </button>
                             <button
                               onClick={() => deleteRow2026(originalIndex, r.name)}
-                              className="p-1.5 bg-red-50 text-red-600 rounded border border-red-200 hover:bg-red-500 hover:text-white transition-colors"
+                              className="p-1 bg-red-50 text-red-600 rounded border border-red-200 hover:bg-red-500 hover:text-white transition-colors"
                               title="حذف الصف"
                             >
-                              <Trash className={ICON_TAP} />
+                              <Trash className={ICON_MOBILE} />
                             </button>
                           </td>
                         </tr>
                       );
                     })}
                     <tr className="border-t-2 border-sky-700 bg-sky-100 font-extrabold">
-                      <td className="text-center w-auto text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300" colSpan={4}>
+                      <td className="text-center text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300" colSpan={4}>
                         الإجماليات
                       </td>
-                      <td className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300">
+                      <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300">
                         {fmt(Number(totals2026.prevDue || 0))}
                       </td>
-                      <td className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300">
+                      <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300">
                         {fmt(Number(totals2026.fees || 0))}
                       </td>
 
                       {MONTHS_2026.map((m) => (
                         <td
                           key={m}
-                          className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300"
+                          className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300"
                         >
                           {totals2026.months[m] > 0 ? fmt(Number(totals2026.months[m])) : "—"}
                         </td>
@@ -2731,29 +2730,26 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
                       {extraCols2026.map((col) => (
                         <td
                           key={col.name}
-                          className="text-center w-auto text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300"
+                          className="text-center text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300"
                         >
                           —
                         </td>
                       ))}
-                      <td className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300">
+                      <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300">
                         {fmt(Number(totals2026.paid || 0))}
                       </td>
-                      <td className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300">
+                      <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300">
                         {fmt(Number(totals2026.remaining || 0))}
                       </td>
-                      <td className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300">—</td>
-                      <td className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300"></td>
-
-                      <td className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg"></td>
+                      <td className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300">—</td>
+                      <td className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300"></td>
+                      <td className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"></td>
                     </tr>
                   </>
                 )}
               </tbody>
             </table>
           </div>
-        </div>
-      </div>
 
 
       {/* ========== النوافذ المنبثقة ========== */}
