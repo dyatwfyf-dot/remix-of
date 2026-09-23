@@ -2288,80 +2288,76 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
         </div>
       </div>
 {/* ========== واجهة جدول 2026 ========== */}
-      <div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-lg border border-sky-100 rounded-2xl overflow-hidden">
-        <div className="bg-gradient-to-l from-sky-800 via-sky-600 to-sky-600 px-2 sm:px-6 py-2.5 sm:py-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2">
-          <div className="min-w-0">
-            <h2 className="text-base sm:text-lg sm:text-xl font-extrabold text-white">
-              📊 سجل أقساط العام الحالي 2026
-            </h2>
-            <p className="text-xs sm:text-sm font-bold text-white">بيانات المسدد والرصيد المدور لعام 2026</p>
+<div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-lg border border-sky-100 rounded-2xl overflow-hidden">
+<div className="bg-gradient-to-l from-sky-800 via-sky-600 to-sky-600 px-2 sm:px-6 py-2.5 sm:py-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2">
+<div className="min-w-0">
+<h2 className=" text-xl font-extrabold text-white">
+  📊 سجل أقساط العام الحالي 2026 </h2>
+<p className="text-xs sm:text-sm font-bold text-white">بيانات المسدد والرصيد المدور لعام 2026</p>
           </div>
-          <div className="w-full grid grid-cols-2 sm:flex gap-1.5 sm:gap-2 items-center">
-            <button
-              onClick={() => setCondFormatModal(true)}
-              className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-extrabold shadow transition-colors flex items-center justify-center gap-1 ${
-                condFormatRules.length
-                  ? "bg-yellow-400 text-yellow-900 animate-pulse"
-                  : "bg-white/20 text-white hover:bg-white/30"
+
+<div className="w-full grid grid-cols-2 sm:flex gap-1.5 sm:gap-2 items-center">
+<button
+ onClick={() => setCondFormatModal(true)}
+className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-extrabold shadow transition-colors flex items-center justify-center gap-1 ${
+condFormatRules.length? 
+"bg-yellow-400 text-yellow-900 animate-pulse"
+: "bg-white/20 text-white hover:bg-white/30"
               }`}
               title="تلوين الصفوف حسب نص معين"
-            >
+            >تنسيق شرطي
               <Palette className={ICON_MOBILE} />
               <span className="hidden sm:inline">{condFormatRules.length ? `تنسيق نشط (${condFormatRules.length})` : "تنسيق شرطي"}</span>
             </button>
 
-            <div className="relative w-full sm:w-auto">
-              <Search className="w-4 h-4 absolute right-2.5 top-2.5 text-yellow-500" />
-              <input type="text"
+<div className="relative w-full">
+ <Search className="w-10 h-5 absolute right-2.5 top-2.5 text-yellow-700" />
+<input type="text"
                 placeholder="بحث (الاسم، الدفعة، المساق)..."
                 value={search2026}
                 onChange={(e) => setSearch2026(e.target.value)}
-                className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-yellow-600 shadow-sm"
+className="pl-3 pr-8 py-2 rounded-lg text-sm border border-black outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-yellow-600 shadow-sm"
               />
             </div>
-      
-            <button
-              onClick={() => setNewRowModal2026(true)}
-              className="apk-only-actions w-full px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-sm font-bold shadow hover:bg-blue-200 transition-colors flex items-center justify-center gap-1"
-            >
+      <button
+ onClick={() => setNewRowModal2026(true)}
+ className="apk-only-actions w-full px-2 py-1 bg-blue-100 text-white rounded-md text-xs font-bold shadow hover:bg-blue-200 transition-colors flex items-center justify-center gap-1"
+            >اضافة طالب جديد
               <Plus className={ICON_MOBILE} /> <span className="hidden sm:inline">طالب جديد</span>
             </button>
 
             <button
               onClick={() => setNewColModal(true)}
-              className="apk-only-actions w-full px-2 py-1 bg-amber-100 text-amber-800 rounded-md text-sm font-bold shadow hover:bg-amber-200 transition-colors flex items-center justify-center gap-1"
-            >
+className="apk-only-actions w-full px-2 py-1 bg-amber-800 text-black rounded-md text-xs font-bold shadow hover:bg-amber-200 transition-colors flex items-center justify-center gap-1"
+            >اضافة عمود جديد
               <Plus className={ICON_MOBILE} /> <span className="hidden sm:inline">عمود جديد</span>
             </button>
 
             <button
               onClick={() => setNewPaymentModal(true)}
-              className="apk-only-actions w-full px-2 py-1 bg-white/20 text-white rounded-md text-sm font-bold shadow hover:bg-white/30 transition-colors truncate"
-            >
-              <span>➕ إضافة قسط</span>
-            </button>
+className="apk-only-actions w-full px-2 py-1 bg-teal-700 text-white rounded-md text-xs font-bold shadow hover:bg-white/30 transition-colors truncate">
+<span>➕ إضافة قسط</span>
+</button>
     
-            <label className="apk-only-actions w-full px-2 py-1 bg-white text-sky-700 rounded-md text-sm font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors">
-              📥 استيراد{" "}
-              <input
-                type="file"
-                accept=".xlsx,.xls"
-                onChange={(e) => importFile(e, 2026)}
-          className="absolute h-0 w-0 opacity-0 overflow-hidden"  
-              />
-            </label>
+<label className="apk-only-actions w-full px-2 py-1 bg-white text-sky-700 rounded-md text-sm font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors">
+📥 استيراد{" "}
+  <input
+type="file"
+accept=".xlsx,.xls"
+ onChange={(e) => importFile(e, 2026)}
+className="absolute h-0 w-0 opacity-0 overflow-hidden"/>
+ </label>
 
-            <div className="apk-only-actions col-span-2 flex gap-1 w-full sm:w-auto">
-              <button
-                onClick={() => exportToExcel(2026)}
-                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
-              >
-                <FileSpreadsheet className={ICON_MOBILE} /> <span className="hidden sm:inline">Excel</span>
+<div className="apk-only-actions col-span-2 flex gap-1 w-full">
+<button
+onClick={() => exportToExcel(2026)}
+className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}>
+<FileSpreadsheet className={ICON_MOBILE} /> <span className="hidden sm:inline">Excel</span>
               </button>
-              <button
+       <button
                 onClick={() => setPrintSettingsYear(2026)}
                 className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white/95 text-sky-800 rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`}
-              >
+              >طباعة تفصيلية
                 <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة</span>
               </button>
             </div>
