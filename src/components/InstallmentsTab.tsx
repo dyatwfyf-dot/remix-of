@@ -2295,7 +2295,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
 <p className="text-xs sm:text-sm font-bold text-white">بيانات المسدد والرصيد المدور لعام 2026</p>
           </div>
 
-<div className="w-full grid grid-cols-2 sm:flex gap-1.5 sm:gap-2 items-center">
+<div className="w-full col-span-2 flex gap-1.5 sm:gap-2">
 <button
  onClick={() => setCondFormatModal(true)}
 className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-extrabold shadow transition-colors flex items-center justify-center gap-1 ${
