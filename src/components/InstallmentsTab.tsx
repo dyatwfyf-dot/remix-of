@@ -2383,6 +2383,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
         <Printer className={ICON_MOBILE} />
         <span>طباعة تفصيلية</span>
       </button>
+            </div>
 
       {/* السطر 5: مكون الإجراءات المجمعة + تنزيل تفصيلي PDF */}
       <div className="w-full">
@@ -2432,7 +2433,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
       </button>
     </div>
   </div>
-</div>
+
 
 <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2026} columns={3} />
