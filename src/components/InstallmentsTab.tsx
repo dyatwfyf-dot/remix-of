@@ -2093,8 +2093,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
               onClear={() => clearInstallments("2025")}
               printLabel="الأقساط/إجمالي"
               additionalWebActions={installments2025WebActions}
- className="col-span-3 w-full flex gap-1 
- [&>button]:min-w-auto [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-2 sm:[&>button]:py-1"
+ className="col-span-2 w-full grid !grid-cols-2 sm:!flex !gap-1 sm:!gap-2 [&>button]:min-w-auto [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-2 sm:[&>button]:py-1"
             />
           </div>
         </div>
