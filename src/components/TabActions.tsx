@@ -214,7 +214,7 @@ className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10528e] text-white rounded
 onClick={handleExcel}
  className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700 active:scale-95 transition-all cursor-pointer"
  title="تصدير إلى Excel اجماليات"
-        >
+        >تصدير اكسل اجمالي
           <FileSpreadsheet className="w-4 h-4" />
         </button>
         {onClear && (
