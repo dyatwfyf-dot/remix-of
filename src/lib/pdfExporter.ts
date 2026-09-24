@@ -907,18 +907,18 @@ font-size: 15px!important;
     }
     tr.group-row td { 
       background: #fef3c7; 
-      color: #000 !important; 
+      color: white !important; 
       font-weight: 900 !important; 
       text-align: center; 
     }
     tr.subtotal-row td { 
       background: #cbd5e1; 
       font-weight: 900 !important;
-      color: #000 !important;
+      color:white !important;
     }
     tr.total-row td { 
       background: #1f7fb8; 
-      color: #000 !important; 
+      color:white !important; 
       font-weight: 900 !important; 
       white-space: nowrap !important;
     }
