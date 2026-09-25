@@ -40,13 +40,13 @@ const TOTAL_COLS = allCols.length + 1;
 const isFormulaCol = (col: string) => col.includes("اجمالي") || col.includes("الفصل");
 
 const colArgb = (col: string) =>
-  col === "اجمالي الاستخدامات" ? ARGB.TOTAL_ALL
+  col === "اجمالي عام الاستخدامات" ? ARGB.TOTAL_ALL
   : col.includes("اجمالي الباب") ? ARGB.BAB_TOTAL
   : col.includes("الفصل") ? ARGB.FASL : undefined;
 
 // صنف لون العمود الحسابي في الواجهة (الشاشة فقط)
 const formulaClass = (col: string) =>
-  col === "اجمالي الاستخدامات" ? "u-f u-f-total"
+  col === "اجمالي عام الاستخدامات" ? "u-f u-f-total"
   : col.includes("اجمالي الباب") ? "u-f u-f-bab"
   : "u-f u-f-fasl";
 
@@ -259,7 +259,7 @@ const THEAD_HTML = `
 <tr>
   <th rowspan="4">رقم الاستمارة</th><th rowspan="4">كشف التسوية</th>
   <th rowspan="4">التاريخ</th><th rowspan="4">البيان</th>
-  <th rowspan="4" class="c-total">اجمالي الاستخدامات</th>
+  <th rowspan="4" class="c-total">اجمالي عام الاستخدامات</th>
   <th colspan="13" class="c-bab">اجمالي الباب الاول</th>
   <th colspan="21" class="c-bab">اجمالي الباب الثاني</th>
   <th colspan="7" class="c-bab">اجمالي الباب الرابع</th>
