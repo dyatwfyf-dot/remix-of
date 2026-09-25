@@ -40,7 +40,7 @@ const TOTAL_COLS = allCols.length + 1;
 const isFormulaCol = (col: string) => col.includes("اجمالي") || col.includes("الفصل");
 
 const colArgb = (col: string) =>
-  col === "اجمالي عام الاستخدامات" ? ARGB.TOTAL_ALL
+  col === "اجمالي الاستخدامات" ? ARGB.TOTAL_ALL
   : col.includes("اجمالي الباب") ? ARGB.BAB_TOTAL
   : col.includes("الفصل") ? ARGB.FASL : undefined;
 
