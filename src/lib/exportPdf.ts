@@ -39,28 +39,6 @@ const reportLetterheadStyles = `
     tbody tr { break-inside: avoid; page-break-inside: avoid; }
 `;
 
-const targetedReportLetterheadStyles = `
-    thead { display: table-header-group; }
-    .report-letterhead-row { break-inside: avoid; page-break-inside: avoid; }
-    .report-letterhead-cell {
-      border: 0 !important;
-      background: #fff !important;
-      padding: 0 !important;
-      height: 30mm !important;
-    }
-    .report-letterhead-image {
-      display: block;
-      width: 100% !important;
-      max-width:100% !important;
-      height: 30mm !important;
-      max-height: 30mm !important;
-      object-fit: fill !important;
-      object-position:top;
-      margin: 0 !important;
-    }
-    tbody tr { break-inside: avoid; page-break-inside: avoid; }
-  `;
-
 const norm = (s: string) => (s || "").replace(/\s+/g, " ").trim();
 
 export async function exportToPdf(opts: {
@@ -88,7 +66,7 @@ ${reportLetterheadStyles}
     @page :first { margin-top: 8mm; }
     html { margin: 0; padding: 0; }
     body { 
-      font-family: 'Cairo'; 
+      font-family: cairo; 
       direction: rtl; 
       color: #000 !important; 
       margin: 0; 
@@ -158,7 +136,8 @@ ${reportLetterheadStyles}
   </style>`;
 
   const body = `<h1>${opts.title}</h1>
-  <div class="meta">المجلس اليمني للاختصاصات الطبية — تاريخ التقرير: ${reportDateLabel}</div>
+  <div class="meta">المجلس اليمني للاختصاصات الطبية — تاريخ التقرير: ${reportDateLabel}
+  </div>
   <table>
     <thead>${reportLetterheadRow(opts.columns.length)}<tr>${opts.columns.map((c) => `<th>${c}</th>`).join("")}</tr></thead>
     <tbody>${opts.rows
@@ -296,7 +275,7 @@ export async function monthlyStatementPdf(opts: {
 ${targetedReportLetterheadStyles}
     @page { size: A4 landscape; margin: 8mm; padding: 0; }
     body { 
-      font-family: 'Cairo'; 
+      font-family: cairo; 
       direction: rtl; 
       color: #000 !important; 
       padding: 6px; 
@@ -350,7 +329,7 @@ tr.subtotal-row td {
     th:not(:first-child), td:not(:first-child) { width: auto !important; }
     th, td {
       padding: 2px 3px !important;
-      white-space: normal !important;
+      white-space: nowrap !important;
       overflow: visible !important;
       overflow-wrap: break-word !important;
       word-break: normal !important;
@@ -370,7 +349,7 @@ tr.subtotal-row td {
       font-variant-numeric: tabular-nums;
       direction: ltr;
     }
-    td.acc { width: auto !important; white-space: normal !important; overflow-wrap: break-word !important; word-break: normal !important; }
+    td.acc { width: auto !important; white-space: nowrap !important; overflow-wrap: break-word !important; word-break: normal !important; }
     @media print {
       body { padding: 0; }
       @page { size: A4 landscape; margin: 3mm; }
@@ -478,7 +457,7 @@ export async function revenuePdf(
 ${targetedReportLetterheadStyles}
     @page { size: A4 landscape; margin: 8mm; padding: 0; }
     body { 
-      font-family: 'Cairo'; 
+      font-family: Cairo; 
       direction: rtl; 
       color: #000 !important; 
       padding: 6px; 
@@ -486,7 +465,7 @@ ${targetedReportLetterheadStyles}
       font-weight: 700 !important;
     }
     h1 { text-align: center; font-size: 16px; font-weight: 900; margin: 0 0 4px; }
-    .meta { text-align: center; font-size: 14px; font-weight: 700; margin: 2px 0; }
+    .meta { text-align: center; font-size: 19px; font-weight: 700; margin: 2px 0; }
     table { width: 100%; border:solid 1px black; font-size: 16px; table-layout: auto; margin-top: 6px; }
     
     th:nth-child(1), td:nth-child(1) { width: 44%; }
@@ -523,14 +502,17 @@ ${targetedReportLetterheadStyles}
     @page { size: A4 landscape; margin: 3mm; padding: 0; }
     body { padding: 0 1px; width: 100%; }
     .report-letterhead-row { width: 100%; }
-    .report-letterhead-cell { padding: 0 !important; width: 100%; }
-    .report-letterhead-image { width: 100% !important; max-width: none !important; height: 50mm !important; object-fit: fill !important; margin: 0 !important; }
-    table { width: 100%; max-width: 100%; table-layout: auto !important; margin-top: 4px; }
+    .report-letterhead-cell { padding: 0 !important; 
+    width: 100%; }
+    .report-letterhead-image { width: 100% !important; max-width: auto !important; height: 50mm !important; 
+    object-fit: fill !important; margin: 0 !important; }
+    table { width: 100%; max-width: 100%;
+  table-layout: auto !important; margin-top: 4px; }
     th:first-child, td:first-child,
     th:not(:first-child), td:not(:first-child) { width: auto !important; }
     th, td {
       padding: 2px 3px !important;
-      white-space: normal !important;
+      white-space:nowrap !important;
       overflow: visible !important;
       overflow-wrap: break-word !important;
       word-break: normal !important;
@@ -549,7 +531,8 @@ ${targetedReportLetterheadStyles}
       font-variant-numeric: tabular-nums;
       direction: ltr;
     }
-    td.acc { width:100% !important; white-space: normal !important; overflow-wrap: break-word !important; word-break: normal !important; }
+    td.acc { width:100% !important;
+white-space: nowrap !important; overflow-wrap: break-word !important; word-break: normal !important; }
     @media print {
       body { padding: 0; }
       @page { size: A4 landscape; margin: 3mm; }

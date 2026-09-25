@@ -63,7 +63,7 @@ export const tablePrintStyles = `
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { margin: 0; padding: 0; }
   body {
-    font-family: 'Cairo', 'Tajawal', Tahoma, Arial, sans-serif;
+    font-family:cairo;
     padding: 3mm 4mm;
     color: #000 !important;
     direction: rtl;
@@ -145,7 +145,7 @@ export const tablePrintStyles = `
   }
 
   .pdf-cell-text {
-    display: flex !important;
+   display: block !important;
     align-items: center !important;
     justify-content: center !important;
     width: 100% !important;
@@ -213,7 +213,7 @@ export const tablePrintStyles = `
   }
   
   .report-letterhead-block {
-    display: flex;
+    display:block;
     position: relative;
     top: 0;
     width: 100%;
