@@ -111,40 +111,40 @@ const HEADING_MOBILE = "text-lg sm:text-xl font-extrabold";
  * downloadDetailedHtmlPdf
  * (لم أصِحح المنطق — فقط تأكدت أن حجم إطار الطباعة مناسب عند التحميل)
  */
-const downloadDetailedHtmlPdf = async ({
-  title,
-  body,
-  css,
-  fileName,
-  pageSize,
-  orientation,
-}: {
-  title: string;
-  body: string;
-  css: string;
-  fileName: string;
-  pageSize: "A4" | "A3";
-  orientation: "portrait" | "landscape";
-}): Promise<void> => {
-  const pageWidthPx = orientation === "landscape" ? 1600 : 1132;
-  const frame = document.createElement("iframe");
-  frame.setAttribute("aria-hidden", "true");
-  frame.style.position = "fixed";
-  frame.style.left = "-10000px";
-  frame.style.top = "0";
-  frame.style.width = `${pageWidthPx}px`;
-  frame.style.height = "800px";
-  frame.style.border = "0";
-  frame.style.opacity = "0";
-  frame.style.pointerEvents = "none";
-  document.body.appendChild(frame);
-
-  try {
-    const fdoc = frame.contentDocument;
-    if (!fdoc) throw new Error("تعذر إنشاء مساحة PDF");
-
-    fdoc.open();
-    const fontFaces = `
+ const downloadDetailedHtmlPdf = async ({
+      title,
+      body,
+      css,
+      fileName,
+      pageSize,
+      orientation,
+    }: {
+      title: string;
+      body: string;
+      css: string;
+      fileName: string;
+      pageSize: "A4" | "A3";
+      orientation: "portrait" | "landscape";
+    }): Promise < void > => {
+      const pageWidthPx = orientation === "landscape" ? 1600 : 1132;
+      const frame = document.createElement("iframe");
+      frame.setAttribute("aria-hidden", "true");
+      frame.style.position = "fixed";
+      frame.style.left = "-10000px";
+      frame.style.top = "0";
+      frame.style.width = `${pageWidthPx}px`;
+      frame.style.height = "800px";
+      frame.style.border = "0";
+      frame.style.opacity = "0";
+      frame.style.pointerEvents = "none";
+      document.body.appendChild(frame);
+      
+      try {
+        const fdoc = frame.contentDocument;
+        if (!fdoc) throw new Error("تعذر إنشاء مساحة PDF");
+        
+        fdoc.open();
+        const fontFaces = `
       @font-face {
         font-family: "Mohammad Bold Art";
         src: url("${window.location.origin}/MohammadBoldArt-Regular.ttf") format("truetype");
@@ -167,8 +167,8 @@ const downloadDetailedHtmlPdf = async ({
         font-display: block;
       }
     `;
-
-    fdoc.write(`<!doctype html>
+        
+        fdoc.write(`<!doctype html>
       <html lang="ar" dir="rtl">
         <head>
           <meta charset="utf-8" />
@@ -184,7 +184,7 @@ const downloadDetailedHtmlPdf = async ({
               margin: 0 !important;
               padding: 0 !important;
               background: #fff !important;
-font-family: sans-serif !important;
+              font-family: sans-serif !important;
             }
             body { width: ${pageWidthPx}px; }
             .pdf-download-root {
@@ -195,10 +195,10 @@ font-family: sans-serif !important;
               box-sizing: border-box;
             }
             .pdf-download-root .report-letterhead-block {
-width: 100% !important;
-height: 30mm !important;
-min-height: 30mm !important;
-max-height: 30mm !important;
+              width: 100% !important;
+              height: 30mm !important;
+              min-height: 30mm !important;
+              max-height: 30mm !important;
               margin: 0 0 4mm !important;
             }
             .pdf-download-root .report-letterhead-image {
@@ -207,38 +207,78 @@ max-height: 30mm !important;
               object-fit: contain !important;
               object-position: top !important;
             }
+
+            /* ===== إخفاء العنوان المكرر في الصفحة الأولى عند وجود ترويسة ===== */
+            .pdf-download-root .report-letterhead-block ~ .doc-header .title h1,
+            .pdf-download-root .report-letterhead-block ~ .doc-header .title h2,
+            .pdf-download-root .report-letterhead-block ~ * .doc-header .title h1,
+            .pdf-download-root .report-letterhead-block ~ * .doc-header .title h2 {
+              display: none !important;
+              height: 0 !important;
+              margin: 0 !important;
+              padding: 0 !important;
+            }
+
             .pdf-download-root .doc-header .title h1 { font-size: 22px !important; }
             .pdf-download-root .doc-header .title h2 { font-size: 18px !important; }
             .pdf-download-root .doc-header .meta { font-size: 14px !important; }
+
+            /* ===== تنسيق الجدول بشكل احترافي ===== */
             .pdf-download-root table {
               width: 100% !important;
               margin: 0 !important;
               border-collapse: collapse !important;
               table-layout: auto !important;
-              border: 1px solid #000 !important;
+              border: 1.2px solid #1f3a5f !important;
+              background: #ffffff !important;
+              overflow: hidden !important;
             }
-            .pdf-download-root th,
-            .pdf-download-root td {
+
+            /* خلايا الرأس */
+            .pdf-download-root thead th {
+              font-family: "Al Qabas Bold", "Mohammad Bold Art", Tahoma, Arial, sans-serif !important;
+              font-size: 18.5px !important;
+              padding: 10px 6px !important;
+              background: #1f3a5f !important;
+              color: #ffffff !important;
               text-align: center !important;
               vertical-align: middle !important;
-              padding: 5px 4px !important;
-              font-size: 15px !important;
-              line-height: 1.45 !important;
-              border: 1px solid #000 !important;
-font-family:Cairo !important;
               font-weight: 700 !important;
+              letter-spacing: 0.2px !important;
+              border: 1px solid #1f3a5f !important;
+              border-bottom: 1.5px solid #16304f !important;
             }
-            .pdf-download-root thead th {
-font-family:Al Qabas Bold !important;
-font-size: 18.5px !important;
-              padding: 7px 4px !important;
+
+            /* خلايا الجسم */
+            .pdf-download-root tbody td,
+            .pdf-download-root tbody th {
+              text-align: center !important;
+              vertical-align: middle !important;
+              padding: 8px 6px !important;
+              font-size: 15px !important;
+              line-height: 1.5 !important;
+              border: 1px solid #c7d2e0 !important;
+              font-family: "Cairo", Tahoma, Arial, sans-serif !important;
+              font-weight: 700 !important;
+              color: #1a1a1a !important;
+              background: #ffffff !important;
             }
+
+            /* تخطيط الصفوف (Zebra) */
+            .pdf-download-root tbody tr:nth-child(even) td,
+            .pdf-download-root tbody tr:nth-child(even) th {
+              background: #f5f8fc !important;
+            }
+
+            /* خلايا النصوص الطويلة */
             .pdf-download-root td.cell-text,
             .pdf-download-root th.cell-text {
               word-break: break-word;
               overflow-wrap: break-word;
               white-space: normal;
             }
+
+            /* خلايا الأرقام */
             .pdf-download-root td.cell-number,
             .pdf-download-root th.cell-number,
             .pdf-download-root .num,
@@ -249,6 +289,7 @@ font-size: 18.5px !important;
               font-variant-numeric: tabular-nums;
               direction: ltr;
             }
+
             .pdf-download-root .cell-content {
               display: flex !important;
               align-items: center !important;
@@ -256,11 +297,22 @@ font-size: 18.5px !important;
               font-size: inherit !important;
               font-weight: inherit !important;
             }
+
+            /* صف المجموع */
             .pdf-download-root .total-row td {
               font-family: "Al Qabas Bold", "Mohammad Bold Art", Tahoma, Arial, sans-serif !important;
               font-size: 15.5px !important;
+              background: #e8eef7 !important;
+              color: #1f3a5f !important;
+              font-weight: 700 !important;
+              border-top: 1.5px solid #1f3a5f !important;
             }
-            .pdf-download-root .doc-foot { font-size: 13px !important; margin-top: 6px !important; }
+
+            /* ذيل التقرير */
+            .pdf-download-root .doc-foot {
+              font-size: 13px !important;
+              margin-top: 6px !important;
+            }
             .print-toolbar { display: none !important; }
           </style>
         </head>
@@ -268,47 +320,47 @@ font-size: 18.5px !important;
           <div class="pdf-download-root">${reportLetterheadHtml()}${body}</div>
         </body>
       </html>`);
-    fdoc.close();
-
-    const images = Array.from(fdoc.images);
-    await Promise.all(
-      images.map(
-        (image) =>
-          image.complete
-            ? Promise.resolve()
-            : new Promise<void>((resolve) => {
-                const done = () => resolve();
-                image.addEventListener("load", done, { once: true });
-                image.addEventListener("error", done, { once: true });
-                window.setTimeout(done, 2500);
-              }),
-      ),
-    );
-    if ((fdoc as any).fonts?.ready) {
-      await Promise.race([
-        (fdoc as any).fonts.ready,
-        new Promise((resolve) => window.setTimeout(resolve, 3000)),
-      ]);
-    }
-    await new Promise((resolve) => window.setTimeout(resolve, 120));
-
-    const page = fdoc.querySelector(".pdf-download-root") as HTMLElement | null;
-    if (!page) throw new Error("تعذر العثور على محتوى التقرير");
-    frame.style.height = `${Math.max(page.scrollHeight + 80, 800)}px`;
-
-    const [{ default: html2canvas }, { default: JsPDF }] = await Promise.all([
-      import("html2canvas"),
-      import("jspdf"),
-    ]);
-    const scale = 3;
-    const pdf = new JsPDF({
-      unit: "mm",
-      format: pageSize.toLowerCase() as "a4" | "a3",
-      orientation,
-      compress: true,
-    });
-    const pageWidthMm = pdf.internal.pageSize.getWidth();
-    const pageHeightMm = pdf.internal.pageSize.getHeight();
+        fdoc.close();
+        
+        const images = Array.from(fdoc.images);
+        await Promise.all(
+          images.map(
+            (image) =>
+            image.complete ?
+            Promise.resolve() :
+            new Promise < void > ((resolve) => {
+              const done = () => resolve();
+              image.addEventListener("load", done, { once: true });
+              image.addEventListener("error", done, { once: true });
+              window.setTimeout(done, 2500);
+            }),
+          ),
+        );
+        if ((fdoc as any).fonts?.ready) {
+          await Promise.race([
+            (fdoc as any).fonts.ready,
+            new Promise((resolve) => window.setTimeout(resolve, 3000)),
+          ]);
+        }
+        await new Promise((resolve) => window.setTimeout(resolve, 120));
+        
+        const page = fdoc.querySelector(".pdf-download-root") as HTMLElement | null;
+        if (!page) throw new Error("تعذر العثور على محتوى التقرير");
+        frame.style.height = `${Math.max(page.scrollHeight + 80, 800)}px`;
+        
+        const [{ default: html2canvas }, { default: JsPDF }] = await Promise.all([
+          import("html2canvas"),
+          import("jspdf"),
+        ]);
+        const scale = 3;
+        const pdf = new JsPDF({
+          unit: "mm",
+          format: pageSize.toLowerCase() as "a4" | "a3",
+          orientation,
+          compress: true,
+        });
+        const pageWidthMm = pdf.internal.pageSize.getWidth();
+        const pageHeightMm = pdf.internal.pageSize.getHeight();
     // هوامش ضيقة حتى يستغل جدول الأقساط كامل عرض صفحة PDF.
     const marginMm = 3;
     const imageWidthMm = pageWidthMm - marginMm * 2;
@@ -403,13 +455,13 @@ const StatsGrid = ({ stats, columns = 3 }: { stats: any[]; columns?: number }) =
         <div
           key={idx}
           // خففنا min-height لجعل البطاقات أكثر إحكامًا على الشاشات الصغيرة
-          className={`${stat.bgClass} relative overflow-hidden min-h-[46px] sm:min-h-[56px] px-2 sm:px-3 py-1 sm:py-2 rounded-xl sm:rounded-2xl border ${stat.borderClass} shadow-sm`}
+className={`${stat.bgClass} relative overflow-hidden min-h-[46px] sm:min-h-[56px] px-2 sm:px-3 py-1 sm:py-2 rounded-xl sm:rounded-2xl border ${stat.borderClass} shadow-sm`}
         >
-          <span className={`absolute inset-y-0 right-0 w-1 sm:w-1.5 ${stat.accentClass || "bg-sky-500"}`} />
-          <div className="pr-1.5 sm:pr-2 min-w-0">
-            <div className="text-xs leading-tight sm:text-xs font-bold text-slate-500 truncate">
+<span className={`absolute inset-y-0 right-0 w-1 sm:w-1.5 ${stat.accentClass || "bg-sky-500"}`} />
+<div className="pr-1.5 sm:pr-2 min-w-0">
+<div className="text-xs leading-tight sm:text-xs font-bold text-slate-500 truncate">
               {stat.label}
-            </div>
+</div>
             <div className="text-sm sm:text-xl numeric-cell font-mono font-extrabold mt-0.5 text-slate-900 tabular-nums truncate">
               {stat.value}
             </div>
