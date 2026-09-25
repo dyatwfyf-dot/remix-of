@@ -19,7 +19,7 @@ const ARGB = { TOTAL_ALL: "FFE5DFEC", BAB_TOTAL: "FFDBEEF3", FASL: "FFFDE9D9", B
   DARK: "FF0B3D6D", GOLD: "FFFFD54A", CUR: "FFDBEAFE", PREV: "FFE2E8F0" };
 
 const dataColumnsOrder = [
-  "اجمالي عام الاستخدامات",
+  "اجمالي الاستخدامات",
   "اجمالي الباب الاول",
   "الفصل الاول_باب1",
   "المرتبات الاساسية", "اجور تعاقدية", "اجور عمل اضافي", "مكافات", "طبيعة عمل", "بدل ريف", "بدل سكن", "بدل تحديث",
