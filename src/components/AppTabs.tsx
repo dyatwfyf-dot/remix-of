@@ -704,7 +704,7 @@ color:#000 !important;
 print-color-adjust:exact !important; 
         
       }
-      tr.month td { background:#0b3d6d; color:#000 !important; font-weight:700 !important; text-align:center; padding:0 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
+      tr.month td { background:#164759; font-weight:700 !important; text-align:center; padding:0 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
    color:white; 
    
         
@@ -712,7 +712,7 @@ print-color-adjust:exact !important;
       tr.t-cur td  {
 background:#dbeafe;
 color:white!important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      tr.t-prev td { background:#e2e8f0; color:white !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      tr.t-prev td { background:#401863; color:white !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
       tr.t-cum td  {
 background:#0b3d6d; color:white !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
       tr.t-cur td:first-child, tr.t-prev td:first-child, tr.t-cum td:first-child { text-align:center; padding-right:4px; }

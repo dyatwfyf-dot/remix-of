@@ -681,13 +681,13 @@ ref={tableRef1}
               <tr>
                 <th
                   rowSpan={2}
-                  className="border border-slate-700 bg-slate-950 text-cyan-200 font-extrabold !px-2 !py-2 !text-xs sm:!text-sm min-w-[150px] whitespace-normal"
-                >
-                  بيان الحسابات (طبقاً للنظام الموحد)
+className="border border-slate-700 bg-slate-950 text-cyan-200 font-extrabold !px-2 !py-2 !text-xs sm:!text-sm min-w-0 whitespace-normal text-center">
+بيان الحسابات
+(طبقاً للنظام الموحد)
                 </th>
                 <th
                   colSpan={2}
-                  className="border border-slate-700 bg-slate-900 text-slate-200 font-bold !px-1.5 !py-2 !text-xs sm:!text-sm"
+className="border border-slate-700 bg-slate-900 text-slate-200 font-bold !px-1.5 !py-2 !text-xs sm:!text-sm"
                 >
                   الرصيد السابق في {startMonth === 1 ? `1/1/${year}` : `${year}/${startMonth}/1`}م
                 </th>

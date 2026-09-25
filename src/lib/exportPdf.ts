@@ -327,12 +327,14 @@ ${targetedReportLetterheadStyles}
     }
     td.acc { text-align: center; padding-right: 6px !important; font-weight: 800 !important; }
     th { 
-background: #d1930d !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+background: #94e6ff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 tr.group-row td {
 background: #32a4c7 !important; 
 font-weight: 900 !important; }
 tr.subtotal-row td { 
-  background: #16794c !important; font-weight: 800 !important; }
+  background: #16794c !important; font-weight: 800 !important; 
+     color:white;
+}
     tr.total-row td { background: #e03636 !important; font-weight: 900 !important; }
     /* تحسينات محصورة بتقريري كشف الحساب الشهري والإيرادات */
     @page { size: A4 landscape; margin: 3mm; padding: 0; }
