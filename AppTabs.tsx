@@ -46,7 +46,7 @@ const colArgb = (col: string) =>
 
 // صنف لون العمود الحسابي في الواجهة (الشاشة فقط)
 const formulaClass = (col: string) =>
-  col === "اجمالي عام الاستخدامات" ? "u-f u-f-total"
+  col === "اجمالي الاستخدامات" ? "u-f u-f-total"
   : col.includes("اجمالي الباب") ? "u-f u-f-bab"
   : "u-f u-f-fasl";
 
