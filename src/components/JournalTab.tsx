@@ -574,8 +574,8 @@ export default function JournalTab() {
 
           {/* جدول أطراف القيد (المدين والدائن) */}
           <div className="overflow-hidden rounded-2xl border border-indigo-100 shadow-sm">
-            <div className="overflow-auto max-h-[68vh]">
-              <table className="min-w-max w-full table-auto border-collapse text-right text-xs sm:text-sm font-semibold">
+            <div className="overflow-auto max-h-[80vh]">
+              <table className="min-w-auto w-full table-auto border-collapse text-right text-xs sm:text-sm font-semibold">
                 <thead className="bg-gradient-to-l from-indigo-950 to-purple-900 text-white">
                   <tr>
                     <th className="!whitespace-nowrap text-center font-bold !px-2 !py-2.5 !text-xs sm:!text-sm">
@@ -749,7 +749,7 @@ export default function JournalTab() {
           </div>
         ) : (
           <div className="overflow-auto max-h-[75vh]">
-            <table className="w-full min-w-0 table-auto border-collapse text-center text-xs sm:text-sm font-semibold">
+            <table className="w-auto min-w-auto table-auto border-collapse text-center text-xs sm:text-sm font-semibold">
               <thead className="sticky top-0 z-20 bg-gradient-to-l from-slate-900 via-indigo-950 to-purple-900 text-white shadow-md">
                 <tr>
                   {JOURNAL_COLS.map((c) => (
@@ -802,21 +802,21 @@ export default function JournalTab() {
                       <td className="min-w-0 max-w-[90px] text-slate-600 !px-1.5 !py-2 !text-xs sm:!text-sm">
                         <span className={journalClampCls}>{j.settlement || "—"}</span>
                       </td>
-                      <td className="min-w-0 max-w-[105px] font-mono text-slate-600 !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-nowrap">
+                      <td className="min-w-0 max-w-[105px] font-mono text-slate-600 !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal">
                         <span className={journalClampCls}>{j.date || "—"}</span>
                       </td>
                       <td
-                        className="min-w-0 max-w-[190px] font-medium text-slate-800 !px-1.5 !py-2 !text-xs sm:!text-sm"
+className="min-w-0 max-w-auto font-medium text-slate-800 !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal"
                         title={j.description}
                       >
                         <span className={journalClampCls}>{j.description || "—"}</span>
                       </td>
-                      <td className="min-w-0 max-w-[180px] !px-1.5 !py-2 !text-xs sm:!text-sm">
+                      <td className="min-w-0 max-w-auto !px-1.5 !py-2 !text-xs sm:!text-sm">
                         <span className={`${journalClampCls} rounded-full bg-emerald-50 px-2.5 py-1 text-xs sm:text-sm font-bold text-emerald-950 border border-emerald-200/60`}>
                           {j.debitAccount || "—"}
                         </span>
                       </td>
-                      <td className="min-w-0 max-w-[180px] !px-1.5 !py-2 !text-xs sm:!text-sm">
+                      <td className="min-w-0 max-w-[180px] !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal">
                         <span className={`${journalClampCls} rounded-full bg-rose-50 px-2.5 py-1 text-xs sm:text-sm font-bold text-rose-950 border border-rose-200/60`}>
                           {j.creditAccount || "—"}
                         </span>

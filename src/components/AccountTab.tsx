@@ -942,7 +942,7 @@ export default function AccountsTab() {
         {/* الجدول بالتنسيق المضغوط والمتوافق مع الهواتف */}
         <div className="p-1 sm:p-2.5">
           <div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-2xl border border-slate-200">
-            <table className="w-full text-center border-collapse border border-slate-300">
+            <table className="w-auto table-layout-auto text-center border-collapse border border-slate-300">
               {/* ترويسة الجدول */}
               <thead className="sticky top-0 z-20 text-slate-900 font-black text-xs sm:text-sm bg-gradient-to-r from-teal-50 via-slate-100 to-amber-50/50">
                 <tr>
@@ -1023,13 +1023,13 @@ export default function AccountsTab() {
                       <td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {acc.checkDate || "—"}
                       </td>
-                      <td className="border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap text-right font-medium">
+                      <td className="border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal text-center font-extrabold">
                         {acc.description || "—"}
                       </td>
-                      <td className="border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+                      <td className="border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-">
                         {acc.specialty || "—"}
                       </td>
-                      <td className="border border-slate-300 font-bold !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap text-right">
+                      <td className="border border-slate-300 font-bold !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal text-center">
                         {acc.name || "—"}
                       </td>
                       <td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
@@ -1051,7 +1051,7 @@ export default function AccountsTab() {
                             updateAccount(acc.id, { ...acc, revenueKey: newKey || undefined });
                             toast.success("تم تحديث رمز الإيراد");
                           }}
-                          className="w-full py-1 px-1 text-[11px] font-bold text-purple-700 bg-purple-50/80 border border-purple-200 rounded-lg outline-none focus:border-purple-600 cursor-pointer"
+                          className="w-auto py-1 px-1 text-[11px] font-bold text-blue-900 bg-purple-50/80 border border-purple-200 rounded-lg outline-none focus:border-purple-600 cursor-pointer"
                         >
                           <option value="">— ربط —</option>
                           {revenueTypes.map((t) => (
