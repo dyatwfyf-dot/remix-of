@@ -90,7 +90,7 @@ export const tablePrintStyles = `
     margin-bottom: 5px;
     font-size: 14.5px;
     font-weight: 800;
-    border-bottom:1px solid #b8860b;
+    border-bottom: 1px solid #b8860b;
     padding-bottom: 4px;
   }
   
@@ -103,19 +103,20 @@ export const tablePrintStyles = `
     font-size: clamp(13px, 1.05vw, 13px);
   }
   
+  /* حدود الخلايا العادية بلون أسود بحجم 1px مع احتواء عمودي وأفقي متوازن */
   th, td {
-    border: 1px solid #000;
+    border: 1px solid #000 !important;
     padding: 6px 8px !important;
     text-align: center !important;
-    vertical-align: middle !important; /* التوسيط العمودي تماماً بين الجزئين العلوي والسفلي */
+    vertical-align: middle !important;
     color: #000 !important;
     font-weight: 800 !important;
-  line-height: 1.5!important;
+    line-height: 1.5 !important;
     height: auto !important;
-    min-height: 50px;
-    font-size: clamp(14px, 1.15vw, 14px) !important;
-    white-space: nowrap !important; /* منع التفاف النصوص نهائياً في كافة الخلايا */
-    width: max-content !important;
+    min-height: auto;
+    font-size: 14px !important;
+    white-space: nowrap !important;
+    width: auto !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
   }
@@ -138,27 +139,26 @@ export const tablePrintStyles = `
     -webkit-text-fill-color: #000 !important;
     text-shadow: none !important;
     font-weight: 900 !important;
-    line-height: 1.15 !important;
+    line-height: 1.5 !important;
     font-size: clamp(14px, 1.9vw, 14px) !important;
-    width: max-content !important;
+    width: auto !important;
   }
 
   .pdf-cell-text {
     display: flex !important;
-align-items: center !important;     /* توسيط عمودي للعنصر الداخلي */
-    justify-content: center !important; /* توسيط أفقـي للعنصر الداخلي */
+    align-items: center !important;
+    justify-content: center !important;
     width: 100% !important;
     height: 100% !important;
     text-align: center !important;
-    white-space: normal!important;
+    white-space: normal !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
   }
 
-  /* ضمان منع التفاف النصوص الطويلة وإبقائها في سطر واحد داخل المساحة المتاحة */
   .text-cell,
   .long-text-cell {
-    white-space: normal!important;
+    white-space: normal !important;
     overflow-wrap: normal !important;
     word-break: keep-all !important;
     width: max-content !important;
@@ -167,7 +167,7 @@ align-items: center !important;     /* توسيط عمودي للعنصر الد
   }
   .long-text-cell .pdf-cell-text,
   .text-cell .pdf-cell-text {
-    white-space: normal!important;
+    white-space: normal !important;
     overflow-wrap: normal !important;
     word-break: keep-all !important;
   }
@@ -183,14 +183,18 @@ align-items: center !important;     /* توسيط عمودي للعنصر الد
     white-space: nowrap !important;
     vertical-align: middle !important;
   }
+
+  /* حدود رؤوس الأعمدة بخط أسود غامق وسميك */
   thead th {
     background: #f5deb3 !important;
     color: #171412 !important;
     font-weight: 900 !important;
-    font-size: 14px;
-    white-space: nowrap !important;
+    font-size: 18px;
+    border: 2px solid #000 !important;
+    white-space: normal !important;
     vertical-align: middle !important;
   }
+  
   tbody tr:nth-child(even) td { background: #f8fafc !important; }
 
   .idx { 
@@ -262,7 +266,7 @@ align-items: center !important;     /* توسيط عمودي للعنصر الد
     height: 30mm !important;
     max-height: 30mm !important;
     object-fit: fill !important;
-    object-position:top!important;
+    object-position: top !important;
     margin: 0 !important;
   }
   .pdf-page .report-letterhead-cell {
