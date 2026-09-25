@@ -306,7 +306,7 @@ const USAGE_UI_CSS = `
 .usage-emerald .u-table th, .usage-emerald .u-table td { border-bottom:1px solid var(--line); border-left:1px solid var(--line); }
 
 /* الرأس */
-.usage-emerald .u-thead th { position:sticky; top:0; z-index:5; background:#e6f3ec; color:#0b3d2e; font-weight:800; font-size:12px; line-height:1.3; padding:6px 8px; text-align:center; vertical-align:middle; white-space:normal; min-width:64px; overflow-wrap:break-word; }
+.usage-emerald .u-thead th { position:sticky; top:0; z-index:5; background:#e6f3ec; color:#0b3d2e; font-weight:800; font-size:12px; line-height:1.3; padding:6px 8px; text-align:center; vertical-align:middle; white-space:normal; min-width:auto; overflow-wrap:break-word; }
 .usage-emerald .u-thead th.c-total { background:#fbe7a1; color:#5a3d00; }
 .usage-emerald .u-thead th.c-bab { background:#0f5132; color:#f5d76e; }
 .usage-emerald .u-thead th.c-fasl { background:#a9d8c3; color:#0b3d2e; }
@@ -662,25 +662,59 @@ const AppTabs: React.FC = () => {
       * { box-sizing: border-box; }
       html, body { margin:0; padding:0; }
       body { font-family:'Cairo','Tajawal','Segoe UI',Tahoma,Arial,sans-serif; direction:rtl; color:#000 !important; padding:0 1px; width:100%; font-weight:700 !important; }
-      .report-letterhead-block { display:flex; width:100%; max-width:none; height:30mm; min-height:30mm; max-height:30mm; overflow:hidden; align-items:stretch; justify-content:center; margin:0 0 3mm; page-break-before:avoid; page-break-after:avoid; }
-      .report-letterhead-image { display:block; width:100% !important; max-width:none !important; height:100% !important; max-height:100% !important; object-fit:fill !important; object-position:top; margin:0 !important; }
+.report-letterhead-block { display:flex; width:100%; max-width:none; height:30mm; min-height:30mm; max-height:30mm; overflow:hidden; align-items:stretch; justify-content:center; margin:0 0 3mm; page-break-before:avoid; page-break-after:avoid; }
+.report-letterhead-image { display:block; width:100% !important; max-width:100% !important; height:100% !important; max-height:100% !important; object-fit:fill !important; object-position:top; margin:0 !important; }
       h2 { text-align:center; color:#000 !important; margin:0 0 3mm; font-weight:800; }
-      .report-date { text-align:center; color:#000 !important; margin:0 0 5px; font-size:10px; font-weight:700; }
+.report-date { text-align:center; color:#000 !important; margin:0 0 5px; font-size:18px; font-weight:700; }
       table { width:100%; max-width:100%; min-width:0; border-collapse:collapse; table-layout:auto !important; font-size:clamp(14px,1.05vw,16px); }
       th, td { border:1px solid #000; padding:2px 3px !important; text-align:center; vertical-align:middle; white-space:normal; overflow:visible; overflow-wrap:break-word; word-break:normal; hyphens:none; line-height:1.15; font-size:clamp(14px,1.05vw,16px); color:#000 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
       .num, .numeric-cell, .date-cell { width:1%; min-width:0; white-space:nowrap !important; overflow:visible; overflow-wrap:normal; word-break:keep-all; hyphens:none; font-family:'Times New Roman',Times,serif !important; font-size:clamp(14px,1vw,16px) !important; font-variant-numeric:tabular-nums; direction:ltr; }
-      .text-cell { width:auto; white-space:normal; overflow-wrap:break-word; word-break:normal; }
-      .report-letterhead-cell { padding:0 !important; border:0 !important; width:100%; }
-      thead th { background:#fff; font-weight:700; color:#000 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      thead .c-total { background:${COLORS.TOTAL_ALL}; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      thead .c-bab   { background:${COLORS.BAB_TOTAL}; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      thead .c-fasl  { background:${COLORS.FASL}; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      thead .c-band  { background:${COLORS.BAND}; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      td.formula { background:#f8fafc; font-weight:700; color:#000 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      tr.month td { background:#0b3d6d; color:#000 !important; font-weight:700 !important; text-align:center; padding:0 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      tr.t-cur td  { background:#dbeafe; color:#000 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      tr.t-prev td { background:#e2e8f0; color:#000 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      tr.t-cum td  { background:#0b3d6d; color:#000 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      .text-cell { 
+width:auto; 
+white-space:normal; overflow-wrap:break-word; word-break:normal; }
+.report-letterhead-cell { padding:0 !important; border:0 !important; width:100%; }
+      thead th { 
+background:#fff; font-weight:700; color:#000 !important; 
+-webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
+white-space:normal !important;
+        
+      }
+ thead .c-total {
+ background:${COLORS.TOTAL_ALL}; 
+ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
+   color:white; 
+ }
+      thead .c-bab   { background:${COLORS.BAB_TOTAL}; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important ; 
+        color:white; 
+      }
+      thead .c-fasl  {
+background:${COLORS.FASL}; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
+      color:white; 
+
+        
+      }
+      thead .c-band  { background:${COLORS.BAND}; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; 
+        color:white; 
+
+      }
+td.formula { 
+background:#f8fafc; font-weight:700; 
+color:#000 !important;
+-webkit-print-color-adjust:exact!important; 
+print-color-adjust:exact !important; 
+        
+      }
+      tr.month td { background:#0b3d6d; color:#000 !important; font-weight:700 !important; text-align:center; padding:0 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
+   color:white; 
+   
+        
+      }
+      tr.t-cur td  {
+background:#dbeafe;
+color:white!important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      tr.t-prev td { background:#e2e8f0; color:white !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      tr.t-cum td  {
+background:#0b3d6d; color:white !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
       tr.t-cur td:first-child, tr.t-prev td:first-child, tr.t-cum td:first-child { text-align:center; padding-right:4px; }
       @media print { @page { size:A4 landscape; margin:3mm; } }
       ${runningLetterheadCss}
