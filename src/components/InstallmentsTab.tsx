@@ -184,7 +184,7 @@ const downloadDetailedHtmlPdf = async ({
               margin: 0 !important;
               padding: 0 !important;
               background: #fff !important;
-              font-family: "Mohammad Bold Art", "Noto Kufi Arabic", Tahoma, Arial, sans-serif !important;
+font-family: sans-serif !important;
             }
             body { width: ${pageWidthPx}px; }
             .pdf-download-root {
@@ -195,10 +195,10 @@ const downloadDetailedHtmlPdf = async ({
               box-sizing: border-box;
             }
             .pdf-download-root .report-letterhead-block {
-              width: 100% !important;
-              height: 30mm !important;
-              min-height: 30mm !important;
-              max-height: 30mm !important;
+width: 100% !important;
+height: 30mm !important;
+min-height: 30mm !important;
+max-height: 30mm !important;
               margin: 0 0 4mm !important;
             }
             .pdf-download-root .report-letterhead-image {
@@ -225,12 +225,12 @@ const downloadDetailedHtmlPdf = async ({
               font-size: 15px !important;
               line-height: 1.45 !important;
               border: 1px solid #000 !important;
-              font-family: "Mohammad Bold Art", "Noto Kufi Arabic", Tahoma, Arial, sans-serif !important;
+font-family:Cairo !important;
               font-weight: 700 !important;
             }
             .pdf-download-root thead th {
-              font-family: "Al Qabas Bold", "Mohammad Bold Art", Tahoma, Arial, sans-serif !important;
-              font-size: 15.5px !important;
+font-family:Al Qabas Bold !important;
+font-size: 18.5px !important;
               padding: 7px 4px !important;
             }
             .pdf-download-root td.cell-text,

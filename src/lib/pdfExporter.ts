@@ -264,15 +264,15 @@ async function htmlTableToPdfPaginated(opts: {
   const cellFontSize = isWideCentered ? 'clamp(14px, 0.9vw, 15px)' : 'clamp(14px, 1.05vw, 16px)';
   const layoutCss = isWideCentered ? `
     .pdf-page {
-    width: 100% !important;
-  max-width:none!important; 
+    width:100%!important;
+  max-width:auto!important; 
   margin: 0 !important; padding: 0 !important;
 }
     .pdf-page table {
-  width: 100% !important;
-  max-width: none!important;
-  margin-left: 0!important;
-  margin-right: 0!important; }
+  width:100%!important;
+  max-width:auto!important;
+  margin-left:0!important;
+  margin-right:0!important; }
   ` : '';
   const pageHeightPx = Math.round(
     pageWidthPx * (orientation === 'landscape' ? 210 / 297 : 297 / 210)
@@ -458,14 +458,14 @@ const statementCss = `
   padding: 0;
   }
   table {
-  width: 100% !important; max-width: 100%; 
+  width: 100% !important;
+  max-width:100%!important; 
 table-layout: auto!important; 
   }
   .info {
   width: 100%; 
 border: solid 1px black; 
 margin: 6px 0 10px;
-table-layout: auto !important; 
   }
   .info td {
 border: 1px solid #000; padding: 6px 8px; 
@@ -576,17 +576,16 @@ export function printHtmlContent(htmlContent: string): void {
           margin: 0;
           padding: 0;
         }
-        h1, h2, h3, h4, h5, h6 {
-          font-weight: 800;
-          letter-spacing: -0.01em;
-          margin: 8px 0;
-          color: #000 !important;
+ h1, h2, h3, h4, h5, h6 {
+font-weight:bold;
+margin: 8px 0;
+color: #000 !important;
         }
         table {
-          width: 100% !important;
-          max-width: 100% !important;
-          border-collapse: collapse;
-          table-layout: auto !important;
+width:auto!important;
+max-width:auto!important;
+border-collapse: collapse;
+table-layout:auto !important;
           margin: 10px 0;
         }
         th, td {
@@ -602,12 +601,12 @@ export function printHtmlContent(htmlContent: string): void {
           white-space: nowrap;
           width: 1%;
         }
-        td:not(.num):not(.idx):not(.numeric-cell) {
-          white-space: normal !important;
-          overflow-wrap: break-word !important;
+td:not(.num):not(.idx):not(.numeric-cell) {
+ white-space:nowrap !important;
+ overflow-wrap: break-word !important;
           word-break: normal !important;
           overflow: visible;
-          width: auto !important;
+width: auto !important;
         }
         td.num, td.idx, td.numeric-cell {
           white-space: nowrap !important;
@@ -622,9 +621,9 @@ export function printHtmlContent(htmlContent: string): void {
           font-weight: 900 !important;
           direction: ltr;
         }
-        th {
-          background: #1f7fb8;
-          color: #000 !important;
+th {
+background: #1f7fb8;
+ color: #000 !important;
           font-weight: 900 !important;
           white-space: nowrap !important;
         }
@@ -634,7 +633,8 @@ export function printHtmlContent(htmlContent: string): void {
         @media print {
           * { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           body { background: white; color: #000 !important; font-weight: 900 !important; width: 100%; margin: 0; padding: 0; }
-          table { width: 100% !important; max-width: 100% !important; }
+ table { width: 100% !important; 
+ max-width: 100% !important; }
           th, td { color: #000 !important; font-weight: 900 !important; }
           .no-print { display: none !important; }
         }
