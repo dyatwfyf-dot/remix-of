@@ -1,0 +1,899 @@
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import {
+  FileSpreadsheet, Plus, Trash2, Upload, Download, FileText, Printer, Eraser,
+} from "lucide-react";
+import * as XLSX from "xlsx";
+import { useReportDate } from "@/lib/reportDate";
+import { toast } from "sonner";
+import { reportLetterheadHtml, runningLetterheadCss } from "@/lib/printTableHtml";
+import { printReportHtml } from "@/lib/nativePrinter";
+import { importUsageInWorker } from "@/lib/excelImportWorkerClient";
+import { saveBlobToInternalStorage } from "@/lib/nativeFileStorage";
+import WebActionMenu from "./WebActionMenu";
+
+const mainHeaders = ["رقم الاستمارة", "كشف التسوية", "التاريخ", "البيان"];
+const STORAGE_KEY = "app-tabs-usages-v1";
+
+const COLORS = { TOTAL_ALL: "#E5DFEC", BAB_TOTAL: "#DBEEF3", FASL: "#FDE9D9", BAND: "#C6D9F0" };
+const ARGB = { TOTAL_ALL: "FFE5DFEC", BAB_TOTAL: "FFDBEEF3", FASL: "FFFDE9D9", BAND: "FFC6D9F0",
+  DARK: "FF0B3D6D", GOLD: "FFFFD54A", CUR: "FFDBEAFE", PREV: "FFE2E8F0" };
+
+const dataColumnsOrder = [
+  "اجمالي الاستخدامات",
+  "اجمالي الباب الاول",
+  "الفصل الاول_باب1",
+  "المرتبات الاساسية", "اجور تعاقدية", "اجور عمل اضافي", "مكافات", "طبيعة عمل", "بدل ريف", "بدل سكن", "بدل تحديث",
+  "الفصل الثاني_باب1",
+  "ح/حكومة", "اصابة عمل",
+  "اجمالي الباب الثاني",
+  "الفصل الاول_باب2",
+  "مياه", "انارة", "ادوات كتابية", "نشر واعلان", "اتصالات", "مؤتمرات واحتفالات", "نفقات النظافة", "اخرى", "نقل مهام", "انتقالات داخلية", "ايجار مباني", "ادوية ومستلزمات طبية", "اغذية وملبوسات", "اخرى_2",
+  "الفصل الثاني_باب2",
+  "صيانة مباني", "وقود وزيوت", "قطع غيار وصيانة وسائل النقل", "قطع غيار وصيانة الالات والمعدات والاثاث",
+  "اجمالي الباب الرابع",
+  "مركز صحي قحزة", "وحدة الغسيل الكلوي", "مشروع دعم الكلى", "الصالة والمطبخ", "مركز صحي", "الامانات",
+];
+
+const allCols = [...mainHeaders, ...dataColumnsOrder];
+const TOTAL_COLS = allCols.length + 1;
+
+const isFormulaCol = (col: string) => col.includes("اجمالي") || col.includes("الفصل");
+
+const colArgb = (col: string) =>
+  col === "اجمالي عام الاستخدامات" ? ARGB.TOTAL_ALL
+  : col.includes("اجمالي الباب") ? ARGB.BAB_TOTAL
+  : col.includes("الفصل") ? ARGB.FASL : undefined;
+
+// صنف لون العمود الحسابي في الواجهة (الشاشة فقط)
+const formulaClass = (col: string) =>
+  col === "اجمالي عام الاستخدامات" ? "u-f u-f-total"
+  : col.includes("اجمالي الباب") ? "u-f u-f-bab"
+  : "u-f u-f-fasl";
+
+const MONTHS = [
+  { id: 1, name: "يناير" }, { id: 2, name: "فبراير" }, { id: 3, name: "مارس" }, { id: 4, name: "أبريل" },
+  { id: 5, name: "مايو" }, { id: 6, name: "يونيو" }, { id: 7, name: "يوليو" }, { id: 8, name: "أغسطس" },
+  { id: 9, name: "سبتمبر" }, { id: 10, name: "أكتوبر" }, { id: 11, name: "نوفمبر" }, { id: 12, name: "ديسمبر" },
+];
+
+const norm = (s: any) => String(s ?? "").replace(/\s+/g, " ").trim();
+
+const normalizeDigits = (value: string) => value.replace(/[٠-٩]/g, (digit) =>
+  String("٠١٢٣٤٥٦٧٨٩".indexOf(digit))
+);
+
+const MONTH_ALIASES = [
+  ["يناير", "jan", "january"], ["فبراير", "فبر", "feb", "february"], ["مارس", "mar", "march"],
+  ["أبريل", "ابريل", "apr", "april"], ["مايو", "may"], ["يونيو", "يونية", "jun", "june"],
+  ["يوليو", "july", "jul"], ["أغسطس", "اغسطس", "aug", "august"], ["سبتمبر", "sep", "september"],
+  ["أكتوبر", "اكتوبر", "oct", "october"], ["نوفمبر", "nov", "november"], ["ديسمبر", "dec", "december"],
+];
+
+const parseMonthId = (value: any): number | null => {
+  if (value instanceof Date && !Number.isNaN(value.getTime())) return value.getMonth() + 1;
+  const text = normalizeDigits(norm(value)).toLowerCase();
+  if (!text) return null;
+
+  const aliasIndex = MONTH_ALIASES.findIndex((aliases) => aliases.some((alias) =>
+    text === alias || text.startsWith(`${alias} `) || text.includes(`شهر ${alias}`) || text.includes(`month ${alias}`)
+  ));
+  if (aliasIndex >= 0) return aliasIndex + 1;
+
+  const monthLabel = text.match(/(?:شهر|month)\s*([0-9]{1,2})/);
+  if (monthLabel) {
+    const month = Number(monthLabel[1]);
+    if (month >= 1 && month <= 12) return month;
+  }
+
+  const yearFirst = text.match(/(?:^|[^0-9])20[0-9]{2}[\/\\.-]([0-9]{1,2})(?:[\/\\.-][0-9]{1,2})?(?:$|[^0-9])/);
+  if (yearFirst) {
+    const month = Number(yearFirst[1]);
+    if (month >= 1 && month <= 12) return month;
+  }
+
+  const numeric = Number(text.replace(/,/g, ""));
+  return Number.isInteger(numeric) && numeric >= 1 && numeric <= 12 ? numeric : null;
+};
+
+const IMPORT_MONTH_KEYS = ["monthid", "month id", "month_id", "month", "monthname", "الشهر", "شهر", "اسم الشهر", "رقم الشهر", "الفترة"];
+const IMPORT_DATE_KEYS = ["التاريخ", "date", "تاريخ"];
+
+const hasNamedMonth = (value: any) => {
+  const text = normalizeDigits(norm(value)).toLowerCase();
+  return MONTH_ALIASES.some((aliases) => aliases.some((alias) =>
+    text === alias || text.startsWith(`${alias} `) || text.includes(`شهر ${alias}`) || text.includes(`month ${alias}`)
+  ));
+};
+
+const monthIdFromLookup = (lookup: Record<string, any>) => {
+  for (const key of IMPORT_MONTH_KEYS) {
+    const monthId = parseMonthId(lookup[norm(key).toLowerCase()]);
+    if (monthId) return monthId;
+  }
+  for (const key of IMPORT_DATE_KEYS) {
+    const monthId = parseMonthId(lookup[norm(key).toLowerCase()]);
+    if (monthId) return monthId;
+  }
+  return null;
+};
+
+const formatNumberEn = (val: any) => {
+  if (val === "" || val === null || val === undefined) return "";
+  const num = Number(val);
+  if (isNaN(num)) return val;
+  return new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(num);
+};
+
+const sumColumns = (row: any, cols: string[]): number =>
+  cols.reduce((acc, col) => {
+    const num = Number(row[col]);
+    return acc + (isNaN(num) ? 0 : num);
+  }, 0);
+
+const recomputeRow = (row: any) => {
+  const newRow = { ...row };
+  const fasl1Bab1 = sumColumns(newRow, ["المرتبات الاساسية", "اجور تعاقدية", "اجور عمل اضافي", "مكافات", "طبيعة عمل", "بدل ريف", "بدل سكن", "بدل تحديث"]);
+  const fasl2Bab1 = sumColumns(newRow, ["ح/حكومة", "اصابة عمل"]);
+  newRow["الفصل الاول_باب1"] = fasl1Bab1;
+  newRow["الفصل الثاني_باب1"] = fasl2Bab1;
+  newRow["اجمالي الباب الاول"] = fasl1Bab1 + fasl2Bab1;
+
+  const fasl1Bab2 = sumColumns(newRow,
+  ["مياه",
+  "انارة"
+  , "ادوات كتابية"
+  , "نشر واعلان"
+  , "اتصالات",
+  "مؤتمرات واحتفالات",
+  "نفقات النظافة", "اخرى",
+  "نقل مهام", "انتقالات داخلية", "ايجار مباني", "ادوية ومستلزمات طبية", "اغذية وملبوسات", "اخرى_2"]);
+  const fasl2Bab2 = sumColumns(newRow, ["صيانة مباني", "وقود وزيوت", "قطع غيار وصيانة وسائل النقل", "قطع غيار وصيانة الالات والمعدات والاثاث"]);
+  newRow["الفصل الاول_باب2"] = fasl1Bab2;
+  newRow["الفصل الثاني_باب2"] = fasl2Bab2;
+  newRow["اجمالي الباب الثاني"] = fasl1Bab2 + fasl2Bab2;
+
+  newRow["اجمالي الباب الرابع"] = sumColumns(newRow, ["مركز صحي قحزة", "وحدة الغسيل الكلوي", "مشروع دعم الكلى", "الصالة والمطبخ", "مركز صحي", "الامانات"]);
+  newRow["اجمالي عام الاستخدامات"] =
+    newRow["اجمالي الباب الاول"] + newRow["اجمالي الباب الثاني"] + newRow["اجمالي الباب الرابع"];
+  return newRow;
+};
+
+/* حجم خط يصغر تلقائياً كلما طالت القيمة حتى تظهر كاملة داخل الخلية */
+const fitFontSize = (text: string) => {
+  const len = text.length;
+  return len > 18 ? 9 : len > 15 ? 10 : len > 12 ? 11 : 12;
+};
+
+/**
+ * خلية قابلة للتحرير تتكيّف تلقائياً مع محتواها:
+ * - النصوص (البيان / كشف التسوية): تلتف على عدة أسطر ويزداد ارتفاع الخلية تلقائياً.
+ * - الأرقام: سطر واحد وعرض العمود يتسع للقيمة مع تصغير الخط عند الحاجة.
+ * - التاريخ: حقل تاريخ بعرض ثابت مناسب.
+ * تعتمد على "عنصر ظل" مخفي يحدد حجم الخلية بينما الحقل الفعلي فوقه.
+ */
+const EditableCell: React.FC<{
+  rowId: string; field: string; value: any;
+  onCommit: (rowId: string, field: string, value: string) => void;
+}> = React.memo(({ rowId, field, value, onCommit }) => {
+  const str = String(value ?? "");
+  const isDate = field === "التاريخ";
+  const isText = field === "البيان" || field === "كشف التسوية";
+  const isWide = field === "البيان";
+
+  if (isDate) {
+    return (
+      <input
+        type="date"
+        value={str}
+        onChange={(e) => onCommit(rowId, field, e.target.value)}
+        dir="ltr"
+        className="u-input w-full min-w-[128px] rounded-md px-1 py-1 text-center text-[11px] leading-tight"
+      />
+    );
+  }
+
+  const fs = isText ? 12 : fitFontSize(str);
+  const isNumericLike = /^[\d.,\-]*$/.test(str);
+  const dir = isText ? "rtl" : isNumericLike ? "ltr" : "rtl";
+
+  return (
+    <div
+      className="relative"
+      style={{
+        minWidth: isWide ? 190 : isText ? 100 : 56,
+        maxWidth: isWide ? 300 : isText ? 180 : undefined,
+      }}
+    >
+      <span
+        aria-hidden="true"
+        className="invisible block px-1.5 py-1 leading-snug text-center"
+        style={{
+          fontSize: fs,
+          whiteSpace: isText ? "pre-wrap" : "pre",
+          wordBreak: isText ? "break-word" : "normal",
+          direction: dir,
+        }}
+      >
+        {str}
+        {"\u200b "}
+      </span>
+      {isText ? (
+        <textarea
+          value={str}
+          onChange={(e) => onCommit(rowId, field, e.target.value)}
+          dir="rtl"
+          rows={1}
+          className="u-input absolute inset-0 h-full w-full resize-none overflow-hidden rounded-md px-1.5 py-1 text-center leading-snug"
+          style={{ fontSize: fs }}
+        />
+      ) : (
+        <input
+          type="text"
+          value={str}
+          onChange={(e) => onCommit(rowId, field, e.target.value)}
+          dir={dir}
+          className="u-input absolute inset-0 h-full w-full rounded-md px-1.5 text-center"
+          style={{ fontSize: fs }}
+        />
+      )}
+    </div>
+  );
+});
+EditableCell.displayName = "EditableCell";
+
+const FormulaCell: React.FC<{ value: any }> = React.memo(({ value }) => {
+  const text = String(formatNumberEn(value) ?? "");
+  return (
+    <div
+      className="whitespace-nowrap px-1.5 py-1 text-center font-bold tabular-nums"
+      style={{ fontSize: fitFontSize(text) }}
+      dir="ltr"
+    >
+      {text}
+    </div>
+  );
+});
+FormulaCell.displayName = "FormulaCell";
+
+const THEAD_HTML = `
+<tr>
+  <th rowspan="4">رقم الاستمارة</th><th rowspan="4">كشف التسوية</th>
+  <th rowspan="4">التاريخ</th><th rowspan="4">البيان</th>
+  <th rowspan="4" class="c-total">اجمالي عام الاستخدامات</th>
+  <th colspan="13" class="c-bab">اجمالي الباب الاول</th>
+  <th colspan="21" class="c-bab">اجمالي الباب الثاني</th>
+  <th colspan="7" class="c-bab">اجمالي الباب الرابع</th>
+  <th rowspan="4">إجراء</th>
+</tr>
+<tr>
+  <th rowspan="3" class="c-bab">الإجمالي</th>
+  <th colspan="10" class="c-fasl">الفصل الاول</th>
+  <th colspan="2" class="c-fasl">الفصل الثاني</th>
+  <th rowspan="3" class="c-bab">الإجمالي</th>
+  <th colspan="15" class="c-fasl">الفصل الاول</th>
+  <th colspan="5" class="c-fasl">الفصل الثاني</th>
+  <th rowspan="3" class="c-bab">الإجمالي</th>
+  <th rowspan="3">مركز صحي قحزة</th><th rowspan="3">وحدة الغسيل الكلوي</th>
+  <th rowspan="3">مشروع دعم الكلى</th><th rowspan="3">الصالة والمطبخ</th>
+  <th rowspan="3">مركز صحي</th><th rowspan="3">الامانات</th>
+</tr>
+<tr>
+  <th rowspan="2" class="c-fasl">إجمالي ف1</th>
+  <th colspan="8" class="c-band">المرتبات والأجور</th>
+  <th rowspan="2" class="c-fasl">إجمالي ف2</th>
+  <th rowspan="2">ح/حكومة</th><th rowspan="2">اصابة عمل</th>
+  <th rowspan="2" class="c-fasl">إجمالي ف1</th>
+  <th rowspan="2">مياه</th><th rowspan="2">انارة</th><th rowspan="2">ادوات كتابية</th>
+  <th rowspan="2">نشر واعلان</th><th rowspan="2">اتصالات</th><th rowspan="2">مؤتمرات</th>
+  <th rowspan="2">نظافة</th><th rowspan="2">اخرى</th><th rowspan="2">نقل مهام</th>
+  <th rowspan="2">انتقالات</th><th rowspan="2">ايجار مباني</th><th rowspan="2">ادوية</th>
+  <th rowspan="2">اغذية</th><th rowspan="2">اخرى2</th>
+  <th rowspan="2" class="c-fasl">إجمالي ف2</th>
+  <th rowspan="2">صيانة مباني</th><th rowspan="2">وقود وزيوت</th>
+  <th rowspan="2">قطع غيار نقل</th><th rowspan="2">قطع غيار معدات</th>
+</tr>
+<tr>
+  <th>اساسية</th><th>تعاقدية</th><th>اضافي</th><th>مكافات</th>
+  <th>طبيعة عمل</th><th>بدل ريف</th><th>بدل سكن</th><th>تحديث</th>
+</tr>`;
+
+/* تنسيق الشاشة فقط (لا يؤثر على الطباعة ولا Excel) */
+const USAGE_UI_CSS = `
+.usage-emerald { --em:#0f5132; --em2:#14746f; --gold:#f5d76e; --line:#c9e0d5; }
+.usage-emerald .u-card { background:linear-gradient(135deg,#f4fbf7 0%,#ffffff 60%); border:1px solid #b5d5c7; border-radius:20px; box-shadow:0 6px 18px -8px rgba(15,81,50,.35); }
+.usage-emerald .u-scroll { border:1px solid #b5d5c7; border-radius:20px; background:#fff; box-shadow:0 8px 22px -10px rgba(15,81,50,.4); overflow:auto; -webkit-overflow-scrolling:touch; }
+.usage-emerald table.u-table { border-collapse:separate; border-spacing:0; width:max-content; min-width:100%; table-layout:auto; }
+.usage-emerald .u-table th, .usage-emerald .u-table td { border-bottom:1px solid var(--line); border-left:1px solid var(--line); }
+
+/* الرأس */
+.usage-emerald .u-thead th { position:sticky; top:0; z-index:5; background:#e6f3ec; color:#0b3d2e; font-weight:800; font-size:12px; line-height:1.3; padding:6px 8px; text-align:center; vertical-align:middle; white-space:normal; min-width:auto; overflow-wrap:break-word; }
+.usage-emerald .u-thead th.c-total { background:#fbe7a1; color:#5a3d00; }
+.usage-emerald .u-thead th.c-bab { background:#0f5132; color:#f5d76e; }
+.usage-emerald .u-thead th.c-fasl { background:#a9d8c3; color:#0b3d2e; }
+.usage-emerald .u-thead th.c-band { background:#f3dfa2; color:#5a3d00; }
+
+/* الصفوف */
+.usage-emerald td.u-cell { padding:2px 3px; vertical-align:middle; text-align:center; color:#173d31; }
+.usage-emerald tr.u-row-a td { background:#ffffff; }
+.usage-emerald tr.u-row-b td { background:#f3faf6; }
+.usage-emerald tr.u-row:hover td:not(.u-f) { background:#e2f3ea; }
+.usage-emerald td.u-f { font-weight:800; }
+.usage-emerald td.u-f-total { background:#fdf1c4 !important; color:#5a3d00; }
+.usage-emerald td.u-f-bab { background:#d3ebdf !important; color:#0b3d2e; }
+.usage-emerald td.u-f-fasl { background:#e7f5ee !important; color:#0f5132; }
+
+/* حقول الإدخال */
+.usage-emerald .u-input { background:transparent; color:#173d31; border:1px solid transparent; outline:none; transition:background .15s, border-color .15s, box-shadow .15s; }
+.usage-emerald .u-input:hover { background:#f0f9f4; }
+.usage-emerald .u-input:focus { background:#ffffff; border-color:#14746f; box-shadow:0 0 0 2px rgba(20,116,111,.22); }
+
+/* شريط الشهر وصفوف الإجماليات */
+.usage-emerald tr.u-month td { background:linear-gradient(90deg,#0f5132,#14746f); color:#f5d76e; font-weight:800; font-size:14px; text-align:right; padding:6px 10px; }
+.usage-emerald tr.u-cur td { background:#d3ebdf; color:#0b3d2e; font-weight:800; }
+.usage-emerald tr.u-prev td { background:#efe8d6; color:#5b4a2a; font-weight:800; }
+.usage-emerald tr.u-cum td { background:#0f5132; color:#f5d76e; font-weight:800; }
+.usage-emerald tr.u-cur td.u-label, .usage-emerald tr.u-prev td.u-label, .usage-emerald tr.u-cum td.u-label { text-align:right; padding:6px 10px; white-space:normal; }
+.usage-emerald tr.u-cur td.u-blank, .usage-emerald tr.u-prev td.u-blank, .usage-emerald tr.u-cum td.u-blank { background:#ffffff; }
+.usage-emerald .u-num-total { white-space:nowrap; padding:4px 6px; font-variant-numeric:tabular-nums; direction:ltr; text-align:center; }
+`;
+
+const AppTabs: React.FC = () => {
+  const { reportDate, reportDateLabel } = useReportDate();
+  const [dataRows, setDataRows] = useState<any[]>(() => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+    catch { return []; }
+  });
+  const [importMonthId, setImportMonthId] = useState<number>(1);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const latestDataRows = useRef(dataRows);
+  const storageTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    latestDataRows.current = dataRows;
+    if (storageTimer.current) clearTimeout(storageTimer.current);
+    storageTimer.current = setTimeout(() => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(latestDataRows.current));
+      } catch (error) {
+        console.error("[Storage] Failed to persist usage rows", error);
+      }
+      storageTimer.current = null;
+    }, 80);
+    return () => {
+      if (storageTimer.current) clearTimeout(storageTimer.current);
+    };
+  }, [dataRows]);
+
+  useEffect(() => {
+    const flush = () => {
+      if (storageTimer.current) clearTimeout(storageTimer.current);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(latestDataRows.current));
+      } catch (error) {
+        console.error("[Storage] Failed to flush usage rows", error);
+      }
+      storageTimer.current = null;
+    };
+    window.addEventListener("pagehide", flush);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      flush();
+    };
+  }, []);
+
+  const rowsOfMonth = useCallback(
+    (id: number) => dataRows.filter((r) => r.monthId === id),
+    [dataRows]
+  );
+
+  const makeEmptyRow = (monthId: number) => {
+    const r: any = { id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, monthId };
+    mainHeaders.forEach((h) => (r[h] = ""));
+    dataColumnsOrder.forEach((h) => (r[h] = ""));
+    return recomputeRow(r);
+  };
+
+  useEffect(() => {
+    setDataRows((prev) => {
+      const counts: Record<number, number> = {};
+      prev.forEach((r) => (counts[r.monthId] = (counts[r.monthId] || 0) + 1));
+      const additions: any[] = [];
+      MONTHS.forEach((m) => { if (!counts[m.id]) additions.push(makeEmptyRow(m.id), makeEmptyRow(m.id)); });
+      return additions.length ? [...prev, ...additions] : prev;
+    });
+  }, []);
+
+  const updateCell = useCallback((rowId: string, key: string, rawValue: string) => {
+    setDataRows((prev) =>
+      prev.map((row) => (row.id === rowId ? recomputeRow({ ...row, [key]: rawValue }) : row))
+    );
+  }, []);
+
+  const handleAddRow = (monthId: number) => setDataRows((prev) => [...prev, makeEmptyRow(monthId)]);
+
+  const handleDeleteRow = (rowId: string) => {
+    if (!window.confirm("هل تريد حذف هذا السطر؟")) return;
+    setDataRows((prev) => prev.filter((row) => row.id !== rowId));
+  };
+
+  const handleClearAll = () => {
+    if (!window.confirm("سيتم حذف جميع بيانات كل الأشهر نهائياً. هل أنت متأكد؟")) return;
+    const fresh: any[] = [];
+    MONTHS.forEach((m) => fresh.push(makeEmptyRow(m.id), makeEmptyRow(m.id)));
+    setDataRows(fresh);
+  };
+
+  const sumOf = (rows: any[], col: string) =>
+    rows.reduce((acc, row) => acc + (Number(row[col]) || 0), 0);
+
+  const monthTotals = (id: number) => {
+    const cur = rowsOfMonth(id);
+    const before = dataRows.filter((r) => r.monthId < id);
+    const cum = dataRows.filter((r) => r.monthId <= id);
+    return {
+      current: (c: string) => sumOf(cur, c),
+      before: (c: string) => sumOf(before, c),
+      cumulative: (c: string) => sumOf(cum, c),
+    };
+  };
+
+  const handleImportClick = () => fileInputRef.current?.click();
+
+  const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = "";
+    try {
+      const imported = await importUsageInWorker(file, importMonthId);
+      if (!imported.length) {
+        toast.error("لم يتم العثور على صفوف استخدامات صالحة في ملف Excel");
+        return;
+      }
+      const importedMonths = new Set(imported.map((row: any) => row.monthId));
+      setDataRows((prev) => [
+        ...prev.filter((row) => !importedMonths.has(row.monthId)),
+        ...imported,
+      ]);
+      toast.success(`تم استيراد ${imported.length} صف إلى ${importedMonths.size} شهر`);
+    } catch (error) {
+      console.error("[Excel] Usage import failed", error);
+      toast.error("تعذّر قراءة الملف. تأكد أنه ملف Excel صالح أو صادر من هذا الجدول.");
+    }
+  };
+
+  const border = {
+    top: { style: "thin" as const, color: { argb: "FF000000" } },
+    left: { style: "thin" as const, color: { argb: "FF000000" } },
+    bottom: { style: "thin" as const, color: { argb: "FF000000" } },
+    right: { style: "thin" as const, color: { argb: "FF000000" } },
+  };
+
+  const handleExportExcel = async () => {
+    const ExcelJS = (await import("exceljs")).default;
+    const wb = new ExcelJS.Workbook();
+
+    const disp = wb.addWorksheet("عرض", {
+      views: [{ rightToLeft: true, state: "frozen", ySplit: 2 }],
+      properties: { defaultRowHeight: 20, tabColor: { argb: ARGB.DARK } },
+      pageSetup: {
+        orientation: "landscape",
+        paperSize: 9,
+        fitToPage: true,
+        fitToWidth: 1,
+        fitToHeight: 0,
+        horizontalDpi: 300,
+        verticalDpi: 300,
+        margins: { left: 0.25, right: 0.25, top: 0.35, bottom: 0.35, header: 0.15, footer: 0.15 },
+      },
+    });
+
+    disp.mergeCells(1, 1, 1, allCols.length);
+    const title = disp.getCell(1, 1);
+    title.value = "سجل مفردات الاستخدامات والنفقات العامة";
+    title.font = { bold: true, size: 14, color: { argb: ARGB.DARK } };
+    title.alignment = { horizontal: "center", vertical: "middle", wrapText: true, shrinkToFit: true };
+
+    disp.getRow(1).height = 28;
+    const hdr = disp.getRow(2);
+    hdr.height = 40;
+    allCols.forEach((c, i) => {
+      const cell = hdr.getCell(i + 1);
+      cell.value = c;
+      cell.font = { bold: true, size: 9 };
+      cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true, shrinkToFit: true };
+      cell.border = border;
+      const argb = colArgb(c);
+      if (argb) cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb } };
+    });
+    disp.getColumn(1).width = 12;
+    allCols.forEach((_, i) => (disp.getColumn(i + 1).width = i < 4 ? 14 : 11));
+
+    let r = 3;
+    MONTHS.forEach((m) => {
+      const rows = rowsOfMonth(m.id);
+      const t = monthTotals(m.id);
+
+      disp.mergeCells(r, 1, r, allCols.length);
+      const mc = disp.getCell(r, 1);
+      mc.value = `شهر ${m.name}`;
+      mc.font = { bold: true, color: { argb: ARGB.GOLD } };
+      mc.fill = { type: "pattern", pattern: "solid", fgColor: { argb: ARGB.DARK } };
+      mc.alignment = { horizontal: "right", vertical: "middle", wrapText: true, shrinkToFit: true };
+      r++;
+
+      rows.forEach((row) => {
+        allCols.forEach((c, i) => {
+          const cell = disp.getCell(r, i + 1);
+          const v = row[c];
+          cell.value = (typeof v === "number") ? v : (v === "" ? "" : (isNaN(Number(v)) ? v : Number(v)));
+          cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true, shrinkToFit: true };
+          cell.font = { size: 9, bold: isFormulaCol(c) };
+          cell.border = border;
+          const argb = colArgb(c);
+          if (argb) cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb } };
+        });
+        r++;
+      });
+
+      const rowCur = (label: string, getter: (c: string) => number, fillArgb: string, fontArgb: string) => {
+        disp.mergeCells(r, 1, r, 4);
+        const lc = disp.getCell(r, 1);
+        lc.value = label; lc.font = { bold: true, color: { argb: fontArgb } };
+        lc.alignment = { horizontal: "right", vertical: "middle", wrapText: true, shrinkToFit: true };
+        lc.fill = { type: "pattern", pattern: "solid", fgColor: { argb: fillArgb } };
+        dataColumnsOrder.forEach((c, i) => {
+          const cell = disp.getCell(r, 5 + i);
+          const val = getter(c);
+          cell.value = val || "";
+          cell.font = { bold: true, size: 9, color: { argb: fontArgb } };
+          cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true, shrinkToFit: true };
+          cell.border = border;
+          cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: fillArgb } };
+        });
+        r++;
+      };
+      rowCur(`إجمالي شهر ${m.name}`, t.current, ARGB.CUR, ARGB.DARK);
+      rowCur(`إجمالي الأشهر السابقة (قبل ${m.name})`, t.before, ARGB.PREV, "FF334155");
+      rowCur(`الإجمالي العام (حتى ${m.name})`, t.cumulative, ARGB.DARK, ARGB.GOLD);
+    });
+
+    for (let col = 1; col <= allCols.length; col++) {
+      let maxLength = allCols[col - 1].length;
+      for (let row = 1; row <= disp.rowCount; row++) {
+        const value = disp.getCell(row, col).value;
+        maxLength = Math.max(maxLength, String(value ?? "").length);
+      }
+      disp.getColumn(col).width = Math.min(22, Math.max(col <= 4 ? 12 : 9, maxLength + 2));
+    }
+    disp.pageSetup.printArea = `A1:${XLSX.utils.encode_col(Math.min(allCols.length, 16384) - 1)}${Math.max(1, disp.rowCount)}`;
+    disp.pageSetup.printTitlesRow = "2:2";
+    disp.headerFooter = {
+      oddFooter: '&L&"Arial"المجلس اليمني للاختصاصات الطبية&C&"Arial"صفحة &P من &N&R&"Arial"فرع صعدة',
+    };
+
+    const flat = wb.addWorksheet("بيانات", { views: [{ rightToLeft: true }] });
+    flat.addRow(["monthId", ...allCols]);
+    flat.getRow(1).height = 34;
+    flat.getRow(1).eachCell({ includeEmpty: true }, (cell: any) => {
+      cell.font = { bold: true, size: 9, color: { argb: "FFFFFFFF" } };
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: ARGB.DARK } };
+      cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true, shrinkToFit: true };
+      cell.border = border;
+    });
+    MONTHS.forEach((m) =>
+      rowsOfMonth(m.id).forEach((row) => flat.addRow([m.id, ...allCols.map((c) => row[c])]))
+    );
+    flat.eachRow({ includeEmpty: true }, (row: any) => {
+      row.eachCell({ includeEmpty: true }, (cell: any) => {
+        cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true, shrinkToFit: true };
+        cell.border = border;
+      });
+    });
+    allCols.forEach((col, index) => {
+      const maxLength = Math.max(col.length, ...flat.getColumn(index + 2).values.slice(1).map((value: any) => String(value ?? "").length));
+      flat.getColumn(index + 2).width = Math.min(22, Math.max(9, maxLength + 2));
+    });
+    flat.pageSetup = {
+      orientation: "landscape",
+      paperSize: 9,
+      fitToPage: true,
+      fitToWidth: 1,
+      fitToHeight: 0,
+      margins: { left: 0.25, right: 0.25, top: 0.35, bottom: 0.35, header: 0.15, footer: 0.15 },
+    };
+    flat.pageSetup.printArea = `A1:${XLSX.utils.encode_col(Math.min(allCols.length + 1, 16384) - 1)}${Math.max(1, flat.rowCount)}`;
+    flat.pageSetup.printTitlesRow = "1:1";
+    flat.headerFooter = {
+      oddFooter: '&L&"Arial"المجلس اليمني للاختصاصات الطبية&C&"Arial"صفحة &P من &N&R&"Arial"فرع صعدة',
+    };
+    const buf = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const fileName = `الاستخدامات-${reportDate}.xlsx`;
+    const internalUri = await saveBlobToInternalStorage(blob, fileName);
+    if (internalUri) {
+      toast.success("تم حفظ ملف Excel داخل تخزين التطبيق");
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const buildAllMonthsHtml = () => {
+    const numCell = (v: number) => (v > 0 ? formatNumberEn(v) : "-");
+    let body = "";
+    MONTHS.forEach((m) => {
+      const rows = rowsOfMonth(m.id);
+      const t = monthTotals(m.id);
+      body += `<tr class="month"><td colspan="${TOTAL_COLS}">شهر ${m.name}</td></tr>`;
+      rows.forEach((row) => {
+        body += "<tr>";
+        mainHeaders.forEach((h) => {
+          const cls = h === "التاريخ" ? "date-cell" : h === "رقم الاستمارة" ? "num numeric-cell" : "text-cell";
+          body += `<td class="${cls}">${row[h] ?? ""}</td>`;
+        });
+        dataColumnsOrder.forEach((c) => {
+          const cls = `num numeric-cell${isFormulaCol(c) ? " formula" : ""}`;
+          body += `<td class="${cls}">${row[c] === "" || row[c] === undefined ? "" : formatNumberEn(row[c])}</td>`;
+        });
+        body += `<td class="text-cell"></td></tr>`;
+      });
+      const totalRow = (label: string, cls: string, getter: (c: string) => number) => {
+        let tr = `<tr class="${cls}"><td class="text-cell" colspan="4">${label}</td>`;
+        dataColumnsOrder.forEach((c) => (tr += `<td class="num numeric-cell">${numCell(getter(c))}</td>`));
+        tr += `<td class="text-cell"></td></tr>`;
+        return tr;
+      };
+      body += totalRow(`إجمالي شهر ${m.name}`, "t-cur", t.current);
+      body += totalRow(`إجمالي الأشهر السابقة (قبل ${m.name})`, "t-prev", t.before);
+      body += totalRow(`الإجمالي العام (حتى ${m.name})`, "t-cum", t.cumulative);
+    });
+
+    return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+    <title>سجل مفردات الاستخدامات والنفقات العامة - ${reportDateLabel}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Tajawal:wght@400;500;700&display=swap">
+    <style>
+      @page { size: A4 landscape; margin: 3mm; }
+      * { box-sizing: border-box; }
+      html, body { margin:0; padding:0; }
+      body { font-family:'Cairo','Tajawal','Segoe UI',Tahoma,Arial,sans-serif; direction:rtl; color:#000 !important; padding:0 1px; width:100%; font-weight:700 !important; }
+.report-letterhead-block { display:flex; width:100%; max-width:none; height:30mm; min-height:30mm; max-height:30mm; overflow:hidden; align-items:stretch; justify-content:center; margin:0 0 3mm; page-break-before:avoid; page-break-after:avoid; }
+.report-letterhead-image { display:block; width:100% !important; max-width:100% !important; height:100% !important; max-height:100% !important; object-fit:fill !important; object-position:top; margin:0 !important; }
+      h2 { text-align:center; color:#000 !important; margin:0 0 3mm; font-weight:800; }
+.report-date { text-align:center; color:#000 !important; margin:0 0 5px; font-size:18px; font-weight:700; }
+      table { width:100%; max-width:100%; min-width:0; border-collapse:collapse; table-layout:auto !important; font-size:clamp(14px,1.05vw,16px); }
+      th, td { border:1px solid #000; padding:2px 3px !important; text-align:center; vertical-align:middle; white-space:normal; overflow:visible; overflow-wrap:break-word; word-break:normal; hyphens:none; line-height:1.15; font-size:clamp(14px,1.05vw,16px); color:#000 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      .num, .numeric-cell, .date-cell { width:1%; min-width:0; white-space:nowrap !important; overflow:visible; overflow-wrap:normal; word-break:keep-all; hyphens:none; font-family:'Times New Roman',Times,serif !important; font-size:clamp(14px,1vw,16px) !important; font-variant-numeric:tabular-nums; direction:ltr; }
+      .text-cell { 
+width:auto; 
+white-space:normal; overflow-wrap:break-word; word-break:normal; }
+.report-letterhead-cell { padding:0 !important; border:0 !important; width:100%; }
+      thead th { 
+background:#fff; font-weight:700; color:#000 !important; 
+-webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
+white-space:normal !important;
+        
+      }
+ thead .c-total {
+ background:${COLORS.TOTAL_ALL}; 
+ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
+   color:white; 
+ }
+      thead .c-bab   { background:${COLORS.BAB_TOTAL}; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important ; 
+        color:white; 
+      }
+      thead .c-fasl  {
+background:${COLORS.FASL}; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
+      color:white; 
+
+        
+      }
+      thead .c-band  { background:${COLORS.BAND}; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; 
+        color:white; 
+
+      }
+td.formula { 
+background:#f8fafc; font-weight:700; 
+color:#000 !important;
+-webkit-print-color-adjust:exact!important; 
+print-color-adjust:exact !important; 
+        
+      }
+      tr.month td { background:#164759; font-weight:700 !important; text-align:center; padding:0 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
+   color:white; 
+   
+        
+      }
+      tr.t-cur td  {
+background:#dbeafe;
+color:white!important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      tr.t-prev td { background:#401863; color:white !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      tr.t-cum td  {
+background:#0b3d6d; color:white !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      tr.t-cur td:first-child, tr.t-prev td:first-child, tr.t-cum td:first-child { text-align:center; padding-right:4px; }
+      @media print { @page { size:A4 landscape; margin:3mm; } }
+      ${runningLetterheadCss}
+    </style></head><body>
+    ${reportLetterheadHtml()}
+    <h2>سجل مفردات الاستخدامات والنفقات العامة</h2>
+    <div class="report-date">تاريخ التقرير: ${reportDateLabel}</div>
+    <table><thead>${THEAD_HTML}</thead><tbody>${body}</tbody></table>
+    </body></html>`;
+  };
+
+  const handlePrint = () => {
+    const opened = printReportHtml(
+      buildAllMonthsHtml(),
+      `سجل مفردات الاستخدامات والنفقات العامة - ${reportDateLabel}`,
+    );
+    if (!opened) toast.error("تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة");
+  };
+
+  const handlePdf = () => {
+    handlePrint();
+  };
+
+  return (
+    <div className="usage-emerald sheet-tabs-ui apk-tabs-ui space-y-3 font-tajawal p-2" dir="rtl">
+      <style>{USAGE_UI_CSS}</style>
+
+      <div className="u-card p-3 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-[#0f5132] via-[#14746f] to-[#1a8f86] text-[#f5d76e] shadow-md">
+              <FileSpreadsheet className="w-5 h-5" />
+            </span>
+            <div className="min-w-0">
+              <h2 className="truncate text-[15px] font-extrabold text-[#0f3a2b]">سجل مفردات الاستخدامات</h2>
+              <p className="truncate text-[12px] font-bold text-[#5c8573]">النفقات العامة شهراً بشهر</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <select
+              value={importMonthId}
+              onChange={(e) => setImportMonthId(Number(e.target.value))}
+              className="rounded-xl border border-[#b5d5c7] bg-[#f1f8f4] px-2.5 py-2 text-[13px] font-bold text-[#0f3a2b] focus:outline-none focus:ring-2 focus:ring-[#14746f]/40"
+              title="الشهر الافتراضي للاستيراد (إن لم يحتوِ الملف عمود الشهر)"
+            >
+              {MONTHS.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+            </select>
+            <div className="web-only-actions">
+              <WebActionMenu
+                label="إجراءات سجل الاستخدامات"
+                actions={[
+                  { label: "استيراد Excel", icon: Upload, onSelect: handleImportClick },
+                  { label: "تصدير Excel", icon: Download, onSelect: handleExportExcel },
+                  { label: "تحويل PDF", icon: FileText, onSelect: handlePdf },
+                  { label: "طباعة", icon: Printer, onSelect: handlePrint },
+                  { label: "مسح الكل", icon: Eraser, onSelect: handleClearAll, destructive: true },
+                ]}
+              />
+            </div>
+            <div className="apk-only-actions flex flex-wrap items-center gap-2">
+              <button onClick={handleImportClick} className="flex items-center gap-1.5 rounded-xl bg-[#0f5132] px-3 py-2 text-[13px] font-extrabold text-white shadow-sm active:scale-[0.98]">
+                <Upload className="w-4 h-4" /> استيراد Excel
+              </button>
+              <button onClick={handleExportExcel} className="flex items-center gap-1.5 rounded-xl bg-[#14746f] px-3 py-2 text-[13px] font-extrabold text-white shadow-sm active:scale-[0.98]">
+                <Download className="w-4 h-4" /> تصدير Excel
+              </button>
+              <button onClick={handlePdf} className="flex items-center gap-1.5 rounded-xl bg-[#b7791f] px-3 py-2 text-[13px] font-extrabold text-white shadow-sm active:scale-[0.98]">
+                <FileText className="w-4 h-4" /> تحويل PDF
+              </button>
+              <button onClick={handlePrint} className="flex items-center gap-1.5 rounded-xl bg-[#1f3d36] px-3 py-2 text-[13px] font-extrabold text-white shadow-sm active:scale-[0.98]">
+                <Printer className="w-4 h-4" /> طباعة
+              </button>
+              <button onClick={handleClearAll} className="flex items-center gap-1.5 rounded-xl bg-[#a4432f] px-3 py-2 text-[13px] font-extrabold text-white shadow-sm active:scale-[0.98]">
+                <Eraser className="w-4 h-4" /> مسح الكل
+              </button>
+            </div>
+            <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleImportFile} className="hidden" />
+          </div>
+        </div>
+      </div>
+
+      <div className="u-scroll w-full" style={{ maxHeight: "70vh" }}>
+        <table className="u-table text-center">
+          <thead className="u-thead" dangerouslySetInnerHTML={{ __html: THEAD_HTML }}>
+          </thead>
+
+          <tbody>
+            {MONTHS.map((m) => {
+              const rows = rowsOfMonth(m.id);
+              const t = monthTotals(m.id);
+
+              return (
+                <React.Fragment key={m.id}>
+                  {/* شريط الشهر */}
+                  <tr className="u-month">
+                    <td colSpan={TOTAL_COLS}>
+                      شهر {m.name}
+                      <button
+                        onClick={() => handleAddRow(m.id)}
+                        className="mr-4 inline-flex items-center gap-1 rounded-lg bg-[#f5d76e] px-2.5 py-1 text-xs font-extrabold text-[#0f3a2b] shadow-sm hover:bg-[#ffe28a] active:scale-[0.98]"
+                      >
+                        <Plus className="w-3 h-3" /> إضافة سطر
+                      </button>
+                    </td>
+                  </tr>
+
+                  {/* صفوف البيانات الخاصة بالشهر */}
+                  {rows.map((row, idx) => (
+                    <tr key={row.id} className={`u-row ${idx % 2 === 0 ? "u-row-a" : "u-row-b"}`}>
+                      {mainHeaders.map((col) => (
+                        <td key={col} className="u-cell">
+                          <EditableCell rowId={row.id} field={col} value={row[col]} onCommit={updateCell} />
+                        </td>
+                      ))}
+                      {dataColumnsOrder.map((col) => {
+                        const isFormula = isFormulaCol(col);
+                        return (
+                          <td key={col} className={`u-cell ${isFormula ? formulaClass(col) : ""}`}>
+                            {isFormula ? (
+                              <FormulaCell value={row[col]} />
+                            ) : (
+                              <EditableCell rowId={row.id} field={col} value={row[col]} onCommit={updateCell} />
+                            )}
+                          </td>
+                        );
+                      })}
+                      {/* زر الحذف */}
+                      <td className="u-cell">
+                        <button
+                          onClick={() => handleDeleteRow(row.id)}
+                          className="grid h-7 w-7 mx-auto place-items-center rounded-lg text-[#b4432f] hover:bg-[#fbe4df] active:scale-95"
+                          title="حذف السطر"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+
+                  {/* صف الإجمالي للشهر الحالي */}
+                  <tr className="u-cur">
+                    <td colSpan={4} className="u-label">إجمالي شهر {m.name}</td>
+                    {dataColumnsOrder.map((c) => (
+                      <td key={c}>
+                        <FormulaCell value={t.current(c)} />
+                      </td>
+                    ))}
+                    <td className="u-blank"></td>
+                  </tr>
+
+                  {/* صف إجمالي الأشهر السابقة */}
+                  <tr className="u-prev">
+                    <td colSpan={4} className="u-label">إجمالي الأشهر السابقة (قبل {m.name})</td>
+                    {dataColumnsOrder.map((c) => (
+                      <td key={c}>
+                        <FormulaCell value={t.before(c)} />
+                      </td>
+                    ))}
+                    <td className="u-blank"></td>
+                  </tr>
+
+                  {/* صف الإجمالي العام التراكمي */}
+                  <tr className="u-cum">
+                    <td colSpan={4} className="u-label">الإجمالي العام (حتى {m.name})</td>
+                    {dataColumnsOrder.map((c) => (
+                      <td key={c}>
+                        <FormulaCell value={t.cumulative(c)} />
+                      </td>
+                    ))}
+                    <td className="u-blank"></td>
+                  </tr>
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default AppTabs;
