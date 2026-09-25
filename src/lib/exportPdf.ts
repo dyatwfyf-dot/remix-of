@@ -34,6 +34,7 @@ const reportLetterheadStyles = `
       height: auto;
       object-fit: contain;
       margin: 0 auto;
+    object-position:top;
     }
     tbody tr { break-inside: avoid; page-break-inside: avoid; }
 `;
@@ -50,7 +51,7 @@ const targetedReportLetterheadStyles = `
     .report-letterhead-image {
       display: block;
       width: 100% !important;
-      max-width: none !important;
+      max-width:100% !important;
       height: 30mm !important;
       max-height: 30mm !important;
       object-fit: fill !important;
@@ -325,16 +326,23 @@ ${targetedReportLetterheadStyles}
       unicode-bidi: embed;
     }
     td.acc { text-align: center; padding-right: 6px !important; font-weight: 800 !important; }
-    th { background: #1f7fb8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    tr.group-row td { background: #fef3c7 !important; font-weight: 900 !important; }
-    tr.subtotal-row td { background: #cbd5e1 !important; font-weight: 800 !important; }
-    tr.total-row td { background: #1f7fb8 !important; font-weight: 900 !important; }
+    th { 
+background: #d1930d !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+tr.group-row td {
+background: #32a4c7 !important; 
+font-weight: 900 !important; }
+tr.subtotal-row td { 
+  background: #16794c !important; font-weight: 800 !important; }
+    tr.total-row td { background: #e03636 !important; font-weight: 900 !important; }
     /* تحسينات محصورة بتقريري كشف الحساب الشهري والإيرادات */
     @page { size: A4 landscape; margin: 3mm; padding: 0; }
     body { padding: 0 1px; width: 100%; }
     .report-letterhead-row { width: 100%; }
     .report-letterhead-cell { padding: 0 !important; width: 100%; }
-    .report-letterhead-image { width: 100% !important; max-width: none !important; height: 50mm !important; object-fit: fill !important; margin: 0 !important; }
+    .report-letterhead-image { width: 100% !important; max-width: auto !important; height: 50mm !important; object-fit: fill !important; margin: 0 !important;
+    object-position:top;
+      
+    }
     table { width: 100%; max-width: 100%; table-layout: auto !important; margin-top: 4px; }
     th:first-child, td:first-child,
     th:not(:first-child), td:not(:first-child) { width: auto !important; }

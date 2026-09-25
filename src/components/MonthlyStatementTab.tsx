@@ -479,17 +479,15 @@ export default function MonthlyStatementTab() {
               <Scale className="w-4 h-4" />
             </div>
           </div>
-          <p
-            className={`mt-2 text-base sm:text-xl font-black font-mono ${
+<p className={`mt-2 text-base sm:text-xl font-black font-mono ${
               netBalance >= 0 ? "text-emerald-700" : "text-rose-700"
-            }`}
-          >
-            {fmt(Math.abs(netBalance))}
+            }`}>
+ {fmt(Math.abs(netBalance))}
           </p>
-          <p className="text-[10px] text-emerald-700/80 mt-0.5 font-bold">
-            {netBalance >= 0 ? "رصيد فائض / مدين" : "رصيد دائن"}
-          </p>
-        </div>
+<p className="text-[10px] text-emerald-700/80 mt-0.5 font-bold">
+{netBalance >= 0 ? "رصيد فائض / مدين" : "رصيد دائن"}
+</p>
+ </div>
 
         <div className="rounded-2xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/40 p-3 shadow-sm hover:shadow-md transition">
           <div className="flex items-center justify-between">
@@ -658,11 +656,14 @@ export default function MonthlyStatementTab() {
         <div className="bg-gradient-to-r from-[#071326] via-[#0d2847] to-[#1a446c] p-3 text-white sm:p-4 border-b border-cyan-800/40">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-right">
             <div>
-              <h3 className="font-black text-sm sm:text-base tracking-wide text-cyan-200">
-                📑 ميزان المراجعة وكشف الحساب الدوري الموسع
-              </h3>
-              <p className="text-[11px] sm:text-xs text-cyan-100/70 mt-0.5">
-                تجميع آلي فوري لكافة قيود اليومية المسجلة خلال عام {year}م
+ <h3 className="font-black text-sm sm:text-base tracking-wide text-cyan-200">
+ 📑 ميزان المراجعة
+ وكشف الحساب الدوري الموسع
+</h3>
+ <p className="text-[11px] sm:text-xs text-cyan-100/70 mt-0.5">
+  آلي فوري
+لكافة قيود اليومية 
+المسجلة خلال عام {year}م
               </p>
             </div>
             <div className="inline-flex items-center gap-2 bg-cyan-950/60 border border-cyan-400/30 px-3 py-1 rounded-full text-xs font-mono font-bold text-cyan-300">
@@ -672,11 +673,11 @@ export default function MonthlyStatementTab() {
         </div>
 
         <div className="relative max-h-[72vh] overflow-auto">
-          <table
-            ref={tableRef1}
-            className="min-w-max table-auto border-collapse text-xs sm:text-sm text-center font-semibold w-full"
+<table
+ref={tableRef1}
+ className="min-w-max table-auto border-collapse text-xs sm:text-sm text-center font-semibold w-full"
           >
-            <thead className="sticky top-0 z-20 shadow-sm bg-slate-900 text-white border-b-2 border-black">
+<thead className="sticky top-0 z-20 shadow-sm bg-slate-900 text-white border-b-2 border-black">
               <tr>
                 <th
                   rowSpan={2}
@@ -878,106 +879,6 @@ export default function MonthlyStatementTab() {
           </table>
         </div>
       </div>
-
-      {/* ── جدول تجميع إيرادات الحساب حسب رمز الإيراد ──────────────────────── */}
-      <div className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 bg-gradient-to-r from-[#0d2847] to-[#1a446c] p-3 text-white sm:p-4">
-          <div>
-            <h3 className="font-bold text-sm sm:text-base text-cyan-200">
-              📊 تجميع إيرادات الحساب حسب رمز الإيراد
-            </h3>
-            <p className="text-[11px] sm:text-xs text-cyan-100/70 mt-0.5">
-              مصدر البيانات: تبويب الحساب الجاري — للفترة: {periodLabel}
-            </p>
-          </div>
-          <div className="bg-white/10 border border-white/20 rounded-full px-3 py-1 text-xs font-bold font-mono text-cyan-100">
-            عدد الرموز: {revenueByCode.length} | عدد السجلات: {revenueTotals.count}
-          </div>
-        </div>
-
-        <div className="relative max-h-[60vh] overflow-auto">
-          <table
-            ref={tableRef2}
-            className="min-w-max table-auto border-collapse text-xs sm:text-sm text-center font-semibold w-full"
-          >
-            <thead className="bg-slate-100 text-slate-800 font-bold border-b border-slate-300 sticky top-0 z-20 shadow-sm">
-              <tr>
-                <th className="border border-slate-300 text-center min-w-[50px] !py-2">م</th>
-                <th className="border border-slate-300 text-center min-w-[100px] !py-2">رمز الإيراد</th>
-                <th className="border border-slate-300 text-right pr-3 min-w-[200px] !py-2">
-                  بيان الإيراد (من قالب الإيرادات)
-                </th>
-                <th className="border border-slate-300 text-center min-w-[80px] !py-2">عدد السجلات</th>
-                <th className="border border-slate-300 text-center min-w-[100px] !py-2">
-                  إيراد الفترة السابقة
-                </th>
-                <th className="border border-slate-300 text-center min-w-[100px] !py-2">
-                  إيراد الفترة الحالية
-                </th>
-                <th className="border border-slate-300 text-center min-w-[110px] !py-2">
-                  الإجمالي التراكمي
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200">
-              {revenueByCode.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="text-center text-slate-500 font-medium py-6">
-                    لا توجد سجلات في تبويب الحساب مرتبطة برمز إيراد ضمن هذه الفترة.
-                  </td>
-                </tr>
-              ) : (
-                revenueByCode.map((r, i) => (
-                  <tr key={r.code} className="hover:bg-cyan-50/40 transition-colors even:bg-slate-50/50">
-                    <td className="border border-slate-300 numeric-cell font-mono text-slate-500 !py-1.5">
-                      {i + 1}
-                    </td>
-                    <td className="border border-slate-300 numeric-cell font-mono font-black text-cyan-800 bg-cyan-50/50 !py-1.5">
-                      {r.code}
-                    </td>
-                    <td className="border border-slate-300 text-right pr-3 font-medium text-slate-800 !py-1.5">
-                      {r.label}
-                    </td>
-                    <td className="border border-slate-300 numeric-cell font-mono text-slate-600 !py-1.5">
-                      {r.count}
-                    </td>
-                    <td className="border border-slate-300 numeric-cell font-mono text-slate-700 !py-1.5">
-                      {r.prev ? fmt(r.prev) : "—"}
-                    </td>
-                    <td className="border border-slate-300 numeric-cell font-mono text-cyan-800 font-bold bg-cyan-50/30 !py-1.5">
-                      {r.cur ? fmt(r.cur) : "—"}
-                    </td>
-                    <td className="border border-slate-300 numeric-cell font-mono text-emerald-700 font-black bg-emerald-50/30 !py-1.5">
-                      {fmt(r.total)}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-            {revenueByCode.length > 0 && (
-              <tfoot>
-                <tr className="bg-[#071326] text-white font-extrabold text-xs sm:text-sm">
-                  <td colSpan={3} className="border border-slate-700 text-center py-2 text-cyan-300">
-                    الإجمالي العام لرموز الإيراد
-                  </td>
-                  <td className="border border-slate-700 text-center numeric-cell font-mono py-2">
-                    {revenueTotals.count}
-                  </td>
-                  <td className="border border-slate-700 text-center numeric-cell font-mono text-slate-200 py-2">
-                    {fmt(revenueTotals.prev)}
-                  </td>
-                  <td className="border border-slate-700 text-center numeric-cell font-mono text-cyan-300 py-2">
-                    {fmt(revenueTotals.cur)}
-                  </td>
-                  <td className="border border-slate-700 text-center numeric-cell font-mono text-emerald-300 font-black py-2">
-                    {fmt(revenueTotals.total)}
-                  </td>
-                </tr>
-              </tfoot>
-            )}
-          </table>
-        </div>
       </div>
-    </div>
   );
 }
