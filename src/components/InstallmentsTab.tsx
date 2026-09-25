@@ -169,7 +169,7 @@ const HEADING_MOBILE = "text-lg sm:text-xl font-extrabold";
     `;
         
         fdoc.write(`<!doctype html>
-      <html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl">
         <head>
           <meta charset="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -213,66 +213,63 @@ const HEADING_MOBILE = "text-lg sm:text-xl font-extrabold";
             .pdf-download-root .report-letterhead-block ~ .doc-header .title h2,
             .pdf-download-root .report-letterhead-block ~ * .doc-header .title h1,
             .pdf-download-root .report-letterhead-block ~ * .doc-header .title h2 {
-              display: none !important;
+ display:flex !important;
               height: 0 !important;
               margin: 0 !important;
               padding: 0 !important;
             }
 
-            .pdf-download-root .doc-header .title h1 { font-size: 22px !important; }
-            .pdf-download-root .doc-header .title h2 { font-size: 18px !important; }
+ .pdf-download-root .doc-header .title h1 { font-size: 22px !important; }
+.pdf-download-root .doc-header .title h2 { font-size: 18px !important; }
             .pdf-download-root .doc-header .meta { font-size: 14px !important; }
 
             /* ===== تنسيق الجدول بشكل احترافي ===== */
-            .pdf-download-root table {
-              width: 100% !important;
+.pdf-download-root table {
+width: 100% !important;
               margin: 0 !important;
               border-collapse: collapse !important;
               table-layout: auto !important;
-              border: 1.2px solid #1f3a5f !important;
-              background: #ffffff !important;
+border: 1px solid #000 !important;
+background: #ffffff !important;
               overflow: hidden !important;
             }
 
             /* خلايا الرأس */
-            .pdf-download-root thead th {
-              font-family: "Al Qabas Bold", "Mohammad Bold Art", Tahoma, Arial, sans-serif !important;
-              font-size: 18.5px !important;
-              padding: 10px 6px !important;
+.pdf-download-root thead th {
+ font-family:AlQabas-Bold !important;
+font-size:18.5px !important;
+padding: 10px 6px !important;
               background: #1f3a5f !important;
               color: #ffffff !important;
               text-align: center !important;
               vertical-align: middle !important;
               font-weight: 700 !important;
-              letter-spacing: 0.2px !important;
-              border: 1px solid #1f3a5f !important;
-              border-bottom: 1.5px solid #16304f !important;
+border: 2px solid #000 !important;
             }
 
             /* خلايا الجسم */
-            .pdf-download-root tbody td,
-            .pdf-download-root tbody th {
-              text-align: center !important;
-              vertical-align: middle !important;
-              padding: 8px 6px !important;
-              font-size: 15px !important;
-              line-height: 1.5 !important;
-              border: 1px solid #c7d2e0 !important;
-              font-family: "Cairo", Tahoma, Arial, sans-serif !important;
-              font-weight: 700 !important;
-              color: #1a1a1a !important;
+.pdf-download-root tbody td,
+.pdf-download-root tbody th {
+text-align: center !important;
+vertical-align: middle !important;
+padding: 3px 3px !important;
+font-size: 15px !important;
+ border: 1px solid #000 !important;
+font-family:Cairo !important;
+font-weight: 900 !important;
+ color:#000 !important;
               background: #ffffff !important;
             }
 
             /* تخطيط الصفوف (Zebra) */
-            .pdf-download-root tbody tr:nth-child(even) td,
-            .pdf-download-root tbody tr:nth-child(even) th {
-              background: #f5f8fc !important;
+.pdf-download-root tbody tr:nth-child(even) td,
+.pdf-download-root tbody tr:nth-child(even) th {
+ background:white !important;
             }
 
-            /* خلايا النصوص الطويلة */
-            .pdf-download-root td.cell-text,
-            .pdf-download-root th.cell-text {
+/* خلايا النصوص الطويلة */
+ .pdf-download-root td.cell-text,
+.pdf-download-root th.cell-text {
               word-break: break-word;
               overflow-wrap: break-word;
               white-space: normal;
