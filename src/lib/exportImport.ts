@@ -640,21 +640,27 @@ export async function importFromExcel(
       });
     } else if (kind === "journal") {
       rows.forEach((r) => {
-        const description = cellStr(get(r, "البيان"));
+        const description = cellStr(get(r, "البيان", "شرح القيد", "الوصف", "بيان القيد", "ملاحظات"));
         if (!description) return;
         if (description.includes("الإجمالي")) return;
-        const debitAcc = cellStr(get(r, "الحساب المدين", "الحساب"));
-        const creditAcc = cellStr(get(r, "الحساب الدائن"));
+        const debitAcc = cellStr(get(r, "الحساب المدين", "اسم الحساب المدين", "الطرف المدين", "حساب مدين", "مدين (الحساب)", "من ح/", "من حساب", "الحساب", "اسم الحساب"));
+        const creditAcc = cellStr(get(r, "الحساب الدائن", "اسم الحساب الدائن", "الطرف الدائن", "حساب دائن", "دائن (الحساب)", "إلى ح/", "الى ح/", "إلى حساب", "الى حساب"));
+        const debit = parseNumericValue(get(r, "مدين", "المبلغ المدين", "مبلغ مدين", "منه", "المبلغ"));
+        const credit = parseNumericValue(get(r, "دائن", "المبلغ الدائن", "مبلغ دائن", "له"));
         result.journal.push({
-          id: uid(), date: toDate(get(r, "التاريخ")),
-          formNo: cellStr(get(r, "رقم الاستمارة")),
-          settlement: cellStr(get(r, "كشف التسوية")),
-          description, account: debitAcc,
-          debitAccount: debitAcc, creditAccount: creditAcc,
-          debit: parseNumericValue(get(r, "مدين")),
-          credit: parseNumericValue(get(r, "دائن")),
+          id: uid(),
+          date: toDate(get(r, "التاريخ", "تاريخ القيد", "تاريخ الحركة", "تاريخ")),
+          formNo: cellStr(get(r, "رقم الاستمارة", "رقم القيد", "رقم السند", "الاستمارة")),
+          settlement: cellStr(get(r, "كشف التسوية", "التسوية")),
+          description,
+          account: debitAcc || creditAcc,
+          debitAccount: debitAcc,
+          creditAccount: creditAcc,
+          debit,
+          credit,
         });
       });
+
     } else if (kind === "installments") {
       rows.forEach((r) => {
         const name = cellStr(get(r, "الاسم"));
@@ -928,10 +934,39 @@ const ALL_STATEMENT_NORM = ALL_STATEMENT_ACCOUNTS.map((a) => ({
 // الباب الثالث يمثل الدعم والموارد فيُرحَّل إلى "الموارد".
 // الباب الرابع (اكتساب أصول غير مالية) لا يُرحَّل لأي منهما ويبقى بدون مطابقة.
 const CHAPTER_TO_STATEMENT_ACCOUNT: Record<string, string> = {
+  [normForMatch("الباب الاول")]: "الاستخدامات",
+  [normForMatch("الباب الأول")]: "الاستخدامات",
+  [normForMatch("باب اول")]: "الاستخدامات",
+  [normForMatch("باب أول")]: "الاستخدامات",
+  [normForMatch("الباب 1")]: "الاستخدامات",
   [normForMatch("الباب الاول (الأجور والمرتبات)")]: "الاستخدامات",
+  [normForMatch("الباب الأول (الأجور والمرتبات)")]: "الاستخدامات",
+  [normForMatch("الأجور والمرتبات")]: "الاستخدامات",
+  [normForMatch("الاجور والمرتبات")]: "الاستخدامات",
+  [normForMatch("الاستخدامات - الباب الاول")]: "الاستخدامات",
+  [normForMatch("الاستخدامات - الباب الأول")]: "الاستخدامات",
+  [normForMatch("الباب الثاني")]: "الاستخدامات",
+  [normForMatch("باب ثاني")]: "الاستخدامات",
+  [normForMatch("الباب 2")]: "الاستخدامات",
   [normForMatch("الباب الثاني (النفقات التشغيلية)")]: "الاستخدامات",
+  [normForMatch("النفقات التشغيلية")]: "الاستخدامات",
+  [normForMatch("نفقات تشغيلية")]: "الاستخدامات",
+  [normForMatch("الاستخدامات - الباب الثاني")]: "الاستخدامات",
+  [normForMatch("الباب الاول والباب الثاني")]: "الاستخدامات",
+  [normForMatch("الباب الأول والثاني")]: "الاستخدامات",
+  [normForMatch("الباب الثالث")]: "الموارد",
+  [normForMatch("باب ثالث")]: "الموارد",
+  [normForMatch("الباب 3")]: "الموارد",
   [normForMatch("الباب الثالث (الدعم والموارد)")]: "الموارد",
+  [normForMatch("الدعم والموارد")]: "الموارد",
+  [normForMatch("الموارد")]: "الموارد",
+  [normForMatch("الباب الرابع")]: "حساب اكتساب الأصول غير المالية",
+  [normForMatch("باب رابع")]: "حساب اكتساب الأصول غير المالية",
+  [normForMatch("الباب 4")]: "حساب اكتساب الأصول غير المالية",
+  [normForMatch("الباب الرابع (اكتساب الأصول غير المالية)")]: "حساب اكتساب الأصول غير المالية",
+  [normForMatch("اكتساب الأصول غير المالية")]: "حساب اكتساب الأصول غير المالية",
 };
+
 
 function matchStatementAccount(raw: string): string | null {
   if (!raw) return null;

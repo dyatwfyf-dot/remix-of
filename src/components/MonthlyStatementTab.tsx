@@ -43,14 +43,13 @@ const norm = (s: string) => {
     .replace(/[\u064B-\u0652\u0670\u0640]/g, "")
     .replace(/[\u0622\u0623\u0625]/g, "\u0627")
     .replace(/[\u0649\u064A]/g, "\u064A")
-    .replace(/\u0629/g, "\u0647")
+    .replace(/\u0629/g, "\u0648")
     .replace(/\u062D\s*\/\s*/g, "\u062D\u0633\u0627\u0628 ")
     .replace(/[()[\]./\\،,]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 };
 
-// لا نقوم بحذف "محلية" أو "عامة" حتى لا تختلط الحسابات المتقاربة
 const STOP_WORDS = new Set(["حساب", "حسابات", "ح"]);
 const tokens = (s: string) =>
   norm(s)
@@ -59,14 +58,71 @@ const tokens = (s: string) =>
 
 const ALL_NORM = ALL_ACCOUNTS.map((a) => ({ name: a, norm: norm(a), toks: tokens(a) }));
 
-// ── قاموس المطابقة الصريحة بين شاشة القيود وقالب الحساب الشهري ───────────────
+// ── قاموس المطابقة الصريحة والشاملة لترحيل الأبواب والحسابات ──────────────────
 const EXACT_ALIASES: Record<string, string> = {
+  // ── الباب الأول والباب الثاني يمثلان الاستخدامات ──
+  [norm("الباب الاول")]: "الاستخدامات",
+  [norm("الباب الأول")]: "الاستخدامات",
+  [norm("باب اول")]: "الاستخدامات",
+  [norm("باب أول")]: "الاستخدامات",
+  [norm("الباب 1")]: "الاستخدامات",
+  [norm("باب 1")]: "الاستخدامات",
   [norm("الباب الاول (الأجور والمرتبات)")]: "الاستخدامات",
+  [norm("الباب الأول (الأجور والمرتبات)")]: "الاستخدامات",
+  [norm("الأجور والمرتبات")]: "الاستخدامات",
+  [norm("الاجور والمرتبات")]: "الاستخدامات",
+  [norm("نفقات الباب الاول")]: "الاستخدامات",
+  [norm("نفقات الباب الأول")]: "الاستخدامات",
+  [norm("الاستخدامات - الباب الاول")]: "الاستخدامات",
+  [norm("الاستخدامات - الباب الأول")]: "الاستخدامات",
+  [norm("استخدامات الباب الاول")]: "الاستخدامات",
+  [norm("استخدامات الباب الأول")]: "الاستخدامات",
+
+  [norm("الباب الثاني")]: "الاستخدامات",
+  [norm("باب ثاني")]: "الاستخدامات",
+  [norm("الباب 2")]: "الاستخدامات",
+  [norm("باب 2")]: "الاستخدامات",
   [norm("الباب الثاني (النفقات التشغيلية)")]: "الاستخدامات",
+  [norm("النفقات التشغيلية")]: "الاستخدامات",
+  [norm("نفقات تشغيلية")]: "الاستخدامات",
+  [norm("نفقات الباب الثاني")]: "الاستخدامات",
+  [norm("الاستخدامات - الباب الثاني")]: "الاستخدامات",
+  [norm("استخدامات الباب الثاني")]: "الاستخدامات",
+
+  [norm("الباب الاول والباب الثاني")]: "الاستخدامات",
+  [norm("الباب الأول والباب الثاني")]: "الاستخدامات",
+  [norm("الباب الاول والثاني")]: "الاستخدامات",
+  [norm("الباب الأول والثاني")]: "الاستخدامات",
+
+  // ── الباب الثالث يمثل الموارد ──
+  [norm("الباب الثالث")]: "الموارد",
+  [norm("باب ثالث")]: "الموارد",
+  [norm("الباب 3")]: "الموارد",
+  [norm("باب 3")]: "الموارد",
   [norm("الباب الثالث (الدعم والموارد)")]: "الموارد",
+  [norm("الدعم والموارد")]: "الموارد",
+  [norm("دعم وموارد")]: "الموارد",
+  [norm("الموارد")]: "الموارد",
+  [norm("موارد الباب الثالث")]: "الموارد",
+
+  // ── الباب الرابع يمثل اكتساب الأصول غير المالية ──
+  [norm("الباب الرابع")]: "حساب اكتساب الأصول غير المالية",
+  [norm("باب رابع")]: "حساب اكتساب الأصول غير المالية",
+  [norm("الباب 4")]: "حساب اكتساب الأصول غير المالية",
+  [norm("باب 4")]: "حساب اكتساب الأصول غير المالية",
   [norm("الباب الرابع (اكتساب الأصول غير المالية)")]: "حساب اكتساب الأصول غير المالية",
+  [norm("اكتساب الأصول غير المالية")]: "حساب اكتساب الأصول غير المالية",
+  [norm("اكتساب الاصول غير الماليه")]: "حساب اكتساب الأصول غير المالية",
+  [norm("حساب اكتساب الاصول غير المالية")]: "حساب اكتساب الأصول غير المالية",
+  [norm("شراء أصول")]: "حساب اكتساب الأصول غير المالية",
+  [norm("شراء اصول")]: "حساب اكتساب الأصول غير المالية",
+
+  // ── مطابقة الحسابات المصرفية والنقدية والوسيطة ──
   [norm("ح/ النقدية للصندوق")]: "حساب النقدية",
   [norm("النقدية للصندوق")]: "حساب النقدية",
+  [norm("ح/ النقدية")]: "حساب النقدية",
+  [norm("صندوق المركز")]: "حساب النقدية",
+  [norm("النقدية بالصندوق")]: "حساب النقدية",
   [norm("ح/ المدينين مالية")]: "حساب المدينين (مالية)",
   [norm("ح/ الدائنين مالية")]: "حساب الدائنين (مالية)",
   [norm("حسابات سلف الحسابات الجارية")]: "حساب سلف الحسابات الجارية",
@@ -77,7 +133,6 @@ const EXACT_ALIASES: Record<string, string> = {
   [norm("حساب دائنون التزمات قائمة")]: "حساب دائنون التزامات قائمة",
   [norm("حساب امانات الكفالات")]: "حساب أمانات الكفالات",
   [norm("حساب النفقات المقدمة عن سلع وخدمات")]: "حساب النفقات المقدمة عن سلع وخدمات وممتلكات",
-  [norm("حساب اكتساب الاصول غير المالية")]: "حساب اكتساب الأصول غير المالية",
   [norm("حساب مراقبة اكتساب الاصول غير المالية")]: "حساب مراقبة اكتساب الأصول غير المالية",
   [norm("حساب البنك امانات")]: "حساب البنك أمانات",
 };
@@ -116,12 +171,10 @@ const matchAccount = (raw: string): string | null => {
 function parseJournalDate(dateStr?: string): { year: number; month: number } | null {
   if (!dateStr) return null;
   const s = String(dateStr).trim();
-  // YYYY-MM-DD أو YYYY/MM/DD
   const matchIso = s.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
   if (matchIso) {
     return { year: parseInt(matchIso[1], 10), month: parseInt(matchIso[2], 10) };
   }
-  // DD-MM-YYYY أو DD/MM/YYYY
   const matchEur = s.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})/);
   if (matchEur) {
     return { year: parseInt(matchEur[3], 10), month: parseInt(matchEur[2], 10) };
@@ -180,7 +233,7 @@ export default function MonthlyStatementTab() {
 
   const { startMonth, endMonth } = getPeriodRange({ mode, year, month, quarter, halfYear });
 
-  // تجميع الحركات من قيود اليومية مع احتساب دقيق للمطابقة
+  // تجميع الحركات من قيود اليومية وترحيلها للحسابات المقابلة في كشف الحساب
   const { data, matchedEntriesCount, unmatchedCount } = useMemo(() => {
     const map: Record<
       string,
@@ -357,7 +410,7 @@ export default function MonthlyStatementTab() {
 
   return (
     <div className="sheet-tabs-ui space-y-4 p-2 sm:space-y-6 sm:p-4 text-slate-800" dir="rtl">
-      {/* ── الترويسة الرئيسية الأنيقة (Royal Sapphire Hero) ──────────────── */}
+      {/* ── الترويسة الرئيسية ────────────────────────────────────────── */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#071326] via-[#0d2847] to-[#1a446c] p-4 text-white shadow-xl shadow-cyan-950/20 border border-cyan-800/40">
         <div className="absolute -top-16 -left-16 w-56 h-56 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-16 -right-16 w-56 h-56 rounded-full bg-blue-600/10 blur-3xl pointer-events-none" />
@@ -387,9 +440,8 @@ export default function MonthlyStatementTab() {
         </div>
       </div>
 
-      {/* ── البطاقات الإحصائية الأربع (4 KPI Cards) ──────────────────────── */}
+      {/* ── البطاقات الإحصائية الأربع ───────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
-        {/* إجمالي مدين */}
         <div className="rounded-2xl border border-cyan-100 bg-gradient-to-br from-white to-cyan-50/40 p-3 shadow-sm hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-cyan-900">مدين الفترة</span>
@@ -405,7 +457,6 @@ export default function MonthlyStatementTab() {
           </p>
         </div>
 
-        {/* إجمالي دائن */}
         <div className="rounded-2xl border border-rose-100 bg-gradient-to-br from-white to-rose-50/40 p-3 shadow-sm hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-rose-900">دائن الفترة</span>
@@ -421,7 +472,6 @@ export default function MonthlyStatementTab() {
           </p>
         </div>
 
-        {/* صافي الرصيد */}
         <div className="rounded-2xl border border-emerald-100 bg-gradient-to-br from-white to-emerald-50/40 p-3 shadow-sm hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-emerald-900">صافي المركز المالي</span>
@@ -441,7 +491,6 @@ export default function MonthlyStatementTab() {
           </p>
         </div>
 
-        {/* حالة ربط القيود */}
         <div className="rounded-2xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/40 p-3 shadow-sm hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-blue-900">القيود المطابقة</span>
@@ -454,15 +503,15 @@ export default function MonthlyStatementTab() {
           </p>
           <p className="text-[10px] text-blue-700/80 mt-0.5">
             {unmatchedCount > 0 ? (
-              <span className="text-amber-600 font-bold">⚠️ {unmatchedCount} قيد يحتاج مراجعة</span>
+              <span className="text-amber-600 font-bold">⚠️ {unmatchedCount} قيد غير مطابق</span>
             ) : (
-              <span className="text-emerald-600 font-bold">✓ ربط مكتمل ومطابق 100%</span>
+              <span className="text-emerald-600 font-bold">✓ ربط مطابق 100%</span>
             )}
           </p>
         </div>
       </div>
 
-      {/* ── لوحة التحكم والإجراءات (2 في كل سطر دائماً) ───────────────────── */}
+      {/* ── لوحة التحكم والإجراءات (حقلين أو زرين في كل سطر دائماً) ────────── */}
       <div className="rounded-2xl border border-slate-200/90 bg-white p-3 sm:p-5 shadow-sm space-y-3.5">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5">
           <Layers className="w-4 h-4 text-cyan-700" />
@@ -471,7 +520,7 @@ export default function MonthlyStatementTab() {
           </h2>
         </div>
 
-        {/* السطر الأول: حقلين (طريقة العرض + الفترة) */}
+        {/* سطر 1: حقلين (طريقة العرض + الفترة) */}
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
           <div>
             <label className="mb-1 block text-xs font-bold text-slate-700">
@@ -540,7 +589,7 @@ export default function MonthlyStatementTab() {
           </div>
         </div>
 
-        {/* السطر الثاني: حقلين (السنة المالية + ملخص الفترة) */}
+        {/* سطر 2: حقلين (السنة + مسمى الحركة) */}
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
           <div>
             <label className="mb-1 block text-xs font-bold text-slate-700">السنة المالية</label>
@@ -560,7 +609,7 @@ export default function MonthlyStatementTab() {
           </div>
         </div>
 
-        {/* السطر الثالث: زرين (تصدير Excel + تصدير PDF) */}
+        {/* سطر 3: زرين (تصدير Excel + PDF) */}
         <div className="grid grid-cols-2 gap-2 sm:gap-3 pt-1">
           <button
             onClick={handleExport}
@@ -579,7 +628,7 @@ export default function MonthlyStatementTab() {
           </button>
         </div>
 
-        {/* السطر الرابع: زرين (استيراد Excel + تصفير/قائمة الإجراءات) */}
+        {/* سطر 4: زرين (استيراد + تصفير) */}
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
           <div className="[&>label]:w-full [&>label]:flex [&>label]:justify-center [&>label]:items-center [&>label]:py-2 [&>label]:rounded-xl [&>label]:text-xs sm:[&>label]:text-sm [&>label]:font-bold [&>label]:shadow-sm">
             <ImportButton kind="monthly" />
@@ -606,7 +655,6 @@ export default function MonthlyStatementTab() {
 
       {/* ── جدول كشف الحساب الشهري الموحد ─────────────────────────────────── */}
       <div className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
-        {/* شريط عنوان الجدول الفاخر */}
         <div className="bg-gradient-to-r from-[#071326] via-[#0d2847] to-[#1a446c] p-3 text-white sm:p-4 border-b border-cyan-800/40">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-right">
             <div>
@@ -623,7 +671,6 @@ export default function MonthlyStatementTab() {
           </div>
         </div>
 
-        {/* جسم الجدول القابل للتمرير بأناقة */}
         <div className="relative max-h-[72vh] overflow-auto">
           <table
             ref={tableRef1}
@@ -787,7 +834,7 @@ export default function MonthlyStatementTab() {
                 );
               })}
 
-              {/* ── الإجمالي العام النهائي لكافة الحسابات ── */}
+              {/* ── الإجمالي العام ── */}
               <tr className="bg-[#071326] text-white font-extrabold text-xs sm:text-sm border-t-2 border-black">
                 <td className="border border-slate-700 text-center bg-black font-black text-cyan-300 !py-2.5">
                   الإجمالي العام النهائي للحسابات الكلية
