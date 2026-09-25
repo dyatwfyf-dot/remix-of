@@ -146,8 +146,8 @@ const HEADING_MOBILE = "text-lg sm:text-xl font-extrabold";
         fdoc.open();
         const fontFaces = `
       @font-face {
-        font-family: "Mohammad Bold Art";
-        src: url("${window.location.origin}/MohammadBoldArt-Regular.ttf") format("truetype");
+font-family: "cairo";
+        src: url("${window.location.origin}/Cairo-Regular-normal.ttf") format("truetype");
         font-style: normal;
         font-weight: 400 1000;
         font-display: block;
@@ -184,17 +184,17 @@ const HEADING_MOBILE = "text-lg sm:text-xl font-extrabold";
               margin: 0 !important;
               padding: 0 !important;
               background: #fff !important;
-              font-family: sans-serif !important;
+font-family: cairo !important;
             }
             body { width: ${pageWidthPx}px; }
-            .pdf-download-root {
-              width: 100%;
-              margin: 0;
+.pdf-download-root {
+width: 100%;
+     margin: 0;
               padding: 0 4px;
               background: #fff;
               box-sizing: border-box;
             }
-            .pdf-download-root .report-letterhead-block {
+.pdf-download-root .report-letterhead-block {
               width: 100% !important;
               height: 30mm !important;
               min-height: 30mm !important;
@@ -204,24 +204,20 @@ const HEADING_MOBILE = "text-lg sm:text-xl font-extrabold";
             .pdf-download-root .report-letterhead-image {
               width: 100% !important;
               height: 100% !important;
-              object-fit: contain !important;
-              object-position: top !important;
+object-fit: fill !important;
+ object-position: top !important;
             }
+ .pdf-download-root .doc-header .title h1 { font-size: 22px !important;
+ text-align: center; 
+}
 
-            /* ===== إخفاء العنوان المكرر في الصفحة الأولى عند وجود ترويسة ===== */
-            .pdf-download-root .report-letterhead-block ~ .doc-header .title h1,
-            .pdf-download-root .report-letterhead-block ~ .doc-header .title h2,
-            .pdf-download-root .report-letterhead-block ~ * .doc-header .title h1,
-            .pdf-download-root .report-letterhead-block ~ * .doc-header .title h2 {
- display:flex !important;
-              height: 0 !important;
-              margin: 0 !important;
-              padding: 0 !important;
-            }
-
- .pdf-download-root .doc-header .title h1 { font-size: 22px !important; }
-.pdf-download-root .doc-header .title h2 { font-size: 18px !important; }
-            .pdf-download-root .doc-header .meta { font-size: 14px !important; }
+.pdf-download-root .doc-header .title h2 { font-size: 18px !important;
+text-align: center; 
+  
+}
+.pdf-download-root .doc-header .meta { font-size: 14px !important; 
+  text-align: center; 
+}
 
             /* ===== تنسيق الجدول بشكل احترافي ===== */
 .pdf-download-root table {
@@ -239,9 +235,10 @@ background: #ffffff !important;
  font-family:AlQabas-Bold !important;
 font-size:18.5px !important;
 padding: 10px 6px !important;
-              background: #1f3a5f !important;
-              color: #ffffff !important;
-              text-align: center !important;
+ background-color: #1f3a5f
+ !important;
+color: #ffffff !important;
+text-align: center !important;
               vertical-align: middle !important;
               font-weight: 700 !important;
 border: 2px solid #000 !important;
