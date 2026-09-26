@@ -314,7 +314,7 @@ export default function MonthlyStatementTab() {
   const periodLabel = getReportPeriodLabel({ mode, year, month, quarter, halfYear });
 
   return (
-    <div className="w-full space-y-6 p-2 sm:p-4 bg-sky-900/40 text-black min-h-screen" dir="rtl text-center ">
+    <div className="w-full space-y-6 p-2 sm:p-4 bg-sky-900 text-black min-h-screen" dir="rtl text-center ">
       {/* ══ الترويسة وأزرار التحكم ══ */}
       <div className="rounded-2xl border border-sky-500/20 bg-sky-900/40 p-4 shadow-xl backdrop-blur-md">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
@@ -431,7 +431,7 @@ export default function MonthlyStatementTab() {
         <table ref={tableRef1} className="w-full text-center text-xs border-collapse">
           <thead>
             <tr className="bg-gradient-to-r from-sky-950 via-slate-900 to-sky-950 text-sky-200 border-b border-sky-500/30">
-              <th rowSpan={2} className="p-2 border-l border-white/10 min-w-[180px] text-right font-black">
+              <th rowSpan={2} className="p-2 border-l border-white/10 min-w-[180px] text-center font-black">
                 بيان أنواع الحسابات
               </th>
               <th colSpan={2} className="p-2 border-l border-white/10 bg-slate-800/40 font-bold">
@@ -485,8 +485,8 @@ export default function MonthlyStatementTab() {
                     return (
                       <tr
                         key={aIdx}
-                        className={`hover:bg-sky-500/10 transition-colors ${
-                          isHighlight ? "bg-sky-500/5 font-bold text-sky-100" : ""
+                        className={`hover:bg-green transition-colors ${
+                          isHighlight ? "bg-yellow font-bold text-black" : ""
                         }`}
                       >
                         <td className="px-3 py-1.5 text-center border-l border-white/5 whitespace-nowrap">
