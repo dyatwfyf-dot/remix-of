@@ -520,20 +520,20 @@ export default function MonthlyStatementTab() {
                     );
                   })}
    {/* جملة المجموعة */}
-                  <tr className="bg-slate-950/90 font-bold text-white border-b border-sky-500/20 text-xs">
-                    <td className="px-3 py-1.5 text-center border-l border-white/5">
+ <tr className="bg-slate-950/90 font-bold text-white border-b border-sky-500/20 text-xs">
+<td className="px-3 py-1.5 text-center border-l border-white/5">
                       جملة {group.title}
                     </td>
 <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white">{gPrevD.toLocaleString()}</td>
-                    <td className="px-2 py-1.5 border-l border-white/5 font-mono">{gPrevC.toLocaleString()}</td>
-                    <td className="px-2 py-1.5 border-l border-white/5 font-mono text-sky-300">{gCurD.toLocaleString()}</td>
-                    <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white">{gCurC.toLocaleString()}</td>
-                    <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white">{(gPrevD + gCurD).toLocaleString()}</td>
-                    <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white">{(gPrevC + gCurC).toLocaleString()}</td>
+<td className="px-2 py-1.5 border-l border-white/5 font-mono">{gPrevC.toLocaleString()}</td>
+ <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white">{gCurD.toLocaleString()}</td>
+<td className="px-2 py-1.5 border-l border-white/5 font-mono text-white">{gCurC.toLocaleString()}</td>
+<td className="px-2 py-1.5 border-l border-white/5 font-mono text-white">{(gPrevD + gCurD).toLocaleString()}</td>
+<td className="px-2 py-1.5 border-l border-white/5 font-mono text-white">{(gPrevC + gCurC).toLocaleString()}</td>
                     <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white">
                       {Math.max(0, gPrevD + gCurD - (gPrevC + gCurC)).toLocaleString()}
                     </td>
-                    <td className="px-2 py-1.5 font-mono text-emerald-300">
+<td className="px-2 py-1.5 font-mono text-white">
                       {Math.max(0, gPrevC + gCurC - (gPrevD + gCurD)).toLocaleString()}
                     </td>
                   </tr>
@@ -543,7 +543,7 @@ export default function MonthlyStatementTab() {
           </tbody>
           {/* الإجمالي العام */}
           <tfoot>
- <tr className="bg-gradient-to-r from-sky-950 via-slate-900 to-sky-950 font-black text-white text-sm border-t-2 border-sky-400">
+ <tr className="bg-gradient-to-r from-sky-950 via-slate-900 to-sky-950 font-white text-center text-sm border-t-2 border-sky-400">
               <td className="px-3 py-2 text-center border-l border-white/10">الإجمالي العام</td>
 <td className="px-2 py-2 border-l border-white/10 font-mono">{totals.prevDebit.toLocaleString()}</td>
 <td className="px-2 py-2 border-l border-white/10 font-mono">{totals.prevCredit.toLocaleString()}</td>
