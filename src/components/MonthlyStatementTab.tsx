@@ -458,7 +458,7 @@ export default function MonthlyStatementTab() {
               <th className="p-1.5 text-emerald-300 bg-emerald-950/40">دائن</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5 font-medium">
+<tbody className="divide-y divide-white/5 font-medium">
             {GROUPS.map((group, gIdx) => {
               let gPrevD = 0, gPrevC = 0, gCurD = 0, gCurC = 0;
               return (
@@ -480,40 +480,40 @@ export default function MonthlyStatementTab() {
                     gCurD += rowData.curDebit;
                     gCurC += rowData.curCredit;
 
-                    const isHighlight = acc === "الاستخدامات" || acc === "الموارد";
+const isHighlight = acc === "الاستخدامات" || acc === "الموارد";
 
-                    return (
-                      <tr
-                        key={aIdx}
-                        className={`hover:bg-green transition-colors ${
-                          isHighlight ? "bg-yellow font-bold text-black" : ""
+return (
+<tr
+ key={aIdx}
+className={`hover:bg-green transition-colors ${
+ isHighlight ? "bg-yellow font-bold text-black" : ""
                         }`}
                       >
-                        <td className="px-3 py-1.5 text-center border-l border-white/5 whitespace-nowrap">
-                          {acc}
-                        </td>
-                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-slate-300">
+<td className="px-3 py-1.5 text-center border-l border-black whitespace-nowrap">
+{acc}
+</td>
+<td className="px-2 py-1.5 border-l border-black font-mono text-white">
                           {rowData.prevDebit ? rowData.prevDebit.toLocaleString() : "-"}
                         </td>
-                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-slate-300">
+                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white">
                           {rowData.prevCredit ? rowData.prevCredit.toLocaleString() : "-"}
                         </td>
-                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-sky-300 bg-sky-950/20 font-bold">
+                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white bg-sky-950/20 font-bold">
                           {rowData.curDebit ? rowData.curDebit.toLocaleString() : "-"}
                         </td>
-                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-amber-300 bg-sky-950/20 font-bold">
+<td className="px-2 py-1.5 border-l border-white/5 font-mono text-white bg-sky-950/20 font-bold">
                           {rowData.curCredit ? rowData.curCredit.toLocaleString() : "-"}
                         </td>
-                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-slate-200 bg-indigo-950/20">
+ <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white bg-indigo-950/20">
                           {totD ? totD.toLocaleString() : "-"}
                         </td>
-                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-slate-200 bg-indigo-950/20">
+                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white bg-indigo-950/20">
                           {totC ? totC.toLocaleString() : "-"}
                         </td>
-                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-emerald-300 bg-emerald-950/20 font-bold">
+                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white bg-emerald-950/20 font-bold">
                           {balD ? balD.toLocaleString() : "-"}
                         </td>
-                        <td className="px-2 py-1.5 font-mono text-emerald-300 bg-emerald-950/20 font-bold">
+                        <td className="px-2 py-1.5 font-mono text-white bg-emerald-950/20 font-bold">
                           {balC ? balC.toLocaleString() : "-"}
                         </td>
                       </tr>
@@ -543,12 +543,12 @@ export default function MonthlyStatementTab() {
           </tbody>
           {/* الإجمالي العام */}
           <tfoot>
- <tr className="bg-gradient-to-r from-sky-950 via-slate-900 to-sky-950 font-white text-center text-sm border-t-2 border-sky-400">
-              <td className="px-3 py-2 text-center border-l border-white/10">الإجمالي العام</td>
-<td className="px-2 py-2 border-l border-white/10 font-mono">{totals.prevDebit.toLocaleString()}</td>
-<td className="px-2 py-2 border-l border-white/10 font-mono">{totals.prevCredit.toLocaleString()}</td>
+ <tr className="bg-gradient-to-r from-sky-950 via-slate-900 to-sky-950 font-bold text-white text-sm border-t-2 border-sky-400">
+<td className="px-3 py-2 text-center border-l border-white/10">الإجمالي العام</td>
+<td className="px-2 py-2 border-l border-white/10 font-mono text-white">{totals.prevDebit.toLocaleString()}</td>
+<td className="px-2 py-2 border-l border-white/10 font-mono text-white">{totals.prevCredit.toLocaleString()}</td>
 <td className="px-2 py-2 border-l border-white/10 font-mono text-white">{totals.curDebit.toLocaleString()}</td>
-              <td className="px-2 py-2 border-l border-white/10 font-mono text-white">{totals.curCredit.toLocaleString()}</td>
+<td className="px-2 py-2 border-l border-white/10 font-mono text-white">{totals.curCredit.toLocaleString()}</td>
               <td className="px-2 py-2 border-l border-white/10 font-mono text-white">
                 {(totals.prevDebit + totals.curDebit).toLocaleString()}
               </td>
