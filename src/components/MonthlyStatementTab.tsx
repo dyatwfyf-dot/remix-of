@@ -314,9 +314,9 @@ export default function MonthlyStatementTab() {
   const periodLabel = getReportPeriodLabel({ mode, year, month, quarter, halfYear });
 
   return (
-    <div className="w-full space-y-4 p-2 sm:p-4 bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 text-slate-100 min-h-screen" dir="rtl">
+    <div className="w-100% space-y-4 p-2 sm:p-4 bg-gradient-to-br from-slate-900 via-sky-950 to-slate-200 text-slate-100 min-h-auto " dir="rtl">
       {/* ══ الترويسة وأزرار التحكم ══ */}
-      <div className="rounded-2xl border border-sky-500/20 bg-slate-100 p-4 shadow-xl backdrop-blur-md">
+      <div className="rounded-2xl border border-sky-500/20 bg-slate-500/40 p-4 shadow-xl backdrop-blur-md">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
           <div className="flex items-center gap-3">
             <div className="grid h-12 w-12 place-items-center rounded-2xl bg-sky-500/20 text-sky-400 border border-sky-400/30 shadow-inner">
@@ -335,7 +335,7 @@ export default function MonthlyStatementTab() {
 
         {/* ══ مؤشرات الحالة وسرعة الترحيل ══ */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3">
-          <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/40 p-2.5">
+          <div className="rounded-xl border border-emerald-500/30 bg-emerald-300/20 p-2.5">
             <div className="flex items-center justify-between text-xs text-emerald-300 mb-1">
               <span>قيود مرحلة آلياً</span>
               <CheckCircle2 className="h-4 w-4 text-emerald-400" />
@@ -343,7 +343,7 @@ export default function MonthlyStatementTab() {
             <div className="text-lg font-black text-white">{matchedEntriesCount}</div>
           </div>
 
-          <div className="rounded-xl border border-sky-500/30 bg-sky-950/40 p-2.5">
+          <div className="rounded-xl border border-sky-500/30 bg-sky-200/40 p-2.5">
             <div className="flex items-center justify-between text-xs text-sky-300 mb-1">
               <span>مدين الشهر الجاري</span>
               <ArrowDownLeft className="h-4 w-4 text-sky-400" />
