@@ -316,7 +316,7 @@ export default function MonthlyStatementTab() {
   return (
     <div className="w-full space-y-4 p-2 sm:p-4 bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 text-slate-100 min-h-screen" dir="rtl">
       {/* ══ الترويسة وأزرار التحكم ══ */}
-      <div className="rounded-2xl border border-sky-500/20 bg-slate-900/80 p-4 shadow-xl backdrop-blur-md">
+      <div className="rounded-2xl border border-sky-500/20 bg-slate-100 p-4 shadow-xl backdrop-blur-md">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
           <div className="flex items-center gap-3">
             <div className="grid h-12 w-12 place-items-center rounded-2xl bg-sky-500/20 text-sky-400 border border-sky-400/30 shadow-inner">
