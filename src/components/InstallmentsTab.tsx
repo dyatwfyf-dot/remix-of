@@ -111,43 +111,43 @@ const HEADING_MOBILE = "text-lg sm:text-xl font-extrabold";
  * downloadDetailedHtmlPdf
  * (لم أصِحح المنطق — فقط تأكدت أن حجم إطار الطباعة مناسب عند التحميل)
  */
-const downloadDetailedHtmlPdf = async ({
-  title,
-  body,
-  css,
-  fileName,
-  pageSize,
-  orientation,
-}: {
-  title: string;
-  body: string;
-  css: string;
-  fileName: string;
-  pageSize: "A4" | "A3";
-  orientation: "portrait" | "landscape";
-}): Promise<void> => {
-  const pageWidthPx = orientation === "landscape" ? 1600 : 1132;
-  const frame = document.createElement("iframe");
-  frame.setAttribute("aria-hidden", "true");
-  frame.style.position = "fixed";
-  frame.style.left = "-10000px";
-  frame.style.top = "0";
-  frame.style.width = `${pageWidthPx}px`;
-  frame.style.height = "800px";
-  frame.style.border = "0";
-  frame.style.opacity = "0";
-  frame.style.pointerEvents = "none";
-  document.body.appendChild(frame);
-
-  try {
-    const fdoc = frame.contentDocument;
-    if (!fdoc) throw new Error("تعذر إنشاء مساحة PDF");
-
-    fdoc.open();
-    const fontFaces = `
+ const downloadDetailedHtmlPdf = async ({
+      title,
+      body,
+      css,
+      fileName,
+      pageSize,
+      orientation,
+    }: {
+      title: string;
+      body: string;
+      css: string;
+      fileName: string;
+      pageSize: "A4" | "A3";
+      orientation: "portrait" | "landscape";
+    }): Promise < void > => {
+      const pageWidthPx = orientation === "landscape" ? 1600 : 1132;
+      const frame = document.createElement("iframe");
+      frame.setAttribute("aria-hidden", "true");
+      frame.style.position = "fixed";
+      frame.style.left = "-10000px";
+      frame.style.top = "0";
+      frame.style.width = `${pageWidthPx}px`;
+      frame.style.height = "800px";
+      frame.style.border = "0";
+      frame.style.opacity = "0";
+      frame.style.pointerEvents = "none";
+      document.body.appendChild(frame);
+      
+      try {
+        const fdoc = frame.contentDocument;
+        if (!fdoc) throw new Error("تعذر إنشاء مساحة PDF");
+        
+        fdoc.open();
+        const fontFaces = `
       @font-face {
-        font-family: "Mohammad Bold Art";
-        src: url("${window.location.origin}/MohammadBoldArt-Regular.ttf") format("truetype");
+font-family: "cairo";
+        src: url("${window.location.origin}/Cairo-Regular-normal.ttf") format("truetype");
         font-style: normal;
         font-weight: 400 1000;
         font-display: block;
@@ -167,9 +167,9 @@ const downloadDetailedHtmlPdf = async ({
         font-display: block;
       }
     `;
-
-    fdoc.write(`<!doctype html>
-      <html lang="ar" dir="rtl">
+        
+        fdoc.write(`<!doctype html>
+<html lang="ar" dir="rtl">
         <head>
           <meta charset="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -184,17 +184,17 @@ const downloadDetailedHtmlPdf = async ({
               margin: 0 !important;
               padding: 0 !important;
               background: #fff !important;
-              font-family: "Mohammad Bold Art", "Noto Kufi Arabic", Tahoma, Arial, sans-serif !important;
+font-family: cairo !important;
             }
             body { width: ${pageWidthPx}px; }
-            .pdf-download-root {
-              width: 100%;
-              margin: 0;
+.pdf-download-root {
+width: 100%;
+     margin: 0;
               padding: 0 4px;
               background: #fff;
               box-sizing: border-box;
             }
-            .pdf-download-root .report-letterhead-block {
+.pdf-download-root .report-letterhead-block {
               width: 100% !important;
               height: 30mm !important;
               min-height: 30mm !important;
@@ -204,41 +204,75 @@ const downloadDetailedHtmlPdf = async ({
             .pdf-download-root .report-letterhead-image {
               width: 100% !important;
               height: 100% !important;
-              object-fit: contain !important;
-              object-position: top !important;
+object-fit: fill !important;
+ object-position: top !important;
             }
-            .pdf-download-root .doc-header .title h1 { font-size: 22px !important; }
-            .pdf-download-root .doc-header .title h2 { font-size: 18px !important; }
-            .pdf-download-root .doc-header .meta { font-size: 14px !important; }
-            .pdf-download-root table {
-              width: 100% !important;
+ .pdf-download-root .doc-header .title h1 { font-size: 22px !important;
+ text-align: center; 
+}
+
+.pdf-download-root .doc-header .title h2 { font-size: 18px !important;
+text-align: center; 
+  
+}
+.pdf-download-root .doc-header .meta { font-size: 14px !important; 
+  text-align: center; 
+}
+
+            /* ===== تنسيق الجدول بشكل احترافي ===== */
+.pdf-download-root table {
+width: 100% !important;
               margin: 0 !important;
               border-collapse: collapse !important;
               table-layout: auto !important;
-              border: 1px solid #000 !important;
+border: 1px solid #000 !important;
+background: #ffffff !important;
+              overflow: hidden !important;
             }
-            .pdf-download-root th,
-            .pdf-download-root td {
-              text-align: center !important;
+
+            /* خلايا الرأس */
+.pdf-download-root thead th {
+ font-family:AlQabas-Bold !important;
+font-size:18.5px !important;
+padding: 10px 6px !important;
+ background-color: #1f3a5f
+ !important;
+color: #ffffff !important;
+text-align: center !important;
               vertical-align: middle !important;
-              padding: 5px 4px !important;
-              font-size: 15px !important;
-              line-height: 1.45 !important;
-              border: 1px solid #000 !important;
-              font-family: "Mohammad Bold Art", "Noto Kufi Arabic", Tahoma, Arial, sans-serif !important;
               font-weight: 700 !important;
+border: 2px solid #000 !important;
             }
-            .pdf-download-root thead th {
-              font-family: "Al Qabas Bold", "Mohammad Bold Art", Tahoma, Arial, sans-serif !important;
-              font-size: 15.5px !important;
-              padding: 7px 4px !important;
+
+            /* خلايا الجسم */
+.pdf-download-root tbody td,
+.pdf-download-root tbody th {
+text-align: center !important;
+vertical-align: middle !important;
+padding: 3px 3px !important;
+font-size: 15px !important;
+ border: 1px solid #000 !important;
+font-family:Cairo !important;
+font-weight: 900 !important;
+ color:#000 !important;
+              background: #ffffff !important;
             }
-            .pdf-download-root td.cell-text,
-            .pdf-download-root th.cell-text {
+
+            /* تخطيط الصفوف (Zebra) */
+.pdf-download-root tbody tr:nth-child(even) td,
+.pdf-download-root tbody tr:nth-child(even) th {
+ background:white !important;
+            }
+
+/* خلايا النصوص الطويلة */
+ .pdf-download-root td.cell-text,
+.pdf-download-root th.cell-text {
               word-break: break-word;
               overflow-wrap: break-word;
               white-space: normal;
             }
+
+            /* خلايا الأرقام */
             .pdf-download-root td.cell-number,
             .pdf-download-root th.cell-number,
             .pdf-download-root .num,
@@ -249,6 +283,7 @@ const downloadDetailedHtmlPdf = async ({
               font-variant-numeric: tabular-nums;
               direction: ltr;
             }
+
             .pdf-download-root .cell-content {
               display: flex !important;
               align-items: center !important;
@@ -256,11 +291,22 @@ const downloadDetailedHtmlPdf = async ({
               font-size: inherit !important;
               font-weight: inherit !important;
             }
+
+            /* صف المجموع */
             .pdf-download-root .total-row td {
               font-family: "Al Qabas Bold", "Mohammad Bold Art", Tahoma, Arial, sans-serif !important;
               font-size: 15.5px !important;
+              background: #e8eef7 !important;
+              color: #1f3a5f !important;
+              font-weight: 700 !important;
+              border-top: 1.5px solid #1f3a5f !important;
             }
-            .pdf-download-root .doc-foot { font-size: 13px !important; margin-top: 6px !important; }
+
+            /* ذيل التقرير */
+            .pdf-download-root .doc-foot {
+              font-size: 13px !important;
+              margin-top: 6px !important;
+            }
             .print-toolbar { display: none !important; }
           </style>
         </head>
@@ -268,47 +314,47 @@ const downloadDetailedHtmlPdf = async ({
           <div class="pdf-download-root">${reportLetterheadHtml()}${body}</div>
         </body>
       </html>`);
-    fdoc.close();
-
-    const images = Array.from(fdoc.images);
-    await Promise.all(
-      images.map(
-        (image) =>
-          image.complete
-            ? Promise.resolve()
-            : new Promise<void>((resolve) => {
-                const done = () => resolve();
-                image.addEventListener("load", done, { once: true });
-                image.addEventListener("error", done, { once: true });
-                window.setTimeout(done, 2500);
-              }),
-      ),
-    );
-    if ((fdoc as any).fonts?.ready) {
-      await Promise.race([
-        (fdoc as any).fonts.ready,
-        new Promise((resolve) => window.setTimeout(resolve, 3000)),
-      ]);
-    }
-    await new Promise((resolve) => window.setTimeout(resolve, 120));
-
-    const page = fdoc.querySelector(".pdf-download-root") as HTMLElement | null;
-    if (!page) throw new Error("تعذر العثور على محتوى التقرير");
-    frame.style.height = `${Math.max(page.scrollHeight + 80, 800)}px`;
-
-    const [{ default: html2canvas }, { default: JsPDF }] = await Promise.all([
-      import("html2canvas"),
-      import("jspdf"),
-    ]);
-    const scale = 3;
-    const pdf = new JsPDF({
-      unit: "mm",
-      format: pageSize.toLowerCase() as "a4" | "a3",
-      orientation,
-      compress: true,
-    });
-    const pageWidthMm = pdf.internal.pageSize.getWidth();
-    const pageHeightMm = pdf.internal.pageSize.getHeight();
+        fdoc.close();
+        
+        const images = Array.from(fdoc.images);
+        await Promise.all(
+          images.map(
+            (image) =>
+            image.complete ?
+            Promise.resolve() :
+            new Promise < void > ((resolve) => {
+              const done = () => resolve();
+              image.addEventListener("load", done, { once: true });
+              image.addEventListener("error", done, { once: true });
+              window.setTimeout(done, 2500);
+            }),
+          ),
+        );
+        if ((fdoc as any).fonts?.ready) {
+          await Promise.race([
+            (fdoc as any).fonts.ready,
+            new Promise((resolve) => window.setTimeout(resolve, 3000)),
+          ]);
+        }
+        await new Promise((resolve) => window.setTimeout(resolve, 120));
+        
+        const page = fdoc.querySelector(".pdf-download-root") as HTMLElement | null;
+        if (!page) throw new Error("تعذر العثور على محتوى التقرير");
+        frame.style.height = `${Math.max(page.scrollHeight + 80, 800)}px`;
+        
+        const [{ default: html2canvas }, { default: JsPDF }] = await Promise.all([
+          import("html2canvas"),
+          import("jspdf"),
+        ]);
+        const scale = 3;
+        const pdf = new JsPDF({
+          unit: "mm",
+          format: pageSize.toLowerCase() as "a4" | "a3",
+          orientation,
+          compress: true,
+        });
+        const pageWidthMm = pdf.internal.pageSize.getWidth();
+        const pageHeightMm = pdf.internal.pageSize.getHeight();
     // هوامش ضيقة حتى يستغل جدول الأقساط كامل عرض صفحة PDF.
     const marginMm = 3;
     const imageWidthMm = pageWidthMm - marginMm * 2;
@@ -403,13 +449,13 @@ const StatsGrid = ({ stats, columns = 3 }: { stats: any[]; columns?: number }) =
         <div
           key={idx}
           // خففنا min-height لجعل البطاقات أكثر إحكامًا على الشاشات الصغيرة
-          className={`${stat.bgClass} relative overflow-hidden min-h-[46px] sm:min-h-[56px] px-2 sm:px-3 py-1 sm:py-2 rounded-xl sm:rounded-2xl border ${stat.borderClass} shadow-sm`}
+className={`${stat.bgClass} relative overflow-hidden min-h-[46px] sm:min-h-[56px] px-2 sm:px-3 py-1 sm:py-2 rounded-xl sm:rounded-2xl border ${stat.borderClass} shadow-sm`}
         >
-          <span className={`absolute inset-y-0 right-0 w-1 sm:w-1.5 ${stat.accentClass || "bg-sky-500"}`} />
-          <div className="pr-1.5 sm:pr-2 min-w-0">
-            <div className="text-xs leading-tight sm:text-xs font-bold text-slate-500 truncate">
+<span className={`absolute inset-y-0 right-0 w-1 sm:w-1.5 ${stat.accentClass || "bg-sky-500"}`} />
+<div className="pr-1.5 sm:pr-2 min-w-0">
+<div className="text-xs leading-tight sm:text-xs font-bold text-slate-500 truncate">
               {stat.label}
-            </div>
+</div>
             <div className="text-sm sm:text-xl numeric-cell font-mono font-extrabold mt-0.5 text-slate-900 tabular-nums truncate">
               {stat.value}
             </div>
@@ -2037,20 +2083,20 @@ const installments2026WebActions: WebActionItem[] = [
  📊 أقساط ومستندات 
  العام 2025
             </h2>
-            <p className="text-xs text-sky-100">يشمل جميع الدفعات لعامي 2024 و 2025</p>
+ <p className="text-lg text-sky-100">يشمل جميع الدفعات لعامي 2024 و 2025</p>
           </div>
-          <div className="w-full sm:w-auto grid grid-cols-2 sm:flex gap-1.5 sm:gap-2 items-center">
-            <div className="relative w-full sm:w-auto">
-              <Search className="w-4 h-4 absolute right-2.5 top-2.5 text-sky-500" />
+<div className="w-full sm:w-auto grid grid-cols-1 sm:flex gap-1.5 sm:gap-2 items-center">
+ <div className="relative w-full sm:w-auto">
+<Search className="w-8 h-4 absolute right-2.5 top-2.5 text-sky-500" />
               <input
                 type="text"
                 placeholder="بحث (الاسم، الدفعة، المساق)..."
                 value={search2025}
                 onChange={(e) => setSearch2025(e.target.value)}
-                className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"
+ className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"
               />
             </div>
-<label className="apk-only-actions relative w-full px-1.5 sm:px-2 py-1 sm:py-1 bg-white text-sky-700 rounded-lg text-xs sm:text-xs font-bold cursor-pointer hover:bg-sky-50 shadow text-center">
+<label className="apk-only-actions relative w-full px-2 sm:px-2 py-2 sm:py-2 bg-white text-sky-700 rounded-lg text-xs sm:text-xs font-bold cursor-pointer hover:bg-sky-50 shadow text-center">
   📥 استيراد الملف{" "}
   <input
     type="file"
@@ -2061,23 +2107,24 @@ const installments2026WebActions: WebActionItem[] = [
 </label>
 
 
-            <div className="apk-only-actions col-span-2 flex gap-1 w-full sm:w-auto">
-              <button
-                onClick={() => exportToExcel(2025)}
-                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
-              >
-                <FileSpreadsheet className={ICON_MOBILE} /> <span className="hidden sm:inline">Excel</span>
+<div className="apk-only-actions col-span-2 flex gap-1 w-full">
+<button
+ onClick={() => exportToExcel(2025)}
+className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-teal-400 text-black-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
+  >تصدير الي اكسل
+<FileSpreadsheet className={ICON_MOBILE} /> 
+<span className="hidden sm:inline">Excel تصدير الي 
+</span>
               </button>
               <button
                 onClick={() => setPrintSettingsYear(2025)}
-                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white/95 text-sky-800 rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`}
-              >
-                <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة</span>
+className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`} >طباعة تفصيلية
+ <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة تفصيلية</span>
               </button>
             </div>
 
-            <TabActions
-              title="أقساط العام 2025"
+<TabActions
+ title="أقساط العام 2025"
               rows={installments2025 || []}
               columns={[
                 { key: "name", label: "اسم المتدرب" },
@@ -2092,21 +2139,21 @@ const installments2026WebActions: WebActionItem[] = [
               onClear={() => clearInstallments("2025")}
               printLabel="الأقساط/إجمالي"
               additionalWebActions={installments2025WebActions}
-              className="col-span-2 w-full !grid !grid-cols-2 sm:!flex !gap-1 sm:!gap-2 [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-2 sm:[&>button]:py-1"
+ className="col-span-2 w-auto grid !grid-cols-2 sm:!flex !gap-1 sm:!gap-2 [&>button]:min-w-auto [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-1 sm:[&>button]:py-1"
             />
           </div>
         </div>
 
         {importError && (
-          <div className="bg-red-50 border-b border-red-200 p-3 flex gap-2">
-            <AlertCircle className="w-5 h-5 text-red-600" />
+ <div className="bg-red-50 border-b border-red-200 p-3 flex gap-2">
+<AlertCircle className="w-5 h-5 text-red-600" />
             <p className="text-sm text-red-700">{importError}</p>
           </div>
         )}
 
-        <div className="p-1 sm:p-3">
-          <StatsGrid stats={stats2025} columns={3} />
-          <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
+ <div className="p-1 sm:p-3">
+<StatsGrid stats={stats2025} columns={3} />
+<div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
             <table className="installments-table min-w-max table-auto text-sm sm:text-base font-semibold">
               <thead className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900  [&>tr>th]:!text-white sticky top-0 z-20 shadow-md">
                 <tr>
@@ -2286,136 +2333,161 @@ const installments2026WebActions: WebActionItem[] = [
         </div>
       </div>
 {/* ========== واجهة جدول 2026 ========== */}
-      <div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-lg border border-sky-100 rounded-2xl overflow-hidden">
-        <div className="bg-gradient-to-l from-sky-800 via-sky-600 to-sky-600 px-2 sm:px-6 py-2.5 sm:py-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2">
-          <div className="min-w-0">
-            <h2 className="text-base sm:text-lg sm:text-xl font-extrabold text-white">
-              📊 سجل أقساط العام الحالي 2026
-            </h2>
-            <p className="text-xs sm:text-sm font-bold text-white">بيانات المسدد والرصيد المدور لعام 2026</p>
-          </div>
-          <div className="w-full grid grid-cols-2 sm:flex gap-1.5 sm:gap-2 items-center">
-            <button
-              onClick={() => setCondFormatModal(true)}
-              className={`apk-only-actions w-full px-2 py-1 rounded-md text-sm font-extrabold shadow transition-colors flex items-center justify-center gap-1 ${
-                condFormatRules.length
-                  ? "bg-yellow-400 text-yellow-900 animate-pulse"
-                  : "bg-white/20 text-white hover:bg-white/30"
-              }`}
-              title="تلوين الصفوف حسب نص معين"
-            >
-              <Palette className={ICON_MOBILE} />
-              <span className="hidden sm:inline">{condFormatRules.length ? `تنسيق نشط (${condFormatRules.length})` : "تنسيق شرطي"}</span>
-            </button>
-
-            <div className="relative w-full sm:w-auto">
-              <Search className="w-4 h-4 absolute right-2.5 top-2.5 text-yellow-500" />
-              <input type="text"
-                placeholder="بحث (الاسم، الدفعة، المساق)..."
-                value={search2026}
-                onChange={(e) => setSearch2026(e.target.value)}
-                className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-yellow-600 shadow-sm"
-              />
-            </div>
-      
-            <button
-              onClick={() => setNewRowModal2026(true)}
-              className="apk-only-actions w-full px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-sm font-bold shadow hover:bg-blue-200 transition-colors flex items-center justify-center gap-1"
-            >
-              <Plus className={ICON_MOBILE} /> <span className="hidden sm:inline">طالب جديد</span>
-            </button>
-
-            <button
-              onClick={() => setNewColModal(true)}
-              className="apk-only-actions w-full px-2 py-1 bg-amber-100 text-amber-800 rounded-md text-sm font-bold shadow hover:bg-amber-200 transition-colors flex items-center justify-center gap-1"
-            >
-              <Plus className={ICON_MOBILE} /> <span className="hidden sm:inline">عمود جديد</span>
-            </button>
-
-            <button
-              onClick={() => setNewPaymentModal(true)}
-              className="apk-only-actions w-full px-2 py-1 bg-white/20 text-white rounded-md text-sm font-bold shadow hover:bg-white/30 transition-colors truncate"
-            >
-              <span>➕ إضافة قسط</span>
-            </button>
+<div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-lg border border-sky-100 rounded-2xl overflow-hidden">
+  <div className="bg-gradient-to-l from-sky-800 via-sky-600 to-sky-600 px-4 sm:px-6 py-4 flex flex-col gap-4">
     
-            <label className="apk-only-actions w-full px-2 py-1 bg-white text-sky-700 rounded-md text-sm font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors">
-              📥 استيراد{" "}
-              <input
-                type="file"
-                accept=".xlsx,.xls"
-                onChange={(e) => importFile(e, 2026)}
-          className="absolute h-0 w-0 opacity-0 overflow-hidden"  
-              />
-            </label>
+    {/* العنوان والوصف */}
+    <div className="min-w-0">
+      <h2 className="text-xl font-extrabold text-white">
+        📊 سجل أقساط العام الحالي 2026
+      </h2>
+      <p className="text-xs sm:text-sm font-bold text-white/90 mt-1">
+        بيانات المسدد والرصيد المدور لعام 2026
+      </p>
+    </div>
 
-            <div className="apk-only-actions col-span-2 flex gap-1 w-full sm:w-auto">
-              <button
-                onClick={() => exportToExcel(2026)}
-                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
-              >
-                <FileSpreadsheet className={ICON_MOBILE} /> <span className="hidden sm:inline">Excel</span>
-              </button>
-              <button
-                onClick={() => setPrintSettingsYear(2026)}
-                className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-white/95 text-sky-800 rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`}
-              >
-                <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة</span>
-              </button>
-            </div>
+    {/* شبكة الأزرار والحقول (كل 2 أزرار/عناصر في سطر) */}
+    <div className="grid grid-cols-2 gap-2 w-full">
 
-            <div className="col-span-2 w-full flex flex-wrap items-center gap-1 sm:gap-2">
-              <TabActions
-                title="أقساط العام 2026"
-                rows={(installments || []).map((r: any) => {
-                  const customValues: any = { ...r.customData };
-                  extraCols2026.forEach((col) => {
-                    if (col.type === "formula")
-                      customValues[col.name] = evaluateFormula(col.formula || "", r);
-                  });
-                  return { ...r, ...customValues };
-                })}
-                columns={[
-                  { key: "name", label: "اسم المتدرب" },
-                  { key: "batch", label: "الدفعة" },
-                  { key: "specialty", label: "المساق" },
-                  { key: "prevDue", label: "المتبقي من 2025" },
-                  { key: "fees", label: "الرسوم" },
-                  { key: "totalPaid", label: "المسدد" },
-                  { key: "remaining", label: "المتبقي" },
-                  { key: "notes", label: "الملاحظات" },
-                  ...extraCols2026.map((c) => ({ key: c.name, label: c.name })),
-                ]}
-                fileName="اقساط-2026"
-                numericKeys={["prevDue", "fees", "totalPaid", "remaining"]}
-                onClear={() => clearInstallments()}
-                printLabel="الأقساط/إجمالي"
-                additionalWebActions={installments2026WebActions}
-                className="!flex-1 min-w-0 !gap-1 sm:!gap-2 [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-2 [&>button]:py-1 [&>button]:text-sm"
-              />
-              <button
-                className="apk-only-actions flex items-center gap-1 px-3 py-1 bg-[#10528e] text-white rounded-md text-sm font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all"
-                type="button"
-                onClick={handleDetailedPdf2026}
-                disabled={detailedPdfBusy2026}
-                title="تنزيل تقرير الأقساط التفصيلي لعام 2026"
-              >
-                <Download className={`${ICON_MOBILE} ${detailedPdfBusy2026 ? "animate-pulse" : ""}`} />
-                <span className="hidden sm:inline">{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تنزيل PDF"}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="p-1 sm:p-3">
+      {/* السطر 1: البحث + التنسيق الشرطي */}
+      <div className="relative w-full">
+        <Search className="w-5 h-5 absolute right-2.5 top-2 text-yellow-700 pointer-events-none" />
+        <input
+          type="text"
+          placeholder="بحث (الاسم، الدفعة، المساق)..."
+          value={search2026}
+          onChange={(e) => setSearch2026(e.target.value)}
+          className="pl-3 pr-8 py-1.5 rounded-lg text-sm border border-black outline-none focus:ring-2 focus:ring-sky-300 w-full text-white shadow-sm placeholder:text-white/70"
+        />
+      </div>
+
+      <button
+        onClick={() => setCondFormatModal(true)}
+        className={`apk-only-actions w-full px-2 py-1.5 rounded-md text-sm font-extrabold shadow transition-colors flex items-center justify-center gap-1 ${
+          condFormatRules.length
+            ? "bg-yellow-400 text-yellow-900 animate-pulse"
+            : "bg-white/20 text-white hover:bg-white/30"
+        }`}
+        title="تلوين الصفوف حسب نص معين"
+      >
+        <Palette className={ICON_MOBILE} />
+        <span>
+          {condFormatRules.length
+            ? `تنسيق نشط (${condFormatRules.length})`
+            : "تنسيق شرطي"}
+        </span>
+      </button>
+
+      {/* السطر 2: إضافة طالب جديد + إضافة عمود جديد */}
+      <button
+        onClick={() => setNewRowModal2026(true)}
+        className="apk-only-actions w-full px-2 py-1.5 bg-blue-900 text-white rounded-md text-xs sm:text-sm font-bold shadow hover:bg-blue-800 transition-colors flex items-center justify-center gap-1"
+      >
+        <Plus className={ICON_MOBILE} />
+        <span>طالب جديد</span>
+      </button>
+
+      <button
+        onClick={() => setNewColModal(true)}
+        className="apk-only-actions w-full px-2 py-1.5 bg-amber-800 text-white rounded-md text-xs sm:text-sm font-bold shadow hover:bg-amber-700 transition-colors flex items-center justify-center gap-1"
+      >
+        <Plus className={ICON_MOBILE} />
+        <span>عمود جديد</span>
+      </button>
+
+      {/* السطر 3: إضافة قسط + استيراد */}
+      <button
+        onClick={() => setNewPaymentModal(true)}
+        className="apk-only-actions w-full px-2 py-1.5 bg-red-700 text-white rounded-md text-sm font-bold shadow hover:bg-red-800 transition-colors flex items-center justify-center gap-1 truncate"
+      >
+        <span>➕ إضافة قسط</span>
+      </button>
+
+      <label className="apk-only-actions relative w-full px-2 py-1.5 bg-white text-sky-700 rounded-md text-sm font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1 text-center">
+        📥 استيراد
+        <input
+          type="file"
+          accept=".xlsx,.xls"
+          onChange={(e) => importFile(e, 2026)}
+          className="absolute h-0 w-0 opacity-0 overflow-hidden"
+        />
+      </label>
+
+      {/* السطر 4: تصدير إلى Excel + طباعة تفصيلية */}
+      <button
+        onClick={() => exportToExcel(2026)}
+        className={`w-full ${BTN_COMPACT} bg-green-100 text-green-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1 text-sm`}
+      >
+        <FileSpreadsheet className={ICON_MOBILE} />
+        <span>تصدير Excel</span>
+      </button>
+
+      <button
+        onClick={() => setPrintSettingsYear(2026)}
+        className={`w-full ${BTN_COMPACT} bg-green-800 text-white rounded-md font-bold shadow hover:bg-green-700 transition-colors flex items-center justify-center gap-1 text-sm`}
+      >
+        <Printer className={ICON_MOBILE} />
+        <span>طباعة تفصيلية</span>
+      </button>
+
+      {/* السطر 5: مكون TabActions (يمتد على العمودين مع تنسيق الأزرار الداخلية 2 في كل سطر) */}
+      <TabActions
+        title="أقساط العام 2026"
+        rows={(installments || []).map((r: any) => {
+          const customValues: any = { ...r.customData };
+          extraCols2026.forEach((col) => {
+            if (col.type === "formula")
+              customValues[col.name] = evaluateFormula(col.formula || "", r);
+          });
+          return { ...r, ...customValues };
+        })}
+        columns={[
+          { key: "name", label: "اسم المتدرب" },
+          { key: "batch", label: "الدفعة" },
+          { key: "specialty", label: "المساق" },
+          { key: "prevDue", label: "المتبقي من 2025" },
+          { key: "fees", label: "الرسوم" },
+          { key: "totalPaid", label: "المسدد" },
+          { key: "remaining", label: "المتبقي" },
+          { key: "notes", label: "الملاحظات" },
+          ...extraCols2026.map((c) => ({ key: c.name, label: c.name })),
+        ]}
+        fileName="اقساط-2026"
+        numericKeys={["prevDue", "fees", "totalPaid", "remaining"]}
+        onClear={() => clearInstallments()}
+        printLabel="الأقساط/إجمالي"
+        additionalWebActions={installments2026WebActions}
+        className="col-span-2 w-full !grid !grid-cols-2 gap-2 [&>button]:w-full [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-sm [&>button]:font-bold [&>button]:rounded-md [&>button]:shadow"
+      />
+
+      {/* السطر 6: زر تنزيل PDF تفصيلي (يمتد عبر العرض الكامل لختام المجموعة) */}
+      <button
+        className="col-span-2 apk-only-actions w-full flex-items-center justify-center gap-1 px-3 py-2 bg-[#10528e] text-white rounded-md text-sm font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all disabled:opacity-50"
+        type="button"
+        onClick={handleDetailedPdf2026}
+        disabled={detailedPdfBusy2026}
+        title="تنزيل تقرير الأقساط التفصيلي لعام 2026"
+      >
+        <Download
+          className={`${ICON_MOBILE} ${
+            detailedPdfBusy2026 ? "animate-pulse" : ""
+          }`}
+        />
+        <span>{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تنزيل PDF تفصيلي"}</span>
+      </button>
+    </div>
+  </div>
+
+<div className="p-1 sm:p-3">
           <StatsGrid stats={stats2026} columns={3} />
-          <div className="overflow-auto max-h-auto rounded-lg border border-slate-200 shadow-sm relative">
-            <table className="installments-table min-w-full w-max table-auto text-sm font-extrabold text-black">
-              {/* ترويسة الجدول: لون ذهبي لامع مع خط أسود غامق */}
-              <thead className="bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500 font-extrabold border-b-2 border-sky-700 text-black sticky top-0 z-20 shadow-md">
+  
+          <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
+<table className="installments-table w-auto min-w-auto table-auto text-xs sm:text-base font-semibold">
+<thead className="bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500 font-extrabold border-b-2 border-sky-700 text-black sticky top-0 z-20 shadow-md">
                 <tr>
-                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30">#</th>
+ <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-xl sm:!text-base text-black border-l border-sky-700/30">#</th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("name")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2423,7 +2495,7 @@ const installments2026WebActions: WebActionItem[] = [
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("batch")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2431,7 +2503,7 @@ const installments2026WebActions: WebActionItem[] = [
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("specialty")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2439,7 +2511,7 @@ const installments2026WebActions: WebActionItem[] = [
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("prevDue")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2447,7 +2519,7 @@ const installments2026WebActions: WebActionItem[] = [
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("fees")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2457,7 +2529,7 @@ const installments2026WebActions: WebActionItem[] = [
                   {MONTHS_2026.map((m) => (
                     <th
                       key={m}
-                      className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                      className="text-center border-l border-sky-700/30 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black"
                     >
                       {m.trim()}
                     </th>
@@ -2465,9 +2537,9 @@ const installments2026WebActions: WebActionItem[] = [
                   {extraCols2026.map((col) => (
                     <th
                       key={col.name}
-                      className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                      className="text-center border-l border-sky-700/30 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black"
                     >
-                      <div className="flex items-center justify-center gap-1">
+ <div className="flex items-center justify-center gap-1">
                         {col.name}
                         <button
                           onClick={() =>
@@ -2488,7 +2560,7 @@ const installments2026WebActions: WebActionItem[] = [
                     </th>
                   ))}
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("totalPaid")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -2496,16 +2568,16 @@ const installments2026WebActions: WebActionItem[] = [
                     </div>
                   </th>
                   <th
-                    className="text-center w-auto whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-3 !py-3 !text-lg text-black border-l border-sky-700/30"
+                    className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30"
                     onClick={() => handleSort2026("remaining")}
                   >
                     <div className="flex items-center justify-center gap-1">
                       الرصيد المتبقي <SortIcon sortConfig={sortConfig2026} columnKey="remaining" />
                     </div>
                   </th>
-                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30">الملاحظات</th>
-                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black border-l border-sky-700/30">حالة</th>
-                  <th className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg text-black">إجراءات</th>
+                  <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30">الملاحظات</th>
+                  <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black border-l border-sky-700/30">حالة</th>
+                  <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base text-black">إجراءات</th>
                 </tr>
               </thead>
               <tbody>
@@ -2513,8 +2585,7 @@ const installments2026WebActions: WebActionItem[] = [
                   <tr>
                     <td
                       colSpan={11 + MONTHS_2026.length + extraCols2026.length}
-
-                      className="text-center w-auto text-slate-400 !px-3 !py-4 !text-lg whitespace-nowrap"
+                      className="text-center text-slate-400 !px1 !py-1 !text-sm sm:!text-base whitespace-nowrap"
                     >
                       لا توجد بيانات (يرجى التأكد من استيراد الملف أو تعديل البحث)
                     </td>
@@ -2533,39 +2604,39 @@ const installments2026WebActions: WebActionItem[] = [
                           key={i}
                           className={`border-t border-slate-200 transition-colors ${rowBgClass}`}
                         >
-                          <td className="text-center w-auto text-black font-mono whitespace-nowrap !px-2 !py-2 !text-lg border-l border-slate-200">
+<td className="text-center text-black font-mono whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             {i + 1}
                           </td>
-                          <td className="text-center w-auto font-bold text-black whitespace-nowrap bg-fuchsia-50/70 !px-2 !py-2 !text-lg border-l border-slate-200">
+<td className="text-center font-bold text-black whitespace-nowrap bg-fuchsia-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             <input
                               value={r.name || ""}
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "name", e.target.value)
                               }
-                              className="w-full min-w-[140px] bg-transparent text-center text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-auto min-w-max bg-transparent text-center text-black font-bold !text-sm sm:!text-base outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1"
                             />
                           </td>
-                          <td className="text-center w-auto text-black whitespace-nowrap bg-sky-50/70 !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center text-black whitespace-nowrap bg-sky-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             <input
                               value={r.batch || ""}
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "batch", e.target.value)
                               }
-                              className="w-full min-w-[90px] bg-transparent text-center text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-full min-w-0 bg-transparent text-center text-black font-semibold !text-sm sm:!text-base outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1"
                               placeholder="—"
                             />
                           </td>
-                          <td className="text-center w-auto text-black whitespace-nowrap bg-sky-50/60 !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center text-black whitespace-nowrap bg-sky-50/60 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             <input
                               value={r.specialty || ""}
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "specialty", e.target.value)
                               }
-                              className="w-full min-w-[110px] bg-transparent text-center text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-full min-w-0 bg-transparent text-center text-black font-semibold !text-sm sm:!text-base outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1"
                               placeholder="—"
                             />
                           </td>
-                          <td className="text-center w-auto numeric-cell font-mono text-black font-extrabold bg-sky-50/40 whitespace-nowrap !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center numeric-cell font-mono text-black font-semibold bg-sky-50/40 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             <input
                               type="text"
                               inputMode="decimal"
@@ -2573,10 +2644,10 @@ const installments2026WebActions: WebActionItem[] = [
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "prevDue", e.target.value)
                               }
-                              className="w-full min-w-[100px] bg-transparent text-center font-mono text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-full min-w-0 bg-transparent text-center font-mono text-black font-semibold !text-sm sm:!text-base outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1"
                             />
                           </td>
-                          <td className="text-center w-auto numeric-cell font-mono text-black font-extrabold whitespace-nowrap bg-sky-50/50 !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center numeric-cell font-mono text-black font-semibold whitespace-nowrap bg-sky-50/50 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             <input
                               type="text"
                               inputMode="decimal"
@@ -2584,7 +2655,7 @@ const installments2026WebActions: WebActionItem[] = [
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "fees", e.target.value)
                               }
-                              className="w-full min-w-[90px] bg-transparent text-center font-mono text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-full min-w-0 bg-transparent text-center font-mono text-black font-semibold !text-sm sm:!text-base outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1"
                             />
                           </td>
                           {MONTHS_2026.map((m) => {
@@ -2593,7 +2664,7 @@ const installments2026WebActions: WebActionItem[] = [
                             return (
                               <td
                                 key={m}
-                                className="numeric-cell w-auto text-center relative bg-white/40 border-l border-slate-200 hover:bg-yellow-50 cursor-pointer group transition-colors whitespace-nowrap !px-2 !py-2"
+                                className="numeric-cell text-center relative bg-white/40 border-l border-slate-200 hover:bg-yellow-50 cursor-pointer group transition-colors whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
                                 onMouseEnter={() => setHoveredCell(cellId)}
                                 onMouseLeave={() => setHoveredCell(null)}
                               >
@@ -2604,7 +2675,7 @@ const installments2026WebActions: WebActionItem[] = [
                                   onChange={(e) =>
                                     update2026PaymentValue(originalIndex, m, e.target.value)
                                   }
-                                  className="w-full min-w-[70px] bg-transparent text-center numeric-cell font-mono text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                                  className="w-full min-w-0 bg-transparent text-center numeric-cell font-mono text-black font-semibold !text-sm sm:!text-base outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1"
                                   placeholder="—"
                                 />
                               </td>
@@ -2612,10 +2683,10 @@ const installments2026WebActions: WebActionItem[] = [
                           })}
 
                           {extraCols2026.map((col) => (
-                            <td key={col.name} className="border-l w-auto border-slate-200 !px-2 !py-2 !text-lg whitespace-nowrap">
+                            <td key={col.name} className="border-l border-slate-200 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base whitespace-nowrap">
                               {col.type === "select" ? (
                                 <select
-                                  className="w-full min-w-[90px] text-center text-black font-extrabold bg-transparent outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1 text-sm"
+                                  className="w-full min-w-0 text-center text-black font-semibold bg-transparent outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 !text-sm sm:!text-base"
                                   value={r.customData?.[col.name] || ""}
                                   onChange={(e) =>
                                     updateCustomColValue(originalIndex, col.name, e.target.value)
@@ -2629,13 +2700,13 @@ const installments2026WebActions: WebActionItem[] = [
                                   ))}
                                 </select>
                               ) : col.type === "formula" ? (
-                                <div className="text-center min-w-[70px] numeric-cell font-mono text-sm font-extrabold text-yellow-700 bg-white/50 py-1 rounded">
+                                <div className="text-center min-w-0 numeric-cell font-mono !text-sm sm:!text-base font-semibold text-yellow-700 bg-white/50 px-1 rounded">
                                   {fmt(Number(evaluateFormula(col.formula || "", r) || 0))}
                                 </div>
                               ) : (
                                 <input
                                   type="text"
-                                  className="w-full min-w-[100px] text-center text-black font-extrabold bg-transparent outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1 text-sm"
+                                  className="w-full min-w-0 text-center text-black font-semibold bg-transparent outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 !text-sm sm:!text-base"
                                   value={r.customData?.[col.name] || ""}
                                   onChange={(e) =>
                                     updateCustomColValue(originalIndex, col.name, e.target.value)
@@ -2646,82 +2717,82 @@ const installments2026WebActions: WebActionItem[] = [
                             </td>
                           ))}
 
-                          <td className="text-center w-auto min-w-[90px] numeric-cell font-mono text-black font-extrabold bg-emerald-50/50 whitespace-nowrap !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center numeric-cell font-mono text-black font-bold bg-emerald-50/50 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             {fmt(Number(r.totalPaid || 0))}
                           </td>
-                          <td className="text-center w-auto min-w-[90px] numeric-cell font-mono text-black font-extrabold bg-rose-50/40 whitespace-nowrap !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center numeric-cell font-mono text-black font-bold bg-rose-50/40 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             {fmt(Number(r.remaining || 0))}
                           </td>
-                          <td className="text-center w-auto bg-amber-50/40 !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center bg-amber-50/40 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200 whitespace-nowrap">
                             <input
                               type="text"
                               value={r.notes || ""}
                               onChange={(e) =>
                                 update2026CellValue(originalIndex, "notes", e.target.value)
                               }
-                              className="w-full min-w-[120px] bg-transparent text-center text-black font-extrabold text-sm sm:!text-lg outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1 py-1"
+                              className="w-full min-w-0 bg-transparent text-center text-black font-medium !text-sm sm:!text-base outline-none focus:bg-white focus:ring-2 ring-yellow-400 rounded px-1"
                               placeholder="—"
                             />
                           </td>
 
-                          <td className="text-center w-auto whitespace-nowrap !px-2 !py-2 !text-lg border-l border-slate-200">
+                          <td className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             <span
-                              className={`px-3 py-1 rounded-full !text-sm font-extrabold ${status.bg} ${status.color}`}
+                              className={`px-2 py-0.5 rounded-full !text-xs sm:!text-sm font-bold ${status.bg} ${status.color}`}
                             >
                               {status.text}
                             </span>
                           </td>
-                          <td className="text-center w-auto whitespace-nowrap flex justify-center gap-2 !px-2 !py-2 !text-lg">
+                          <td className="text-center whitespace-nowrap flex justify-center gap-1 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
                             <button
                               onClick={() => {
                                 setEditRowData(r);
                                 setEditRowModal({ year: 2026, row: r, index: originalIndex });
                               }}
-                              className="p-1.5 bg-sky-50 text-amber-600 rounded border border-amber-200 hover:bg-amber-500 hover:text-white transition-colors"
+                              className="p-1 bg-sky-50 text-amber-600 rounded border border-amber-200 hover:bg-amber-500 hover:text-white transition-colors"
                               title="تعديل الصف"
                             >
-                              <Edit className={ICON_TAP} />
+                              <Edit className={ICON_MOBILE} />
                             </button>
                             <button
                               onClick={() => printStatement(r, 2026)}
-                              className="p-1.5 bg-blue-50 text-blue-600 rounded border border-blue-200 hover:bg-blue-500 hover:text-white transition-colors"
+                              className="p-1 bg-blue-50 text-blue-600 rounded border border-blue-200 hover:bg-blue-500 hover:text-white transition-colors"
                               title="طباعة الكشف"
                             >
-                              <Printer className={ICON_TAP} />
+                              <Printer className={ICON_MOBILE} />
                             </button>
                             <button
                               onClick={() => handleExportPdf(r, 2026)}
-                              className="p-1.5 bg-emerald-50 text-emerald-600 rounded border border-emerald-200 hover:bg-emerald-500 hover:text-white transition-colors"
+                              className="p-1 bg-emerald-50 text-emerald-600 rounded border border-emerald-200 hover:bg-emerald-500 hover:text-white transition-colors"
                               title="تنزيل PDF (متوافق مع شاومي)"
                             >
-                              <FileText className={ICON_TAP} />
+                              <FileText className={ICON_MOBILE} />
                             </button>
                             <button
                               onClick={() => deleteRow2026(originalIndex, r.name)}
-                              className="p-1.5 bg-red-50 text-red-600 rounded border border-red-200 hover:bg-red-500 hover:text-white transition-colors"
+                              className="p-1 bg-red-50 text-red-600 rounded border border-red-200 hover:bg-red-500 hover:text-white transition-colors"
                               title="حذف الصف"
                             >
-                              <Trash className={ICON_TAP} />
+                              <Trash className={ICON_MOBILE} />
                             </button>
                           </td>
                         </tr>
                       );
                     })}
                     <tr className="border-t-2 border-sky-700 bg-sky-100 font-extrabold">
-                      <td className="text-center w-auto text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300" colSpan={4}>
+                      <td className="text-center text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300" colSpan={4}>
                         الإجماليات
                       </td>
-                      <td className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300">
+                      <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300">
                         {fmt(Number(totals2026.prevDue || 0))}
                       </td>
-                      <td className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300">
+                      <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300">
                         {fmt(Number(totals2026.fees || 0))}
                       </td>
 
                       {MONTHS_2026.map((m) => (
                         <td
                           key={m}
-                          className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300"
+                          className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300"
                         >
                           {totals2026.months[m] > 0 ? fmt(Number(totals2026.months[m])) : "—"}
                         </td>
@@ -2729,29 +2800,28 @@ const installments2026WebActions: WebActionItem[] = [
                       {extraCols2026.map((col) => (
                         <td
                           key={col.name}
-                          className="text-center w-auto text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300"
+                          className="text-center text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300"
                         >
                           —
                         </td>
                       ))}
-                      <td className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300">
+                      <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300">
                         {fmt(Number(totals2026.paid || 0))}
                       </td>
-                      <td className="text-center w-auto numeric-cell font-mono text-black whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300">
+                      <td className="text-center numeric-cell font-mono text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300">
                         {fmt(Number(totals2026.remaining || 0))}
                       </td>
-                      <td className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300">—</td>
-                      <td className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg border-l border-sky-300"></td>
-
-                      <td className="text-center w-auto whitespace-nowrap !px-3 !py-3 !text-lg"></td>
+                      <td className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300">—</td>
+                      <td className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300"></td>
+                      <td className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"></td>
                     </tr>
                   </>
                 )}
               </tbody>
             </table>
           </div>
-        </div>
-      </div>
+          </div>
+          </div>
 
 
       {/* ========== النوافذ المنبثقة ========== */}

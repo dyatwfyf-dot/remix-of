@@ -259,7 +259,7 @@ const THEAD_HTML = `
 <tr>
   <th rowspan="4">رقم الاستمارة</th><th rowspan="4">كشف التسوية</th>
   <th rowspan="4">التاريخ</th><th rowspan="4">البيان</th>
-  <th rowspan="4" class="c-total">اجمالي الاستخدامات</th>
+  <th rowspan="4" class="c-total">اجمالي عام الاستخدامات</th>
   <th colspan="13" class="c-bab">اجمالي الباب الاول</th>
   <th colspan="21" class="c-bab">اجمالي الباب الثاني</th>
   <th colspan="7" class="c-bab">اجمالي الباب الرابع</th>

@@ -53,8 +53,8 @@ const baseCss = (
     max-width: 100%; 
     border-collapse: collapse;
 
-    border: solid 1px black; 
-    table-layout: auto !important; 
+    border: solid 1px #000; 
+table-layout: auto !important; 
 font-size: 15px!important;
   }
   thead { display: table-header-group; }
@@ -72,7 +72,7 @@ font-size: 15px!important;
     color: #000 !important; 
     font-weight: 900 !important; 
     white-space: nowrap !important;
-    width: max-content !important;
+    width:auto !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
   }
@@ -145,7 +145,7 @@ min - height: 30 mm!important;
 padding: 0!important;
 border: 0!important;
 background: #fff!important;
-vertical-align:top;
+text-align: center; 
   }
   .report-letterhead-cell img {
     display: block;

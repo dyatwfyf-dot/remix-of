@@ -56,8 +56,8 @@
     width: 100% !important;
     min-width: 100% !important;
     border: solid 1px black!important;
-    table-layout: auto !important;
-    margin-top: 6px !important;
+    table-layout:auto !important;
+margin-top: 6px !important;
     margin-bottom: 6px !important;
     page-break-inside: auto;
   }
@@ -197,7 +197,7 @@
   }
 
   .report-letterhead-cell {
-    border: 0 !important;
+    border: sold 1px black !important;
     background: #ffffff !important;
     padding: 0 0 2mm !important;
     height: auto !important;
@@ -208,9 +208,9 @@
     width: 100%;
     max-height: 20mm;
     height: auto;
-    object-fit: contain;
+    object-fit: fill;
     margin: 0 auto;
-    position:top;
+object-position: top !important;
   }
 
   /* أدوات التحكم بالفواصل */
@@ -224,9 +224,9 @@
   .print-button {
     margin: 10px 0;
     padding: 8px 16px;
-    background: #1f7fb8;
+    background: rgba(115, 2, 101, 1);
     color: #ffffff;
-    border: none;
+ border: solid 1px black;
     border-radius: 4px;
     cursor: pointer;
     font-weight: 900;
