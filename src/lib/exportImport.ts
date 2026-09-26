@@ -896,14 +896,18 @@ export async function importFromExcel(
           revenueKey,
         });
       });
+// ── استيراد القيود اليومية مع المعالجة الذكية للحساب المنفرد والطرفين ──
     } else if (kind === "journal") {
       rows.forEach((r) => {
         const description = cellStr(
           get(r, "البيان", "شرح القيد", "الوصف", "بيان القيد", "ملاحظات"),
         );
         if (!description) return;
-        if (description.includes("الإجمالي")) return;
-        const debitAcc = cellStr(
+        if (description.includes("الإجمالي") || description.includes("الاجمالي")) return;
+
+        // قراءة الأعمدة باحتمالاتها المتعددة
+        const singleAcc = cellStr(get(r, "الحساب", "اسم الحساب", "الطرف", "اسم_الحساب", "حساب"));
+        let debitAcc = cellStr(
           get(
             r,
             "الحساب المدين",
@@ -913,11 +917,9 @@ export async function importFromExcel(
             "مدين (الحساب)",
             "من ح/",
             "من حساب",
-            "الحساب",
-            "اسم الحساب",
           ),
         );
-        const creditAcc = cellStr(
+        let creditAcc = cellStr(
           get(
             r,
             "الحساب الدائن",
@@ -931,25 +933,54 @@ export async function importFromExcel(
             "الى حساب",
           ),
         );
+
         const debit = parseNumericValue(
-          get(r, "مدين", "المبلغ المدين", "مبلغ مدين", "منه", "المبلغ"),
+          get(r, "مدين", "المبلغ المدين", "مبلغ مدين", "منه", "المبلغ", "مدين ريال"),
         );
         const credit = parseNumericValue(
-          get(r, "دائن", "المبلغ الدائن", "مبلغ دائن", "له"),
+          get(r, "دائن", "المبلغ الدائن", "مبلغ دائن", "له", "دائن ريال"),
         );
+
+        // إذا كان الملف يحتوي على عمود حساب واحد فقط (الشائع جداً في ملفات اليومية):
+        if (!debitAcc && !creditAcc && singleAcc) {
+          if (debit > 0 && credit === 0) {
+            debitAcc = singleAcc;
+          } else if (credit > 0 && debit === 0) {
+            creditAcc = singleAcc;
+          } else {
+            debitAcc = singleAcc;
+            creditAcc = singleAcc;
+          }
+        } else {
+          if (!debitAcc && singleAcc && debit > 0) debitAcc = singleAcc;
+          if (!creditAcc && singleAcc && credit > 0) creditAcc = singleAcc;
+        }
+
+        // قراءة التاريخ ومعالجة الأرقام التسلسلية للإكسل
+        let rawDate = get(r, "التاريخ", "تاريخ القيد", "تاريخ الحركة", "تاريخ", "date");
+        let parsedDate = toDate(rawDate);
+        if (!parsedDate && rawDate) {
+          const num = Number(rawDate);
+          if (!isNaN(num) && num > 30000 && num < 60000) {
+            const d = XLSX.SSF.parse_date_code(num);
+            if (d) parsedDate = `${d.y}-${String(d.m).padStart(2, "0")}-${String(d.d).padStart(2, "0")}`;
+          }
+        }
+
         result.journal.push({
           id: uid(),
-          date: toDate(get(r, "التاريخ", "تاريخ القيد", "تاريخ الحركة", "تاريخ")),
-          formNo: cellStr(get(r, "رقم الاستمارة", "رقم القيد", "رقم السند", "الاستمارة")),
+          date: parsedDate,
+          formNo: cellStr(get(r, "رقم الاستمارة", "رقم القيد", "رقم السند", "الاستمارة", "م")),
           settlement: cellStr(get(r, "كشف التسوية", "التسوية")),
           description,
-          account: debitAcc || creditAcc,
+          account: debitAcc || creditAcc || singleAcc,
           debitAccount: debitAcc,
           creditAccount: creditAcc,
           debit,
           credit,
         });
       });
+
     } else if (kind === "installments") {
       rows.forEach((r) => {
         const name = cellStr(get(r, "الاسم"));
