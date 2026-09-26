@@ -1,9 +1,8 @@
-import React, { useMemo, useRef, useState, useEffect } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useStore } from "@/lib/store";
 import { useReportDate } from "@/lib/reportDate";
-import { exportMonthlyStatement, exportRevenueStatement } from "@/lib/exportImport";
+import { exportMonthlyStatement } from "@/lib/exportImport";
 import monthlySchema from "@/data/monthlyStatement.json";
-import revenueSchema from "@/data/revenueTemplate.json";
 import TabActions from "./TabActions";
 import ImportButton from "./ImportButton";
 import {
@@ -16,12 +15,12 @@ import {
   FileSpreadsheet,
   Calendar,
   CheckCircle2,
-  AlertTriangle,
   ArrowDownLeft,
   ArrowUpRight,
   Scale,
-  Building2,
+  Sparkles,
   Layers,
+  TrendingUp,
 } from "lucide-react";
 
 type StatementGroup = { title: string; accounts: string[] };
@@ -171,21 +170,21 @@ export const matchAccount = (raw: string): string | null => {
   const core = coreAccountName(raw);
   if (!c) return null;
 
-  // 1. الفحص في قاموس المرادفات المباشر
   if (EXACT_ALIASES[c]) return EXACT_ALIASES[c];
   if (EXACT_ALIASES[core]) return EXACT_ALIASES[core];
 
-  // 2. المطابقة التامة بعد تنظيف الحروف والهمزات
   const exact = ALL_ACCOUNTS_CLEAN.find((a) => a.cleaned === c);
   if (exact) return exact.original;
 
-  // 3. المطابقة بجوهر الاسم (حذف كلمة حساب أو ح)
   const coreMatch = ALL_ACCOUNTS_CLEAN.find((a) => a.core === core);
   if (coreMatch) return coreMatch.original;
 
-  // 4. مطابقة الاحتواء التام
   const contains = ALL_ACCOUNTS_CLEAN.find(
-    (a) => a.cleaned.includes(c) || c.includes(a.cleaned) || a.core.includes(core) || core.includes(a.core)
+    (a) =>
+      a.cleaned.includes(c) ||
+      c.includes(a.cleaned) ||
+      a.core.includes(core) ||
+      core.includes(a.core)
   );
   if (contains) return contains.original;
 
@@ -196,7 +195,6 @@ export const matchAccount = (raw: string): string | null => {
 function parseJournalDate(dateStr?: string | number): { year: number; month: number } | null {
   if (!dateStr) return null;
 
-  // إذا كان التاريخ رقماً تسلسلياً من إكسل
   const num = Number(dateStr);
   if (!isNaN(num) && num > 30000 && num < 60000) {
     const d = new Date((num - 25569) * 86400 * 1000);
@@ -222,8 +220,7 @@ function parseJournalDate(dateStr?: string | number): { year: number; month: num
 export default function MonthlyStatementTab() {
   const { journal, clearJournal } = useStore();
   const { reportDate } = useReportDate();
-  const tableRef1 = useRef<HTMLTableElement>(null);
-  const tableRef2 = useRef<HTMLTableElement>(null);
+  const tableRef = useRef<HTMLTableElement>(null);
 
   const [year, setYear] = useState(new Date().getFullYear());
   const [mode, setMode] = useState<ReportPeriodMode>("month");
@@ -234,7 +231,7 @@ export default function MonthlyStatementTab() {
   const { startMonth, endMonth } = getPeriodRange({ mode, year, month, quarter, halfYear });
 
   // ── الترحيل الآلي الفوري لمبالغ القيود اليومية شهراً بشهر وحساباً بحساب ──
-  const { data, matchedEntriesCount, unmatchedCount, activeMonths } = useMemo(() => {
+  const { data, matchedEntriesCount, activeMonths } = useMemo(() => {
     const map: Record<
       string,
       { prevDebit: number; prevCredit: number; curDebit: number; curCredit: number }
@@ -244,7 +241,6 @@ export default function MonthlyStatementTab() {
     });
 
     let matched = 0;
-    let unmatched = 0;
     const monthsSet = new Set<number>();
 
     journal.forEach((j) => {
@@ -261,7 +257,6 @@ export default function MonthlyStatementTab() {
       const debitAmt = Number(j.debit) || 0;
       const creditAmt = Number(j.credit) || 0;
 
-      // تحديد الحساب المدين والدائن بمرونة فائقة
       const debitAccountRaw = j.debitAccount || (debitAmt > 0 ? j.account : "") || "";
       const creditAccountRaw = j.creditAccount || (creditAmt > 0 ? j.account : "") || "";
 
@@ -287,13 +282,11 @@ export default function MonthlyStatementTab() {
       }
 
       if (hasMatchedLeg) matched++;
-      else if (debitAmt > 0 || creditAmt > 0) unmatched++;
     });
 
     return {
       data: map,
       matchedEntriesCount: matched,
-      unmatchedCount: unmatched,
       activeMonths: Array.from(monthsSet).sort((a, b) => a - b),
     };
   }, [journal, year, startMonth, endMonth]);
@@ -306,170 +299,297 @@ export default function MonthlyStatementTab() {
         curDebit: a.curDebit + r.curDebit,
         curCredit: a.curCredit + r.curCredit,
       }),
-      { prevDebit: 0, prevCredit: 0, curDebit: 0, curCredit: 0 },
+      { prevDebit: 0, prevCredit: 0, curDebit: 0, curCredit: 0 }
     );
   }, [data]);
 
   const movementLabel = getReportMovementLabel({ mode, month, quarter, halfYear });
   const periodLabel = getReportPeriodLabel({ mode, year, month, quarter, halfYear });
 
+  const netBalance = totals.curDebit - totals.curCredit;
+
   return (
-    <div className="w-full space-y-6 p-2 sm:p-4 bg-sky-900 text-black min-h-screen" dir="rtl text-center ">
-      {/* ══ الترويسة وأزرار التحكم ══ */}
-      <div className="rounded-2xl border border-sky-500/20 bg-sky-900/40 p-4 shadow-xl backdrop-blur-md">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
-          <div className="flex items-center gap-3">
-            <div className="grid h-12 w-12 place-items-center rounded-2xl bg-sky-500/20 text-sky-400 border border-sky-400/30 shadow-inner">
-              <FileSpreadsheet className="h-6 w-6" />
+    <div
+      className="w-full space-y-6 p-2 sm:p-5 min-h-screen bg-gradient-to-br from-slate-950 via-[#0B132B] to-[#1C2541] text-slate-100"
+      dir="rtl"
+    >
+      {/* ══ الترويسة الرئيسية والبطاقات الزجاجية ══ */}
+      <div className="rounded-2xl border border-cyan-500/20 bg-slate-900/70 p-4 sm:p-6 shadow-2xl backdrop-blur-xl transition-all">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <div className="flex items-center gap-3.5">
+            <div className="grid h-12 w-12 sm:h-14 sm:w-14 place-items-center rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 text-cyan-400 border border-cyan-400/30 shadow-lg shadow-cyan-950/50">
+              <FileSpreadsheet className="h-6 w-6 sm:h-7 sm:w-7" />
             </div>
             <div>
-              <h1 className="text-lg font-black text-white">كشف الحساب الشهري التلقائي</h1>
-              <p className="text-xs text-sky-300">ترحيل آلي فوري لكافة قيود اليومية المحفوظة والمستوردة</p>
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg sm:text-xl font-black bg-gradient-to-r from-cyan-300 via-sky-200 to-indigo-300 bg-clip-text text-transparent">
+                  كشف الحساب الشهري التلقائي
+                </h1>
+                <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-bold text-cyan-300 border border-cyan-500/30">
+                  <Sparkles className="h-3 w-3" /> ترحيل ذكي
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                ربط تلقائي بالقيود اليومية المحفوظة والمستوردة مع توحيد مرن للحسابات
+              </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             <ImportButton kind="monthly" />
+            <TabActions
+              tableRef={tableRef}
+              title={`كشف_الحساب_الشهري_${periodLabel}`}
+              onExportExcel={() => exportMonthlyStatement(tableRef)}
+            />
           </div>
         </div>
 
-        {/* ══ مؤشرات الحالة وسرعة الترحيل ══ */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3">
-          <div className="rounded-xl border border-emerald-500/30 bg-emerald-300/20 p-2.5">
-            <div className="flex items-center justify-between text-xs text-emerald-300 mb-1">
-              <span>قيود مرحلة آلياً</span>
-              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+        {/* ══ مؤشرات الحالة اللحظية (KPI Cards) ══ */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+          {/* قيود مرحلة */}
+          <div className="relative overflow-hidden rounded-xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/40 via-slate-900/50 to-slate-900/80 p-3 shadow-lg">
+            <div className="flex items-center justify-between text-xs text-emerald-300 mb-1.5 font-bold">
+              <span>قيود مرحّلة</span>
+              <div className="p-1 rounded-lg bg-emerald-500/20 text-emerald-400">
+                <CheckCircle2 className="h-4 w-4" />
+              </div>
             </div>
-            <div className="text-lg font-black text-white">{matchedEntriesCount}</div>
+            <div className="text-xl sm:text-2xl font-black text-emerald-300 tracking-tight font-mono">
+              {matchedEntriesCount}
+            </div>
+            <span className="text-[10px] text-emerald-400/80 mt-1 block">قيد متطابق من دفتر اليومية</span>
           </div>
 
-          <div className="rounded-xl border border-sky-500/30 bg-sky-200/40 p-2.5">
-            <div className="flex items-center justify-between text-xs text-sky-300 mb-1">
-              <span>مدين الشهر الجاري</span>
-              <ArrowDownLeft className="h-4 w-4 text-sky-400" />
+          {/* مدين الفترة */}
+          <div className="relative overflow-hidden rounded-xl border border-cyan-500/30 bg-gradient-to-br from-cyan-950/40 via-slate-900/50 to-slate-900/80 p-3 shadow-lg">
+            <div className="flex items-center justify-between text-xs text-cyan-300 mb-1.5 font-bold">
+              <span>مدين الفترة</span>
+              <div className="p-1 rounded-lg bg-cyan-500/20 text-cyan-400">
+                <ArrowDownLeft className="h-4 w-4" />
+              </div>
             </div>
-            <div className="text-lg font-black text-white">{totals.curDebit.toLocaleString()}</div>
+            <div className="text-xl sm:text-2xl font-black text-cyan-300 tracking-tight font-mono">
+              {totals.curDebit.toLocaleString()}
+            </div>
+            <span className="text-[10px] text-cyan-400/80 mt-1 block">إجمالي حركة الجانب المدين</span>
           </div>
 
-          <div className="rounded-xl border border-amber-500/30 bg-amber-950/40 p-2.5">
-            <div className="flex items-center justify-between text-xs text-amber-300 mb-1">
-              <span>دائن الشهر الجاري</span>
-              <ArrowUpRight className="h-4 w-4 text-amber-400" />
+          {/* دائن الفترة */}
+          <div className="relative overflow-hidden rounded-xl border border-amber-500/30 bg-gradient-to-br from-amber-950/40 via-slate-900/50 to-slate-900/80 p-3 shadow-lg">
+            <div className="flex items-center justify-between text-xs text-amber-300 mb-1.5 font-bold">
+              <span>دائن الفترة</span>
+              <div className="p-1 rounded-lg bg-amber-500/20 text-amber-400">
+                <ArrowUpRight className="h-4 w-4" />
+              </div>
             </div>
-            <div className="text-lg font-black text-white">{totals.curCredit.toLocaleString()}</div>
+            <div className="text-xl sm:text-2xl font-black text-amber-300 tracking-tight font-mono">
+              {totals.curCredit.toLocaleString()}
+            </div>
+            <span className="text-[10px] text-amber-400/80 mt-1 block">إجمالي حركة الجانب الدائن</span>
           </div>
 
-          <div className="rounded-xl border border-purple-500/30 bg-purple-950/40 p-2.5">
-            <div className="flex items-center justify-between text-xs text-purple-300 mb-1">
+          {/* صافي الحركة */}
+          <div className="relative overflow-hidden rounded-xl border border-indigo-500/30 bg-gradient-to-br from-indigo-950/40 via-slate-900/50 to-slate-900/80 p-3 shadow-lg">
+            <div className="flex items-center justify-between text-xs text-indigo-300 mb-1.5 font-bold">
               <span>صافي حركة الفترة</span>
-              <Scale className="h-4 w-4 text-purple-400" />
+              <div className="p-1 rounded-lg bg-indigo-500/20 text-indigo-400">
+                <Scale className="h-4 w-4" />
+              </div>
             </div>
-            <div className="text-lg font-black text-white">{(totals.curDebit - totals.curCredit).toLocaleString()}</div>
+            <div
+              className={`text-xl sm:text-2xl font-black tracking-tight font-mono ${
+                netBalance >= 0 ? "text-indigo-300" : "text-rose-400"
+              }`}
+            >
+              {netBalance.toLocaleString()}
+            </div>
+            <span className="text-[10px] text-indigo-400/80 mt-1 block">
+              {netBalance >= 0 ? "رصيد مدين للفترة" : "رصيد دائن للفترة"}
+            </span>
           </div>
         </div>
 
-        {/* ══ أشرطة اختيار الشهر السريع ══ */}
+        {/* ══ أشرطة اختيار الأشهر النشطة ══ */}
         {activeMonths.length > 0 && (
-          <div className="mt-3 p-2 bg-slate-950/60 rounded-xl border border-white/5 flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-bold text-sky-300 ml-2">الأشهر التي تحتوي حركات:</span>
-            {activeMonths.map((m) => (
-              <button
-                key={m}
-                onClick={() => {
-                  setMode("month");
-                  setMonth(m);
-                }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
-                  mode === "month" && month === m
-                    ? "bg-sky-500 text-white shadow-md shadow-sky-500/30"
-                    : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-                }`}
-              >
-                {MONTHS_NAMES[m - 1]}
-              </button>
-            ))}
+          <div className="mt-4 p-2.5 bg-slate-950/60 rounded-xl border border-cyan-500/10 flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-cyan-300 ml-2">
+              <TrendingUp className="h-3.5 w-3.5 text-cyan-400" />
+              <span>أشهر بها حركات مسجلة:</span>
+            </div>
+            {activeMonths.map((m) => {
+              const isSelected = mode === "month" && month === m;
+              return (
+                <button
+                  key={m}
+                  onClick={() => {
+                    setMode("month");
+                    setMonth(m);
+                  }}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all shadow-sm ${
+                    isSelected
+                      ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-cyan-500/30 shadow-md scale-105"
+                      : "bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 hover:text-white border border-white/5"
+                  }`}
+                >
+                  {MONTHS_NAMES[m - 1]}
+                </button>
+              );
+            })}
           </div>
         )}
 
-        {/* ══ محددات الفترة ══ */}
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-          <div className="flex items-center gap-1 bg-slate-800/80 px-2.5 py-1.5 rounded-lg border border-white/10">
-            <Calendar className="h-3.5 w-3.5 text-sky-400" />
+        {/* ══ محددات الفترة والتقويم ══ */}
+        <div className="mt-4 flex flex-wrap items-center gap-2.5 text-xs">
+          {/* محدد السنة */}
+          <div className="flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-white/10 hover:border-cyan-500/30 transition-colors shadow-inner">
+            <Calendar className="h-4 w-4 text-cyan-400" />
             <select
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
-              className="bg-transparent font-bold text-white outline-none cursor-pointer"
+              className="bg-transparent font-bold text-white outline-none cursor-pointer text-xs"
             >
               {[2024, 2025, 2026, 2027].map((y) => (
-                <option key={y} value={y} className="bg-slate-900 text-white">{y}م</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex items-center gap-1 bg-slate-800/80 px-2.5 py-1.5 rounded-lg border border-white/10">
-            <select
-              value={month}
-              onChange={(e) => setMonth(Number(e.target.value))}
-              className="bg-transparent font-bold text-white outline-none cursor-pointer"
-            >
-              {MONTHS_NAMES.map((m, idx) => (
-                <option key={idx + 1} value={idx + 1} className="bg-slate-900 text-white">
-                  شهر {m}
+                <option key={y} value={y} className="bg-slate-900 text-white">
+                  عام {y}م
                 </option>
               ))}
             </select>
           </div>
 
-          <span className="text-slate-400 font-medium mr-auto">
-            الفترة الحالية: <strong className="text-sky-300">{periodLabel}</strong>
-          </span>
+          {/* محدد نوع الفترة */}
+          <div className="flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-white/10 hover:border-cyan-500/30 transition-colors shadow-inner">
+            <Layers className="h-4 w-4 text-indigo-400" />
+            <select
+              value={mode}
+              onChange={(e) => setMode(e.target.value as ReportPeriodMode)}
+              className="bg-transparent font-bold text-white outline-none cursor-pointer text-xs"
+            >
+              <option value="month" className="bg-slate-900 text-white">شهري</option>
+              <option value="quarter" className="bg-slate-900 text-white">ربع سنوي</option>
+              <option value="halfYear" className="bg-slate-900 text-white">نصف سنوي</option>
+              <option value="year" className="bg-slate-900 text-white">سنوي كامل</option>
+            </select>
+          </div>
+
+          {/* محدد الشهر إذا كان النمط شهري */}
+          {mode === "month" && (
+            <div className="flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-white/10 hover:border-cyan-500/30 transition-colors shadow-inner">
+              <select
+                value={month}
+                onChange={(e) => setMonth(Number(e.target.value))}
+                className="bg-transparent font-bold text-white outline-none cursor-pointer text-xs"
+              >
+                {MONTHS_NAMES.map((m, idx) => (
+                  <option key={idx + 1} value={idx + 1} className="bg-slate-900 text-white">
+                    شهر {m}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* محدد الربع إذا كان النمط ربع سنوي */}
+          {mode === "quarter" && (
+            <div className="flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-white/10 hover:border-cyan-500/30 transition-colors shadow-inner">
+              <select
+                value={quarter}
+                onChange={(e) => setQuarter(Number(e.target.value))}
+                className="bg-transparent font-bold text-white outline-none cursor-pointer text-xs"
+              >
+                <option value={1} className="bg-slate-900 text-white">الربع الأول (يناير - مارس)</option>
+                <option value={2} className="bg-slate-900 text-white">الربع الثاني (أبريل - يونيو)</option>
+                <option value={3} className="bg-slate-900 text-white">الربع الثالث (يوليو - سبتمبر)</option>
+                <option value={4} className="bg-slate-900 text-white">الربع الرابع (أكتوبر - ديسمبر)</option>
+              </select>
+            </div>
+          )}
+
+          {/* محدد النصف إذا كان النمط نصف سنوي */}
+          {mode === "halfYear" && (
+            <div className="flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-white/10 hover:border-cyan-500/30 transition-colors shadow-inner">
+              <select
+                value={halfYear}
+                onChange={(e) => setHalfYear(Number(e.target.value))}
+                className="bg-transparent font-bold text-white outline-none cursor-pointer text-xs"
+              >
+                <option value={1} className="bg-slate-900 text-white">النصف الأول (يناير - يونيو)</option>
+                <option value={2} className="bg-slate-900 text-white">النصف الثاني (يوليو - ديسمبر)</option>
+              </select>
+            </div>
+          )}
+
+          <div className="mr-auto flex items-center gap-1.5 text-slate-300 font-medium">
+            <span>الفترة المعروضة:</span>
+            <span className="font-bold text-cyan-300 bg-cyan-950/50 px-2.5 py-0.5 rounded-md border border-cyan-500/20">
+              {periodLabel}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* ══ جدول كشف الحساب الشهري ══ */}
-      <div className="overflow-x-auto rounded-2xl border border-sky-500/20 bg-sky-100 shadow-2xl text-center">
-        <table ref={tableRef1} className="w-full text-center text-xs border-collapse">
+      {/* ══ جدول كشف الحساب الشهري بتصميم أنيق وعصري ══ */}
+      <div className="overflow-x-auto rounded-2xl border border-cyan-500/20 bg-slate-900/60 shadow-2xl backdrop-blur-xl">
+        <table ref={tableRef} className="w-full text-center text-xs border-collapse">
+          {/* ترويسة الجدول الرئيسية */}
           <thead>
-            <tr className="bg-gradient-to-r from-sky-950 via-slate-900 to-sky-950 text-sky-200 border-b border-sky-500/30">
-              <th rowSpan={2} className="p-2 border-l border-white/10 min-w-[180px] text-center font-black">
+            <tr className="bg-gradient-to-r from-slate-950 via-[#0e1e38] to-slate-950 text-slate-200 border-b border-cyan-500/30">
+              <th rowSpan={2} className="p-3 border-l border-white/10 min-w-[200px] text-right pr-4 font-black text-cyan-300 text-sm">
                 بيان أنواع الحسابات
               </th>
-              <th colSpan={2} className="p-2 border-l border-white/10 bg-slate-800/40 font-bold">
+              <th colSpan={2} className="p-2 border-l border-white/10 bg-slate-900/80 font-bold text-slate-300">
                 الأشهر السابقة
               </th>
-              <th colSpan={2} className="p-2 border-l border-white/10 bg-sky-900/30 font-bold">
-                {movementLabel}
+              <th colSpan={2} className="p-2 border-l border-white/10 bg-cyan-950/40 font-bold text-cyan-300">
+                حركة {movementLabel}
               </th>
-              <th colSpan={2} className="p-2 border-l border-white/10 bg-indigo-900/30 font-bold">
-                الجملة
+              <th colSpan={2} className="p-2 border-l border-white/10 bg-indigo-950/40 font-bold text-indigo-300">
+                الجملة (سابق + حالي)
               </th>
-              <th colSpan={2} className="p-2 bg-emerald-900/30 font-bold">
+              <th colSpan={2} className="p-2 bg-emerald-950/40 font-bold text-emerald-300">
                 الرصيد في نهاية الفترة
               </th>
             </tr>
-            <tr className="bg-slate-950/80 text-[11px] text-slate-300 border-b border-white/10">
-              <th className="p-1.5 border-l border-white/10 text-sky-300">مدين</th>
-              <th className="p-1.5 border-l border-white/10 text-amber-300">دائن</th>
-              <th className="p-1.5 border-l border-white/10 text-sky-300 bg-sky-950/40">مدين</th>
-              <th className="p-1.5 border-l border-white/10 text-amber-300 bg-sky-950/40">دائن</th>
-              <th className="p-1.5 border-l border-white/10 text-sky-300 bg-indigo-950/40">مدين</th>
-              <th className="p-1.5 border-l border-white/10 text-amber-300 bg-indigo-950/40">دائن</th>
-              <th className="p-1.5 border-l border-white/10 text-emerald-300 bg-emerald-950/40">مدين</th>
-              <th className="p-1.5 text-emerald-300 bg-emerald-950/40">دائن</th>
+            <tr className="bg-slate-950/90 text-[11px] font-bold text-slate-300 border-b border-cyan-500/20">
+              {/* سابق */}
+              <th className="p-2 border-l border-white/10 text-cyan-400 bg-slate-900/60">مدين</th>
+              <th className="p-2 border-l border-white/10 text-amber-400 bg-slate-900/60">دائن</th>
+              {/* حالي */}
+              <th className="p-2 border-l border-white/10 text-cyan-300 bg-cyan-950/30">مدين</th>
+              <th className="p-2 border-l border-white/10 text-amber-300 bg-cyan-950/30">دائن</th>
+              {/* جملة */}
+              <th className="p-2 border-l border-white/10 text-cyan-400 bg-indigo-950/30">مدين</th>
+              <th className="p-2 border-l border-white/10 text-amber-400 bg-indigo-950/30">دائن</th>
+              {/* رصيد */}
+              <th className="p-2 border-l border-white/10 text-emerald-300 bg-emerald-950/30">مدين</th>
+              <th className="p-2 text-emerald-300 bg-emerald-950/30">دائن</th>
             </tr>
           </thead>
-<tbody className="divide-y divide-white/5 font-medium">
+
+          {/* محتوى الحسابات والمجموعات */}
+          <tbody className="divide-y divide-white/5 font-medium">
             {GROUPS.map((group, gIdx) => {
               let gPrevD = 0, gPrevC = 0, gCurD = 0, gCurC = 0;
               return (
                 <React.Fragment key={gIdx}>
-   <tr className="bg-white font-bold text-black text-center">
-                    <td colSpan={9} className="px-3 py-1.5 border-y border-sky-500/20">
-                      • {group.title}
+                  {/* عنوان المجموعة الرئيسي */}
+                  <tr className="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 font-black text-cyan-300 border-y border-cyan-500/20">
+                    <td colSpan={9} className="px-4 py-2 text-right">
+                      <div className="flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400"></span>
+                        <span className="text-xs sm:text-sm font-bold tracking-wide">{group.title}</span>
+                      </div>
                     </td>
                   </tr>
+
+                  {/* سطور الحسابات التفصيلية */}
                   {group.accounts.map((acc, aIdx) => {
-                    const rowData = data[cleanArabic(acc)] || { prevDebit: 0, prevCredit: 0, curDebit: 0, curCredit: 0 };
+                    const rowData = data[cleanArabic(acc)] || {
+                      prevDebit: 0,
+                      prevCredit: 0,
+                      curDebit: 0,
+                      curCredit: 0,
+                    };
                     const totD = rowData.prevDebit + rowData.curDebit;
                     const totC = rowData.prevCredit + rowData.curCredit;
                     const balD = Math.max(0, totD - totC);
@@ -480,60 +600,86 @@ export default function MonthlyStatementTab() {
                     gCurD += rowData.curDebit;
                     gCurC += rowData.curCredit;
 
-const isHighlight = acc === "الاستخدامات" || acc === "الموارد";
+                    const isHighlight = acc === "الاستخدامات" || acc === "الموارد";
 
-return (
-<tr
- key={aIdx}
-className={`hover:bg-green transition-colors ${
- isHighlight ? "bg-yellow font-bold text-black" : ""
+                    return (
+                      <tr
+                        key={aIdx}
+                        className={`transition-colors duration-150 ${
+                          isHighlight
+                            ? "bg-cyan-500/10 font-bold border-y border-cyan-500/30 text-cyan-200"
+                            : "hover:bg-slate-800/40 text-slate-200"
                         }`}
                       >
-<td className="px-3 py-1.5 text-center border-l border-black whitespace-nowrap">
-{acc}
-</td>
-<td className="px-2 py-1.5 border-l border-black font-mono text-white">
+                        <td className="px-3 py-2 text-right pr-5 border-l border-white/5 whitespace-nowrap">
+                          {isHighlight ? (
+                            <span className="inline-flex items-center gap-1.5 font-black text-cyan-300">
+                              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                              {acc}
+                            </span>
+                          ) : (
+                            acc
+                          )}
+                        </td>
+                        {/* سابق */}
+                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-slate-300">
                           {rowData.prevDebit ? rowData.prevDebit.toLocaleString() : "-"}
                         </td>
-                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white">
+                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-slate-300">
                           {rowData.prevCredit ? rowData.prevCredit.toLocaleString() : "-"}
                         </td>
-                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white bg-sky-950/20 font-bold">
+                        {/* حالي */}
+                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-cyan-300 font-bold bg-cyan-950/20">
                           {rowData.curDebit ? rowData.curDebit.toLocaleString() : "-"}
                         </td>
-<td className="px-2 py-1.5 border-l border-white/5 font-mono text-white bg-sky-950/20 font-bold">
+                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-amber-300 font-bold bg-amber-950/20">
                           {rowData.curCredit ? rowData.curCredit.toLocaleString() : "-"}
                         </td>
- <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white bg-indigo-950/20">
+                        {/* جملة */}
+                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-slate-200 bg-indigo-950/20">
                           {totD ? totD.toLocaleString() : "-"}
                         </td>
-                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white bg-indigo-950/20">
+                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-slate-200 bg-indigo-950/20">
                           {totC ? totC.toLocaleString() : "-"}
                         </td>
-                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white bg-emerald-950/20 font-bold">
+                        {/* رصيد */}
+                        <td className="px-2 py-1.5 border-l border-white/5 font-mono text-emerald-400 font-bold bg-emerald-950/20">
                           {balD ? balD.toLocaleString() : "-"}
                         </td>
-                        <td className="px-2 py-1.5 font-mono text-white bg-emerald-950/20 font-bold">
+                        <td className="px-2 py-1.5 font-mono text-emerald-400 font-bold bg-emerald-950/20">
                           {balC ? balC.toLocaleString() : "-"}
                         </td>
                       </tr>
                     );
                   })}
-   {/* جملة المجموعة */}
- <tr className="bg-slate-950/90 font-bold text-white border-b border-sky-500/20 text-xs">
-<td className="px-3 py-1.5 text-center border-l border-white/5">
+
+                  {/* جملة المجموعة */}
+                  <tr className="bg-slate-950/80 font-bold text-slate-100 border-b border-cyan-500/20 text-xs">
+                    <td className="px-3 py-2 text-right pr-4 border-l border-white/5 text-cyan-300">
                       جملة {group.title}
                     </td>
-<td className="px-2 py-1.5 border-l border-white/5 font-mono text-white">{gPrevD.toLocaleString()}</td>
-<td className="px-2 py-1.5 border-l border-white/5 font-mono">{gPrevC.toLocaleString()}</td>
- <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white">{gCurD.toLocaleString()}</td>
-<td className="px-2 py-1.5 border-l border-white/5 font-mono text-white">{gCurC.toLocaleString()}</td>
-<td className="px-2 py-1.5 border-l border-white/5 font-mono text-white">{(gPrevD + gCurD).toLocaleString()}</td>
-<td className="px-2 py-1.5 border-l border-white/5 font-mono text-white">{(gPrevC + gCurC).toLocaleString()}</td>
-                    <td className="px-2 py-1.5 border-l border-white/5 font-mono text-white">
+                    <td className="px-2 py-2 border-l border-white/5 font-mono text-slate-300">
+                      {gPrevD.toLocaleString()}
+                    </td>
+                    <td className="px-2 py-2 border-l border-white/5 font-mono text-slate-300">
+                      {gPrevC.toLocaleString()}
+                    </td>
+                    <td className="px-2 py-2 border-l border-white/5 font-mono text-cyan-300 font-black">
+                      {gCurD.toLocaleString()}
+                    </td>
+                    <td className="px-2 py-2 border-l border-white/5 font-mono text-amber-300 font-black">
+                      {gCurC.toLocaleString()}
+                    </td>
+                    <td className="px-2 py-2 border-l border-white/5 font-mono text-indigo-300">
+                      {(gPrevD + gCurD).toLocaleString()}
+                    </td>
+                    <td className="px-2 py-2 border-l border-white/5 font-mono text-indigo-300">
+                      {(gPrevC + gCurC).toLocaleString()}
+                    </td>
+                    <td className="px-2 py-2 border-l border-white/5 font-mono text-emerald-400 font-bold">
                       {Math.max(0, gPrevD + gCurD - (gPrevC + gCurC)).toLocaleString()}
                     </td>
-<td className="px-2 py-1.5 font-mono text-white">
+                    <td className="px-2 py-2 font-mono text-emerald-400 font-bold">
                       {Math.max(0, gPrevC + gCurC - (gPrevD + gCurD)).toLocaleString()}
                     </td>
                   </tr>
@@ -541,25 +687,42 @@ className={`hover:bg-green transition-colors ${
               );
             })}
           </tbody>
+
           {/* الإجمالي العام */}
           <tfoot>
- <tr className="bg-gradient-to-r from-sky-950 via-slate-900 to-sky-950 font-bold text-white text-sm border-t-2 border-sky-400">
-<td className="px-3 py-2 text-center border-l border-white/10">الإجمالي العام</td>
-<td className="px-2 py-2 border-l border-white/10 font-mono text-white">{totals.prevDebit.toLocaleString()}</td>
-<td className="px-2 py-2 border-l border-white/10 font-mono text-white">{totals.prevCredit.toLocaleString()}</td>
-<td className="px-2 py-2 border-l border-white/10 font-mono text-white">{totals.curDebit.toLocaleString()}</td>
-<td className="px-2 py-2 border-l border-white/10 font-mono text-white">{totals.curCredit.toLocaleString()}</td>
-              <td className="px-2 py-2 border-l border-white/10 font-mono text-white">
+            <tr className="bg-gradient-to-r from-slate-950 via-[#0e1e38] to-slate-950 font-black text-white text-xs sm:text-sm border-t-2 border-cyan-400 shadow-inner">
+              <td className="px-3 py-3 text-right pr-4 border-l border-white/10 text-cyan-300">
+                الإجمالي العام لكافة الحسابات
+              </td>
+              <td className="px-2 py-3 border-l border-white/10 font-mono text-slate-300">
+                {totals.prevDebit.toLocaleString()}
+              </td>
+              <td className="px-2 py-3 border-l border-white/10 font-mono text-slate-300">
+                {totals.prevCredit.toLocaleString()}
+              </td>
+              <td className="px-2 py-3 border-l border-white/10 font-mono text-cyan-300 font-black text-sm">
+                {totals.curDebit.toLocaleString()}
+              </td>
+              <td className="px-2 py-3 border-l border-white/10 font-mono text-amber-300 font-black text-sm">
+                {totals.curCredit.toLocaleString()}
+              </td>
+              <td className="px-2 py-3 border-l border-white/10 font-mono text-indigo-300 font-black">
                 {(totals.prevDebit + totals.curDebit).toLocaleString()}
               </td>
-              <td className="px-2 py-2 border-l border-white/10 font-mono text-white">
+              <td className="px-2 py-3 border-l border-white/10 font-mono text-indigo-300 font-black">
                 {(totals.prevCredit + totals.curCredit).toLocaleString()}
               </td>
-              <td className="px-2 py-2 border-l border-white/10 font-mono text-white">
-                {Math.max(0, totals.prevDebit + totals.curDebit - (totals.prevCredit + totals.curCredit)).toLocaleString()}
+              <td className="px-2 py-3 border-l border-white/10 font-mono text-emerald-300 font-black">
+                {Math.max(
+                  0,
+                  totals.prevDebit + totals.curDebit - (totals.prevCredit + totals.curCredit)
+                ).toLocaleString()}
               </td>
-              <td className="px-2 py-2 font-mono text-white">
-                {Math.max(0, totals.prevCredit + totals.curCredit - (totals.prevDebit + totals.curDebit)).toLocaleString()}
+              <td className="px-2 py-3 font-mono text-emerald-300 font-black">
+                {Math.max(
+                  0,
+                  totals.prevCredit + totals.curCredit - (totals.prevDebit + totals.curDebit)
+                ).toLocaleString()}
               </td>
             </tr>
           </tfoot>
