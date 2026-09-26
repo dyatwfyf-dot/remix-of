@@ -2,6 +2,7 @@ import * as XLSX from "xlsx";
 import type { Account, Hafiza, Installment, Journal } from "./store";
 import { INSTALLMENT_MONTHS } from "./store";
 import monthlySchema from "@/data/monthlyStatement.json";
+import revenueSchema from "@/data/revenueTemplate.json";
 import {
   getPeriodRange,
   getReportMovementLabel,
@@ -30,10 +31,162 @@ import { formatReportDate } from "./reportDate";
 
 const JOURNAL_SHEET_NAME = "المجلس الطبي يومية";
 
+export const MONTHLY_NAMES = [
+  "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+  "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر",
+];
+
+type StatementGroup = { title: string; accounts: string[] };
+const STATEMENT_GROUPS = (monthlySchema as { groups: StatementGroup[] }).groups;
+const STATEMENT_TITLE = (monthlySchema as { title: string }).title;
+const STATEMENT_OFFICE = (monthlySchema as { office: string }).office;
+const STATEMENT_GOV = (monthlySchema as { governorate: string }).governorate;
+
+type RevType = { no: number; title: string };
+type RevItem = { no: number; title: string; types: RevType[] };
+type RevSection = { no: number; title: string; items: RevItem[] };
+type RevChapter = { no: number; title: string; longTitle?: string; sections: RevSection[] };
+const REV = revenueSchema as { title: string; office: string; chapters: RevChapter[] };
+
 /**
  * دالة مساعدة لتحويل أي قيمة إلى رقم صحيح أو عشري بأمان
  */
-const parseNumericValue = (v: unknown): number => (v === "" || v == null ? 0 : Number(v) || 0);
+export const parseNumericValue = (v: unknown): number =>
+  v === "" || v == null ? 0 : Number(v) || 0;
+
+export function normName(s: string) {
+  return (s || "").replace(/\s+/g, " ").trim();
+}
+
+/**
+ * دالة تطبيع النصوص العربية لتسهيل مطابقة العناوين
+ */
+export const normHeader = (s: unknown): string => {
+  const str = String(s ?? "");
+  return str
+    .replace(/[\u064B-\u0652\u0670\u0640]/g, "")
+    .replace(/[\u0622\u0623\u0625]/g, "\u0627")
+    .replace(/[\u0649\u064A]/g, "\u064A")
+    .replace(/\u0629/g, "\u0647")
+    .replace(/[()[\]./\\،,:]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
+export const normForMatch = (s: string) => {
+  if (!s) return "";
+  return s
+    .replace(/[\u064B-\u0652\u0670\u0640]/g, "")
+    .replace(/[\u0622\u0623\u0625]/g, "\u0627")
+    .replace(/[\u0649\u064A]/g, "\u064A")
+    .replace(/\u0629/g, "\u0647")
+    .replace(/\u062D\s*\/\s*/g, "\u062D\u0633\u0627\u0628 ")
+    .replace(/[()[\]./\\،,]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
+const STOP_WORDS_FOR_MATCH = new Set(["حساب", "حسابات", "ح", "محلية", "محليه", "عامة", "عامه"]);
+
+export const tokensForMatch = (s: string) =>
+  normForMatch(s)
+    .split(" ")
+    .filter((w) => w && !STOP_WORDS_FOR_MATCH.has(w));
+
+const ALL_STATEMENT_ACCOUNTS = STATEMENT_GROUPS.flatMap((g) => g.accounts);
+const ALL_STATEMENT_NORM = ALL_STATEMENT_ACCOUNTS.map((a) => ({
+  name: a,
+  norm: normForMatch(a),
+  toks: tokensForMatch(a),
+}));
+
+export const CHAPTER_TO_STATEMENT_ACCOUNT: Record<string, string> = {
+  [normForMatch("الباب الاول")]: "الاستخدامات",
+  [normForMatch("الباب الأول")]: "الاستخدامات",
+  [normForMatch("باب اول")]: "الاستخدامات",
+  [normForMatch("باب أول")]: "الاستخدامات",
+  [normForMatch("الباب 1")]: "الاستخدامات",
+  [normForMatch("باب 1")]: "الاستخدامات",
+  [normForMatch("الباب الاول (الأجور والمرتبات)")]: "الاستخدامات",
+  [normForMatch("الباب الأول (الأجور والمرتبات)")]: "الاستخدامات",
+  [normForMatch("الأجور والمرتبات")]: "الاستخدامات",
+  [normForMatch("الاجور والمرتبات")]: "الاستخدامات",
+  [normForMatch("نفقات الباب الاول")]: "الاستخدامات",
+  [normForMatch("نفقات الباب الأول")]: "الاستخدامات",
+  [normForMatch("الاستخدامات - الباب الاول")]: "الاستخدامات",
+  [normForMatch("الاستخدامات - الباب الأول")]: "الاستخدامات",
+  [normForMatch("استخدامات الباب الاول")]: "الاستخدامات",
+  [normForMatch("استخدامات الباب الأول")]: "الاستخدامات",
+
+  [normForMatch("الباب الثاني")]: "الاستخدامات",
+  [normForMatch("باب ثاني")]: "الاستخدامات",
+  [normForMatch("الباب 2")]: "الاستخدامات",
+  [normForMatch("باب 2")]: "الاستخدامات",
+  [normForMatch("الباب الثاني (النفقات التشغيلية)")]: "الاستخدامات",
+  [normForMatch("النفقات التشغيلية")]: "الاستخدامات",
+  [normForMatch("نفقات تشغيلية")]: "الاستخدامات",
+  [normForMatch("نفقات الباب الثاني")]: "الاستخدامات",
+  [normForMatch("الاستخدامات - الباب الثاني")]: "الاستخدامات",
+  [normForMatch("استخدامات الباب الثاني")]: "الاستخدامات",
+
+  [normForMatch("الباب الاول والباب الثاني")]: "الاستخدامات",
+  [normForMatch("الباب الأول والباب الثاني")]: "الاستخدامات",
+  [normForMatch("الباب الاول والثاني")]: "الاستخدامات",
+  [normForMatch("الباب الأول والثاني")]: "الاستخدامات",
+
+  [normForMatch("الباب الثالث")]: "الموارد",
+  [normForMatch("باب ثالث")]: "الموارد",
+  [normForMatch("الباب 3")]: "الموارد",
+  [normForMatch("باب 3")]: "الموارد",
+  [normForMatch("الباب الثالث (الدعم والموارد)")]: "الموارد",
+  [normForMatch("الدعم والموارد")]: "الموارد",
+  [normForMatch("دعم وموارد")]: "الموارد",
+  [normForMatch("الموارد")]: "الموارد",
+  [normForMatch("موارد الباب الثالث")]: "الموارد",
+
+  [normForMatch("الباب الرابع")]: "حساب اكتساب الأصول غير المالية",
+  [normForMatch("باب رابع")]: "حساب اكتساب الأصول غير المالية",
+  [normForMatch("الباب 4")]: "حساب اكتساب الأصول غير المالية",
+  [normForMatch("باب 4")]: "حساب اكتساب الأصول غير المالية",
+  [normForMatch("الباب الرابع (اكتساب الأصول غير المالية)")]: "حساب اكتساب الأصول غير المالية",
+  [normForMatch("اكتساب الأصول غير المالية")]: "حساب اكتساب الأصول غير المالية",
+  [normForMatch("اكتساب الاصول غير الماليه")]: "حساب اكتساب الأصول غير المالية",
+  [normForMatch("شراء أصول")]: "حساب اكتساب الأصول غير المالية",
+  [normForMatch("شراء اصول")]: "حساب اكتساب الأصول غير المالية",
+
+  [normForMatch("ح/ النقدية")]: "حساب النقدية",
+  [normForMatch("النقدية")]: "حساب النقدية",
+  [normForMatch("حساب البنك")]: "حساب البنك موارد",
+  [normForMatch("البنك موارد")]: "حساب البنك موارد",
+  [normForMatch("البنك استخدامات")]: "حساب البنك استخدامات",
+};
+
+export function matchStatementAccount(raw: string): string | null {
+  if (!raw) return null;
+  const n = normForMatch(raw);
+  if (!n) return null;
+
+  const chapterMatch = CHAPTER_TO_STATEMENT_ACCOUNT[n];
+  if (chapterMatch) return chapterMatch;
+
+  const exact = ALL_STATEMENT_NORM.find((a) => a.norm === n);
+  if (exact) return exact.name;
+
+  const contains = ALL_STATEMENT_NORM.find((a) => a.norm.includes(n) || n.includes(a.norm));
+  if (contains) return contains.name;
+
+  const rawToks = tokensForMatch(raw);
+  if (!rawToks.length) return null;
+  let best: { name: string; score: number } | null = null;
+  for (const a of ALL_STATEMENT_NORM) {
+    if (!a.toks.length) continue;
+    const common = a.toks.filter((t) => rawToks.includes(t)).length;
+    if (!common) continue;
+    const score = common / Math.max(a.toks.length, rawToks.length);
+    if (!best || score > best.score) best = { name: a.name, score };
+  }
+  return best && best.score >= 0.6 ? best.name : null;
+}
 
 function buildJournalSheet(journal: Journal[]): XLSX.WorkSheet {
   const ws: XLSX.WorkSheet = {};
@@ -125,16 +278,16 @@ function buildJournalSheet(journal: Journal[]): XLSX.WorkSheet {
   return ws;
 }
 
-/**
- * دالة تصدير بيانات النظام إلى ملف Excel متعدد الأوراق
- */
-export async function exportToExcel(data: {
-  hafiza: Hafiza[];
-  accounts: Account[];
-  journal: Journal[];
-  installments?: Installment[];
-  openingBalance: number;
-}, reportDate?: string) {
+export async function exportToExcel(
+  data: {
+    hafiza: Hafiza[];
+    accounts: Account[];
+    journal: Journal[];
+    installments?: Installment[];
+    openingBalance: number;
+  },
+  reportDate?: string,
+) {
   const dateValue = reportDate || new Date().toISOString().slice(0, 10);
   const reportDateLabel = formatReportDate(dateValue);
   const sourceSheets: { name: string; source: XLSX.WorkSheet; title: string; count: number }[] = [];
@@ -224,37 +377,25 @@ export async function exportToExcel(data: {
   const imageId = await loadReportLetterhead(workbook);
   for (const item of sourceSheets) {
     const sourceRange = XLSX.utils.decode_range(item.source["!ref"] || "A1");
-    appendXlsxSheet(workbook, item.source, item.name, {
-      title: item.title,
-      reportDateLabel,
-      recordCount: item.count,
-      totalColumns: sourceRange.e.c - sourceRange.s.c + 1,
-      palette: getExcelPalette(item.title),
-    }, imageId);
+    appendXlsxSheet(
+      workbook,
+      item.source,
+      item.name,
+      {
+        title: item.title,
+        reportDateLabel,
+        recordCount: item.count,
+        totalColumns: sourceRange.e.c - sourceRange.s.c + 1,
+        palette: getExcelPalette(item.title),
+      },
+      imageId,
+    );
   }
   await downloadWorkbook(workbook, `قيود_اليومية_${dateValue}.xlsx`);
 }
 
 export type ImportKind = "hafiza" | "account" | "journal" | "installments" | "revenue" | "monthly";
 
-/**
- * دالة تطبيع النصوص العربية لتسهيل مطابقة العناوين
- */
-export const normHeader = (s: unknown): string => {
-  const str = String(s ?? "");
-  return str
-    .replace(/[\u064B-\u0652\u0670\u0640]/g, "")
-    .replace(/[\u0622\u0623\u0625]/g, "\u0627")
-    .replace(/[\u0649\u064A]/g, "\u064A")
-    .replace(/\u0629/g, "\u0647")
-    .replace(/[()[\]./\\،,:]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-};
-
-/**
- * دالة استيراد وتحليل ملفات Excel الواردة إلى النظام
- */
 export async function importFromExcel(
   source: File | ArrayBuffer,
   only?: ImportKind,
@@ -262,7 +403,7 @@ export async function importFromExcel(
 ) {
   const buf = source instanceof ArrayBuffer ? source : await source.arrayBuffer();
   const wb = XLSX.read(buf);
-  
+
   const result: {
     hafiza: Hafiza[];
     accounts: Account[];
@@ -284,7 +425,12 @@ export async function importFromExcel(
       const d = XLSX.SSF.parse_date_code(v);
       if (d) return `${d.y}-${String(d.m).padStart(2, "0")}-${String(d.d).padStart(2, "0")}`;
     }
-    return String(v);
+    const s = String(v).trim();
+    const dmy = s.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+    if (dmy) {
+      return `${dmy[3]}-${dmy[2].padStart(2, "0")}-${dmy[1].padStart(2, "0")}`;
+    }
+    return s;
   };
   const norm = (s: unknown) =>
     String(s ?? "")
@@ -293,16 +439,18 @@ export async function importFromExcel(
 
   const cellStr = (v: unknown): string => {
     if (v == null || v === "") return "";
-    if (typeof v === "number") {
-      return Number.isInteger(v) ? String(v) : String(v);
-    }
     return String(v).trim();
   };
 
   const detectKind = (sheetName: string, cols: string[]): ImportKind | null => {
     const n = sheetName;
     if (n.includes("ايراد") || n.includes("إيراد") || n.includes("موارد")) return "revenue";
-    if (n.includes("كشف") || n.includes("حساب المدة") || n.includes("شهر يناير") || n.includes("شهر فبراير"))
+    if (
+      n.includes("كشف") ||
+      n.includes("حساب المدة") ||
+      n.includes("شهر يناير") ||
+      n.includes("شهر فبراير")
+    )
       return "monthly";
     if (n.includes("قسط") || n.includes("الأقساط") || n.includes("الاقساط")) return "installments";
     if (n.includes("حافظ") || n.includes("حوافظ")) return "hafiza";
@@ -482,82 +630,172 @@ export async function importFromExcel(
     return 0;
   };
 
-  const knownMonthlyAccounts = new Set(
-    (monthlySchema as { groups: { accounts: string[] }[] }).groups.flatMap((g) =>
-      g.accounts.map((a) => normHeader(a)),
-    ),
-  );
-
   const parseMonthlySheet = (sheet: XLSX.WorkSheet, sheetName: string): Journal[] => {
     const aoa = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
       header: 1,
       defval: "",
       blankrows: false,
     });
-    if (aoa.length < 5) return [];
+    if (aoa.length < 3) return [];
+
     let month = monthIndexFromName(sheetName);
     let year = new Date().getFullYear();
-    for (let i = 0; i < Math.min(aoa.length, 6); i++) {
+    for (let i = 0; i < Math.min(aoa.length, 10); i++) {
       const rowTxt = (aoa[i] as unknown[]).map((c) => String(c ?? "")).join(" ");
       if (!month) month = monthIndexFromName(rowTxt);
       const ym = rowTxt.match(/(20\d{2})/);
       if (ym) year = parseInt(ym[1], 10);
     }
-    if (!month) return [];
+    if (!month) month = new Date().getMonth() + 1;
+
     const lastDay = new Date(year, month, 0).getDate();
     const opsDate = `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
-    const openDate = `${year - 1}-12-31`;
+    const openDate =
+      month === 1
+        ? `${year - 1}-12-31`
+        : `${year}-${String(month - 1).padStart(2, "0")}-28`;
+
     let headerIdx = -1;
-    for (let i = 0; i < Math.min(aoa.length, 10); i++) {
-      const r = (aoa[i] as unknown[]).map((c) => String(c ?? ""));
+    for (let i = 0; i < Math.min(aoa.length, 12); i++) {
+      const r = (aoa[i] as unknown[]).map((c) => normHeader(String(c ?? "")));
       if (r.some((c) => c.includes("مدين")) && r.some((c) => c.includes("دائن"))) {
         headerIdx = i;
         break;
       }
     }
     if (headerIdx < 0) return [];
+
+    const headers = (aoa[headerIdx] as unknown[]).map((c) => normHeader(String(c ?? "")));
+
+    let accCol = headers.findIndex(
+      (h) => h.includes("حساب") || h.includes("بيان") || h.includes("باب") || h.includes("اسم"),
+    );
+    if (accCol < 0) accCol = 0;
+
+    let openDCol = -1,
+      openCCol = -1,
+      opsDCol = -1,
+      opsCCol = -1;
+
+    headers.forEach((h, idx) => {
+      if (idx === accCol) return;
+      if (h.includes("مدين")) {
+        if (h.includes("سابق") || h.includes("قبل") || h.includes("افتتاح")) {
+          if (openDCol < 0) openDCol = idx;
+        } else if (opsDCol < 0) {
+          opsDCol = idx;
+        }
+      } else if (h.includes("دائن")) {
+        if (h.includes("سابق") || h.includes("قبل") || h.includes("افتتاح")) {
+          if (openCCol < 0) openCCol = idx;
+        } else if (opsCCol < 0) {
+          opsCCol = idx;
+        }
+      }
+    });
+
+    if (openDCol < 0) openDCol = 1;
+    if (openCCol < 0) openCCol = 2;
+    if (opsDCol < 0) opsDCol = 3;
+    if (opsCCol < 0) opsCCol = 4;
+
     const out: Journal[] = [];
-    const importOpening = month === 1;
+    const skipTitles = [
+      "اجمالي", "إجمالي", "جملة", "مجموع",
+      "الحسابات الرئيسية", "الحسابات المساعدة",
+      "الحسابات الانتقالية", "الحسابات الإنتقالية",
+      "الحسابات النظامية", "الحسابات الرقابية",
+      "الرصيد الختامي", "بيان انواع الحسابات", "بيان أنواع الحسابات",
+    ];
+
     for (let i = headerIdx + 1; i < aoa.length; i++) {
       const row = aoa[i] as unknown[];
       if (!row) continue;
-      const account = norm(row[0]);
-      if (!account) continue;
-      if (!knownMonthlyAccounts.has(normHeader(account))) continue;
-      const openD = parseNumericValue(row[1]);
-      const openC = parseNumericValue(row[2]);
-      const opsD = parseNumericValue(row[3]);
-      const opsC = parseNumericValue(row[4]);
-      if (importOpening && openD)
+
+      let rawAccount = norm(row[accCol]);
+      if (!rawAccount || !isNaN(Number(rawAccount))) {
+        rawAccount = norm(row[accCol + 1]);
+      }
+      if (!rawAccount) continue;
+
+      const normAcc = normHeader(rawAccount);
+      if (skipTitles.some((s) => normAcc.includes(normHeader(s)))) continue;
+
+      const matched = matchStatementAccount(rawAccount) || rawAccount;
+
+      const openD = parseNumericValue(row[openDCol]);
+      const openC = parseNumericValue(row[openCCol]);
+      const opsD = parseNumericValue(row[opsDCol]);
+      const opsC = parseNumericValue(row[opsCCol]);
+
+      if (openD > 0) {
         out.push({
-          id: uid(), date: openDate, formNo: "", settlement: "",
-          description: "رصيد افتتاحي (استيراد كشف شهري)",
-          account, debitAccount: account, creditAccount: "", debit: openD, credit: 0,
+          id: uid(),
+          date: openDate,
+          formNo: "",
+          settlement: "",
+          description: "رصيد سابق / افتتاحي (استيراد كشف شهري)",
+          account: matched,
+          debitAccount: matched,
+          creditAccount: "",
+          debit: openD,
+          credit: 0,
         });
-      if (importOpening && openC)
+      }
+      if (openC > 0) {
         out.push({
-          id: uid(), date: openDate, formNo: "", settlement: "",
-          description: "رصيد افتتاحي (استيراد كشف شهري)",
-          account: "", debitAccount: "", creditAccount: account, debit: 0, credit: openC,
+          id: uid(),
+          date: openDate,
+          formNo: "",
+          settlement: "",
+          description: "رصيد سابق / افتتاحي (استيراد كشف شهري)",
+          account: matched,
+          debitAccount: "",
+          creditAccount: matched,
+          debit: 0,
+          credit: openC,
         });
-      if (opsD)
+      }
+      if (opsD > 0) {
         out.push({
-          id: uid(), date: opsDate, formNo: "", settlement: "",
-          description: `عمليات ${sheetName} (استيراد كشف شهري)`,
-          account, debitAccount: account, creditAccount: "", debit: opsD, credit: 0,
+          id: uid(),
+          date: opsDate,
+          formNo: "",
+          settlement: "",
+          description: `حركة شهر ${month} (استيراد كشف شهري)`,
+          account: matched,
+          debitAccount: matched,
+          creditAccount: "",
+          debit: opsD,
+          credit: 0,
         });
-      if (opsC)
+      }
+      if (opsC > 0) {
         out.push({
-          id: uid(), date: opsDate, formNo: "", settlement: "",
-          description: `عمليات ${sheetName} (استيراد كشف شهري)`,
-          account: "", debitAccount: "", creditAccount: account, debit: 0, credit: opsC,
+          id: uid(),
+          date: opsDate,
+          formNo: "",
+          settlement: "",
+          description: `حركة شهر ${month} (استيراد كشف شهري)`,
+          account: matched,
+          debitAccount: "",
+          creditAccount: matched,
+          debit: 0,
+          credit: opsC,
         });
+      }
     }
     return out;
   };
 
- for (const name of wb.SheetNames) {
-    if ((!only || only === "monthly" || only === "journal") && monthIndexFromName(name)) {
+  for (const name of wb.SheetNames) {
+    const isMonthlySheet =
+      monthIndexFromName(name) > 0 ||
+      name.includes("كشف") ||
+      name.includes("حساب") ||
+      only === "monthly";
+
+    if ((!only || only === "monthly" || only === "journal") && isMonthlySheet) {
       const mRows = parseMonthlySheet(wb.Sheets[name], name);
       if (mRows.length) {
         result.journal.push(...mRows);
@@ -565,7 +803,10 @@ export async function importFromExcel(
       }
     }
 
-    if ((!only || only === "revenue") && (name.includes("ايراد") || name.includes("إيراد") || name.includes("موارد"))) {
+    if (
+      (!only || only === "revenue") &&
+      (name.includes("ايراد") || name.includes("إيراد") || name.includes("موارد"))
+    ) {
       const rev = parseRevenueSheet(wb.Sheets[name], name);
       if (rev) {
         Object.assign(result.revenue, rev);
@@ -575,7 +816,7 @@ export async function importFromExcel(
 
     const tplRows = parseJournalTemplate(wb.Sheets[name]);
     if (tplRows && tplRows.length) {
-      if (!only || only === "journal") result.journal.push(...tplRows);
+      if (!only || only === "journal" || only === "monthly") result.journal.push(...tplRows);
       continue;
     }
 
@@ -584,8 +825,16 @@ export async function importFromExcel(
     const cols = Object.keys(rows[0]);
     const kind = detectKind(name, cols);
     if (!kind) continue;
-    if (only && kind !== only) continue;
-    if (kind === "monthly") continue;
+
+    if (only && kind !== only && !(only === "monthly" && kind === "journal")) continue;
+
+    if (kind === "monthly") {
+      const mRows = parseMonthlySheet(wb.Sheets[name], name);
+      if (mRows.length) {
+        result.journal.push(...mRows);
+      }
+      continue;
+    }
 
     if (kind === "hafiza") {
       rows.forEach((r) => {
@@ -593,9 +842,13 @@ export async function importFromExcel(
         const hafizaNo = cellStr(get(r, "رقم الحافظة"));
         if (!name && !hafizaNo) return;
         result.hafiza.push({
-          id: uid(), name, batch: cellStr(get(r, "الدفعة")),
-          specialty: cellStr(get(r, "التخصص")), date: toDate(get(r, "التاريخ")),
-          hafizaNo, description: cellStr(get(r, "البيان")),
+          id: uid(),
+          name,
+          batch: cellStr(get(r, "الدفعة")),
+          specialty: cellStr(get(r, "التخصص")),
+          date: toDate(get(r, "التاريخ")),
+          hafizaNo,
+          description: cellStr(get(r, "البيان")),
           hafizaAmount: parseNumericValue(get(r, "مبلغ الحافظة")),
           notifyDate: toDate(get(r, "تاريخ التوريد")),
           notifyNo: cellStr(get(r, "رقم الاشعار")),
@@ -614,39 +867,76 @@ export async function importFromExcel(
         let hafizaNo = cellStr(get(r, "رقم الحافظة"));
         const hafizaNoNum = Number(hafizaNo);
         if (
-          hafizaNo && !isNaN(hafizaNoNum) && hafizaNoNum > 10000 &&
+          hafizaNo &&
+          !isNaN(hafizaNoNum) &&
+          hafizaNoNum > 10000 &&
           (hafizaNoNum === hafizaAmount || hafizaNoNum === income || hafizaNoNum === expense)
         ) {
           hafizaNo = "";
         }
         const accDate = toDate(get(r, "التاريخ"));
-        // ترحيل تلقائي للإيرادات عند الاستيراد: يُطبَّق فقط عندما يحتوي عمود
-        // "الإيرادات" على مبلغ فعلي أكبر من صفر، ويُحدَّد البند حسب وجود
-        // كلمة "امتحان" في البيان أم لا — لعام 2026 فقط.
         let revenueKey: string | undefined;
         if (income > 0 && accDate.slice(0, 4) === "2026") {
           revenueKey = description.includes("امتحان") ? "3-2-3-8" : "3-2-3-7";
         }
         result.accounts.push({
-          id: uid(), date: accDate, hafizaNo,
+          id: uid(),
+          date: accDate,
+          hafizaNo,
           notifyNo: cellStr(get(r, "رقم الاشعار")),
           notifyDate: toDate(get(r, "تاريخ التوريد")),
           checkNo: cellStr(get(r, "رقم الشيك")),
           checkDate: toDate(get(r, "تاريخه", "تاريخ الشيك")),
-          description, specialty: cellStr(get(r, "التخصص")),
-          name, hafizaAmount, income, expense,
+          description,
+          specialty: cellStr(get(r, "التخصص")),
+          name,
+          hafizaAmount,
+          income,
+          expense,
           revenueKey,
         });
       });
     } else if (kind === "journal") {
       rows.forEach((r) => {
-        const description = cellStr(get(r, "البيان", "شرح القيد", "الوصف", "بيان القيد", "ملاحظات"));
+        const description = cellStr(
+          get(r, "البيان", "شرح القيد", "الوصف", "بيان القيد", "ملاحظات"),
+        );
         if (!description) return;
         if (description.includes("الإجمالي")) return;
-        const debitAcc = cellStr(get(r, "الحساب المدين", "اسم الحساب المدين", "الطرف المدين", "حساب مدين", "مدين (الحساب)", "من ح/", "من حساب", "الحساب", "اسم الحساب"));
-        const creditAcc = cellStr(get(r, "الحساب الدائن", "اسم الحساب الدائن", "الطرف الدائن", "حساب دائن", "دائن (الحساب)", "إلى ح/", "الى ح/", "إلى حساب", "الى حساب"));
-        const debit = parseNumericValue(get(r, "مدين", "المبلغ المدين", "مبلغ مدين", "منه", "المبلغ"));
-        const credit = parseNumericValue(get(r, "دائن", "المبلغ الدائن", "مبلغ دائن", "له"));
+        const debitAcc = cellStr(
+          get(
+            r,
+            "الحساب المدين",
+            "اسم الحساب المدين",
+            "الطرف المدين",
+            "حساب مدين",
+            "مدين (الحساب)",
+            "من ح/",
+            "من حساب",
+            "الحساب",
+            "اسم الحساب",
+          ),
+        );
+        const creditAcc = cellStr(
+          get(
+            r,
+            "الحساب الدائن",
+            "اسم الحساب الدائن",
+            "الطرف الدائن",
+            "حساب دائن",
+            "دائن (الحساب)",
+            "إلى ح/",
+            "الى ح/",
+            "إلى حساب",
+            "الى حساب",
+          ),
+        );
+        const debit = parseNumericValue(
+          get(r, "مدين", "المبلغ المدين", "مبلغ مدين", "منه", "المبلغ"),
+        );
+        const credit = parseNumericValue(
+          get(r, "دائن", "المبلغ الدائن", "مبلغ دائن", "له"),
+        );
         result.journal.push({
           id: uid(),
           date: toDate(get(r, "التاريخ", "تاريخ القيد", "تاريخ الحركة", "تاريخ")),
@@ -660,7 +950,6 @@ export async function importFromExcel(
           credit,
         });
       });
-
     } else if (kind === "installments") {
       rows.forEach((r) => {
         const name = cellStr(get(r, "الاسم"));
@@ -672,31 +961,22 @@ export async function importFromExcel(
         const totalPaid = Object.values(payments).reduce((s, v) => s + v, 0);
         result.installments.push({
           no: get(r, "م") ? Number(get(r, "م")) : null,
-          name, batch: cellStr(get(r, "الدفعة")),
-          specialty: cellStr(get(r, "التخصص")), fees, prevDue,
-          payments, totalPaid, remaining: prevDue - totalPaid,
-          notes: cellStr(get(r, "الملاحظات")), phone: cellStr(get(r, "الجوال")),
+          name,
+          batch: cellStr(get(r, "الدفعة")),
+          specialty: cellStr(get(r, "التخصص")),
+          fees,
+          prevDue,
+          payments,
+          totalPaid,
+          remaining: prevDue - totalPaid,
+          notes: cellStr(get(r, "الملاحظات")),
+          phone: cellStr(get(r, "الجوال")),
         });
       });
     }
   }
   return result;
 }
-
-const MONTHLY_NAMES = [
-  "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
-  "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر",
-];
-
-function normName(s: string) {
-  return (s || "").replace(/\s+/g, " ").trim();
-}
-
-type StatementGroup = { title: string; accounts: string[] };
-const STATEMENT_GROUPS = (monthlySchema as { groups: StatementGroup[] }).groups;
-const STATEMENT_TITLE = (monthlySchema as { title: string }).title;
-const STATEMENT_OFFICE = (monthlySchema as { office: string }).office;
-const STATEMENT_GOV = (monthlySchema as { governorate: string }).governorate;
 
 function buildMonthlySheet(journal: Journal[], year: number, month: number): XLSX.WorkSheet {
   const map: Record<string, { prevD: number; prevC: number; curD: number; curC: number }> = {};
@@ -710,8 +990,15 @@ function buildMonthlySheet(journal: Journal[], year: number, month: number): XLS
     const m = d.getMonth() + 1;
     if (m > month) return;
     const isCurrent = m === month;
-    const dKey = normName(j.debitAccount || j.account || "");
-    const cKey = normName(j.creditAccount || "");
+    const debitRaw = j.debitAccount || j.account || "";
+    const creditRaw = j.creditAccount || "";
+
+    const dMatched = matchStatementAccount(debitRaw);
+    const cMatched = matchStatementAccount(creditRaw);
+
+    const dKey = dMatched ? normName(dMatched) : normName(debitRaw);
+    const cKey = cMatched ? normName(cMatched) : normName(creditRaw);
+
     if (dKey && map[dKey]) {
       if (isCurrent) map[dKey].curD += +j.debit || 0;
       else map[dKey].prevD += +j.debit || 0;
@@ -732,43 +1019,73 @@ function buildMonthlySheet(journal: Journal[], year: number, month: number): XLS
     `الرصيد في 1/1/${year} دائن`,
     `عمليات شهر ${MONTHLY_NAMES[month - 1]} مدين`,
     `عمليات شهر ${MONTHLY_NAMES[month - 1]} دائن`,
-    "الجملة مدين", "الجملة دائن",
+    "الجملة مدين",
+    "الجملة دائن",
     `الرصيد في ${year}/${month} مدين`,
     `الرصيد في ${year}/${month} دائن`,
   ]);
 
-  let GPD = 0, GPC = 0, GCD = 0, GCC = 0;
+  let GPD = 0,
+    GPC = 0,
+    GCD = 0,
+    GCC = 0;
   STATEMENT_GROUPS.forEach((g) => {
     rows.push([g.title, "", "", "", "", "", "", "", ""]);
-    let gPD = 0, gPC = 0, gCD = 0, gCC = 0;
+    let gPD = 0,
+      gPC = 0,
+      gCD = 0,
+      gCC = 0;
     g.accounts.forEach((a) => {
       const r = map[normName(a)] || { prevD: 0, prevC: 0, curD: 0, curC: 0 };
       const totD = r.prevD + r.curD;
       const totC = r.prevC + r.curC;
       const balD = Math.max(0, totD - totC);
       const balC = Math.max(0, totC - totD);
-      gPD += r.prevD; gPC += r.prevC; gCD += r.curD; gCC += r.curC;
+      gPD += r.prevD;
+      gPC += r.prevC;
+      gCD += r.curD;
+      gCC += r.curC;
       rows.push([a, r.prevD, r.prevC, r.curD, r.curC, totD, totC, balD, balC]);
     });
-    GPD += gPD; GPC += gPC; GCD += gCD; GCC += gCC;
+    GPD += gPD;
+    GPC += gPC;
+    GCD += gCD;
+    GCC += gCC;
     rows.push([
-      "جملة " + g.title, gPD, gPC, gCD, gCC,
-      gPD + gCD, gPC + gCC,
+      "جملة " + g.title,
+      gPD,
+      gPC,
+      gCD,
+      gCC,
+      gPD + gCD,
+      gPC + gCC,
       Math.max(0, gPD + gCD - gPC - gCC),
       Math.max(0, gPC + gCC - gPD - gCD),
     ]);
   });
   rows.push([
-    "الإجمالي العام", GPD, GPC, GCD, GCC,
-    GPD + GCD, GPC + GCC,
+    "الإجمالي العام",
+    GPD,
+    GPC,
+    GCD,
+    GCC,
+    GPD + GCD,
+    GPC + GCC,
     Math.max(0, GPD + GCD - GPC - GCC),
     Math.max(0, GPC + GCC - GPD - GCD),
   ]);
 
   const ws = XLSX.utils.aoa_to_sheet(rows);
   ws["!cols"] = [
-    { wch: 42 }, { wch: 14 }, { wch: 14 }, { wch: 14 },
-    { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 14 },
+    { wch: 42 },
+    { wch: 14 },
+    { wch: 14 },
+    { wch: 14 },
+    { wch: 14 },
+    { wch: 14 },
+    { wch: 14 },
+    { wch: 14 },
+    { wch: 14 },
   ];
   ws["!merges"] = [
     { s: { r: 0, c: 0 }, e: { r: 0, c: 8 } },
@@ -791,8 +1108,15 @@ function buildQuarterlySheet(journal: Journal[], year: number, quarter: number):
     const m = d.getMonth() + 1;
     if (m > endMonth) return;
     const isCurrent = m >= startMonth && m <= endMonth;
-    const dKey = normName(j.debitAccount || j.account || "");
-    const cKey = normName(j.creditAccount || "");
+    const debitRaw = j.debitAccount || j.account || "";
+    const creditRaw = j.creditAccount || "";
+
+    const dMatched = matchStatementAccount(debitRaw);
+    const cMatched = matchStatementAccount(creditRaw);
+
+    const dKey = dMatched ? normName(dMatched) : normName(debitRaw);
+    const cKey = cMatched ? normName(cMatched) : normName(creditRaw);
+
     if (dKey && map[dKey]) {
       if (isCurrent) map[dKey].curD += +j.debit || 0;
       else map[dKey].prevD += +j.debit || 0;
@@ -817,43 +1141,73 @@ function buildQuarterlySheet(journal: Journal[], year: number, quarter: number):
     `الرصيد في ${year}/${startMonth}/1 دائن`,
     `حساب المدة الربع ${qNames[quarter - 1]} مدين`,
     `حساب المدة الربع ${qNames[quarter - 1]} دائن`,
-    "الجملة مدين", "الجملة دائن",
+    "الجملة مدين",
+    "الجملة دائن",
     `الرصيد في ${year}/${endMonth}/${lastDay} مدين`,
     `الرصيد في ${year}/${endMonth}/${lastDay} دائن`,
   ]);
 
-  let GPD = 0, GPC = 0, GCD = 0, GCC = 0;
+  let GPD = 0,
+    GPC = 0,
+    GCD = 0,
+    GCC = 0;
   STATEMENT_GROUPS.forEach((g) => {
     rows.push([g.title, "", "", "", "", "", "", "", ""]);
-    let gPD = 0, gPC = 0, gCD = 0, gCC = 0;
+    let gPD = 0,
+      gPC = 0,
+      gCD = 0,
+      gCC = 0;
     g.accounts.forEach((a) => {
       const r = map[normName(a)] || { prevD: 0, prevC: 0, curD: 0, curC: 0 };
       const totD = r.prevD + r.curD;
       const totC = r.prevC + r.curC;
       const balD = Math.max(0, totD - totC);
       const balC = Math.max(0, totC - totD);
-      gPD += r.prevD; gPC += r.prevC; gCD += r.curD; gCC += r.curC;
+      gPD += r.prevD;
+      gPC += r.prevC;
+      gCD += r.curD;
+      gCC += r.curC;
       rows.push([a, r.prevD, r.prevC, r.curD, r.curC, totD, totC, balD, balC]);
     });
-    GPD += gPD; GPC += gPC; GCD += gCD; GCC += gCC;
+    GPD += gPD;
+    GPC += gPC;
+    GCD += gCD;
+    GCC += gCC;
     rows.push([
-      "جملة " + g.title, gPD, gPC, gCD, gCC,
-      gPD + gCD, gPC + gCC,
+      "جملة " + g.title,
+      gPD,
+      gPC,
+      gCD,
+      gCC,
+      gPD + gCD,
+      gPC + gCC,
       Math.max(0, gPD + gCD - gPC - gCC),
       Math.max(0, gPC + gCC - gPD - gCD),
     ]);
   });
   rows.push([
-    "الإجمالي العام", GPD, GPC, GCD, GCC,
-    GPD + GCD, GPC + GCC,
+    "الإجمالي العام",
+    GPD,
+    GPC,
+    GCD,
+    GCC,
+    GPD + GCD,
+    GPC + GCC,
     Math.max(0, GPD + GCD - GPC - GCC),
     Math.max(0, GPC + GCC - GPD - GCD),
   ]);
 
   const ws = XLSX.utils.aoa_to_sheet(rows);
   ws["!cols"] = [
-    { wch: 42 }, { wch: 14 }, { wch: 14 }, { wch: 14 },
-    { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 14 },
+    { wch: 42 },
+    { wch: 14 },
+    { wch: 14 },
+    { wch: 14 },
+    { wch: 14 },
+    { wch: 14 },
+    { wch: 14 },
+    { wch: 14 },
+    { wch: 14 },
   ];
   ws["!merges"] = [
     { s: { r: 0, c: 0 }, e: { r: 0, c: 8 } },
@@ -870,142 +1224,41 @@ export async function exportMonthlyStatement(journal: Journal[], year: number, r
   for (let m = 1; m <= 12; m++) {
     const source = buildMonthlySheet(journal, year, m);
     const range = XLSX.utils.decode_range(source["!ref"] || "A1");
-    appendXlsxSheet(workbook, source, `شهر ${MONTHLY_NAMES[m - 1]}`, {
-      title: `الحساب الشهري - شهر ${MONTHLY_NAMES[m - 1]} ${year}م`,
-      reportDateLabel,
-      recordCount: journal.length,
-      totalColumns: range.e.c - range.s.c + 1,
-      palette: getExcelPalette("الحساب الشهري"),
-    }, imageId);
+    appendXlsxSheet(
+      workbook,
+      source,
+      `شهر ${MONTHLY_NAMES[m - 1]}`,
+      {
+        title: `الحساب الشهري - شهر ${MONTHLY_NAMES[m - 1]} ${year}م`,
+        reportDateLabel,
+        recordCount: journal.length,
+        totalColumns: range.e.c - range.s.c + 1,
+        palette: getExcelPalette("الحساب الشهري"),
+      },
+      imageId,
+    );
   }
   const qNames = ["الأول", "الثاني", "الثالث", "الرابع"];
   for (let q = 1; q <= 4; q++) {
     const source = buildQuarterlySheet(journal, year, q);
     const range = XLSX.utils.decode_range(source["!ref"] || "A1");
-    appendXlsxSheet(workbook, source, `حساب المدة - ${qNames[q - 1]}`, {
-      title: `حساب المدة - الربع ${qNames[q - 1]} ${year}م`,
-      reportDateLabel,
-      recordCount: journal.length,
-      totalColumns: range.e.c - range.s.c + 1,
-      palette: getExcelPalette("الحساب الشهري"),
-    }, imageId);
+    appendXlsxSheet(
+      workbook,
+      source,
+      `حساب المدة - ${qNames[q - 1]}`,
+      {
+        title: `حساب المدة - الربع ${qNames[q - 1]} ${year}م`,
+        reportDateLabel,
+        recordCount: journal.length,
+        totalColumns: range.e.c - range.s.c + 1,
+        palette: getExcelPalette("الحساب الشهري"),
+      },
+      imageId,
+    );
   }
   await downloadWorkbook(workbook, `كشف_الحساب_الشهري_${year}_${dateValue}.xlsx`);
 }
 
-/**
- * ======= التعديلات: إضافة دوال تطبيع/مطابقة متقاربة لاستخدامها في تقارير الفترة =======
- *
- * نضيف هنا دوال تطبيع ومطابقة تشبه المستخدمة في واجهة MonthlyStatementTab حتى
- * يتطابق سلوك التجميع في التقارير مع ما تراه في الواجهة.
- */
-
-// دالة تطبيع أقوى مشابهة لتلك في الـ component (تحذف التشكيل وتوحّد بعض الحروف)
-const normForMatch = (s: string) => {
-  if (!s) return "";
-  return s
-    .replace(/[\u064B-\u0652\u0670\u0640]/g, "")
-    .replace(/[\u0622\u0623\u0625]/g, "\u0627")
-    .replace(/[\u0649\u064A]/g, "\u064A")
-    .replace(/\u0629/g, "\u0647")
-    .replace(/\u062D\s*\/\s*/g, "\u062D\u0633\u0627\u0628 ")
-    .replace(/[()[\]./\\،,]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-};
-
-const STOP_WORDS_FOR_MATCH = new Set(["حساب", "حسابات", "ح", "محلية", "محليه", "عامة", "عامه"]);
-
-const tokensForMatch = (s: string) =>
-  normForMatch(s)
-    .split(" ")
-    .filter((w) => w && !STOP_WORDS_FOR_MATCH.has(w));
-
-// قائمة جميع حسابات البيان (من STATEMENT_GROUPS)
-const ALL_STATEMENT_ACCOUNTS = STATEMENT_GROUPS.flatMap((g) => g.accounts);
-const ALL_STATEMENT_NORM = ALL_STATEMENT_ACCOUNTS.map((a) => ({
-  name: a,
-  norm: normForMatch(a),
-  toks: tokensForMatch(a),
-}));
-
-// تعيين صريح لأبواب الموازنة إلى حسابي "الاستخدامات" و"الموارد" في كشف الحساب الشهري.
-// الباب الأول والثاني يمثلان إنفاقاً فعلياً فيُرحَّلان إلى "الاستخدامات".
-// الباب الثالث يمثل الدعم والموارد فيُرحَّل إلى "الموارد".
-// الباب الرابع (اكتساب أصول غير مالية) لا يُرحَّل لأي منهما ويبقى بدون مطابقة.
-const CHAPTER_TO_STATEMENT_ACCOUNT: Record<string, string> = {
-  [normForMatch("الباب الاول")]: "الاستخدامات",
-  [normForMatch("الباب الأول")]: "الاستخدامات",
-  [normForMatch("باب اول")]: "الاستخدامات",
-  [normForMatch("باب أول")]: "الاستخدامات",
-  [normForMatch("الباب 1")]: "الاستخدامات",
-  [normForMatch("الباب الاول (الأجور والمرتبات)")]: "الاستخدامات",
-  [normForMatch("الباب الأول (الأجور والمرتبات)")]: "الاستخدامات",
-  [normForMatch("الأجور والمرتبات")]: "الاستخدامات",
-  [normForMatch("الاجور والمرتبات")]: "الاستخدامات",
-  [normForMatch("الاستخدامات - الباب الاول")]: "الاستخدامات",
-  [normForMatch("الاستخدامات - الباب الأول")]: "الاستخدامات",
-  [normForMatch("الباب الثاني")]: "الاستخدامات",
-  [normForMatch("باب ثاني")]: "الاستخدامات",
-  [normForMatch("الباب 2")]: "الاستخدامات",
-  [normForMatch("الباب الثاني (النفقات التشغيلية)")]: "الاستخدامات",
-  [normForMatch("النفقات التشغيلية")]: "الاستخدامات",
-  [normForMatch("نفقات تشغيلية")]: "الاستخدامات",
-  [normForMatch("الاستخدامات - الباب الثاني")]: "الاستخدامات",
-  [normForMatch("الباب الاول والباب الثاني")]: "الاستخدامات",
-  [normForMatch("الباب الأول والثاني")]: "الاستخدامات",
-  [normForMatch("الباب الثالث")]: "الموارد",
-  [normForMatch("باب ثالث")]: "الموارد",
-  [normForMatch("الباب 3")]: "الموارد",
-  [normForMatch("الباب الثالث (الدعم والموارد)")]: "الموارد",
-  [normForMatch("الدعم والموارد")]: "الموارد",
-  [normForMatch("الموارد")]: "الموارد",
-  [normForMatch("الباب الرابع")]: "حساب اكتساب الأصول غير المالية",
-  [normForMatch("باب رابع")]: "حساب اكتساب الأصول غير المالية",
-  [normForMatch("الباب 4")]: "حساب اكتساب الأصول غير المالية",
-  [normForMatch("الباب الرابع (اكتساب الأصول غير المالية)")]: "حساب اكتساب الأصول غير المالية",
-  [normForMatch("اكتساب الأصول غير المالية")]: "حساب اكتساب الأصول غير المالية",
-};
-
-
-function matchStatementAccount(raw: string): string | null {
-  if (!raw) return null;
-  const n = normForMatch(raw);
-  if (!n) return null;
-
-  const chapterMatch = CHAPTER_TO_STATEMENT_ACCOUNT[n];
-  if (chapterMatch) return chapterMatch;
-
-  // مطابقة حرفية أولاً
-  const exact = ALL_STATEMENT_NORM.find((a) => a.norm === n);
-  if (exact) return exact.name;
-
-  // مطابقة احتوائية
-  const contains = ALL_STATEMENT_NORM.find((a) => a.norm.includes(n) || n.includes(a.norm));
-  if (contains) return contains.name;
-
-  // مطابقة توكينية تقريبية
-  const rawToks = tokensForMatch(raw);
-  if (!rawToks.length) return null;
-  let best: { name: string; score: number } | null = null;
-  for (const a of ALL_STATEMENT_NORM) {
-    if (!a.toks.length) continue;
-    const common = a.toks.filter((t) => rawToks.includes(t)).length;
-    if (!common) continue;
-    const score = common / Math.max(a.toks.length, rawToks.length);
-    if (!best || score > best.score) best = { name: a.name, score };
-  }
-  return best && best.score >= 0.6 ? best.name : null;
-}
-/**
- * دالة تجميع بيانات كشف الحساب الشهري المستخدمة في تقارير PDF / Excel
- *
- * ملاحظة مهمة:
- * - الخريطة map تبقى تستخدم normName (كما في السابق) كمفتاح حتى تظل متوافقة
- *   مع أجزاء أخرى من الكود التي تتوقع نفس المفتاح (مثل exportPdf.ts الذي يستدعي map[norm(a)]).
- * - لكن عند محاولة تسجيل قيود اليومية نقوم أولاً بمحاولة مطابقة اسم الحساب بطريقة ذكية
- *   (matchStatementAccount). إذا وُجدت نتيجة مطابقة نستخدم اسم الحساب المطابق، ثم نطبّع باسم المفتاح normName.
- */
 export function buildMonthlyStatementRows(
   journal: Journal[],
   year: number,
@@ -1024,14 +1277,12 @@ export function buildMonthlyStatementRows(
     if (m > endMonth) return;
     const isCurrent = m >= startMonth && m <= endMonth;
 
-    // جرب مطابقة ذكية للأسماء أولاً (تطبيع/توكنز)، ثم استخدم اسم المطابقة إذا وُجد
     const debitRaw = j.debitAccount || j.account || "";
     const creditRaw = j.creditAccount || "";
 
     const dMatchedName = matchStatementAccount(debitRaw);
     const cMatchedName = matchStatementAccount(creditRaw);
 
-    // إذا وُجدت مطابقة استخدم اسم الحساب المطابق، وإلا استخدم normName على النص الخام
     const dKey = dMatchedName ? normName(dMatchedName) : normName(debitRaw || "");
     const cKey = cMatchedName ? normName(cMatchedName) : normName(creditRaw || "");
 
@@ -1052,8 +1303,6 @@ export function buildMonthlyStatementRows(
     gov: STATEMENT_GOV,
   };
 }
-
-/* باقي الملف: buildPeriodicStatementSheet و exportPeriodicStatement و اجزاء الايرادات (لم تتغير) */
 
 function buildPeriodicStatementSheet(
   journal: Journal[],
@@ -1178,23 +1427,21 @@ export async function exportPeriodicStatement(
   const range = XLSX.utils.decode_range(source["!ref"] || "A1");
   const workbook = await createExcelWorkbook();
   const imageId = await loadReportLetterhead(workbook);
-  appendXlsxSheet(workbook, source, `تقرير ${periodLabel}`.slice(0, 31), {
-    title: `تقرير مالي عن: ${periodLabel}`,
-    reportDateLabel: formatReportDate(dateValue),
-    recordCount: journal.length,
-    totalColumns: range.e.c - range.s.c + 1,
-    palette: getExcelPalette("الحساب الشهري"),
-  }, imageId);
+  appendXlsxSheet(
+    workbook,
+    source,
+    `تقرير ${periodLabel}`.slice(0, 31),
+    {
+      title: `تقرير مالي عن: ${periodLabel}`,
+      reportDateLabel: formatReportDate(dateValue),
+      recordCount: journal.length,
+      totalColumns: range.e.c - range.s.c + 1,
+      palette: getExcelPalette("الحساب الشهري"),
+    },
+    imageId,
+  );
   await downloadWorkbook(workbook, `تقرير_الحساب_${year}_${dateValue}.xlsx`);
 }
-
-import revenueSchema from "@/data/revenueTemplate.json";
-
-type RevType = { no: number; title: string };
-type RevItem = { no: number; title: string; types: RevType[] };
-type RevSection = { no: number; title: string; items: RevItem[] };
-type RevChapter = { no: number; title: string; longTitle?: string; sections: RevSection[] };
-const REV = revenueSchema as { title: string; office: string; chapters: RevChapter[] };
 
 function buildRevenueSheet(
   revenue: Record<string, number>,
@@ -1212,16 +1459,21 @@ function buildRevenueSheet(
   const itemsAgg: Record<string, { cur: number; prev: number }> = {};
   const sectionsAgg: Record<string, { cur: number; prev: number }> = {};
   const chaptersAgg: Record<string, { cur: number; prev: number }> = {};
-  let grandCur = 0, grandPrev = 0;
+  let grandCur = 0,
+    grandPrev = 0;
   REV.chapters.forEach((ch) => {
-    let cCur = 0, cPrev = 0;
+    let cCur = 0,
+      cPrev = 0;
     ch.sections.forEach((sec) => {
-      let sCur = 0, sPrev = 0;
+      let sCur = 0,
+        sPrev = 0;
       sec.items.forEach((it) => {
-        let iCur = 0, iPrev = 0;
+        let iCur = 0,
+          iPrev = 0;
         it.types.forEach((t) => {
           const k = `${ch.no}-${sec.no}-${it.no}-${t.no}`;
-          const cur = getVal(month, k), prev = sumPrev(k);
+          const cur = getVal(month, k),
+            prev = sumPrev(k);
           types[k] = { cur, prev };
           iCur += cur;
           iPrev += prev;
@@ -1294,13 +1546,23 @@ function buildRevenueSheet(
       ws[`A${row}`] = { v: sec.title, t: "s" };
       merges.push(XLSX.utils.decode_range(`A${row}:B${row}`));
       ws[`D${row}`] = { v: sec.no, t: "n" };
-      sumRow(row, "I", sectionsAgg[`${ch.no}-${sec.no}`].cur, sectionsAgg[`${ch.no}-${sec.no}`].prev);
+      sumRow(
+        row,
+        "I",
+        sectionsAgg[`${ch.no}-${sec.no}`].cur,
+        sectionsAgg[`${ch.no}-${sec.no}`].prev,
+      );
       row++;
       sec.items.forEach((it) => {
         ws[`A${row}`] = { v: it.title, t: "s" };
         merges.push(XLSX.utils.decode_range(`A${row}:B${row}`));
         ws[`E${row}`] = { v: it.no, t: "n" };
-        sumRow(row, "I", itemsAgg[`${ch.no}-${sec.no}-${it.no}`].cur, itemsAgg[`${ch.no}-${sec.no}-${it.no}`].prev);
+        sumRow(
+          row,
+          "I",
+          itemsAgg[`${ch.no}-${sec.no}-${it.no}`].cur,
+          itemsAgg[`${ch.no}-${sec.no}-${it.no}`].prev,
+        );
         row++;
         it.types.forEach((t) => {
           const k = `${ch.no}-${sec.no}-${it.no}-${t.no}`;
@@ -1330,15 +1592,29 @@ function buildRevenueSheet(
 
   ws["!ref"] = `A1:M${row}`;
   ws["!cols"] = [
-    { wch: 13 }, { wch: 35 }, { wch: 5 }, { wch: 5 }, { wch: 5 },
-    { wch: 5 }, { wch: 2 }, { wch: 4 }, { wch: 16 }, { wch: 4 },
-    { wch: 16 }, { wch: 4 }, { wch: 16 },
+    { wch: 13 },
+    { wch: 35 },
+    { wch: 5 },
+    { wch: 5 },
+    { wch: 5 },
+    { wch: 5 },
+    { wch: 2 },
+    { wch: 4 },
+    { wch: 16 },
+    { wch: 4 },
+    { wch: 16 },
+    { wch: 4 },
+    { wch: 16 },
   ];
   ws["!merges"] = merges;
   return ws;
 }
 
-export async function exportRevenueStatement(revenue: Record<string, number>, year: number, reportDate?: string) {
+export async function exportRevenueStatement(
+  revenue: Record<string, number>,
+  year: number,
+  reportDate?: string,
+) {
   const dateValue = reportDate || new Date().toISOString().slice(0, 10);
   const reportDateLabel = formatReportDate(dateValue);
   const workbook = await createExcelWorkbook();
@@ -1346,13 +1622,19 @@ export async function exportRevenueStatement(revenue: Record<string, number>, ye
   for (let m = 1; m <= 12; m++) {
     const source = buildRevenueSheet(revenue, year, m);
     const range = XLSX.utils.decode_range(source["!ref"] || "A1");
-    appendXlsxSheet(workbook, source, `الايرادات شهر ${m}`, {
-      title: `كشف الحساب الشهري للموارد - شهر ${MONTHLY_NAMES[m - 1]} ${year}م`,
-      reportDateLabel,
-      recordCount: Object.keys(revenue).filter((key) => key.startsWith(`${year}-${m}-`)).length,
-      totalColumns: range.e.c - range.s.c + 1,
-      palette: getExcelPalette("الإيرادات"),
-    }, imageId);
+    appendXlsxSheet(
+      workbook,
+      source,
+      `الايرادات شهر ${m}`,
+      {
+        title: `كشف الحساب الشهري للموارد - شهر ${MONTHLY_NAMES[m - 1]} ${year}م`,
+        reportDateLabel,
+        recordCount: Object.keys(revenue).filter((key) => key.startsWith(`${year}-${m}-`)).length,
+        totalColumns: range.e.c - range.s.c + 1,
+        palette: getExcelPalette("الإيرادات"),
+      },
+      imageId,
+    );
   }
   await downloadWorkbook(workbook, `كشف_الايرادات_${year}_${dateValue}.xlsx`);
-        }
+}
