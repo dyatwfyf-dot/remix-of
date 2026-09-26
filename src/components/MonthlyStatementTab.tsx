@@ -314,7 +314,7 @@ export default function MonthlyStatementTab() {
   const periodLabel = getReportPeriodLabel({ mode, year, month, quarter, halfYear });
 
   return (
-    <div className="w-100% space-y-4 p-2 sm:p-4 bg-gradient-to-br from-slate-900 via-sky-950 to-slate-200 text-slate-100 min-h-auto " dir="rtl">
+    <div className="w-auto space-y-4 p-2 sm:p-4 bg-gradient-to-br from-sky-500 via-sky-950 to-slate-200 text-slate-100 min-h-screen" dir="rtl">
       {/* ══ الترويسة وأزرار التحكم ══ */}
       <div className="rounded-2xl border border-sky-500/20 bg-slate-500/40 p-4 shadow-xl backdrop-blur-md">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
@@ -427,7 +427,7 @@ export default function MonthlyStatementTab() {
       </div>
 
       {/* ══ جدول كشف الحساب الشهري ══ */}
-      <div className="overflow-x-auto rounded-2xl border border-sky-500/20 bg-slate-900/90 shadow-2xl">
+      <div className="overflow-x-auto rounded-2xl border border-sky-500/20 bg-slate-900/90 shadow-2xl text-center">
         <table ref={tableRef1} className="w-full text-center text-xs border-collapse">
           <thead>
             <tr className="bg-gradient-to-r from-sky-950 via-slate-900 to-sky-950 text-sky-200 border-b border-sky-500/30">
