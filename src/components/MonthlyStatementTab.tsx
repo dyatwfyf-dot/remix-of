@@ -314,7 +314,7 @@ export default function MonthlyStatementTab() {
   const periodLabel = getReportPeriodLabel({ mode, year, month, quarter, halfYear });
 
   return (
-    <div className="w-auto space-y-4 p-2 sm:p-4 bg-gradient-to-br from-sky-500 via-sky-950 to-slate-200 text-slate-100 min-h-screen" dir="rtl">
+    <div className="w-full space-y-2 p-2 sm:p-4 bg-white text-black min-h-screen" dir="rtl text-center ">
       {/* ══ الترويسة وأزرار التحكم ══ */}
       <div className="rounded-2xl border border-sky-500/20 bg-slate-500/40 p-4 shadow-xl backdrop-blur-md">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
