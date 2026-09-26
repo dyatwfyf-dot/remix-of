@@ -314,9 +314,9 @@ export default function MonthlyStatementTab() {
   const periodLabel = getReportPeriodLabel({ mode, year, month, quarter, halfYear });
 
   return (
-    <div className="w-full space-y-2 p-2 sm:p-4 bg-white text-black min-h-screen" dir="rtl text-center ">
+    <div className="w-full space-y-6 p-2 sm:p-4 bg-white text-black min-h-screen" dir="rtl text-center ">
       {/* ══ الترويسة وأزرار التحكم ══ */}
-      <div className="rounded-2xl border border-sky-500/20 bg-slate-500/40 p-4 shadow-xl backdrop-blur-md">
+      <div className="rounded-2xl border border-sky-500/20 bg-sky-900/40 p-4 shadow-xl backdrop-blur-md">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
           <div className="flex items-center gap-3">
             <div className="grid h-12 w-12 place-items-center rounded-2xl bg-sky-500/20 text-sky-400 border border-sky-400/30 shadow-inner">
@@ -427,7 +427,7 @@ export default function MonthlyStatementTab() {
       </div>
 
       {/* ══ جدول كشف الحساب الشهري ══ */}
-      <div className="overflow-x-auto rounded-2xl border border-sky-500/20 bg-slate-900/90 shadow-2xl text-center">
+      <div className="overflow-x-auto rounded-2xl border border-sky-500/20 bg-sky-100 shadow-2xl text-center">
         <table ref={tableRef1} className="w-full text-center text-xs border-collapse">
           <thead>
             <tr className="bg-gradient-to-r from-sky-950 via-slate-900 to-sky-950 text-sky-200 border-b border-sky-500/30">
@@ -463,7 +463,7 @@ export default function MonthlyStatementTab() {
               let gPrevD = 0, gPrevC = 0, gCurD = 0, gCurC = 0;
               return (
                 <React.Fragment key={gIdx}>
-                  <tr className="bg-sky-950/40 font-bold text-sky-200 text-right">
+   <tr className="bg-white font-bold text-black text-center">
                     <td colSpan={9} className="px-3 py-1.5 border-y border-sky-500/20">
                       • {group.title}
                     </td>
