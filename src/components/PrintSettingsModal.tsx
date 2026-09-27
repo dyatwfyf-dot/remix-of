@@ -20,7 +20,7 @@ export const DEFAULT_PRINT_SETTINGS: InstallmentsPrintSettings = {
   pageSize: "A4",
   margin: "narrow",
   fontMode: "auto",
-  fontSize: 10,
+  fontSize: 13,
   hiddenColumns: [],
   showTotals: true,
   showHeader: true,
@@ -30,7 +30,7 @@ export const DEFAULT_PRINT_SETTINGS: InstallmentsPrintSettings = {
 const STORAGE_PREFIX = "installments-print-settings";
 
 export const marginToCss = (m: PrintMargin) =>
-  m === "narrow" ? "4mm 3mm" : m === "wide" ? "14mm 12mm" : "8mm 6mm";
+  m === "narrow" ? "1mm 1mm" : m === "wide" ? "14mm 12mm" : "8mm 6mm";
 
 export function loadPrintSettings(year: number): InstallmentsPrintSettings {
   try {
@@ -97,9 +97,9 @@ const Toggle = ({
   <button
     type="button"
     onClick={() => onChange(!checked)}
-    className="flex items-center justify-between w-full min-h-[44px] px-3 rounded-xl border border-sky-100 bg-white hover:bg-sky-50/60 transition-colors"
+    className="flex items-center justify-between w-100% min-h-auto px-3 rounded-xl border border-sky-100 bg-white hover:bg-sky-50/60 transition-colors"
   >
-    <span className="text-xs font-bold text-black">{label}</span>
+    <span className="text-xl font-bold text-black">{label}</span>
     <span
       className={`w-10 h-5 rounded-full relative transition-colors ${
         checked ? "bg-emerald-500" : "bg-slate-300"
@@ -152,9 +152,9 @@ export default function PrintSettingsModal({
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-gradient-to-l from-sky-700 via-sky-600 to-sky-600 text-white">
-          <div className="min-w-0">
+          <div className="min-w-auto">
             <h3 className="text-sm sm:text-base font-extrabold truncate">إعدادات الطباعة والتوسيط التلقائي</h3>
-            <p className="text-[11px] text-sky-100">تقرير أقساط العام {year}م</p>
+            <p className="text-[13px] text-sky-100">تقرير أقساط العام {year}م</p>
           </div>
           <button
             onClick={onClose}
@@ -252,11 +252,11 @@ export default function PrintSettingsModal({
           {columnOptions.length > 0 && (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-black">الأعمدة المطبوعة</span>
+                <span className="text-[13px] font-bold text-black">الأعمدة المطبوعة</span>
                 <button
                   type="button"
                   onClick={() => setS({ ...s, hiddenColumns: [] })}
-                  className="flex items-center gap-1 text-[11px] font-bold text-black hover:text-black"
+                  className="flex items-center gap-1 text-[13px] font-bold text-black hover:text-black"
                 >
                   <RotateCcw className="w-3.5 h-3.5" /> تحديد الكل
                 </button>

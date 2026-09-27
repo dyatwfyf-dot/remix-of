@@ -1824,8 +1824,8 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
       text-align: center;
       box-sizing: border-box;
     }
-    .info-lbl { font-size: 11pt; line-height: 1.15; font-weight: 800; color:black; text-align: center; }
-    .info-val { font-size: 10.5pt; line-height: 1.15; font-weight: 800; margin-top: 1mm; overflow-wrap: anywhere; }
+    .info-lbl { font-size: 11pt; line-height: 1; font-weight: 800; color:black; text-align: center; }
+    .info-val { font-size: 10.5pt; line-height: 1; font-weight: 800; margin-top: 1mm; overflow-wrap: anywhere; }
 
     table {
       table-layout: auto;
@@ -1842,7 +1842,7 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
       vertical-align: middle;
       padding: 2.2mm 2mm;
       font-size: 10.5pt;
-      line-height: 1.25;
+      line-height: 1;
       white-space: normal;
       overflow: hidden;
       text-overflow: clip;
@@ -1866,16 +1866,16 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
       justify-content: space-between;
       gap: 8mm;
       font-size: 9pt;
-      line-height: 1.3;
+      line-height: 1;
       font-weight: 700;
       page-break-inside: avoid;
       break-inside: avoid;
     }
     .header, .info-grid { page-break-inside: avoid; break-inside: avoid; }
     @media print {
-      html, body { width: auto; }
+      html, body { width:100٪; }
       body { margin: 0; padding: 0; }
-      .page-frame { min-height: auto; border-radius: 0; box-shadow: none; padding: 4mm; }
+      .page-frame { min-height:100٪; border-radius: 0; box-shadow: none; padding: 4mm; }
       .print-toolbar { display: none !important; }
       .header, .info-box, th, td {
         -webkit-print-color-adjust: exact;
