@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from "react";
 import { useStore } from "@/lib/store";
 import { useReportDate } from "@/lib/reportDate";
-import { exportMonthlyStatement } from "@/lib/exportImport";
+import { exportMonthlyStatement, matchStatementAccount } from "@/lib/exportImport";
 import monthlySchema from "@/data/monthlyStatement.json";
 import TabActions from "./TabActions";
 import ImportButton from "./ImportButton";
@@ -257,11 +257,17 @@ export default function MonthlyStatementTab() {
       const debitAmt = Number(j.debit) || 0;
       const creditAmt = Number(j.credit) || 0;
 
-      const debitAccountRaw = j.debitAccount || (debitAmt > 0 ? j.account : "") || "";
-      const creditAccountRaw = j.creditAccount || (creditAmt > 0 ? j.account : "") || "";
+      // يدعم القيود الجديدة والملفات القديمة التي خزّنت اسم الحساب في عمود
+      // debitCol/creditCol أو في الحقل العام account.
+      const debitAccountRaw =
+        j.debitAccount || j.debitCol || (debitAmt > 0 ? j.account : "") || "";
+      const creditAccountRaw =
+        j.creditAccount || j.creditCol || (creditAmt > 0 ? j.account : "") || "";
 
-      const dMatch = matchAccount(debitAccountRaw);
-      const cMatch = matchAccount(creditAccountRaw);
+      // المطابقة الموحدة تتعرف على: الباب الأول/الثاني = الاستخدامات،
+      // الباب الثالث = الموارد، مع اختلاف الهمزات والتشكيل وعبارات الوصف.
+      const dMatch = matchStatementAccount(debitAccountRaw) || matchAccount(debitAccountRaw);
+      const cMatch = matchStatementAccount(creditAccountRaw) || matchAccount(creditAccountRaw);
       const dKey = dMatch ? cleanArabic(dMatch) : "";
       const cKey = cMatch ? cleanArabic(cMatch) : "";
 

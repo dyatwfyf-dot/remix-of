@@ -58,6 +58,24 @@ export function normName(s: string) {
   return (s || "").replace(/\s+/g, " ").trim();
 }
 
+function parseJournalDateForReport(value: string | number | undefined): { year: number; month: number } | null {
+  if (value == null || value === "") return null;
+  const numeric = Number(value);
+  if (Number.isFinite(numeric) && numeric > 30000 && numeric < 60000) {
+    const date = new Date((numeric - 25569) * 86400 * 1000);
+    return { year: date.getUTCFullYear(), month: date.getUTCMonth() + 1 };
+  }
+  const text = String(value).trim();
+  const iso = text.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
+  if (iso) return { year: Number(iso[1]), month: Number(iso[2]) };
+  const european = text.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})/);
+  if (european) return { year: Number(european[3]), month: Number(european[2]) };
+  const date = new Date(text);
+  return Number.isNaN(date.getTime())
+    ? null
+    : { year: date.getFullYear(), month: date.getMonth() + 1 };
+}
+
 /**
  * دالة تطبيع النصوص العربية لتسهيل مطابقة العناوين
  */
@@ -1015,14 +1033,13 @@ function buildMonthlySheet(journal: Journal[], year: number, month: number): XLS
     g.accounts.forEach((a) => (map[normName(a)] = { prevD: 0, prevC: 0, curD: 0, curC: 0 })),
   );
   journal.forEach((j) => {
-    const d = new Date(j.date);
-    if (isNaN(d.getTime())) return;
-    if (d.getFullYear() !== year) return;
-    const m = d.getMonth() + 1;
+    const parsedDate = parseJournalDateForReport(j.date);
+    if (!parsedDate || parsedDate.year !== year) return;
+    const m = parsedDate.month;
     if (m > month) return;
     const isCurrent = m === month;
-    const debitRaw = j.debitAccount || j.account || "";
-    const creditRaw = j.creditAccount || "";
+    const debitRaw = j.debitAccount || j.debitCol || j.account || "";
+    const creditRaw = j.creditAccount || j.creditCol || (j.credit ? j.account : "") || "";
 
     const dMatched = matchStatementAccount(debitRaw);
     const cMatched = matchStatementAccount(creditRaw);
@@ -1133,14 +1150,13 @@ function buildQuarterlySheet(journal: Journal[], year: number, quarter: number):
     g.accounts.forEach((a) => (map[normName(a)] = { prevD: 0, prevC: 0, curD: 0, curC: 0 })),
   );
   journal.forEach((j) => {
-    const d = new Date(j.date);
-    if (isNaN(d.getTime())) return;
-    if (d.getFullYear() !== year) return;
-    const m = d.getMonth() + 1;
+    const parsedDate = parseJournalDateForReport(j.date);
+    if (!parsedDate || parsedDate.year !== year) return;
+    const m = parsedDate.month;
     if (m > endMonth) return;
     const isCurrent = m >= startMonth && m <= endMonth;
-    const debitRaw = j.debitAccount || j.account || "";
-    const creditRaw = j.creditAccount || "";
+    const debitRaw = j.debitAccount || j.debitCol || j.account || "";
+    const creditRaw = j.creditAccount || j.creditCol || (j.credit ? j.account : "") || "";
 
     const dMatched = matchStatementAccount(debitRaw);
     const cMatched = matchStatementAccount(creditRaw);
@@ -1301,15 +1317,14 @@ export function buildMonthlyStatementRows(
     g.accounts.forEach((a) => (map[normName(a)] = { prevD: 0, prevC: 0, curD: 0, curC: 0 })),
   );
   journal.forEach((j) => {
-    const d = new Date(j.date);
-    if (isNaN(d.getTime())) return;
-    if (d.getFullYear() !== year) return;
-    const m = d.getMonth() + 1;
+    const parsedDate = parseJournalDateForReport(j.date);
+    if (!parsedDate || parsedDate.year !== year) return;
+    const m = parsedDate.month;
     if (m > endMonth) return;
     const isCurrent = m >= startMonth && m <= endMonth;
 
-    const debitRaw = j.debitAccount || j.account || "";
-    const creditRaw = j.creditAccount || "";
+    const debitRaw = j.debitAccount || j.debitCol || j.account || "";
+    const creditRaw = j.creditAccount || j.creditCol || (j.credit ? j.account : "") || "";
 
     const dMatchedName = matchStatementAccount(debitRaw);
     const cMatchedName = matchStatementAccount(creditRaw);
