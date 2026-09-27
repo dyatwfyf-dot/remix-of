@@ -1034,14 +1034,14 @@ const exportToPDF = async (
 
     // ملاءمة تلقائية لعرض الصفحة حسب الحجم والاتجاه
     const pageWidthMm =
-      settings.pageSize === "A3"
-        ? settings.orientation === "landscape"
-          ? 420
+      settings.pageSize === "A4"
+        ? settings.orientation === "portrait"
+          ? 210
           : 297
         : settings.orientation === "landscape"
           ? 297
           : 210;
-    const marginMm = settings.margin === "narrow" ? 8 : settings.margin === "wide" ? 26 : 14;
+    const marginMm = settings.margin === "narrow" ? 1 : settings.margin === "wide" ? 26 : 14;
     const usableWidthMm = pageWidthMm - marginMm;
     const widthUnits = cols.reduce((s, c) => s + (c.wide ? 2.4 : 1), 0);
     const unitMm = usableWidthMm / Math.max(1, widthUnits);
@@ -1123,7 +1123,7 @@ const exportToPDF = async (
       }
  .print-toolbar {
  display: flex;
- justify-content: flex-end;
+ justify-content:flex-end;
   margin: 0 0 6px;
       }
       .print-toolbar button {
@@ -1142,6 +1142,7 @@ const exportToPDF = async (
       }
       .doc-header {
         display: flex;
+      text-align: center;
         align-items: center;
         justify-content: space-between;
         gap: 8px;
@@ -1149,24 +1150,27 @@ const exportToPDF = async (
         padding-bottom: 4px;
         margin-bottom: 5px;
       }
-      .doc-header .title { text-align:center; }
+      .doc-header.title { text-align:center; }
       .doc-header h1 { 
   font-size: 18px; 
- font-weight: 800; 
- letter-spacing: -0.2px;
+ font-weight: 1000; 
+ text-align: center;
+ font-family:cairo; 
 }
 .doc-header h2 { 
-font-size: 15px; 
+font-size: 16px; 
 font-weight: 700;
-margin-top: 1px; 
+margin-top:8px; 
+text-align: center;
 color: ${colorTokens.accent}; }
   .doc-header .meta { 
-font-size: 12px; 
+font-size: 14px; 
 font-weight: 700; 
-text-align: center; 
+text-align:center; 
 line-height: 1.5; 
   }
-   .doc-header .meta span { display: block; 
+   .doc-header .meta span { 
+   display: block; 
    }
 
       table {
@@ -1180,33 +1184,33 @@ border: 1px solid #000;
 padding: 5px 6px !important;
 text-align: center !important;
 vertical-align: middle !important; /* ضمان المحاذاة الرأسية لكل الخلايا */
-white-space: nowrap !important; /* الأعمدة العادية (أرقام/أشهر) تبقى بسطر واحد */
+white-space:normal !important; /* الأعمدة العادية (أرقام/أشهر) تبقى بسطر واحد */
         overflow: hidden;
         text-overflow: ellipsis;
-        font-size:13px;
+        font-size:16px;
 overflow-wrap: normal !important;
         word-break: keep-all !important;
         hyphens: none !important;
-     line-height: 1.45;
-        font-weight: 700;
+     line-height: 1.5;
+        font-weight: 900;
     color: #000 !important;
       }
       /* أعمدة الاسم والمساق (wide): السماح بالتفاف النص بدل خط واحد ممدود */
       th.wrap, td.wrap {
-      white-space: nowrap!important;
+      white-space:normal!important;
         overflow: visible !important;
         text-overflow: clip !important;
         overflow-wrap: break-word !important;
         word-break: normal !important;
       }
       .cell-content {
-  display: flex !important; /* تحويل العنصر الداخلي إلى Flexbox */
-  align-items: center !important; /* التمركز الرأسي للمحتوى */
-justify-content: center !important; /* التمركز الأفقي للمحتوى */
+  display: flex !important;
+  align-items:center !important; /* التمركز الرأسي للمحتوى */
+justify-content:center !important; /* التمركز الأفقي للمحتوى */
         width: 100%;
         height: auto;
         box-sizing: border-box;
-        padding: 3px 5px;
+        padding: 3px 2px;
         margin: 0;
         text-align: center !important;
         white-space: nowrap !important;
@@ -1236,29 +1240,29 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
       }
       td.numeric-cell, th.numeric-cell, td.date-cell, th.date-cell, td.compact-cell, th.compact-cell {
         font-family: 'Times New Roman', Times, serif !important;
-        font-size: 13px !important;
-        line-height: 1.15 !important;
+        font-size: 16px !important;
+        line-height: 1 !important;
         white-space: nowrap !important;
         overflow-wrap: normal !important;
-        word-break: keep-all !important;
+        word-break:break-word !important;
         hyphens: none !important;
         text-align: center !important;
       }
       td.numeric-cell *, th.numeric-cell *, td.date-cell *, th.date-cell *, td.compact-cell *, th.compact-cell * {
-        font-size: 12px !important;
+        font-size: 14px !important;
         line-height: inherit !important;
         white-space: nowrap !important;
-        overflow-wrap: normal !important;
+        overflow-wrap:nowrap !important;
         word-break: keep-all !important;
         text-align: center !important;
       }
       th {
         background: ${colorTokens.head} !important;
         color: ${colorTokens.headText} !important;
-        font-family: Cairo, Arial, sans-serif !important;
-        font-size: 13px;
+        font-family: cairo !important;
+        font-size: 18px;
         font-weight: 800;
-        padding: 6px 7px !important;
+        padding: 5px 5px !important;
         text-align: center !important;
         vertical-align: middle !important;
       }
@@ -1279,7 +1283,7 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
         margin-top: 5px;
         display: flex;
         justify-content: space-between;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 700;
         border-top: 0.75pt solid ${colorTokens.accent};
         padding-top: 3px;

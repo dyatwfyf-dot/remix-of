@@ -60,18 +60,23 @@ export const tablePrintStyles = `
     margin: 1mm;
   }
   
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing:border-box; 
+  }
   html { margin: 0; padding: 0; }
   body {
-    font-family:cairo;
+    font-family: cairo;
     padding: 1mm 1mm;
     color: #000 !important;
-    direction: rtl;
+    direction:rtl;
     margin: 0;
     width: 100%;
     box-sizing: border-box;
     font-weight: 1000;
     font-size: 16px;
+    text-align: center;
     line-height: 1.5;
     background: #fff;
     -webkit-print-color-adjust: exact !important;
@@ -97,10 +102,11 @@ export const tablePrintStyles = `
   /* احتواء تلقائي كامل للجدول وتوسيط تام للمحتوى */
   table {
     width: 100%;
-    max-width:0;
+    max-width:auto;
     border-collapse: collapse;
     table-layout: auto !important;
     font-size:13px;
+    text-align: center;
   }
   
   /* حدود الخلايا العادية بلون أسود بحجم 1px مع احتواء عمودي وأفقي متوازن */
@@ -116,7 +122,7 @@ export const tablePrintStyles = `
     min-height: auto;
     font-size: 14px !important;
     white-space:normal !important;
-    width:auto !important;
+    width:100% !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
   }
@@ -153,26 +159,26 @@ export const tablePrintStyles = `
   width: 100% !important;
   height: 100% !important;
   text-align: center !important;
-  white-space: normal !important;
-  word-break: normal !important;
+  white-space:nowrap !important;
+  word-break: break-word!important;
   overflow-wrap: break-word !important;
 }
 
 .text-cell,
 .long-text-cell {
-  white-space: normal !important;
+  white-space:nowrap !important;
   overflow-wrap: break-word !important;
-  word-break: normal !important;
-  width: 100% !important;
+  word-break:break-word !important;
+  width: auto !important;
   text-align: center !important;
   vertical-align: middle !important;
 }
 
 .long-text-cell .pdf-cell-text,
 .text-cell .pdf-cell-text {
-  white-space: normal !important;
+  white-space:nowrap !important;
   overflow-wrap: break-word !important;
-  word-break: normal !important;
+  word-break:break-word !important;
 }
 
 /* تنسيق خلايا الجدول العامة بدون إجبار الـ nowrap العمومي */
@@ -258,6 +264,7 @@ thead th {
     border: none !important;
     background: #fff !important;
     padding: 2px 0 2px !important;
+    text-align: center;
   }
   .report-letterhead-row .report-letterhead-cell {
     height: 30mm !important;
@@ -266,27 +273,27 @@ thead th {
     border: 0 !important;
     background: #fff !important;
   }
-.report - letterhead - row.report - letterhead - image {
+.report-letterhead-row.report-letterhead-image {
     display:block!important;
     width:100% !important;
     max-width: 100 % !important;
-    height: 30 mm!important;
-    max-height: 30 mm!important;
+    height: 30mm!important;
+    max-height: 30mm!important;
     object-fit: contain!important; /* للحفاظ على أبعاد الشعار من التشوه */
-    object-position: top center!important;
+    object-position:top !important;
     margin: 0 auto!important;
   }
   
   .pdf-page.report-letterhead-cell {
-    height: 30 mm!important;
-    min-height: 30mm!important;
+    height: 30mm!important;
+    min-height:30mm!important;
     padding: 0!important;
     border: 0!important;
     background: #fff!important;
   }
-thead { display: table - header - group; }
-tfoot { display: table - footer - group; }
-tr { page-break-inside: avoid; }
+thead { display: table-header-group; }
+tfoot { display: table-footer-group; }
+tr { page-break-inside:avoid; }
   ${noteRowCss}
   ${runningLetterheadCss}
 `;
@@ -325,11 +332,6 @@ export function buildTableHtml(opts: {
   const sub =
     subtitle ??
     `المجلس اليمني للاختصاصات الطبية - صعدة • تاريخ التقرير: ${reportDateLabel} • عدد السجلات: ${rows.length}`;
-
-  const titleRow = `<tr class="doc-title-row"><td colspan="${columns.length + 1}" class="doc-title-cell">
-    <h1>${escapeHtml(title)}</h1>
-    <div class="sub">${escapeHtml(sub)}</div>
-  </td></tr>`;
 
   const head = `${titleRow}<tr><th class="idx numeric-cell">م</th>${columns
     .map((c) => `<th class="${getCellClass(c)}"><span class="pdf-cell-text">${escapeHtml(c.label)}</span></th>`)

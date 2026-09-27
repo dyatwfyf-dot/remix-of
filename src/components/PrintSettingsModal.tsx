@@ -148,7 +148,7 @@ export default function PrintSettingsModal({
     <div className="fixed inset-0 z-[80] bg-slate-900/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div
         dir="rtl"
-        className="w-full sm:max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[92vh] overflow-y-auto"
+        className="w-100% sm:max-w-auto bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[92vh] overflow-y-auto"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-gradient-to-l from-sky-700 via-sky-600 to-sky-600 text-white">

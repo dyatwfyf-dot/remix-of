@@ -140,8 +140,8 @@ font-size: 15px!important;
   
   .report-letterhead-cell
   {
-    height: 30 mm!important;
-min - height: 30 mm!important;
+    height: 30mm!important;
+min-height: 30mm!important;
 padding: 0!important;
 border: 0!important;
 background: #fff!important;
@@ -150,10 +150,10 @@ text-align: center;
   .report-letterhead-cell img {
     display: block;
     width: 100%;
-    max-width: 100%;
+    max-width:auto;
     height: 30mm;
     max-height: 30mm;
-    object-fit: fill;
+    object-fit: content;
     object-position:top;
     margin: 0;
   }
@@ -164,8 +164,11 @@ text-align: center;
   /* تحسينات خاصة بالـ print / PDF */
   @media print {
     html, body { width: 100%; }
-    body { margin: 0; padding: 0; font-size: 6
-    16px; line-height: 1.3; }
+    body { 
+    margin: 0; 
+    padding: 0; 
+    font-size:16px; 
+     }
     thead { display: table-header-group; }
     tfoot { display: table-footer-group; }
     .page-break { page-break-after: always; }
@@ -190,7 +193,7 @@ export async function openPrintDocument(options: PrintDocumentOptions): Promise<
     css = "",
     orientation = "portrait",
     pageSize = "A4",
-    margin = "8mm",
+    margin = "2mm",
     letterheadPlacement = "table",
     autoPrint = true,
   } = options;

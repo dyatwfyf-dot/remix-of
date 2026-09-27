@@ -284,10 +284,20 @@ ${targetedReportLetterheadStyles}
     }
     h1 { text-align: center; font-size: 16px; 
     font-weight: 900; margin: 0 0 4px; }
-    .meta { text-align: center; font-size: 16px; font-weight: 700; margin: 2px 0; }
-    table { width: 100%; border: solid 1px black; 
+  
+    .meta { 
+    text-align:center; 
     font-size: 16px; 
-    table-layout: auto; margin-top: 6px; }
+    font-weight: 700;
+    margin: 2px 0; }
+    table { 
+    width: 100%; 
+    border: solid 1px black; 
+    font-size: 16px; 
+    table-layout: auto; 
+    margin-top: 6px;
+    }
+   
     th:first-child, td:first-child { width: 28%; }
     th:not(:first-child), td:not(:first-child) { width: 9%; }
     th, td { 
@@ -304,9 +314,16 @@ ${targetedReportLetterheadStyles}
       direction: ltr;
       unicode-bidi: embed;
     }
-    td.acc { text-align: center; padding-right: 6px !important; font-weight: 800 !important; }
+    td.acc { 
+    text-align: center; 
+    padding-right: 6px !important;
+    font-weight: 800 !important;
+    }
     th { 
-background: #94e6ff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+background: #94e6ff 
+!important; 
+-webkit-print-color-adjust: exact; 
+print-color-adjust: exact; }
 tr.group-row td {
 background: #32a4c7 !important; 
 font-weight: 900 !important; }
@@ -320,16 +337,20 @@ tr.subtotal-row td {
     body { padding: 0 1px; width: 100%; }
     .report-letterhead-row { width: 100%; }
     .report-letterhead-cell { padding: 0 !important; width: 100%; }
-    .report-letterhead-image { width: 100% !important; max-width: auto !important; height: 50mm !important; object-fit: fill !important; margin: 0 !important;
+    .report-letterhead-image {
+    width: 100% !important;
+    max-width: auto !important;
+    height: 30mm !important;
+    object-fit:content !important; 
+    margin: 0 !important;
     object-position:top;
-      
     }
-    table { width: 100%; max-width: 100%; table-layout: auto !important; margin-top: 4px; }
+    table { width: 100%; max-width:auto; table-layout: auto !important; margin-top: 4px; }
     th:first-child, td:first-child,
     th:not(:first-child), td:not(:first-child) { width: auto !important; }
     th, td {
       padding: 2px 3px !important;
-      white-space: nowrap !important;
+      white-space:normal !important;
       overflow: visible !important;
       overflow-wrap: break-word !important;
       word-break: normal !important;
@@ -505,7 +526,7 @@ ${targetedReportLetterheadStyles}
     .report-letterhead-cell { padding: 0 !important; 
     width: 100%; }
     .report-letterhead-image { width: 100% !important; max-width: auto !important; height: 50mm !important; 
-    object-fit: fill !important; margin: 0 !important; }
+    object-fit:contain !important; margin: 0 !important; }
     table { width: 100%; max-width: 100%;
   table-layout: auto !important; margin-top: 4px; }
     th:first-child, td:first-child,
