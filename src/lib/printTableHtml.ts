@@ -102,7 +102,7 @@ export const tablePrintStyles = `
   /* احتواء تلقائي كامل للجدول وتوسيط تام للمحتوى */
   table {
     width: 100%;
-    max-width:auto;
+    max-width:100%;
     border-collapse: collapse;
     table-layout: auto !important;
     font-size:16px;
@@ -110,7 +110,7 @@ export const tablePrintStyles = `
   }
   
   /* حدود الخلايا العادية بلون أسود بحجم 1px مع احتواء عمودي وأفقي متوازن */
-  th, td {
+  th {
     border: 1px solid #000 !important;
     padding: 2px 2px !important;
     text-align: center !important;
@@ -202,7 +202,7 @@ thead th {
   color: #171412 !important;
   font-weight: 900 !important;
   font-size: 18px;
-  border: 2px solid #000 !important;
+  border: 1px solid #000 !important;
   white-space: normal !important;
   vertical-align: middle !important;
   text-align: center !important;
@@ -276,10 +276,11 @@ thead th {
 .report-letterhead-row.report-letterhead-image {
     display:block!important;
     width:100% !important;
-    max-width: 100 % !important;
-    height: 30mm!important;
-    max-height: 30mm!important;
-    object-fit: contain!important; /* للحفاظ على أبعاد الشعار من التشوه */
+    max-width: 100% !important;
+    height: 30mm !important;
+    max-height: 30mm !important;
+object-fit: contain !important; 
+    /* للحفاظ على أبعاد الشعار من التشوه */
     object-position:top !important;
     margin: 0 auto!important;
   }

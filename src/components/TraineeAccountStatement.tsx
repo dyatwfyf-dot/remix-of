@@ -64,7 +64,7 @@ export default function TraineeAccountStatement({
   return (
     <div className="w-full bg-gradient-to-b from-slate-50/80 to-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden mb-6">
       {/* الرأس مع زر التوسع */}
-      <div className="bg-gradient-to-l from-teal-600 via-teal-500 to-cyan-600 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center cursor-pointer hover:shadow-md transition-shadow"
+<div className="bg-gradient-to-l from-teal-600 via-teal-500 to-cyan-600 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center cursor-pointer hover:shadow-md transition-shadow"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-3">

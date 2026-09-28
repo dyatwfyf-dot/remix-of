@@ -38,8 +38,33 @@ function pdfPageCellCss(opts: { padding?: string; fontSize?: string; headerFontS
     max-width:auto !important;
     border-collapse: collapse !important;
   }
+  .pdf-page th{
+    border: 1 px solid #000 !important;
 
-  .pdf-page th, 
+    padding: ${padding} !important;
+
+    text-align: center !important;
+
+    vertical-align: middle !important;
+
+    font-size: 18px !important;
+
+    line-height: 1 !important;
+
+    overflow: hidden !important;
+
+    word-break: break-word !important;
+
+    overflow-wrap: anywhere !important;
+
+    white-space: normal !important;
+  }
+
+
+
+
+
+
   .pdf-page td, 
   .pdf-page td.acc, 
   .pdf-page td.num, 
@@ -53,16 +78,7 @@ function pdfPageCellCss(opts: { padding?: string; fontSize?: string; headerFontS
     overflow: hidden !important;
     word-break: break-word !important;
     overflow-wrap: anywhere !important;
-    white-space: normal !important;
-  }
-
-  /* حدود رؤوس الأعمدة بخط أسود غامق وسميك */
-  .pdf-page th {
-    font-size: ${headerFontSize} !important;
-    font-weight: 900 !important;
-    border: 1px solid #000 !important;
-    white-space:normal !important; 
-
+    white-space:nowrap !important;
   }
 
   .pdf-page .num { 
@@ -80,7 +96,6 @@ function pdfPageCellCss(opts: { padding?: string; fontSize?: string; headerFontS
     color: #000 !important;
     font-weight: 800 !important;
     margin: 0 auto !important;
-    white-space:normal !important;
   }
 
   .pdf-page .text-cell,
@@ -94,10 +109,10 @@ function pdfPageCellCss(opts: { padding?: string; fontSize?: string; headerFontS
   .pdf-page .numeric-cell,
   .pdf-page .date-cell,
   .pdf-page .compact-cell,
-  .pdf-page .num .pdf-cell-text,
-  .pdf-page .numeric-cell .pdf-cell-text,
-  .pdf-page .date-cell .pdf-cell-text,
-  .pdf-page .compact-cell .pdf-cell-text {
+  .pdf-page .num 
+  .pdf-page .numeric-cell 
+  .pdf-page .date-cell
+  .pdf-page .compact-cell {
     white-space: nowrap !important;
     overflow-wrap: normal !important;
     word-break: keep-all !important;
@@ -278,7 +293,7 @@ async function htmlTableToPdfPaginated(opts: {
     numericKeys = [],
     css,
     fileName,
-    orientation = 'landscape',
+    orientation = 'portrait',
     reportDate,
     pdfLayout = 'default',
   } = opts;
@@ -286,9 +301,9 @@ async function htmlTableToPdfPaginated(opts: {
   const pageWidthPx = opts.pageWidthPx ?? (isWideCentered
     ? (orientation === 'portrait' ? 1123 : 1600)
     : (orientation === 'landscape' ? 1123 : 794));
-  const cellPadding = isWideCentered ? '3px 4px' : '3px 4px';
+  const cellPadding = isWideCentered ? '1px 1px' : '1px 1px';
   const cellFontSize = orientation === 'portrait'
-    ? (isWideCentered ? 'clamp(8px, 0.9vw, 10px)' : 'clamp(8px, 1vw, 11px)')
+    ? (isWideCentered ? 'clamp(18px, 0.9vw, 16px)' : 'clamp(14px, 1vw, 15px)')
     : (isWideCentered ? 'clamp(14px, 0.9vw, 15px)' : 'clamp(14px, 1.05vw, 16px)');
   const headerFontSize = orientation === 'portrait'
     ? 'clamp(8px, 0.95vw, 10px)'
@@ -310,7 +325,7 @@ async function htmlTableToPdfPaginated(opts: {
     }
   ` : '';
   const pageHeightPx = Math.round(
-    pageWidthPx * (orientation === 'landscape' ? 210 / 297 : 297 / 210)
+    pageWidthPx * (orientation === 'portrait' ? 297 / 210 : 210 / 297)
   );
 
   const [{ default: html2canvas }, { default: JsPDF }] = await Promise.all([
@@ -488,13 +503,13 @@ async function htmlTableToPdfPaginated(opts: {
 const statementCss = `
   ${tablePrintStyles}
   body, .pdf-page { 
-    font-size: 15px; 
+    font-size: 18px; 
     margin: 0;
     padding: 0;
   }
   table {
     width: 100% !important;
-    max-width:auto!important; 
+    max-width:100%!important; 
     table-layout:auto !important; 
   }
   .info {
@@ -619,7 +634,7 @@ export function printHtmlContent(htmlContent: string): void {
         }
         table {
           width: 100% !important;
-          max-width:auto !important;
+          max-width:100% !important;
           border-collapse: collapse;
           table-layout: auto !important;
           margin: 10px 0;
@@ -634,7 +649,7 @@ export function printHtmlContent(htmlContent: string): void {
           font-weight: 900 !important;
         }
         th {
-          border: 2px solid #000 !important;
+          border: 1px solid #000 !important;
           background: #1f7fb8;
           color: #000 !important;
           font-weight: 900 !important;
@@ -668,7 +683,7 @@ export function printHtmlContent(htmlContent: string): void {
           * { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           body { background: white; color: #000 !important; font-weight: 900 !important; width: 100%; margin: 0; padding: 0; }
           table { 
-width: 100% !important; max-width:auto!important; }
+width: 100% !important; max-width:100%!important; }
 th, td { color: #000 !important; font-weight: 900 !important; }
           .no-print { display: none !important; }
         }
@@ -733,7 +748,7 @@ export async function exportTablePdf(opts: {
     fileName,
     reportDate,
     pdfLayout = 'default',
-    orientation = 'landscape',
+    orientation = 'portrait',
   } = opts;
   const safeDate = reportDate || new Date().toISOString().slice(0, 10);
 
@@ -866,7 +881,7 @@ export function revenuePdf(revenue: Record<string, number>, year: number, month:
     @page :first { margin-top: 5mm; }
     html { margin: 0; padding: 0; }
     body { 
-      font-family: 'Cairo'; 
+      font-family: Cairo'; 
       direction: rtl; 
       color: #000 !important; 
       margin: 0; 

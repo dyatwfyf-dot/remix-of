@@ -92,7 +92,11 @@ const PRINT_STYLES = `
   .accounts-print-scope { background: #ffffff !important; padding: 0 !important; }
   .accounts-print-area, .accounts-print-area * { visibility: visible !important; }
   .accounts-print-hide { display: none !important; }
-  table { width: 100% !important; border-collapse: collapse !important; font-size: 11px !important; }
+  table { width: 100% !important; border-collapse: collapse !important; font-size: 14px !important; 
+        table-layout:auto !important; 
+
+    
+  }
   th, td { border: 1px solid #000 !important; padding: 3px 5px !important; }
 }
 `;
@@ -944,11 +948,11 @@ export default function AccountsTab() {
         {/* الجدول بالتنسيق المضغوط والمتوافق مع الهواتف */}
         <div className="p-1 sm:p-2.5">
           <div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-2xl border border-slate-200">
-            <table className="w-auto table-layout-auto text-center border-collapse border border-slate-300">
+ <table className="w-100% table-layout-auto text-center border-collapse border border-slate-300">
               {/* ترويسة الجدول */}
-              <thead className="sticky top-0 z-20 text-slate-900 font-black text-xs sm:text-sm bg-gradient-to-r from-teal-50 via-slate-100 to-amber-50/50">
+ <thead className="sticky top-0 z-20 text-slate-900 font-black text-xs sm:text-sm bg-gradient-to-r from-teal-50 via-slate-100 to-amber-50/50">
                 <tr>
-                  <th className="border border-slate-300 text-center w-9 sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 whitespace-nowrap bg-slate-100">
+                  <th className="border border-slate-300 text-center w-9 sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 whitespace-normal bg-slate-100">
                     م
                   </th>
                   {COLS.map((c) => (
@@ -1028,13 +1032,13 @@ export default function AccountsTab() {
                       <td className="border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal text-center font-extrabold">
                         {acc.description || "—"}
                       </td>
-                      <td className="border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-">
+ <td className="border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-lg sm:text-sm whitespace-normal">
                         {acc.specialty || "—"}
                       </td>
-                      <td className="border border-slate-300 font-bold !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal text-center">
+<td className="border border-slate-300 font-bold !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-xs whitespace-normal text-center">
                         {acc.name || "—"}
                       </td>
-                      <td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+                      <td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal">
                         {Number(acc.hafizaAmount) > 0 ? fmt(Number(acc.hafizaAmount)) : "—"}
                       </td>
                       <td className="border border-slate-300 font-mono tabular-nums font-bold text-center bg-emerald-50/50 text-emerald-700 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">

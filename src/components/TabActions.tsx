@@ -43,7 +43,7 @@ export default function TabActions({
   className = "",
   printLabel = "طباعة",
   pdfLayout = "default",
-  pdfOrientation = "landscape",
+  pdfOrientation = "portrait",
   additionalWebActions = [],
   webClassName = "",
 }: Props) {
@@ -73,7 +73,7 @@ export default function TabActions({
         @media print {
           * { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           body { margin: 0; padding: 2mm 3mm; color: #000 !important; font-weight: 600; }
-          table { table-layout: fixed !important; width: 100% !important; max-width: 100% !important; }
+table { table-layout:auto !important; width: 100% !important; max-width: 100% !important; }
           th, td { min-width: 0 !important; max-width: 100% !important; overflow: hidden !important; white-space: normal !important; overflow-wrap: anywhere !important; }
           .num, .numeric-cell, .date-cell, .compact-cell { white-space: nowrap !important; overflow-wrap: normal !important; }
           th, td { 
@@ -193,7 +193,7 @@ export default function TabActions({
 <div className={`apk-only-actions flex gap-2 ${className}`}>
 <button
           onClick={handlePrint}
-className="flex item-center gap-1.5 px-3 py-1.5 bg-white text-[#10528e] border border-[#10528e]/30 rounded-lg text-xs font-bold shadow-sm hover:bg-blue-50 active:scale-95 transition-all cursor-pointer"
+className="flex item-center gap-1.5 px-3 py-1.5 bg-red/900 text-white border border-[#10528e]/30 rounded-lg text-xs font-bold shadow-sm hover:bg-blue-50 active:scale-95 transition-all cursor-pointer"
 title="طباعة هذا التبويب"
         >
           <Printer className="w-4 h-4" /> {printLabel}
@@ -218,7 +218,7 @@ className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10528e] text-white rounded
 onClick={handleExcel}
  className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700 active:scale-95 transition-all cursor-pointer"
  title="تصدير إلى Excel اجماليات"
-        >تصدير اكسل اجمالي
+        >تصدير EXL اجمالي
           <FileSpreadsheet className="w-4 h-4" />
         </button>
         {onClear && (
