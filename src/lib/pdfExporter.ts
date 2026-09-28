@@ -34,7 +34,7 @@ function pdfPageCellCss(opts: { padding?: string; fontSize?: string } = {}): str
   .pdf-page table { 
     table-layout: auto !important; 
     width: 100% !important; 
-    max-width: 100% !important;
+    max-width:auto!important;
     border-collapse: collapse !important;
   }
 
@@ -49,7 +49,6 @@ function pdfPageCellCss(opts: { padding?: string; fontSize?: string } = {}): str
     vertical-align: middle !important;
     font-size: ${fontSize} !important;
     line-height: 1.15 !important;
-    white-space: nowrap !important; 
     word-break: keep-all !important;
   }
 
@@ -58,21 +57,26 @@ function pdfPageCellCss(opts: { padding?: string; fontSize?: string } = {}): str
     font-size: 18px !important;
     font-weight: 900 !important;
     border: 2px solid #000 !important;
+    white-space:normal !important; 
+
   }
 
   .pdf-page .num { 
     font-family: 'Times New Roman', Times, serif !important; 
     font-size: 15.5px !important; 
     font-weight: 900 !important; 
+    white-space: nowrap !important; 
+
   }
 
   .pdf-page .pdf-cell-text {
     display: block !important;
-    width: 100% !important;
+    width:auto!important;
     text-align: center !important;
     color: #000 !important;
     font-weight: 800 !important;
     margin: 0 auto !important;
+    white-space: nowrap !important; 
   }
   `;
 }
@@ -261,15 +265,17 @@ async function htmlTableToPdfPaginated(opts: {
   const layoutCss = isWideCentered ? `
     .pdf-page {
       width: 100% !important;
-      max-width: 100% !important; 
+      max-width:auto !important; 
       margin: 0 !important; 
       padding: 0 !important;
     }
     .pdf-page table {
       width: 100% !important;
-      max-width: 100% !important;
+      max-width:auto!important;
       margin-left: 0 !important;
-      margin-right: 0 !important; 
+      margin-right: 0 !important;
+      table-layout:auto !important; 
+
     }
   ` : '';
   const pageHeightPx = Math.round(
@@ -457,8 +463,8 @@ const statementCss = `
   }
   table {
     width: 100% !important;
-    max-width: 100% !important; 
-    table-layout: auto !important; 
+    max-width:auto!important; 
+    table-layout:auto !important; 
   }
   .info {
     width: 100%; 
@@ -564,7 +570,7 @@ export function printHtmlContent(htmlContent: string): void {
         * { margin: 0; padding: 0; box-sizing: border-box; }
         @page { size: A4; margin: 5mm; }
         body {
-          font-family: 'Cairo';
+          font-family:cairo;
           direction: rtl;
           color: #000 !important;
           background: white;
@@ -582,7 +588,7 @@ export function printHtmlContent(htmlContent: string): void {
         }
         table {
           width: 100% !important;
-          max-width: 100% !important;
+          max-width:auto !important;
           border-collapse: collapse;
           table-layout: auto !important;
           margin: 10px 0;
@@ -601,7 +607,7 @@ export function printHtmlContent(htmlContent: string): void {
           background: #1f7fb8;
           color: #000 !important;
           font-weight: 900 !important;
-          white-space: nowrap !important;
+          white-space: normal !important;
         }
         td:not(.num):not(.idx):not(.numeric-cell) {
           white-space: nowrap !important;
@@ -629,7 +635,7 @@ export function printHtmlContent(htmlContent: string): void {
         @media print {
           * { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           body { background: white; color: #000 !important; font-weight: 900 !important; width: 100%; margin: 0; padding: 0; }
-          table { width: 100% !important; max-width: 100% !important; }
+          table { width: 100% !important; max-width:auto!important; }
           th, td { color: #000 !important; font-weight: 900 !important; }
           .no-print { display: none !important; }
         }

@@ -1053,9 +1053,9 @@ const exportToPDF = async (
 
     // ملاءمة تلقائية لعرض الصفحة حسب الحجم والاتجاه
     const pageWidthMm =
-      settings.pageSize === "A3"
-        ? settings.orientation === "landscape"
-          ? 420
+      settings.pageSize === "A4"
+        ? settings.orientation === "portrait"
+          ? 210
           : 297
         : settings.orientation === "landscape"
           ? 297
@@ -1147,7 +1147,7 @@ const exportToPDF = async (
       }
  .print-toolbar {
  display: flex;
- justify-content: flex-end;
+ justify-content:flex-end;
   margin: 0 0 6px;
       }
       .print-toolbar button {
@@ -1166,6 +1166,7 @@ const exportToPDF = async (
       }
       .doc-header {
         display: flex;
+      text-align: center;
         align-items: center;
         justify-content: space-between;
         gap: 8px;
@@ -1173,24 +1174,27 @@ const exportToPDF = async (
         padding-bottom: 4px;
         margin-bottom: 5px;
       }
-      .doc-header .title { text-align:center; }
+      .doc-header.title { text-align:center; }
       .doc-header h1 { 
   font-size: 18px; 
- font-weight: 800; 
- letter-spacing: -0.2px;
+ font-weight: 1000; 
+ text-align: center;
+ font-family:cairo; 
 }
 .doc-header h2 { 
-font-size: 15px; 
+font-size: 16px; 
 font-weight: 700;
-margin-top: 1px; 
+margin-top:8px; 
+text-align: center;
 color: ${colorTokens.accent}; }
   .doc-header .meta { 
-font-size: 12px; 
+font-size: 14px; 
 font-weight: 700; 
-text-align: center; 
+text-align:center; 
 line-height: 1.5; 
   }
-   .doc-header .meta span { display: block; 
+   .doc-header .meta span { 
+   display: block; 
    }
 
       table {
@@ -1214,8 +1218,8 @@ line-height: 1.5;
 	overflow-wrap: normal !important;
 	        word-break: break-word !important;
         hyphens: none !important;
-     line-height: 1.45;
-        font-weight: 700;
+     line-height: 1.5;
+        font-weight: 900;
     color: #000 !important;
       }
       /* أعمدة الاسم والمساق (wide): السماح بالتفاف النص بدل خط واحد ممدود */
@@ -1227,13 +1231,13 @@ line-height: 1.5;
         word-break: normal !important;
       }
       .cell-content {
-  display: flex !important; /* تحويل العنصر الداخلي إلى Flexbox */
-  align-items: center !important; /* التمركز الرأسي للمحتوى */
-justify-content: center !important; /* التمركز الأفقي للمحتوى */
+  display: flex !important;
+  align-items:center !important; /* التمركز الرأسي للمحتوى */
+justify-content:center !important; /* التمركز الأفقي للمحتوى */
         width: 100%;
         height: auto;
         box-sizing: border-box;
-        padding: 3px 5px;
+        padding: 3px 2px;
         margin: 0;
         text-align: center !important;
         white-space: normal !important;
@@ -1267,7 +1271,7 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
         line-height: 1.15 !important;
         white-space: nowrap !important;
         overflow-wrap: normal !important;
-        word-break: keep-all !important;
+        word-break:break-word !important;
         hyphens: none !important;
         text-align: center !important;
       }
@@ -1275,7 +1279,7 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
         font-size: ${Math.max(4, fontSizePx - 0.4)}px !important;
         line-height: inherit !important;
         white-space: nowrap !important;
-        overflow-wrap: normal !important;
+        overflow-wrap:nowrap !important;
         word-break: keep-all !important;
         text-align: center !important;
       }
@@ -1285,7 +1289,7 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
         font-family: Cairo, Arial, sans-serif !important;
         font-size: ${headerFontSizePx}px !important;
         font-weight: 800;
-        padding: 6px 7px !important;
+        padding: 5px 5px !important;
         text-align: center !important;
         vertical-align: middle !important;
       }
@@ -1306,7 +1310,7 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
         margin-top: 5px;
         display: flex;
         justify-content: space-between;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 700;
         border-top: 0.75pt solid ${colorTokens.accent};
         padding-top: 3px;
@@ -1860,8 +1864,8 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
       text-align: center;
       box-sizing: border-box;
     }
-    .info-lbl { font-size: 11pt; line-height: 1.15; font-weight: 800; color:black; text-align: center; }
-    .info-val { font-size: 10.5pt; line-height: 1.15; font-weight: 800; margin-top: 1mm; overflow-wrap: anywhere; }
+    .info-lbl { font-size: 11pt; line-height: 1; font-weight: 800; color:black; text-align: center; }
+    .info-val { font-size: 10.5pt; line-height: 1; font-weight: 800; margin-top: 1mm; overflow-wrap: anywhere; }
 
     table {
       table-layout: auto;
@@ -1878,7 +1882,7 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
       vertical-align: middle;
       padding: 2.2mm 2mm;
       font-size: 10.5pt;
-      line-height: 1.25;
+      line-height: 1;
       white-space: normal;
       overflow: hidden;
       text-overflow: clip;
@@ -1902,16 +1906,16 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
       justify-content: space-between;
       gap: 8mm;
       font-size: 9pt;
-      line-height: 1.3;
+      line-height: 1;
       font-weight: 700;
       page-break-inside: avoid;
       break-inside: avoid;
     }
     .header, .info-grid { page-break-inside: avoid; break-inside: avoid; }
     @media print {
-      html, body { width: auto; }
+      html, body { width:100٪; }
       body { margin: 0; padding: 0; }
-      .page-frame { min-height: auto; border-radius: 0; box-shadow: none; padding: 4mm; }
+      .page-frame { min-height:100٪; border-radius: 0; box-shadow: none; padding: 4mm; }
       .print-toolbar { display: none !important; }
       .header, .info-box, th, td {
         -webkit-print-color-adjust: exact;

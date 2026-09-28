@@ -14,7 +14,7 @@
     color: #000000 !important;
     font-family: 'Cairo';
     direction: rtl;
-    line-height: 1.35;
+    line-height: 1.5;
     font-size: 15px;
     font-weight: 900 !important;
     -webkit-print-color-adjust: exact !important;
@@ -24,7 +24,7 @@
   /* إعدادات الصفحة */
   @page {
     size: A4 portrait;
-    margin: 8mm;
+    margin: 2mm;
   }
 
   @page :first {
@@ -41,11 +41,11 @@
     text-align: center;
   }
 
-  h1 { font-size: 16px; }
-  h2 { font-size: 14px; }
+  h1 { font-size: 18px; }
+  h2 { font-size: 16px; }
 
   /* الفقرات والعناصر الحاوية */
-  p, div {
+  p,div {
     page-break-inside: avoid;
     break-inside: avoid;
     margin: 2px 0;
@@ -54,7 +54,7 @@
   /* الجداول: احتواء تلقائي حقيقي */
   table {
     width: 100% !important;
-    min-width: 100% !important;
+    min-width:auto !important;
     border: solid 1px black!important;
     table-layout:auto !important;
 margin-top: 6px !important;
@@ -79,13 +79,13 @@ margin-top: 6px !important;
   /* رؤوس وخلايا الجداول - التوسيط التام عمودياً وأفقياً ومنع الالتفاف */
   th, td {
     border: 1px solid #000 !important;
-    padding: 6px 8px !important;
+    padding: 2px 2px !important;
     text-align: center !important;
     vertical-align: middle !important;
-    font-size: clamp(14px, 1.1vw, 16px);
-    line-height: 1.4 !important;
-    height: auto !important;
-    max-height: none !important;
+    font-size:13px;
+    line-height: 1 !important;
+    height:50% !important;
+    max-height:auto !important;
     overflow: visible !important;
     color: #000000 !important;
     font-weight: 700 !important;
@@ -97,9 +97,9 @@ margin-top: 6px !important;
 
   /* خلايا النص العادي المستثناة لتسمح بالالتفاف عند الحاجة */
   td:not(.num):not(.numeric-cell):not(.date-cell):not(.currency):not(.number):not(.amount) {
-    white-space: normal !important;
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
+    white-space:nowrap !important;
+    word-wrap:break-word !important;
+    overflow-wrap:break-word !important;
     hyphens: auto;
     width: auto !important;
     text-align: center !important;
@@ -110,14 +110,13 @@ margin-top: 6px !important;
     background-color: #1f7fb8 !important;
     color: #000000 !important;
     font-weight: 900 !important;
-    font-size: clamp(14px, 1.15vw, 15px);
+    font-size:16px;
     white-space: normal !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     width: auto !important;
     text-align: center !important;
     vertical-align: middle !important;
-    color: #FFFFFF;
   }
 
   /* الأرقام والتواريخ والمبالغ - محاذاة في المنتصف، بدون التفاف مطلقاً */
@@ -128,7 +127,7 @@ margin-top: 6px !important;
   .number,
   .amount {
     font-family: 'Times New Roman' !important;
-    font-size: clamp(14px, vw, 16px) !important;
+    font-size:13px !important;
     color: #000000 !important;
     font-weight: 900 !important;
     direction: ltr !important;
@@ -169,10 +168,10 @@ margin-top: 6px !important;
 
   /* الخلايا النصية المحاذاة */
   td.acc, td.align-right {
-    text-align: center !important;
-    padding-right: 6px !important;
+    text-align:center !important;
+    padding-right:2px !important;
     font-weight: 800 !important;
-    vertical-align: middle !important;
+    vertical-align:middle !important;
   }
 
   /* الروابط والعناصر التفاعلية المخفية */
@@ -205,12 +204,12 @@ margin-top: 6px !important;
 
   .report-letterhead-image {
     display: block;
-    width: 100%;
-    max-height: 20mm;
+    width:100%;
+    max-height:30mm;
     height: auto;
-    object-fit: fill;
-    margin: 0 auto;
-object-position: top !important;
+object-fit:fill;
+    margin:0 auto;
+object-position:top !important;
   }
 
   /* أدوات التحكم بالفواصل */
@@ -220,17 +219,17 @@ object-position: top !important;
 
 /* تنسيقات الشاشة قبل الطباعة */
 @media screen {
-  .print-only { display: none !important; }
+  .print-only { display:none !important; }
   .print-button {
     margin: 10px 0;
     padding: 8px 16px;
     background: rgba(115, 2, 101, 1);
     color: #ffffff;
- border: solid 1px black;
+ border:solid 1px black;
     border-radius: 4px;
     cursor: pointer;
-    font-weight: 900;
-    font-size: 16px;
+    font-weight:900;
+    font-size:13px;
   }
   .print-button:hover {
     background: #1a6a94;

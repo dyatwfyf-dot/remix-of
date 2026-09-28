@@ -15,7 +15,8 @@ const PRINT_LETTERHEAD_ALT = "ترويسة المجلس اليمني للاخت�
 function ensurePrintLetterhead(html: string, forceTable: boolean = true): string {
   if (!html) return html;
 
-  const letterheadRow = (columnCount: number) => `<tr class="report-letterhead-row" data-report-letterhead-injected="true"><th class="report-letterhead-cell" colspan="${Math.max(1, columnCount)}"><img class="report-letterhead-image" src="${REPORT_LETTERHEAD_SRC}" alt="${PRINT_LETTERHEAD_ALT}" /></th></tr>`;
+  const letterheadRow = (columnCount: number) => 
+  `<tr class="report-letterhead-row" data-report-letterhead-injected="true"><th class="report-letterhead-cell" colspan="${Math.max(1, columnCount)}"><img class="report-letterhead-image" src="${REPORT_LETTERHEAD_SRC}" alt="${PRINT_LETTERHEAD_ALT}" /></th></tr>`;
   const standaloneLetterhead = `<div class="report-letterhead-block" data-report-letterhead-injected="true"><img class="report-letterhead-image" src="${REPORT_LETTERHEAD_SRC}" alt="${PRINT_LETTERHEAD_ALT}" /></div>`;
   const printCss = `<style data-report-letterhead-styles="true">
     thead { display: table-header-group !important; }
@@ -80,7 +81,7 @@ export function printReportHtml(html: string, name: string): boolean {
     return true;
   }
 
-  const reportWindow = registerReportWindow(window.open("", "_blank", "width=1200,height=800"));
+  const reportWindow = registerReportWindow(window.open("", "_blank", "width=auto,height=auto"));
   if (!reportWindow) return false;
   reportWindow.document.open();
   reportWindow.document.write(printableHtml);
