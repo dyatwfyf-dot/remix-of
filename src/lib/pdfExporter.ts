@@ -305,10 +305,11 @@ async function htmlTableToPdfPaginated(opts: {
   const cellFontSize = orientation === 'portrait'
     ? (isWideCentered ? 'clamp(18px, 0.9vw, 16px)' : 'clamp(14px, 1vw, 15px)')
     : (isWideCentered ? 'clamp(14px, 0.9vw, 15px)' : 'clamp(14px, 1.05vw, 16px)');
-  const headerFontSize = orientation === 'portrait'
-    ? 'clamp(18px, 0.95vw, 1
-    16px)'
-    : 'clamp(14px, 0.9vw, 16px)';
+  // ✅ الكود الصحيح بعد دمجه في سطر واحد:
+const headerFontSize = orientation === 'portrait'
+  ? 'clamp(18px, 0.95vw, 16px)'
+  : 'clamp(14px, 0.9vw, 16px)';
+
   const layoutCss = isWideCentered ? `
     .pdf-page {
       width: 100% !important;
