@@ -32,7 +32,7 @@ const reportLetterheadStyles = `
       width: 100%;
       max-height: 20mm;
       height: auto;
-      object-fit: contain;
+      object-fit:co;
       margin: 0 auto;
     object-position:top;
     }
@@ -188,7 +188,7 @@ export const accountsPdf = (a: Account[], opening: number, reportDate?: string) 
     ]);
   });
   exportToPdf({
-    title: "حساب المجلس اليمني للاختصاصات الطبية - صعدة",
+title: "حساب المجلس اليمني للاختصاصات الطبية - صعدة",
     columns: [
       "م", "التاريخ", "رقم الحافظة", "رقم الاشعار", "تاريخ التوريد", "رقم الشيك", "تاريخه", "البيان", "التخصص", "الاسم", "مبلغ الحافظة", "الإيرادات", "المصروفات", "الرصيد"
     ],
@@ -333,7 +333,7 @@ tr.subtotal-row td {
 }
     tr.total-row td { background: #e03636 !important; font-weight: 900 !important; }
     /* تحسينات محصورة بتقريري كشف الحساب الشهري والإيرادات */
-    @page { size: A4 landscape; margin: 3mm; padding: 0; }
+    @page { size: A4 portrait; margin: 3mm; padding: 0; }
     body { padding: 0 1px; width: 100%; }
     .report-letterhead-row { width: 100%; }
     .report-letterhead-cell { padding: 0 !important; width: 100%; }
@@ -345,7 +345,10 @@ tr.subtotal-row td {
     margin: 0 !important;
     object-position:top;
     }
-    table { width: 100%; max-width:auto; table-layout: auto !important; margin-top: 4px; }
+    table { width: 100%; 
+max-width:auto; 
+table-layout: auto !important; 
+margin-top: 4px; }
     th:first-child, td:first-child,
     th:not(:first-child), td:not(:first-child) { width: auto !important; }
     th, td {
@@ -357,7 +360,7 @@ tr.subtotal-row td {
       line-height: 1.5;
     }
     .num, .numeric-cell, .date-cell {
-      width: 1% !important;
+      width:auto !important;
       min-width: 0 !important;
       white-space: nowrap !important;
       overflow: visible !important;

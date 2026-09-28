@@ -34,11 +34,11 @@ const baseCss = (
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: #fff; }
   body {
-    font-family: 'Cairo';
+    font-family: cairo;
     direction: rtl;
     color: #000;
-    font-weight: 500;
-    font-size: 16px;
+    font-weight: 800;
+    font-size: 18px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     text-rendering: geometricPrecision;
@@ -50,7 +50,7 @@ const baseCss = (
   /* جداول: احتواء تلقائي للأعمدة بحسب محتواها وتوسيط تام */
   table { 
     width: 100%!important; 
-    max-width: 100%; 
+    max-width:auto; 
     border-collapse: collapse;
 
     border: solid 1px #000; 
@@ -86,7 +86,7 @@ font-size: 15px!important;
     width: 100% !important;
     height: auto !important;
     text-align: center !important;
-    white-space: nowrap !important;
+    white-space:normal !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
   }

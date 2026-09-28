@@ -33,9 +33,9 @@ function pdfPageCellCss(opts: { padding?: string; fontSize?: string; headerFontS
 
   return `
   .pdf-page table {
-    table-layout: fixed !important;
+    table-layout: auto !important;
     width: 100% !important;
-    max-width: 100% !important;
+    max-width:auto !important;
     border-collapse: collapse !important;
   }
 
@@ -49,7 +49,7 @@ function pdfPageCellCss(opts: { padding?: string; fontSize?: string; headerFontS
     text-align: center !important;
     vertical-align: middle !important;
     font-size: ${fontSize} !important;
-    line-height: 1.15 !important;
+    line-height: 1 !important;
     overflow: hidden !important;
     word-break: break-word !important;
     overflow-wrap: anywhere !important;
@@ -60,7 +60,7 @@ function pdfPageCellCss(opts: { padding?: string; fontSize?: string; headerFontS
   .pdf-page th {
     font-size: ${headerFontSize} !important;
     font-weight: 900 !important;
-    border: 2px solid #000 !important;
+    border: 1px solid #000 !important;
     white-space:normal !important; 
 
   }
@@ -80,7 +80,7 @@ function pdfPageCellCss(opts: { padding?: string; fontSize?: string; headerFontS
     color: #000 !important;
     font-weight: 800 !important;
     margin: 0 auto !important;
-    white-space: nowrap !important;
+    white-space:normal !important;
   }
 
   .pdf-page .text-cell,
@@ -158,8 +158,8 @@ async function htmlToPdf(opts: {
   orientation?: 'portrait' | 'landscape';
   pageWidthPx?: number;
 }): Promise<void> {
-  const { html, css, fileName, orientation = 'landscape' } = opts;
-  const pageWidthPx = opts.pageWidthPx ?? (orientation === 'landscape' ? 1123 : 794);
+  const { html, css, fileName, orientation = 'portrait' } = opts;
+  const pageWidthPx = opts.pageWidthPx ?? (orientation === 'portrait' ? 1123 : 794);
 
   const frame = document.createElement('iframe');
   frame.setAttribute('aria-hidden', 'true');
@@ -220,7 +220,7 @@ async function htmlToPdf(opts: {
 
     blackenGreenDataPixels(canvas, page);
 
-    const pdf = new JsPDF({ unit: 'mm', format: 'a4', orientation, compress: true });
+    const pdf = new JsPDF({ unit: 'mm', format: 'A4', orientation, compress: true });
     const pw = pdf.internal.pageSize.getWidth();
     const ph = pdf.internal.pageSize.getHeight();
     const margin = 3;
@@ -659,6 +659,7 @@ export function printHtmlContent(htmlContent: string): void {
           color: #000 !important;
           font-weight: 900 !important;
           direction: ltr;
+ white-space: nowrap !important;
         }
         tr:nth-child(even) td {
           background: #f8fafc;
@@ -666,8 +667,9 @@ export function printHtmlContent(htmlContent: string): void {
         @media print {
           * { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           body { background: white; color: #000 !important; font-weight: 900 !important; width: 100%; margin: 0; padding: 0; }
-          table { width: 100% !important; max-width:auto!important; }
-          th, td { color: #000 !important; font-weight: 900 !important; }
+          table { 
+width: 100% !important; max-width:auto!important; }
+th, td { color: #000 !important; font-weight: 900 !important; }
           .no-print { display: none !important; }
         }
       </style>

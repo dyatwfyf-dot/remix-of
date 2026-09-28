@@ -207,7 +207,7 @@ margin-top: 6px !important;
     width:100%;
     max-height:30mm;
     height: auto;
-object-fit:fill;
+object-fit:content;
     margin:0 auto;
 object-position:top !important;
   }

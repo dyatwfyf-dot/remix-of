@@ -16,7 +16,7 @@ export const reportLetterheadHtml = () => `
 export const reportLetterheadRowHtml = (columnCount: number) => `
   <tr class="report-letterhead-row">
     <th class="report-letterhead-cell" colspan="${Math.max(1, Math.floor(columnCount))}">
-      <img class="report-letterhead-image" style="display:block;width:100%;max-width:100%;height:30mm;max-height:30mm;object-fit:fill;object-position:top;margin:0;" src="${REPORT_LETTERHEAD_SRC}" alt="ترويسة المجلس اليمني للاختصاصات الطبية" />
+      <img class="report-letterhead-image" style="display:block;width:100%;max-width:100%;height:30mm;max-height:30mm;object-fit:content;object-position:top;margin:0;" src="${REPORT_LETTERHEAD_SRC}" alt="ترويسة المجلس اليمني للاختصاصات الطبية" />
     </th>
   </tr>
 `;
@@ -56,7 +56,7 @@ export const escapeHtml = (s: any) =>
  */
 export const tablePrintStyles = `
   @page {
-    size: A4 landscape;
+    size: A4 portrait;
     margin: 1mm;
   }
   
@@ -105,7 +105,7 @@ export const tablePrintStyles = `
     max-width:auto;
     border-collapse: collapse;
     table-layout: auto !important;
-    font-size:13px;
+    font-size:16px;
     text-align: center;
   }
   
@@ -121,7 +121,7 @@ export const tablePrintStyles = `
     height:100% !important;
     min-height: auto;
     font-size: 14px !important;
-    white-space:normal !important;
+    white-space:nowrap !important;
     width:100% !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
@@ -159,24 +159,24 @@ export const tablePrintStyles = `
   width: 100% !important;
   height: 100% !important;
   text-align: center !important;
-  white-space:nowrap !important;
+  white-space:normal !important;
   word-break: break-word!important;
   overflow-wrap: break-word !important;
 }
 
 .text-cell,
 .long-text-cell {
-  white-space:nowrap !important;
+  white-space:normal !important;
   overflow-wrap: break-word !important;
   word-break:break-word !important;
-  width: auto !important;
+  width:100% !important;
   text-align: center !important;
   vertical-align: middle !important;
 }
 
 .long-text-cell .pdf-cell-text,
 .text-cell .pdf-cell-text {
-  white-space:nowrap !important;
+  white-space:normal !important;
   overflow-wrap: break-word !important;
   word-break:break-word !important;
 }
@@ -193,7 +193,7 @@ tfoot td {
 
 /* إذا أردت أسطاراً معينة تمنع التفافها، ضع لها كلاس خاص مثل .no-wrap بدلاً من فرضها على الكل */
 tbody td .no-wrap {
-  white-space: nowrap !important;
+  white-space: normal !important;
 }
 
 /* حدود رؤوس الأعمدة بخط أسود غامق وسميك */
@@ -244,7 +244,7 @@ thead th {
   .report-letterhead-image {
     display:flex;
     width: 100%;
-    max-width:auto;
+    max-width:100%;
     height: 100%;
     max-height:auto;
     object-fit: content;
