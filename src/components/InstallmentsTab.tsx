@@ -127,6 +127,10 @@ const HEADING_MOBILE = "text-lg sm:text-xl font-extrabold";
       orientation: "portrait" | "landscape";
     }): Promise < void > => {
       const pageWidthPx = orientation === "landscape" ? 1600 : 1132;
+      // التقرير التفصيلي قد يحتوي على أكثر من 25 عمودًا؛ حجم ثابت كبير
+      // يجعل الصفحة العَمودية تقتطع الأعمدة. نستخدم حجمًا صغيرًا آمنًا هنا.
+      const pdfBodyFontPx = orientation === "portrait" ? 6 : 8;
+      const pdfHeaderFontPx = orientation === "portrait" ? 7 : 9;
       const frame = document.createElement("iframe");
       frame.setAttribute("aria-hidden", "true");
       frame.style.position = "fixed";
@@ -221,20 +225,21 @@ text-align: center;
 
             /* ===== تنسيق الجدول بشكل احترافي ===== */
 .pdf-download-root table {
-width: 100% !important;
-              margin: 0 !important;
-              border-collapse: collapse !important;
-              table-layout: auto !important;
-border: 1px solid #000 !important;
-background: #ffffff !important;
-              overflow: hidden !important;
+	width: 100% !important;
+	max-width: 100% !important;
+	              margin: 0 !important;
+	              border-collapse: collapse !important;
+	              table-layout: fixed !important;
+	border: 1px solid #000 !important;
+	background: #ffffff !important;
+	              overflow: hidden !important;
             }
 
             /* خلايا الرأس */
 .pdf-download-root thead th {
- font-family:AlQabas-Bold !important;
-font-size:18.5px !important;
-padding: 10px 6px !important;
+	 font-family:AlQabas-Bold !important;
+font-size:${pdfHeaderFontPx}px !important;
+	padding: 10px 6px !important;
  background-color: #1f3a5f
  !important;
 color: #ffffff !important;
@@ -249,14 +254,16 @@ border: 2px solid #000 !important;
 .pdf-download-root tbody th {
 text-align: center !important;
 vertical-align: middle !important;
-padding: 3px 3px !important;
-font-size: 15px !important;
+	padding: 3px 2px !important;
+font-size: ${pdfBodyFontPx}px !important;
  border: 1px solid #000 !important;
 font-family:Cairo !important;
 font-weight: 900 !important;
  color:#000 !important;
-              background: #ffffff !important;
-            }
+	              background: #ffffff !important;
+	              min-width: 0 !important;
+	              max-width: 100% !important;
+	            }
 
             /* تخطيط الصفوف (Zebra) */
 .pdf-download-root tbody tr:nth-child(even) td,
@@ -269,33 +276,37 @@ font-weight: 900 !important;
 .pdf-download-root th.cell-text {
               word-break: break-word;
               overflow-wrap: break-word;
-              white-space: normal;
+	              white-space: normal !important;
             }
 
             /* خلايا الأرقام */
-            .pdf-download-root td.cell-number,
+.pdf-download-root td.cell-number,
             .pdf-download-root th.cell-number,
             .pdf-download-root .num,
             .pdf-download-root .numeric-cell {
               white-space: nowrap !important;
               word-break: normal !important;
               overflow-wrap: normal !important;
-              font-variant-numeric: tabular-nums;
-              direction: ltr;
+	              font-variant-numeric: tabular-nums;
+	              direction: ltr;
+	              min-width: 0 !important;
             }
 
-            .pdf-download-root .cell-content {
+.pdf-download-root .cell-content {
               display: flex !important;
               align-items: center !important;
               justify-content: center !important;
               font-size: inherit !important;
-              font-weight: inherit !important;
-            }
+	              font-weight: inherit !important;
+	              min-width: 0 !important;
+	              max-width: 100% !important;
+	              overflow: hidden !important;
+	            }
 
             /* صف المجموع */
             .pdf-download-root .total-row td {
               font-family: "Al Qabas Bold", "Mohammad Bold Art", Tahoma, Arial, sans-serif !important;
-              font-size: 15.5px !important;
+              font-size: ${pdfBodyFontPx}px !important;
               background: #e8eef7 !important;
               color: #1f3a5f !important;
               font-weight: 700 !important;
@@ -308,6 +319,14 @@ font-weight: 900 !important;
               margin-top: 6px !important;
             }
             .print-toolbar { display: none !important; }
+            .pdf-download-root th,
+            .pdf-download-root td {
+              min-width: 0 !important;
+              max-width: 100% !important;
+              overflow: hidden !important;
+              white-space: normal !important;
+              word-break: break-word !important;
+            }
           </style>
         </head>
         <body>
@@ -1041,12 +1060,17 @@ const exportToPDF = async (
         : settings.orientation === "landscape"
           ? 297
           : 210;
-    const marginMm = settings.margin === "narrow" ? 8 : settings.margin === "wide" ? 26 : 14;
-    const usableWidthMm = pageWidthMm - marginMm;
+    const marginMm = settings.margin === "narrow" ? 4 : settings.margin === "wide" ? 13 : 8;
+    const usableWidthMm = pageWidthMm - marginMm * 2;
     const widthUnits = cols.reduce((s, c) => s + (c.wide ? 2.4 : 1), 0);
     const unitMm = usableWidthMm / Math.max(1, widthUnits);
-    const autoFont = Math.max(5, Math.min(11, unitMm * 1.25));
-    const fontSizePx = settings.fontMode === "manual" ? settings.fontSize : autoFont;
+    // في A4 الطولي يوجد عدد كبير من أعمدة الأشهر؛ نخفض الخط تلقائيًا
+    // ونمنع القيمة اليدوية من إعادة الجدول إلى عرض يتجاوز الصفحة.
+    const autoFont = Math.max(4.2, Math.min(10, unitMm * 1.18));
+    const fontSizePx = Math.min(
+      settings.fontMode === "manual" ? settings.fontSize : autoFont,
+      autoFont,
+    );
     const headerFontSizePx = fontSizePx + 0.4;
 
     const fitStyle = (text: any, base = fontSizePx) => {
@@ -1170,22 +1194,25 @@ line-height: 1.5;
    }
 
       table {
-  font-size:14px;
- table-layout: auto!important;
-  width: 100% !important; 
-border: 1px solid #000;
+  font-size:${fontSizePx}px;
+  table-layout: fixed !important;
+  width: 100% !important;
+  max-width: 100% !important;
+	border: 1px solid #000;
       }
       th, td {
- border: 1px solid #000;
-padding: 5px 6px !important;
-text-align: center !important;
-vertical-align: middle !important; /* ضمان المحاذاة الرأسية لكل الخلايا */
-white-space: nowrap !important; /* الأعمدة العادية (أرقام/أشهر) تبقى بسطر واحد */
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size:13px;
-overflow-wrap: normal !important;
-        word-break: keep-all !important;
+	 border: 1px solid #000;
+	padding: 2px 2px !important;
+	text-align: center !important;
+	vertical-align: middle !important; /* ضمان المحاذاة الرأسية لكل الخلايا */
+	white-space: normal !important;
+	        overflow: hidden;
+	        text-overflow: ellipsis;
+	        min-width: 0 !important;
+	        max-width: 100% !important;
+	        font-size:${fontSizePx}px !important;
+	overflow-wrap: normal !important;
+	        word-break: break-word !important;
         hyphens: none !important;
      line-height: 1.45;
         font-weight: 700;
@@ -1193,7 +1220,7 @@ overflow-wrap: normal !important;
       }
       /* أعمدة الاسم والمساق (wide): السماح بالتفاف النص بدل خط واحد ممدود */
       th.wrap, td.wrap {
-      white-space: nowrap!important;
+	      white-space: normal!important;
         overflow: visible !important;
         text-overflow: clip !important;
         overflow-wrap: break-word !important;
@@ -1209,7 +1236,7 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
         padding: 3px 5px;
         margin: 0;
         text-align: center !important;
-        white-space: nowrap !important;
+        white-space: normal !important;
         overflow: hidden;
         overflow-wrap: normal !important;
         word-break: keep-all !important;
@@ -1217,7 +1244,7 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
         line-height: 1.35;
       }
       td.wrap .cell-content, th.wrap .cell-content {
-        white-space: nowrap!important;
+        white-space: normal!important;
         overflow: visible !important;
         overflow-wrap: break-word !important;
         word-break: normal !important;
@@ -1230,13 +1257,13 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
         text-align: center !important;
       }
       table th.wrap *, table td.wrap * {
-        white-space: nowrap!important;
+        white-space: normal!important;
         overflow-wrap: break-word !important;
         word-break: normal !important;
       }
       td.numeric-cell, th.numeric-cell, td.date-cell, th.date-cell, td.compact-cell, th.compact-cell {
         font-family: 'Times New Roman', Times, serif !important;
-        font-size: 13px !important;
+        font-size: ${fontSizePx}px !important;
         line-height: 1.15 !important;
         white-space: nowrap !important;
         overflow-wrap: normal !important;
@@ -1245,7 +1272,7 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
         text-align: center !important;
       }
       td.numeric-cell *, th.numeric-cell *, td.date-cell *, th.date-cell *, td.compact-cell *, th.compact-cell * {
-        font-size: 12px !important;
+        font-size: ${Math.max(4, fontSizePx - 0.4)}px !important;
         line-height: inherit !important;
         white-space: nowrap !important;
         overflow-wrap: normal !important;
@@ -1256,7 +1283,7 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
         background: ${colorTokens.head} !important;
         color: ${colorTokens.headText} !important;
         font-family: Cairo, Arial, sans-serif !important;
-        font-size: 13px;
+        font-size: ${headerFontSizePx}px !important;
         font-weight: 800;
         padding: 6px 7px !important;
         text-align: center !important;
@@ -1288,6 +1315,15 @@ justify-content: center !important; /* التمركز الأفقي للمحتو�
       @media print {
         .print-toolbar { display: none !important; }
         tr { page-break-inside: avoid; }
+        table { table-layout: fixed !important; width: 100% !important; max-width: 100% !important; }
+        th, td {
+          width: auto !important;
+          min-width: 0 !important;
+          max-width: 100% !important;
+          overflow: hidden !important;
+          white-space: normal !important;
+          word-break: break-word !important;
+        }
       }
     `;
 
