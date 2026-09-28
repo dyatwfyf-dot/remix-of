@@ -265,7 +265,15 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
   }
   
   /* شريط التمرير الأفقي للجداول العريضة */
-  .overflow-x-auto { -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+  .overflow-x-auto,
+  .overflow-y-auto,
+  .overflow-auto {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    contain: layout paint;
+    will-change: scroll-position;
+  }
 }
 
 /* الشاشات الصغيرة والجوالات */

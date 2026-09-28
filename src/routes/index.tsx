@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, startTransition, useCallback, useEffect, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Toaster, toast } from "sonner";
 
@@ -161,7 +161,7 @@ function Index() {
         tabHistoryRef.current = [tab];
       }
       activeTabRef.current = tab;
-      setActiveTab(tab);
+      startTransition(() => setActiveTab(tab));
     };
 
     window.addEventListener("popstate", handlePopState);
@@ -182,7 +182,7 @@ function Index() {
     // نعيده إلى التبويب الأساسي داخل نفس الصفحة بدلاً من مغادرة التطبيق.
     activeTabRef.current = "installments";
     tabHistoryRef.current = ["installments"];
-    setActiveTab("installments");
+    startTransition(() => setActiveTab("installments"));
     const url = new URL(window.location.href);
     url.searchParams.delete("tab");
     window.history.replaceState(
@@ -210,7 +210,7 @@ function Index() {
 
     activeTabRef.current = tab;
     tabHistoryRef.current = [...tabHistoryRef.current, tab];
-    setActiveTab(tab);
+    startTransition(() => setActiveTab(tab));
     const url = new URL(window.location.href);
     if (tab === "installments") url.searchParams.delete("tab");
     else url.searchParams.set("tab", tab);
@@ -295,7 +295,7 @@ function Index() {
 
       {/* شريط التبويبات السفلي — عائم زجاجي فاتح */}
       <nav
-        className="fixed inset-x-0 bottom-0 z-[60] border-t border-[#b8d4e8] bg-white/90 pb-[env(safe-area-inset-bottom)] shadow-[0_-6px_22px_rgba(46,107,138,0.14)] backdrop-blur-xl"
+        className="fixed inset-x-0 bottom-0 z-[60] border-t border-[#b8d4e8] bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_12px_rgba(46,107,138,0.12)]"
         dir="rtl"
         aria-label="التنقل الرئيسي"
       >
@@ -308,7 +308,7 @@ function Index() {
                 type="button"
                 onClick={() => handleTabChange(tab.value)}
                 aria-current={isActive ? "page" : undefined}
-                className={`flex min-h-[48px] min-w-[76px] shrink-0 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-1.5 text-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#6ba3c8] active:scale-[0.97] sm:min-w-[104px] sm:px-3 ${
+                className={`flex min-h-[48px] min-w-[76px] shrink-0 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-1.5 text-center transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#6ba3c8] sm:min-w-[104px] sm:px-3 ${
                   isActive
                     ? `${tab.activeClass} text-white shadow-md`
                     : "text-[#4e6b80] hover:bg-[#e8f0f8]"
