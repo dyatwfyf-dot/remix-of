@@ -27,7 +27,7 @@ async function downloadPdfBlob(pdf: any, fileName: string): Promise<void> {
  * مصدر وحيد وموحّد لقواعد احتواء/التفاف الخلايا داخل ".pdf-page".
  */
 function pdfPageCellCss(opts: { padding?: string; fontSize?: string; headerFontSize?: string } = {}): string {
-  const padding = opts.padding ?? '2px 3px';
+  const padding = opts.padding ?? '1px 1px';
   const fontSize = opts.fontSize ?? '15px';
   const headerFontSize = opts.headerFontSize ?? fontSize;
 
@@ -306,18 +306,19 @@ async function htmlTableToPdfPaginated(opts: {
     ? (isWideCentered ? 'clamp(18px, 0.9vw, 16px)' : 'clamp(14px, 1vw, 15px)')
     : (isWideCentered ? 'clamp(14px, 0.9vw, 15px)' : 'clamp(14px, 1.05vw, 16px)');
   const headerFontSize = orientation === 'portrait'
-    ? 'clamp(8px, 0.95vw, 10px)'
+    ? 'clamp(18px, 0.95vw, 1
+    16px)'
     : 'clamp(14px, 0.9vw, 16px)';
   const layoutCss = isWideCentered ? `
     .pdf-page {
       width: 100% !important;
-      max-width:auto !important; 
+      max-width:100% !important; 
       margin: 0 !important; 
       padding: 0 !important;
     }
     .pdf-page table {
       width: 100% !important;
-      max-width:auto!important;
+      max-width:100%!important;
       margin-left: 0 !important;
       margin-right: 0 !important;
       table-layout:auto !important; 
