@@ -599,3 +599,41 @@ table td > * {
   border-radius: 0.65rem !important;
   font-weight: 700;
 }
+
+/* الحاوية الموحدة للتبويبات: عرض كامل بلا فراغات جانبية.
+   يبقى تمرير الجداول العريضة داخل حاويتها فقط، ولا يسبب تمدد الصفحة. */
+.app-tab-content {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  padding-inline: 0 !important;
+  overflow-x: hidden;
+}
+
+.app-tab-content > * {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0;
+  margin-inline: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+@media screen and (max-width: 640px) {
+  html,
+  body,
+  #root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .app-tab-content {
+    padding-inline: 0 !important;
+  }
+
+  .app-tab-content > * {
+    padding-inline: 0 !important;
+    border-radius: 0 !important;
+  }
+}

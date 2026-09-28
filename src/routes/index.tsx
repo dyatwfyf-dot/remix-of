@@ -270,7 +270,7 @@ function Index() {
       </div>
 
       {/* محتوى التبويب النشط */}
-      <div className="w-full bg-[#f4f9fd] p-2.5 pb-28 sm:p-4 sm:pb-24 md:p-6 min-h-[calc(100vh-140px)]">
+      <div className="app-tab-content w-full min-w-0 bg-[#f4f9fd] p-0 pb-28 sm:p-0 sm:pb-24 md:p-0 min-h-[calc(100vh-140px)]">
         <Suspense
           fallback={
             <div
@@ -299,7 +299,7 @@ function Index() {
         dir="rtl"
         aria-label="التنقل الرئيسي"
       >
-        <div className="mx-auto flex max-w-7xl gap-1.5 overflow-x-auto px-2 py-2 sm:gap-2 sm:px-3">
+        <div className="flex w-full gap-1.5 overflow-x-auto px-0 py-2 sm:gap-2 sm:px-0">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.value;
             return (
