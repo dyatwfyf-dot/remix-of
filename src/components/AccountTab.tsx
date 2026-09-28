@@ -718,6 +718,7 @@ export default function AccountsTab() {
               fileName={`الحساب-الجاري-${accountReportYear}`}
               numericKeys={["hafizaAmount", "income", "expense", "balance"]}
               pdfLayout="wide-centered"
+              pdfOrientation="portrait"
             />
           </div>
         </div>
@@ -933,6 +934,7 @@ export default function AccountsTab() {
               fileName="الحساب-الجاري"
               numericKeys={["hafizaAmount", "income", "expense", "balance"]}
               pdfLayout="wide-centered"
+              pdfOrientation="portrait"
               onClear={handleClearAll}
               className="col-span-2 sm:col-span-1 w-full"
             />

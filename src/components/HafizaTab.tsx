@@ -396,7 +396,7 @@ export default function HafizaTab() {
                   <X className="w-4 h-4" />
                 </Button>
               )}
-              <TabActions title="حوافظ التوريد" rows={hafiza} columns={COLS} fileName="حوافظ-التوريد" pdfLayout="wide-centered" />
+              <TabActions title="حوافظ التوريد" rows={hafiza} columns={COLS} fileName="حوافظ-التوريد" pdfLayout="wide-centered" pdfOrientation="portrait" />
             </div>
           </div>
         </CardHeader>

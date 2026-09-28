@@ -26,15 +26,16 @@ async function downloadPdfBlob(pdf: any, fileName: string): Promise<void> {
 /**
  * مصدر وحيد وموحّد لقواعد احتواء/التفاف الخلايا داخل ".pdf-page".
  */
-function pdfPageCellCss(opts: { padding?: string; fontSize?: string } = {}): string {
+function pdfPageCellCss(opts: { padding?: string; fontSize?: string; headerFontSize?: string } = {}): string {
   const padding = opts.padding ?? '2px 3px';
   const fontSize = opts.fontSize ?? '15px';
+  const headerFontSize = opts.headerFontSize ?? fontSize;
 
   return `
-  .pdf-page table { 
-    table-layout: auto !important; 
-    width: 100% !important; 
-    max-width:auto!important;
+  .pdf-page table {
+    table-layout: fixed !important;
+    width: 100% !important;
+    max-width: 100% !important;
     border-collapse: collapse !important;
   }
 
@@ -49,12 +50,15 @@ function pdfPageCellCss(opts: { padding?: string; fontSize?: string } = {}): str
     vertical-align: middle !important;
     font-size: ${fontSize} !important;
     line-height: 1.15 !important;
-    word-break: keep-all !important;
+    overflow: hidden !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+    white-space: normal !important;
   }
 
   /* حدود رؤوس الأعمدة بخط أسود غامق وسميك */
   .pdf-page th {
-    font-size: 18px !important;
+    font-size: ${headerFontSize} !important;
     font-weight: 900 !important;
     border: 2px solid #000 !important;
     white-space:normal !important; 
@@ -63,7 +67,7 @@ function pdfPageCellCss(opts: { padding?: string; fontSize?: string } = {}): str
 
   .pdf-page .num { 
     font-family: 'Times New Roman', Times, serif !important; 
-    font-size: 15.5px !important; 
+    font-size: ${fontSize} !important;
     font-weight: 900 !important; 
     white-space: nowrap !important; 
 
@@ -71,12 +75,32 @@ function pdfPageCellCss(opts: { padding?: string; fontSize?: string } = {}): str
 
   .pdf-page .pdf-cell-text {
     display: block !important;
-    width:auto!important;
+    width: 100% !important;
     text-align: center !important;
     color: #000 !important;
     font-weight: 800 !important;
     margin: 0 auto !important;
-    white-space: nowrap !important; 
+    white-space: nowrap !important;
+  }
+
+  .pdf-page .text-cell,
+  .pdf-page .text-cell .pdf-cell-text {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+  }
+
+  .pdf-page .num,
+  .pdf-page .numeric-cell,
+  .pdf-page .date-cell,
+  .pdf-page .compact-cell,
+  .pdf-page .num .pdf-cell-text,
+  .pdf-page .numeric-cell .pdf-cell-text,
+  .pdf-page .date-cell .pdf-cell-text,
+  .pdf-page .compact-cell .pdf-cell-text {
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
   }
   `;
 }
@@ -259,9 +283,16 @@ async function htmlTableToPdfPaginated(opts: {
     pdfLayout = 'default',
   } = opts;
   const isWideCentered = pdfLayout === 'wide-centered';
-  const pageWidthPx = opts.pageWidthPx ?? (isWideCentered ? 1600 : (orientation === 'landscape' ? 1123 : 794));
+  const pageWidthPx = opts.pageWidthPx ?? (isWideCentered
+    ? (orientation === 'portrait' ? 1123 : 1600)
+    : (orientation === 'landscape' ? 1123 : 794));
   const cellPadding = isWideCentered ? '3px 4px' : '3px 4px';
-  const cellFontSize = isWideCentered ? 'clamp(14px, 0.9vw, 15px)' : 'clamp(14px, 1.05vw, 16px)';
+  const cellFontSize = orientation === 'portrait'
+    ? (isWideCentered ? 'clamp(8px, 0.9vw, 10px)' : 'clamp(8px, 1vw, 11px)')
+    : (isWideCentered ? 'clamp(14px, 0.9vw, 15px)' : 'clamp(14px, 1.05vw, 16px)');
+  const headerFontSize = orientation === 'portrait'
+    ? 'clamp(8px, 0.95vw, 10px)'
+    : 'clamp(14px, 0.9vw, 16px)';
   const layoutCss = isWideCentered ? `
     .pdf-page {
       width: 100% !important;
@@ -309,7 +340,7 @@ async function htmlTableToPdfPaginated(opts: {
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
       <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       <style>${css}</style>
-      <style>${pdfPageCellCss({ padding: cellPadding, fontSize: cellFontSize })}</style>
+      <style>${pdfPageCellCss({ padding: cellPadding, fontSize: cellFontSize, headerFontSize })}</style>
       <style>${layoutCss}</style>
       </head><body style="margin:0; padding:0;"><div class="pdf-page">${fullHtml}</div></body></html>`);
     mdoc.close();
@@ -690,8 +721,18 @@ export async function exportTablePdf(opts: {
   fileName: string;
   reportDate?: string;
   pdfLayout?: 'default' | 'wide-centered';
+  orientation?: 'portrait' | 'landscape';
 }): Promise<void> {
-  const { title, columns, rows, numericKeys = [], fileName, reportDate, pdfLayout = 'default' } = opts;
+  const {
+    title,
+    columns,
+    rows,
+    numericKeys = [],
+    fileName,
+    reportDate,
+    pdfLayout = 'default',
+    orientation = 'landscape',
+  } = opts;
   const safeDate = reportDate || new Date().toISOString().slice(0, 10);
 
   await htmlTableToPdfPaginated({
@@ -701,7 +742,7 @@ export async function exportTablePdf(opts: {
     numericKeys,
     css: tablePrintStyles,
     fileName: `${fileName}-${safeDate}.pdf`,
-    orientation: 'landscape',
+    orientation,
     reportDate,
     pdfLayout,
   });

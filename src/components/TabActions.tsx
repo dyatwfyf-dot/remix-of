@@ -28,6 +28,7 @@ type Props = {
   className?: string;
   printLabel?: string;
   pdfLayout?: "default" | "wide-centered";
+  pdfOrientation?: "portrait" | "landscape";
   additionalWebActions?: WebActionItem[];
   webClassName?: string;
 };
@@ -42,6 +43,7 @@ export default function TabActions({
   className = "",
   printLabel = "طباعة",
   pdfLayout = "default",
+  pdfOrientation = "landscape",
   additionalWebActions = [],
   webClassName = "",
 }: Props) {
@@ -67,11 +69,13 @@ export default function TabActions({
       <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       <style>
         ${printStyles}
-        @page { 
-        margin: 6mm; }
+        @page { size: A4 ${pdfOrientation}; margin: 4mm; }
         @media print {
           * { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          body { margin: 0; padding: 4mm 6mm; color: #000 !important; font-weight: 600; }
+          body { margin: 0; padding: 2mm 3mm; color: #000 !important; font-weight: 600; }
+          table { table-layout: fixed !important; width: 100% !important; max-width: 100% !important; }
+          th, td { min-width: 0 !important; max-width: 100% !important; overflow: hidden !important; white-space: normal !important; overflow-wrap: anywhere !important; }
+          .num, .numeric-cell, .date-cell, .compact-cell { white-space: nowrap !important; overflow-wrap: normal !important; }
           th, td { 
         color: #000 !important; font-weight: 700; }
         }
@@ -101,7 +105,7 @@ export default function TabActions({
     if (pdfBusy) return;
     setPdfBusy(true);
     try {
-      await exportTablePdf({ title, columns, rows, numericKeys, fileName, reportDate, pdfLayout });
+      await exportTablePdf({ title, columns, rows, numericKeys, fileName, reportDate, pdfLayout, orientation: pdfOrientation });
       toast.success("تم تنزيل الملف بنجاح");
     } catch (err) {
       console.error("PDF export error:", err);
