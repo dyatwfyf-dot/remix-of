@@ -1174,7 +1174,9 @@ const exportToPDF = async (
         padding-bottom: 4px;
         margin-bottom: 5px;
       }
-      .doc-header.title { text-align:center; }
+      .doc-header.title {
+      text-align:center;
+       font-family:cairo; }
       .doc-header h1 { 
   font-size: 18px; 
  font-weight: 1000; 
@@ -1199,7 +1201,7 @@ line-height: 1.5;
 
       table {
   font-size:${fontSizePx}px;
-  table-layout: fixed !important;
+  table-layout: auto !important;
   width: 100% !important;
   max-width: 100% !important;
 	border: 1px solid #000;
@@ -1292,6 +1294,7 @@ justify-content:center !important; /* التمركز الأفقي للمحتوى
         padding: 5px 5px !important;
         text-align: center !important;
         vertical-align: middle !important;
+   white-space: normal !important;
       }
       tbody tr:nth-child(even) td { background: ${colorTokens.zebra} !important; }
       td.t-fees { background: ${colorTokens.fees} !important; }
