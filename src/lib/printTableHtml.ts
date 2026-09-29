@@ -16,7 +16,7 @@ export const reportLetterheadHtml = () => `
 export const reportLetterheadRowHtml = (columnCount: number) => `
   <tr class="report-letterhead-row">
     <th class="report-letterhead-cell" colspan="${Math.max(1, Math.floor(columnCount))}">
-      <img class="report-letterhead-image" style="display:block;width:100%;max-width:100%;height:30mm;max-height:30mm;object-fit:content;object-position:top;margin:0;" src="${REPORT_LETTERHEAD_SRC}" alt="ترويسة المجلس اليمني للاختصاصات الطبية" />
+      <img class="report-letterhead-image" style="display:block;width:100%;max-width:100%;height:30mm;max-height:30mm;object-fit:contain;object-position:top;margin:0;" src="${REPORT_LETTERHEAD_SRC}" alt="ترويسة المجلس اليمني للاختصاصات الطبية" />
     </th>
   </tr>
 `;
@@ -61,16 +61,16 @@ export const tablePrintStyles = `
   }
   
   * { 
-  margin: 0; 
-  padding: 0; 
-  box-sizing:border-box; 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
   }
   html { margin: 0; padding: 0; }
   body {
     font-family: cairo;
     padding: 1mm 1mm;
     color: #000 !important;
-    direction:rtl;
+    direction: rtl;
     margin: 0;
     width: 100%;
     box-sizing: border-box;
@@ -92,7 +92,7 @@ export const tablePrintStyles = `
   .sub {
     text-align: center;
     color: #000 !important;
-    margin-bottom:2px;
+    margin-bottom: 2px;
     font-size: 14.5px;
     font-weight: 800;
     border: 1px solid #000;
@@ -102,10 +102,10 @@ export const tablePrintStyles = `
   /* احتواء تلقائي كامل للجدول وتوسيط تام للمحتوى */
   table {
     width: 100%;
-    max-width:100%;
+    max-width: 100%;
     border-collapse: collapse;
     table-layout: auto !important;
-    font-size:16px;
+    font-size: 16px;
     text-align: center;
   }
   
@@ -117,12 +117,12 @@ export const tablePrintStyles = `
     vertical-align: middle !important;
     color: #000 !important;
     font-weight: 800 !important;
-    line-height: 1!important;
-    height:100% !important;
+    line-height: 1 !important;
+    height: 100% !important;
     min-height: auto;
     font-size: 14px !important;
-    white-space:nowrap !important;
-    width:100% !important;
+    white-space: nowrap !important;
+    width: 100% !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
   }
@@ -150,63 +150,62 @@ export const tablePrintStyles = `
     width: auto !important;
   }
 
-/* تنسيق نص الخلايا بشكل يدعم الـ Flexbox والتوسيط الصحيح */
-.pdf-cell-text {
-  display: flex !important;
-  flex-direction: column;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 100% !important;
-  height: 100% !important;
-  text-align: center !important;
-  white-space:normal !important;
-  word-break: break-word!important;
-  overflow-wrap: break-word !important;
-}
+  /* تنسيق نص الخلايا بشكل يدعم الـ Flexbox والتوسيط الصحيح */
+  .pdf-cell-text {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    text-align: center !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
 
-.text-cell,
-.long-text-cell {
-  white-space:normal !important;
-  overflow-wrap: break-word !important;
-  word-break:break-word !important;
-  width:100% !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-}
+  .text-cell,
+  .long-text-cell {
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+    width: 100% !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+  }
 
-.long-text-cell .pdf-cell-text,
-.text-cell .pdf-cell-text {
-  white-space:normal !important;
-  overflow-wrap: break-word !important;
-  word-break:break-word !important;
-}
+  .long-text-cell .pdf-cell-text,
+  .text-cell .pdf-cell-text {
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+  }
 
-/* تنسيق خلايا الجدول العامة بدون إجبار الـ nowrap العمومي */
-tbody td,
-tfoot td {
-  color: #000 !important;
-  -webkit-text-fill-color: #000 !important;
-  text-shadow: none !important;
-  font-weight: 800 !important;
-  vertical-align: middle !important;
-}
+  /* تنسيق خلايا الجدول العامة */
+  tbody td,
+  tfoot td {
+    color: #000 !important;
+    -webkit-text-fill-color: #000 !important;
+    text-shadow: none !important;
+    font-weight: 800 !important;
+    vertical-align: middle !important;
+  }
 
-/* إذا أردت أسطاراً معينة تمنع التفافها، ضع لها كلاس خاص مثل .no-wrap بدلاً من فرضها على الكل */
-tbody td .no-wrap {
-  white-space: normal !important;
-}
+  tbody td .no-wrap {
+    white-space: normal !important;
+  }
 
-/* حدود رؤوس الأعمدة بخط أسود غامق وسميك */
-thead th {
-  background: #f5deb3 !important;
-  color: #171412 !important;
-  font-weight: 900 !important;
-  font-size: 18px;
-  border: 1px solid #000 !important;
-  white-space: normal !important;
-  vertical-align: middle !important;
-  text-align: center !important;
-}
+  /* حدود رؤوس الأعمدة بخط أسود غامق وسميك */
+  thead th {
+    background: #f5deb3 !important;
+    color: #171412 !important;
+    font-weight: 900 !important;
+    font-size: 18px;
+    border: 1px solid #000 !important;
+    white-space: normal !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+  }
 
   tbody tr:nth-child(even) td { background: #f8fafc !important; }
 
@@ -226,14 +225,14 @@ thead th {
   }
   
   .report-letterhead-block {
-    display:flex;
+    display: flex;
     position: relative;
     top: 0;
     width: 100%;
     height: 34mm;
     min-height: 34mm;
     max-height: 34mm;
-    align-items:center;
+    align-items: center;
     justify-content: center;
     margin: 0 auto 5mm;
     page-break-before: avoid;
@@ -242,12 +241,12 @@ thead th {
     break-after: avoid;
   }
   .report-letterhead-image {
-    display:flex;
+    display: flex;
     width: 100%;
-    max-width:100%;
+    max-width: 100%;
     height: 100%;
-    max-height:auto;
-    object-fit: content;
+    max-height: auto;
+    object-fit: contain;
     object-position: top;
     image-rendering: auto;
     margin: 0;
@@ -273,28 +272,27 @@ thead th {
     border: 0 !important;
     background: #fff !important;
   }
-.report-letterhead-row.report-letterhead-image {
-    display:block!important;
-    width:100% !important;
+  .report-letterhead-row.report-letterhead-image {
+    display: block !important;
+    width: 100% !important;
     max-width: 100% !important;
     height: 30mm !important;
     max-height: 30mm !important;
-object-fit: contain !important; 
-    /* للحفاظ على أبعاد الشعار من التشوه */
-    object-position:top !important;
-    margin: 0 auto!important;
+    object-fit: contain !important;
+    object-position: top !important;
+    margin: 0 auto !important;
   }
   
   .pdf-page.report-letterhead-cell {
-    height: 30mm!important;
-    min-height:30mm!important;
-    padding: 0!important;
-    border: 0!important;
-    background: #fff!important;
+    height: 30mm !important;
+    min-height: 30mm !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: #fff !important;
   }
-thead { display: table-header-group; }
-tfoot { display: table-footer-group; }
-tr { page-break-inside:avoid; }
+  thead { display: table-header-group; }
+  tfoot { display: table-footer-group; }
+  tr { page-break-inside: avoid; }
   ${noteRowCss}
   ${runningLetterheadCss}
 `;
@@ -333,6 +331,11 @@ export function buildTableHtml(opts: {
   const sub =
     subtitle ??
     `المجلس اليمني للاختصاصات الطبية - صعدة • تاريخ التقرير: ${reportDateLabel} • عدد السجلات: ${rows.length}`;
+
+  const titleRow = `<tr class="doc-title-row"><td colspan="${columns.length + 1}" class="doc-title-cell">
+    <h1>${escapeHtml(title)}</h1>
+    <div class="sub">${escapeHtml(sub)}</div>
+  </td></tr>`;
 
   const head = `${titleRow}<tr><th class="idx numeric-cell">م</th>${columns
     .map((c) => `<th class="${getCellClass(c)}"><span class="pdf-cell-text">${escapeHtml(c.label)}</span></th>`)
