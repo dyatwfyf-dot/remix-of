@@ -101,7 +101,7 @@ export const tablePrintStyles = `
   
   /* احتواء تلقائي كامل للجدول وتوسيط تام للمحتوى */
   table {
-    width: 100%;
+    width:100%;
     max-width: 100%;
     border-collapse: collapse;
     table-layout: auto !important;
