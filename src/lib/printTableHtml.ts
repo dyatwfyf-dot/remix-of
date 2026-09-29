@@ -16,7 +16,7 @@ export const reportLetterheadHtml = () => `
 export const reportLetterheadRowHtml = (columnCount: number) => `
   <tr class="report-letterhead-row">
     <th class="report-letterhead-cell" colspan="${Math.max(1, Math.floor(columnCount))}">
-      <img class="report-letterhead-image" style="display:block;width:100%;max-width:100%;height:30mm;max-height:30mm;object-fit:contain;object-position:top;margin:0;" src="${REPORT_LETTERHEAD_SRC}" alt="ترويسة المجلس اليمني للاختصاصات الطبية" />
+      <img class="report-letterhead-image" style="display:block;width:100%;max-width:100%;height:30mm;max-height:30mm;object-fit:fill;object-position:top;margin:0;" src="${REPORT_LETTERHEAD_SRC}" alt="ترويسة المجلس اليمني للاختصاصات الطبية" />
     </th>
   </tr>
 `;
@@ -56,19 +56,15 @@ export const escapeHtml = (s: any) =>
  */
 export const tablePrintStyles = `
   @page {
-    size: A4 portrait;
-    margin: 1mm;
+    size: A4 landscape;
+    margin: 6mm;
   }
   
-  * { 
-    margin: 0; 
-    padding: 0; 
-    box-sizing: border-box; 
-  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
   html { margin: 0; padding: 0; }
   body {
-    font-family: cairo;
-    padding: 1mm 1mm;
+    font-family: 'Cairo', 'Tajawal', Tahoma, Arial, sans-serif;
+    padding: 3mm 4mm;
     color: #000 !important;
     direction: rtl;
     margin: 0;
@@ -76,7 +72,6 @@ export const tablePrintStyles = `
     box-sizing: border-box;
     font-weight: 1000;
     font-size: 16px;
-    text-align: center;
     line-height: 1.5;
     background: #fff;
     -webkit-print-color-adjust: exact !important;
@@ -92,37 +87,35 @@ export const tablePrintStyles = `
   .sub {
     text-align: center;
     color: #000 !important;
-    margin-bottom: 2px;
+    margin-bottom: 5px;
     font-size: 14.5px;
     font-weight: 800;
-    border: 1px solid #000;
-    padding-bottom: 2px;
+    border-bottom:1px solid #b8860b;
+    padding-bottom: 4px;
   }
   
   /* احتواء تلقائي كامل للجدول وتوسيط تام للمحتوى */
   table {
-    width:100%;
+    width: 100%;
     max-width: 100%;
     border-collapse: collapse;
     table-layout: auto !important;
-    font-size: 16px;
-    text-align: center;
+    font-size: clamp(13px, 1.05vw, 13px);
   }
   
-  /* حدود الخلايا العادية بلون أسود بحجم 1px مع احتواء عمودي وأفقي متوازن */
-  th {
-    border: 1px solid #000 !important;
-    padding: 2px 2px !important;
+  th, td {
+    border: 1px solid #000;
+    padding: 6px 8px !important;
     text-align: center !important;
-    vertical-align: middle !important;
+    vertical-align: middle !important; /* التوسيط العمودي تماماً بين الجزئين العلوي والسفلي */
     color: #000 !important;
     font-weight: 800 !important;
-    line-height: 1 !important;
-    height: 100% !important;
-    min-height: auto;
-    font-size: 14px !important;
-    white-space: nowrap !important;
-    width: 100% !important;
+  line-height: 1.5!important;
+    height: auto !important;
+    min-height: 50px;
+    font-size: clamp(14px, 1.15vw, 14px) !important;
+    white-space: nowrap !important; /* منع التفاف النصوص نهائياً في كافة الخلايا */
+    width: max-content !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
   }
@@ -145,68 +138,59 @@ export const tablePrintStyles = `
     -webkit-text-fill-color: #000 !important;
     text-shadow: none !important;
     font-weight: 900 !important;
-    line-height: 1.5 !important;
+    line-height: 1.15 !important;
     font-size: clamp(14px, 1.9vw, 14px) !important;
-    width: auto !important;
+    width: max-content !important;
   }
 
-  /* تنسيق نص الخلايا بشكل يدعم الـ Flexbox والتوسيط الصحيح */
   .pdf-cell-text {
     display: flex !important;
-    flex-direction: column;
-    align-items: center !important;
-    justify-content: center !important;
+align-items: center !important;     /* توسيط عمودي للعنصر الداخلي */
+    justify-content: center !important; /* توسيط أفقـي للعنصر الداخلي */
     width: 100% !important;
     height: 100% !important;
     text-align: center !important;
-    white-space: normal !important;
-    word-break: break-word !important;
-    overflow-wrap: break-word !important;
+    white-space: normal!important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
   }
 
+  /* ضمان منع التفاف النصوص الطويلة وإبقائها في سطر واحد داخل المساحة المتاحة */
   .text-cell,
   .long-text-cell {
-    white-space: normal !important;
-    overflow-wrap: break-word !important;
-    word-break: break-word !important;
-    width: 100% !important;
+    white-space: normal!important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
+    width: max-content !important;
     text-align: center !important;
     vertical-align: middle !important;
   }
-
   .long-text-cell .pdf-cell-text,
   .text-cell .pdf-cell-text {
-    white-space: normal !important;
-    overflow-wrap: break-word !important;
-    word-break: break-word !important;
+    white-space: normal!important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
   }
-
-  /* تنسيق خلايا الجدول العامة */
+  
   tbody td,
-  tfoot td {
+  tfoot td,
+  tbody td *,
+  tfoot td * {
     color: #000 !important;
     -webkit-text-fill-color: #000 !important;
     text-shadow: none !important;
     font-weight: 800 !important;
+    white-space: nowrap !important;
     vertical-align: middle !important;
   }
-
-  tbody td .no-wrap {
-    white-space: normal !important;
-  }
-
-  /* حدود رؤوس الأعمدة بخط أسود غامق وسميك */
   thead th {
     background: #f5deb3 !important;
     color: #171412 !important;
     font-weight: 900 !important;
-    font-size: 18px;
-    border: 1px solid #000 !important;
-    white-space: normal !important;
+    font-size: 14px;
+    white-space: nowrap !important;
     vertical-align: middle !important;
-    text-align: center !important;
   }
-
   tbody tr:nth-child(even) td { background: #f8fafc !important; }
 
   .idx { 
@@ -219,7 +203,7 @@ export const tablePrintStyles = `
   .total-row td {
     background: #fef3c7 !important;
     font-weight: 800;
-    border: 1px solid #000;
+    border-top: 1.5pt solid #92400e;
     white-space: nowrap !important;
     vertical-align: middle !important;
   }
@@ -232,7 +216,7 @@ export const tablePrintStyles = `
     height: 34mm;
     min-height: 34mm;
     max-height: 34mm;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     margin: 0 auto 5mm;
     page-break-before: avoid;
@@ -241,12 +225,12 @@ export const tablePrintStyles = `
     break-after: avoid;
   }
   .report-letterhead-image {
-    display: flex;
+    display: block;
     width: 100%;
     max-width: 100%;
     height: 100%;
-    max-height: auto;
-    object-fit: contain;
+    max-height: 100%;
+    object-fit: fill;
     object-position: top;
     image-rendering: auto;
     margin: 0;
@@ -262,8 +246,7 @@ export const tablePrintStyles = `
   .doc-title-row td.doc-title-cell {
     border: none !important;
     background: #fff !important;
-    padding: 2px 0 2px !important;
-    text-align: center;
+    padding: 2px 0 6px !important;
   }
   .report-letterhead-row .report-letterhead-cell {
     height: 30mm !important;
@@ -272,27 +255,28 @@ export const tablePrintStyles = `
     border: 0 !important;
     background: #fff !important;
   }
-  .report-letterhead-row.report-letterhead-image {
+  .report-letterhead-row .report-letterhead-image {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
     height: 30mm !important;
     max-height: 30mm !important;
-    object-fit: contain !important;
-    object-position: top !important;
-    margin: 0 auto !important;
+    object-fit: fill !important;
+    object-position:top!important;
+    margin: 0 !important;
   }
-  
-  .pdf-page.report-letterhead-cell {
+  .pdf-page .report-letterhead-cell {
     height: 30mm !important;
     min-height: 30mm !important;
     padding: 0 !important;
     border: 0 !important;
     background: #fff !important;
   }
+
   thead { display: table-header-group; }
   tfoot { display: table-footer-group; }
   tr { page-break-inside: avoid; }
+
   ${noteRowCss}
   ${runningLetterheadCss}
 `;

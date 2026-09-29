@@ -28,7 +28,6 @@ type Props = {
   className?: string;
   printLabel?: string;
   pdfLayout?: "default" | "wide-centered";
-  pdfOrientation?: "portrait" | "landscape";
   additionalWebActions?: WebActionItem[];
   webClassName?: string;
 };
@@ -43,7 +42,6 @@ export default function TabActions({
   className = "",
   printLabel = "طباعة",
   pdfLayout = "default",
-  pdfOrientation = "portrait",
   additionalWebActions = [],
   webClassName = "",
 }: Props) {
@@ -69,13 +67,11 @@ export default function TabActions({
       <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       <style>
         ${printStyles}
-        @page { size: A4 ${pdfOrientation}; margin: 4mm; }
+        @page { 
+        margin: 6mm; }
         @media print {
           * { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          body { margin: 0; padding: 2mm 3mm; color: #000 !important; font-weight: 600; }
-table { table-layout:auto !important; width: 100% !important; max-width: 100% !important; }
-          th, td { min-width: 0 !important; max-width: 100% !important; overflow: hidden !important; white-space: normal !important; overflow-wrap: anywhere !important; }
-          .num, .numeric-cell, .date-cell, .compact-cell { white-space: nowrap !important; overflow-wrap: normal !important; }
+          body { margin: 0; padding: 4mm 6mm; color: #000 !important; font-weight: 600; }
           th, td { 
         color: #000 !important; font-weight: 700; }
         }
@@ -105,7 +101,7 @@ table { table-layout:auto !important; width: 100% !important; max-width: 100% !i
     if (pdfBusy) return;
     setPdfBusy(true);
     try {
-      await exportTablePdf({ title, columns, rows, numericKeys, fileName, reportDate, pdfLayout, orientation: pdfOrientation });
+      await exportTablePdf({ title, columns, rows, numericKeys, fileName, reportDate, pdfLayout });
       toast.success("تم تنزيل الملف بنجاح");
     } catch (err) {
       console.error("PDF export error:", err);
@@ -187,44 +183,44 @@ table { table-layout:auto !important; width: 100% !important; max-width: 100% !i
 
   return (
     <>
-<div className={`web-only-actions ${webClassName}`}>
+      <div className={`web-only-actions ${webClassName}`}>
         <WebActionMenu label={`إجراءات ${title}`} actions={webActions} className="w-full sm:w-auto" />
       </div>
-<div className={`apk-only-actions flex gap-2 ${className}`}>
-<button
+      <div className={`apk-only-actions flex flex-wrap gap-2 ${className}`}>
+        <button
           onClick={handlePrint}
-className="flex item-center gap-1.5 px-3 py-1.5 bg-red/900 text-white border border-[#10528e]/30 rounded-lg text-xs font-bold shadow-sm hover:bg-blue-50 active:scale-95 transition-all cursor-pointer"
-title="طباعة هذا التبويب"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-[#10528e] border border-[#10528e]/30 rounded-lg text-xs font-bold shadow-sm hover:bg-blue-50 active:scale-95 transition-all cursor-pointer"
+          title="طباعة هذا التبويب"
         >
           <Printer className="w-4 h-4" /> {printLabel}
         </button>
- <button
-onClick={handleDownloadPdf}
-disabled={pdfBusy}
-className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10528e] text-white rounded-lg text-xs font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-wait"
- title="تنزيل PDF بنفس تنسيق الطباعة"
+        <button
+          onClick={handleDownloadPdf}
+          disabled={pdfBusy}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10528e] text-white rounded-lg text-xs font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-wait"
+          title="تنزيل PDF بنفس تنسيق الطباعة"
         >
           {pdfBusy ? (
             <>
-<Loader2 className="w-4 h-4 animate-spin" /> جارٍ التحضير…
+              <Loader2 className="w-4 h-4 animate-spin" /> جارٍ التحضير…
             </>
           ) : (
             <>
-<Download className="w-4 h-4" /> تنزيل PDF
+              <Download className="w-4 h-4" /> تنزيل PDF
             </>
           )}
         </button>
         <button
-onClick={handleExcel}
- className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700 active:scale-95 transition-all cursor-pointer"
- title="تصدير إلى Excel اجماليات"
-        >تصدير EXL اجمالي
-          <FileSpreadsheet className="w-4 h-4" />
+          onClick={handleExcel}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700 active:scale-95 transition-all cursor-pointer"
+          title="تصدير إلى Excel"
+        >
+          <FileSpreadsheet className="w-4 h-4" /> تصدير Excel
         </button>
         {onClear && (
-<button
- onClick={handleClear}
- className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-rose-700 active:scale-95 transition-all cursor-pointer"
+          <button
+            onClick={handleClear}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-rose-700 active:scale-95 transition-all cursor-pointer"
             title="مسح بيانات هذا التبويب"
           >
             <Trash2 className="w-4 h-4" /> مسح البيانات
