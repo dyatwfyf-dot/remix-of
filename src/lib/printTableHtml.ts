@@ -63,10 +63,10 @@ export const tablePrintStyles = `
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { margin: 0; padding: 0; }
   body {
-    font-family: 'Cairo', 'Tajawal', Tahoma, Arial, sans-serif;
+    font-family: 'Cairo';
     padding: 3mm 4mm;
     color: #000 !important;
-    direction: rtl;
+    direction:rtl;
     margin: 0;
     width: 100%;
     box-sizing: border-box;
@@ -96,10 +96,10 @@ export const tablePrintStyles = `
   /* احتواء تلقائي كامل للجدول وتوسيط تام للمحتوى */
   table {
     width: 100%;
-    max-width: 100%;
+    max-width:auto;
     border-collapse: collapse;
     table-layout: auto !important;
-    font-size: clamp(13px, 1.05vw, 13px);
+    font-size:16px;
   }
   
   th, td {
@@ -157,16 +157,16 @@ align-items: center !important;     /* توسيط عمودي للعنصر الد
   /* ضمان منع التفاف النصوص الطويلة وإبقائها في سطر واحد داخل المساحة المتاحة */
   .text-cell,
   .long-text-cell {
-    white-space: nowrap !important;
+    white-space: normal !important;
     overflow-wrap: normal !important;
     word-break: keep-all !important;
-    width:auto !important;
+    width:50% !important;
     text-align: center !important;
     vertical-align: middle !important;
   }
   .long-text-cell .pdf-cell-text,
   .text-cell .pdf-cell-text {
-    white-space: normal!important;
+white-space: normal!important;
     overflow-wrap: normal !important;
     word-break: keep-all !important;
   }
@@ -186,7 +186,7 @@ align-items: center !important;     /* توسيط عمودي للعنصر الد
     background: #f5deb3 !important;
     color: #171412 !important;
     font-weight: 900 !important;
-    font-size: 14px;
+    font-size: 18px;
     white-space: normal !important;
     vertical-align: middle !important;
   }

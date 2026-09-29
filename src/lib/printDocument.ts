@@ -72,7 +72,7 @@ font-size: 15px !important;
     color: #000 !important; 
     font-weight: 900 !important; 
     white-space: nowrap !important;
-    width:auto !important;
+    width:100% !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
   }
@@ -83,7 +83,7 @@ font-size: 15px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 100% !important;
+    width: auto!important;
     height: auto !important;
     text-align: center !important;
     white-space:normal !important;
@@ -124,10 +124,10 @@ font-size: 15px !important;
   /* إجبار خلايا النصوص الطويلة أيضاً على الامتداد دون التفاف وتوسيطها */
   .long-text-cell,
   .text-cell {
-    white-space: nowrap !important;
+    white-space: normal !important;
     overflow-wrap: normal !important;
     word-break: keep-all !important;
-    width: max-content !important;
+    width:50% !important;
     text-align: center !important;
     vertical-align: middle !important;
   }
@@ -177,10 +177,10 @@ text-align: center;
       font-size:16px; 
       color: #000 !important; 
       font-weight: 700 !important; 
-      white-space: nowrap !important;
+      white-space:normal !important;
       word-break: keep-all !important;
       overflow-wrap: normal !important;
-      width: max-content !important;
+      width: 50% !important;
       vertical-align: middle !important;
     }
   }
