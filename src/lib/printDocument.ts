@@ -71,7 +71,7 @@ font-size: 15px !important;
     font-size: 15px; 
     color: #000 !important; 
     font-weight: 900 !important; 
-    white-space: nowrap !important;
+    white-space:normal !important;
     width:100% !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
@@ -83,7 +83,7 @@ font-size: 15px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: auto!important;
+    width:100% !important;
     height: auto !important;
     text-align: center !important;
     white-space:normal !important;
@@ -180,7 +180,7 @@ text-align: center;
       white-space:normal !important;
       word-break: keep-all !important;
       overflow-wrap: normal !important;
-      width: 50% !important;
+      width: 100% !important;
       vertical-align: middle !important;
     }
   }

@@ -63,7 +63,7 @@ export const tablePrintStyles = `
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { margin: 0; padding: 0; }
   body {
-    font-family: 'Cairo';
+    font-family: cairo;
     padding: 3mm 4mm;
     color: #000 !important;
     direction:rtl;
@@ -106,20 +106,18 @@ export const tablePrintStyles = `
     border: 1px solid #000;
     padding: 6px 8px !important;
     text-align: center !important;
-    vertical-align: middle !important; /* التوسيط العمودي تماماً بين الجزئين العلوي والسفلي */
+    vertical-align: middle !important;
     color: #000 !important;
     font-weight: 800 !important;
   line-height: 1.5!important;
     height: 100% !important;
     min-height:auto;
     font-size: clamp(14px, 1.15vw, 14px) !important;
-    white-space: nowrap !important; /* منع التفاف النصوص نهائياً في كافة الخلايا */
+    white-space: normal !important; 
     width:100% !important;
     word-break: keep-all !important;
-    overflow-wrap:nowrap !important;
+    overflow-wrap:normal !important;
   }
-
-  /* منع التفاف النصوص وتوسيط خلايا الأرقام والتواريخ والأكواد */
   .num,
   .numeric-cell,
   .date-cell,
@@ -139,7 +137,7 @@ export const tablePrintStyles = `
     font-weight: 900 !important;
     line-height: 1.15 !important;
     font-size: clamp(14px, 1.9vw, 14px) !important;
-    width: max-content !important;
+    width:auto !important;
   }
 
   .pdf-cell-text {
@@ -179,7 +177,7 @@ white-space: normal!important;
     -webkit-text-fill-color: #000 !important;
     text-shadow: none !important;
     font-weight: 800 !important;
-    white-space: nowrap !important;
+    white-space: normal !important;
     vertical-align: middle !important;
   }
   thead th {
