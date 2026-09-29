@@ -4,8 +4,8 @@
 
 /* تحديد مقاس وإتجاه الصفحة ليكون A4 أفقي (Landscape) عند المعاينة والطباعة */
 @page {
-  size: A4 landscape;
-  margin: 8mm;
+  size: A4 portrait;
+  margin: 2mm;
 }
 
 @font-face {
@@ -41,8 +41,8 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
 }
 
 @font-face {
-  font-family: "Mohammad Bold Art";
-src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
+  font-family: "cairo";
+src: url("/Cairo-Regular-normal.ttf") format("truetype");
   font-style: normal;
   font-weight: 400 900;
   font-display: swap;
@@ -50,8 +50,8 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
 
 /* خط التطبيق العام (المهند) */
 @font-face {
-  font-family: "Mohammad Bold Art";
-  src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
+  font-family: "cairo";
+  src: url("/Cairo-Regular-normal.ttf") format("truetype");
   font-style: normal;
   font-weight: 600 900;
   font-display: swap;
@@ -67,9 +67,9 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
 }
 
 :root {
-  --font-ui: "Mohammad Bold Art";
+  --font-ui: "cairo";
   --font-display: "Al Qabas Bold", "Noto Kufi Arabic", "Noto Sans Arabic", "Cairo", sans-serif;
-  --font-heading: "Al Qabas Bold", "Noto Kufi Arabic", "Noto Sans Arabic", "Cairo", sans-serif;
+  --font-heading: "Al Qabas Bold";
   --font-data: "Times New Roman", "Noto Sans Arabic", "Segoe UI", sans-serif;
 }
 
@@ -235,7 +235,7 @@ src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
   table td {
     text-align: center;
     vertical-align: middle;
-    white-space: normal; /* السماح بالتفاف النصوص الطويلة تلقائياً */
+    white-space: nowrap; /* السماح بالتفاف النصوص الطويلة تلقائياً */
     overflow-wrap: break-word !important; /* كسر الكلمات الطويلة عند الحاجة لمنع التمدد الزائد */
     word-break: normal !important;
     padding: 5px 6px !important;

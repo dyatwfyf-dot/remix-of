@@ -54,8 +54,8 @@ const baseCss = (
     border-collapse: collapse;
 
     border: solid 1px #000; 
-table-layout: auto !important; 
-font-size: 15px!important;
+table-layout:auto !important; 
+font-size: 15px !important;
   }
   thead { display: table-header-group; }
   tfoot { display: table-footer-group; }
@@ -132,7 +132,7 @@ font-size: 15px!important;
     vertical-align: middle !important;
   }
 
-  th { font-weight: 800; white-space: nowrap !important; vertical-align: middle !important; }
+  th { font-weight: 800; white-space:normal !important; vertical-align: middle !important; }
   img { max-width: 100%; height: auto; display: block; }
 
   /* ترويسة التقرير داخل thead تتكرر مع رؤوس الأعمدة في كل صفحة */

@@ -72,7 +72,6 @@ export const tablePrintStyles = `
     box-sizing: border-box;
     font-weight: 1000;
     font-size: 16px;
-    line-height: 1.5;
     background: #fff;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -111,13 +110,13 @@ export const tablePrintStyles = `
     color: #000 !important;
     font-weight: 800 !important;
   line-height: 1.5!important;
-    height: auto !important;
-    min-height: 50px;
+    height: 100% !important;
+    min-height:auto;
     font-size: clamp(14px, 1.15vw, 14px) !important;
     white-space: nowrap !important; /* منع التفاف النصوص نهائياً في كافة الخلايا */
-    width: max-content !important;
+    width:100% !important;
     word-break: keep-all !important;
-    overflow-wrap: normal !important;
+    overflow-wrap:nowrap !important;
   }
 
   /* منع التفاف النصوص وتوسيط خلايا الأرقام والتواريخ والأكواد */
@@ -158,10 +157,10 @@ align-items: center !important;     /* توسيط عمودي للعنصر الد
   /* ضمان منع التفاف النصوص الطويلة وإبقائها في سطر واحد داخل المساحة المتاحة */
   .text-cell,
   .long-text-cell {
-    white-space: normal!important;
+    white-space: nowrap !important;
     overflow-wrap: normal !important;
     word-break: keep-all !important;
-    width: max-content !important;
+    width:auto !important;
     text-align: center !important;
     vertical-align: middle !important;
   }
@@ -188,7 +187,7 @@ align-items: center !important;     /* توسيط عمودي للعنصر الد
     color: #171412 !important;
     font-weight: 900 !important;
     font-size: 14px;
-    white-space: nowrap !important;
+    white-space: normal !important;
     vertical-align: middle !important;
   }
   tbody tr:nth-child(even) td { background: #f8fafc !important; }
@@ -256,7 +255,7 @@ align-items: center !important;     /* توسيط عمودي للعنصر الد
     background: #fff !important;
   }
   .report-letterhead-row .report-letterhead-image {
-    display: block !important;
+    display: flex !important;
     width: 100% !important;
     max-width: 100% !important;
     height: 30mm !important;
