@@ -56,8 +56,8 @@ export const escapeHtml = (s: any) =>
  */
 export const tablePrintStyles = `
   @page {
-    size: A4 landscape;
-    margin: 6mm;
+    size: A4 portrait;
+    margin: 2mm;
   }
   
   * { margin: 0; padding: 0; box-sizing: border-box; }

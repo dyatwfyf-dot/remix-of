@@ -89,7 +89,7 @@ margin-top: 6px !important;
     overflow: visible !important;
     color: #000000 !important;
     font-weight: 700 !important;
-    white-space: nowrap !important;
+    white-space: normal !important;
     width: 1%;
     word-wrap: normal;
     overflow-wrap: normal;
@@ -107,8 +107,8 @@ margin-top: 6px !important;
   }
 
   th {
-    background-color: #1f7fb8 !important;
-    color: #000000 !important;
+    background-color: #003A7D !important;
+    color: #FFFFFF !important;
     font-weight: 900 !important;
     font-size:16px;
     white-space: normal !important;
