@@ -333,7 +333,7 @@ tr.subtotal-row td {
 }
     tr.total-row td { background: #e03636 !important; font-weight: 900 !important; }
     /* تحسينات محصورة بتقريري كشف الحساب الشهري والإيرادات */
-    @page { size: A4 portrait; margin: 3mm; padding: 0; }
+    @page { size: A4 landscape; margin: 3mm; padding: 0; }
     body { padding: 0 1px; width: 100%; }
     .report-letterhead-row { width: 100%; }
     .report-letterhead-cell { padding: 0 !important; width: 100%; }
@@ -373,7 +373,7 @@ margin-top: 4px; }
       font-variant-numeric: tabular-nums;
       direction: ltr;
     }
-    td.acc { width: auto !important; white-space: nowrap !important; overflow-wrap: break-word !important; word-break: normal !important; }
+    td.acc { width: 100% !important; white-space:normal !important; overflow-wrap: break-word !important; word-break: normal !important; }
     @media print {
       body { padding: 0; }
       @page { size: A4 landscape; margin: 3mm; }
@@ -529,7 +529,7 @@ ${targetedReportLetterheadStyles}
     .report-letterhead-cell { padding: 0 !important; 
     width: 100%; }
     .report-letterhead-image { width: 100% !important; max-width: auto !important; height: 50mm !important; 
-    object-fit:contain !important; margin: 0 !important; }
+    object-fit:content !important; margin: 0 !important; }
     table { width: 100%; max-width: 100%;
   table-layout: auto !important; margin-top: 4px; }
     th:first-child, td:first-child,
@@ -556,7 +556,7 @@ ${targetedReportLetterheadStyles}
       direction: ltr;
     }
     td.acc { width:100% !important;
-white-space: nowrap !important; overflow-wrap: break-word !important; word-break: normal !important; }
+white-space: normal !important; overflow-wrap: break-word !important; word-break: normal !important; }
     @media print {
       body { padding: 0; }
       @page { size: A4 landscape; margin: 3mm; }

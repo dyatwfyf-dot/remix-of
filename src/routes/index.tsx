@@ -233,7 +233,7 @@ function Index() {
       dir="rtl"
     >
       {/* قسم الهيدر العلوي — أزرق ثلجي عصري */}
-      <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 bg-gradient-to-l from-[#2e6b8a] via-[#3d7fa0] to-[#2e6b8a] px-3 py-3 sm:px-5 sm:py-4 border-b border-[#b8d4e8] shadow-sm text-white overflow-hidden">
+<div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 bg-gradient-to-l from-[#2e6b8a] via-[#3d7fa0] to-[#2e6b8a] px-3 py-3 sm:px-5 sm:py-4 border-b border-[#b8d4e8] shadow-sm text-white overflow-hidden">
         {/* خيط زخرفي أعلى الهيدر */}
         <div className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,#b8d4e8,#e8f0f8,#b8d4e8)] opacity-80" />
 
@@ -243,8 +243,8 @@ function Index() {
             <FileSpreadsheet className="w-5 h-5" />
           </div>
           <div className="flex flex-col gap-0.5 min-w-0">
-            <h1 className="text-[clamp(1rem,3.4vw,1.35rem)] font-bold tracking-wide text-white leading-tight truncate sm:whitespace-normal">
-              المجلس اليمني للاختصاصات الطبية
+ <h1 className="text-[clamp(1rem,3.4vw,1.35rem)] font-bold tracking-wide text-white leading-tight truncate sm:whitespace-normal">
+المجلس اليمني للاختصاصات الطبية
             </h1>
             <p className="text-[clamp(0.75rem,2.4vw,0.875rem)] text-[#e8f0f8] font-medium flex items-center gap-1.5 leading-snug min-w-0">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#b8d4e8] shrink-0"></span>

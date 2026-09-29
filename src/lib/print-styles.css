@@ -12,7 +12,7 @@
     padding: 0 !important;
     background: #ffffff !important;
     color: #000000 !important;
-    font-family: 'Cairo';
+    font-family:Cairo;
     direction: rtl;
     line-height: 1.5;
     font-size: 15px;
@@ -114,7 +114,7 @@ margin-top: 6px !important;
     white-space: normal !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
-    width: auto !important;
+    width: 100% !important;
     text-align: center !important;
     vertical-align: middle !important;
   }
