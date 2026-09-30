@@ -403,10 +403,10 @@ className="w-full text-center px-3 py-2 hover:bg-sky-50 text-xs sm:text-xs flex 
 
         <CardContent className="p-0">
           <div className="w-auto overflow-auto max-h-[72vh]">
-<Table className="w-100% table-auto text-center border-collapse border border-black">
+<Table className="w-auto table-auto text-center border-collapse border border-black">
  <TableHeader className="bg-slate-100/90 sticky top-0 z-10 border-b border-slate-200 whitespace-normal">
                 <TableRow>
-<TableHead className="w-10 text-center font-bold text-slate-700">#</TableHead>
+<TableHead className="w-auto text-center font-bold text-slate-700">#</TableHead>
                   {COLS.map((c) => (
                     <TableHead key={c.key} className="text-center font-bold text-slate-800 text-xs px-2 py-2">
                       <div className="flex flex-col items-center">
@@ -418,12 +418,12 @@ className="w-full text-center px-3 py-2 hover:bg-sky-50 text-xs sm:text-xs flex 
                           value={filters[c.key] || ""}
                           onChange={(e) => setFilter(c.key, e.target.value)}
                           placeholder="فلتر..."
-                          className="mt-1 px-1.5 py-0.5 rounded-md text-[10px] w-20 text-center bg-white border border-slate-300 focus:outline-none focus:ring-1 focus:ring-sky-400 font-normal"
+className="mt-1 px-1.5 py-0.5 rounded-md text-[10px] w-auto text-center bg-white border border-slate-300 focus:outline-none focus:ring-1 focus:ring-sky-400 font-normal"
                         />
                       </div>
                     </TableHead>
                   ))}
-                  <TableHead className="w-12 text-center font-bold text-slate-700">حذف</TableHead>
+<TableHead className="w-12 text-center font-bold text-slate-700">حذف</TableHead>
                 </TableRow>
               </TableHeader>
 

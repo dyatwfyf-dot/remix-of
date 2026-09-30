@@ -948,9 +948,9 @@ export default function AccountsTab() {
         {/* الجدول بالتنسيق المضغوط والمتوافق مع الهواتف */}
         <div className="p-1 sm:p-2.5">
           <div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-2xl border border-slate-200">
- <table className="w-100% table-auto text-center border-collapse border border-slate-300">
+ <table className="w-auto table-auto text-center border-collapse border border-slate-300">
               {/* ترويسة الجدول */}
- <thead className="sticky top-0 z-20 text-slate-900 font-black text-xs sm:text-sm bg-gradient-to-r from-teal-50 via-slate-100 to-amber-50/50">
+ <thead className="sticky top-0 z-20 text-slate-900 font-black text-xs sm:text-sm bg-gradient-to-r from-teal-50 via-slate-100 to-amber-50/50 whitespace-normal">
                 <tr>
 <th className="border border-slate-300 text-center w-9 sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 whitespace-normal bg-slate-100">
                     م
@@ -982,8 +982,8 @@ className="border border-slate-300 cursor-pointer hover:bg-teal-100/60 transitio
                       <input
                         value={filters[c.key] || ""}
                         onChange={(e) => setFilter(c.key, e.target.value)}
-                        placeholder="بحث..."
-className="w-full min-w-[55px] max-w-[90px] px-1 py-1 text-[11px] border border-slate-300 rounded-lg bg-white text-slate-800 outline-none focus:border-teal-600 font-medium text-center"
+ placeholder="يحث....."
+className="w-auto max-w-auto px-2 py-2 text-[11px] border border-slate-300 rounded-lg bg-white text-slate-800 outline-none focus:border-teal-600 font-medium text-center"
                       />
                     </th>
                   ))}
@@ -1033,7 +1033,7 @@ className="odd:bg-white even:bg-slate-50/70 hover:bg-teal-50/50 transition-color
                         {acc.description || "—"}
                       </td>
  <td className="w-auto
- max-w auto border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xl sm:text-sm whitespace-normal">
+ max-w-auto border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xl sm:text-sm whitespace-normal">
                         {acc.specialty || "—"}
                       </td>
 <td className="w-auto border border-slate-300 font-bold !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-xs whitespace-normal text-center">

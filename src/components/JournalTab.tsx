@@ -749,18 +749,19 @@ export default function JournalTab() {
           </div>
         ) : (
 <div className="overflow-auto max-h-[75vh]">
-<table className="w-100% min-w-auto table-auto border-collapse text-center text-xs sm:text-sm font-semibold">
-              <thead className="sticky top-0 z-20 bg-gradient-to-l from-slate-900 via-indigo-950 to-purple-900 text-white shadow-md">
+<table className="w-100% 
+min-w-auto table-auto border-collapse text-center text-xs sm:text-sm font-semibold">
+ <thead className="sticky top-0 z-20 bg-gradient-to-l from-slate-900 via-indigo-950 to-purple-900 text-white shadow-md whitespace-normal">
                 <tr>
                   {JOURNAL_COLS.map((c) => (
                     <th
                       key={c.key}
-className="min-w-auto max-w-auto whitespace-normal border-b border-black text-center font-bold leading-tight !px-2 !py-2.5 !text-xl sm:!text-sm"
+className="max-w-auto whitespace-normal border-b border-black text-center font-bold leading-tight !px-2 !py-2.5 !text-xl sm:!text-sm"
                     >
                       {c.label}
                     </th>
                   ))}
- <th className="min-w-auto max-w-auto whitespace-nowrap border-b border-black text-center font-bold leading-tight !px-2 !py-2.5 !text-xs sm:!text-sm">
+ <th className="w-auto max-w-auto whitespace-normal border-b border-black text-center font-bold leading-tight !px-2 !py-2.5 !text-xs sm:!text-sm">
                     الإجراءات
                   </th>
                 </tr>
@@ -773,7 +774,7 @@ className="min-w-auto max-w-auto whitespace-normal border-b border-black text-ce
                         onChange={(e) => setJournalFilter(c.key, e.target.value)}
                         placeholder="تصفية..."
                         aria-label={`تصفية ${c.label}`}
-                        className="w-full min-w-[45px] rounded-lg border border-indigo-200 bg-white px-2 py-1 text-xs font-bold text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20"
+                        className="w-auto min-w-auto rounded-lg border border-indigo-200 bg-white px-2 py-1 text-xm font-bold text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20"
                       />
                     </th>
                   ))}
@@ -796,16 +797,16 @@ className="min-w-auto max-w-auto whitespace-normal border-b border-black text-ce
                       key={j.id}
 className="border-b border-indigo-50/70 odd:bg-white even:bg-indigo-50/20 transition-colors hover:bg-purple-50/60"
                     >
-<td className="min-w-0 max-w-[90px] font-mono text-slate-600 !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-nowrap">
+<td className="w-auto max-w-auto font-mono text-slate-600 !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-nowrap">
                         <span className={journalClampCls}>{j.formNo || "—"}</span>
                       </td>
- <td className="min-w-0 max-w-[90px] text-slate-600 !px-1.5 !py-2 !text-xs sm:!text-sm">
+ <td className="w-auto max-w-auto text-slate-600 !px-1.5 !py-2 !text-xs sm:!text-sm">
                         <span className={journalClampCls}>{j.settlement || "—"}</span>
                       </td>
-<td className="min-w-0 max-w-auto font-bold text-black !px-1.5 !py-2 !text-xl sm:!text-sm whitespace-normal">
+<td className="w-auto max-w-auto font-bold text-black !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal">
                         <span className={journalClampCls}>{j.date || "—"}</span>
                       </td> <td
-className="w-auto max-w-0 font-medium text-black !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal"
+className="w-auto max-w-auto font-bold text-black !px-2 !py-2 !text-xs sm:!text-sm whitespace-normal"
                         title={j.description}
                       >
                         <span className={journalClampCls}>{j.description || "—"}</span>
@@ -816,7 +817,7 @@ whitespace-normal">
                           {j.debitAccount || "—"}
                         </span>
                       </td>
-<td className="min-w-0 max-w-auto !px-1.5 !py-2 !text-xl sm:!text-sm whitespace-normal">
+<td className="min-w-0 max-w-auto !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal">
                         <span className={`${journalClampCls} rounded-full bg-rose-50 px-2.5 py-1 text-xs sm:text-sm font-bold text-rose-950 border border-rose-200/60`}>
                           {j.creditAccount || "—"}
                         </span>
