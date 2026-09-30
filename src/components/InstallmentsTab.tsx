@@ -1060,7 +1060,7 @@ const exportToPDF = async (
         : settings.orientation === "landscape"
           ? 297
           : 210;
-    const marginMm = settings.margin === "narrow" ? 4 : settings.margin === "wide" ? 13 : 8;
+    const marginMm = settings.margin === "narrow" ? 2 : settings.margin === "wide" ? 13 : 8;
     const usableWidthMm = pageWidthMm - marginMm * 2;
     const widthUnits = cols.reduce((s, c) => s + (c.wide ? 2.4 : 1), 0);
     const unitMm = usableWidthMm / Math.max(1, widthUnits);
@@ -1199,58 +1199,59 @@ line-height: 1.5;
    display: block; 
    }
 
-      table {
-  font-size:${fontSizePx}px;
-  table-layout: auto !important;
-  width: 100% !important;
-  max-width: 100% !important;
+table {
+font-size:${fontSizePx}px;
+table-layout: auto !important;
+width: 100% !important;
+max-width:auto !important;
 	border: 1px solid #000;
       }
-      th, td {
+
+th, td {
 	 border: 1px solid #000;
 	padding: 2px 2px !important;
 	text-align: center !important;
-	vertical-align: middle !important; /* ضمان المحاذاة الرأسية لكل الخلايا */
-	white-space: normal !important;
-	        overflow: hidden;
-	        text-overflow: ellipsis;
-	        min-width: 0 !important;
-	        max-width: 100% !important;
-	        font-size:${fontSizePx}px !important;
-	overflow-wrap: normal !important;
-	        word-break: break-word !important;
-        hyphens: none !important;
-     line-height: 1.5;
-        font-weight: 900;
-    color: #000 !important;
+min-width: 0 !important;
+max-width: 100% !important;
+font-size:${fontSizePx}px !important;
+overflow-wrap: normal !important;
+word-break: break-word !important;
+hyphens: none !important;
+line-height: 1.5;
+font-weight: 900;
+color: #000 !important;
       }
+
       /* أعمدة الاسم والمساق (wide): السماح بالتفاف النص بدل خط واحد ممدود */
-      th.wrap, td.wrap {
-	      white-space: normal!important;
-        overflow: visible !important;
-        text-overflow: clip !important;
-        overflow-wrap: break-word !important;
-        word-break: normal !important;
+th.wrap, td.wrap {
+white-space: nowrap !important; 
+overflow: visible !important;
+text-overflow: clip !important;
+overflow-wrap: break-word !important;
+word-break: normal !important;
       }
-      .cell-content {
-  display: flex !important;
-  align-items:center !important; /* التمركز الرأسي للمحتوى */
+
+.cell-content {
+  display: inline-block !important;
+align-items:center !important; /* التمركز الرأسي للمحتوى */
 justify-content:center !important; /* التمركز الأفقي للمحتوى */
-        width: 100%;
-        height: auto;
-        box-sizing: border-box;
+ width: 100%;
+height: auto;
+box-sizing: border-box;
         padding: 3px 2px;
         margin: 0;
-        text-align: center !important;
-        white-space: normal !important;
+text-align: center !important;
+white-space: normal !important;
         overflow: hidden;
         overflow-wrap: normal !important;
         word-break: keep-all !important;
         hyphens: none !important;
         line-height: 1.35;
       }
-      td.wrap .cell-content, th.wrap .cell-content {
-        white-space: normal!important;
+
+td.wrap .cell-content,
+th.wrap .cell-content {
+white-space: normal!important;
         overflow: visible !important;
         overflow-wrap: break-word !important;
         word-break: normal !important;
@@ -1286,18 +1287,20 @@ justify-content:center !important; /* التمركز الأفقي للمحتوى
         text-align: center !important;
       }
       th {
-        background: ${colorTokens.head} !important;
+background: ${colorTokens.head} !important;
         color: ${colorTokens.headText} !important;
-        font-family: Cairo, Arial, sans-serif !important;
-        font-size: ${headerFontSizePx}px !important;
-        font-weight: 800;
-        padding: 5px 5px !important;
-        text-align: center !important;
-        vertical-align: middle !important;
+font-family: AlQabas-Bold !important;
+font-size: ${headerFontSizePx}px !important;
+font-weight: 800;
+padding: 5px 5px !important;
+text-align: center !important;
+vertical-align: middle !important;
    white-space: normal !important;
       }
-      tbody tr:nth-child(even) td { background: ${colorTokens.zebra} !important; }
-      td.t-fees { background: ${colorTokens.fees} !important; }
+
+tbody tr:nth-child(even) td { background: ${colorTokens.zebra} !important; }
+
+td.t-fees { background: ${colorTokens.fees} !important; }
       td.t-paid { background: ${colorTokens.paid} !important; font-weight: 800; }
       td.t-due { background: ${colorTokens.due} !important; color: #000 !important; font-weight: 800; }
       td.s-ok { background: ${settings.colored ? "#d1fae5" : "#ffffff"} !important; }
@@ -1322,7 +1325,7 @@ justify-content:center !important; /* التمركز الأفقي للمحتوى
       @media print {
         .print-toolbar { display: none !important; }
         tr { page-break-inside: avoid; }
-        table { table-layout: fixed !important; width: 100% !important; max-width: 100% !important; }
+        table { table-layout: auto !important; width: 100% !important; max-width: auto !important; }
         th, td {
           width: auto !important;
           min-width: 0 !important;
