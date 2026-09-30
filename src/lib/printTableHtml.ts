@@ -66,7 +66,7 @@ export const tablePrintStyles = `
   }
 
   body {
-    font-family: Cairo, Arial, sans-serif;
+    font-family: Cairo;
     padding: 3mm 4mm;
     color: #000 !important;
     direction: rtl;
@@ -121,11 +121,12 @@ export const tablePrintStyles = `
     background: #f5deb3 !important;
     color: #171412 !important;
     font-weight: 900 !important;
-    font-size: 13px !important;
+    font-size: 16px !important;
     line-height: 1.25 !important;
     white-space: normal !important;
     word-break: normal !important;
     overflow-wrap: break-word !important;
+font-family: AlQabas-Bold;
   }
 
   /* 2. خلايا الجدول لجميع الصفوف: منع التفاف النص واحتواء تام للمحتوى */
@@ -148,7 +149,7 @@ export const tablePrintStyles = `
 
   tbody td {
     font-weight: 700 !important;
-    font-size: 12.5px !important;
+    font-size: 15.5px !important;
     padding: 3px 5px !important;
   }
 
@@ -156,7 +157,7 @@ export const tablePrintStyles = `
     display: inline-block !important;
     text-align: center !important;
     width: auto !important;
-    white-space: inherit !important;
+    white-space: normal !important;
   }
 
   .num,
@@ -167,7 +168,7 @@ export const tablePrintStyles = `
     font-family: 'Times New Roman', Times, serif !important;
     direction: ltr !important;
     font-weight: 900 !important;
-    font-size: 13px !important;
+    font-size: 15px !important;
   }
 
   tbody tr:nth-child(even) td {
@@ -205,7 +206,7 @@ export const tablePrintStyles = `
     max-width: 100%;
     height: 100%;
     max-height: 100%;
-    object-fit: fill;
+    object-fit: content;
     object-position: top;
     margin: 0;
   }
