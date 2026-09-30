@@ -62,8 +62,8 @@ export async function exportToPdf(opts: {
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 ${reportLetterheadStyles}
-    @page { size: A4 ${orient}; margin: 8mm; padding: 0; }
-    @page :first { margin-top: 8mm; }
+    @page { size: A4 ${orient}; margin: 2mm; padding: 0; }
+    @page :first { margin-top: 3mm; }
     html { margin: 0; padding: 0; }
     body { 
       font-family: cairo; 
@@ -86,7 +86,7 @@ ${reportLetterheadStyles}
     table { 
       width: 100%;
       border: solid 1px black; 
-      font-size:15px; 
+      font-size:18px; 
       table-layout: auto;
       margin-top: 6px;
     }
@@ -109,6 +109,9 @@ ${reportLetterheadStyles}
       font-weight: 1000 !important;
       direction: ltr;
       unicode-bidi: embed;
+      word-break: nowrap !important;
+    overflow-wrap: break-word !important;
+    vertical-align: middle !important;
     }
     th { 
       background: #1f7fb8 !important;
@@ -116,6 +119,8 @@ ${reportLetterheadStyles}
       font-weight: 900 !important;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
+word-break: normal !important;
+
     }
     tr:nth-child(even) td { background: #f8fafc; }
     tr:nth-child(odd) td { background: #ffffff; }
@@ -310,7 +315,7 @@ ${targetedReportLetterheadStyles}
     }
     .num {
       font-family: 'Times New Roman', Times, serif !important;
-      font-size: 14px !important;
+      font-size: 16px !important;
       direction: ltr;
       unicode-bidi: embed;
     }
@@ -318,6 +323,8 @@ ${targetedReportLetterheadStyles}
     text-align: center; 
     padding-right: 6px !important;
     font-weight: 800 !important;
+    word-break: normal !important;
+
     }
     th { 
 background: #94e6ff 
@@ -360,7 +367,7 @@ margin-top: 4px; }
       line-height: 1.5;
     }
     .num, .numeric-cell, .date-cell {
-      width:auto !important;
+      width:100% !important;
       min-width: 0 !important;
       white-space: nowrap !important;
       overflow: visible !important;
@@ -368,8 +375,7 @@ margin-top: 4px; }
       word-break: keep-all !important;
       hyphens: none !important;
       font-family: 'Times New Roman', Times, serif !important;
-      font-size: clamp(
-      14px, 2vw, 16px) !important;
+      font-size: 16px !important;
       font-variant-numeric: tabular-nums;
       direction: ltr;
     }

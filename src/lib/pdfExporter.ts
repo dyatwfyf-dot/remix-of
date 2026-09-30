@@ -313,13 +313,13 @@ const headerFontSize = orientation === 'portrait'
   const layoutCss = isWideCentered ? `
     .pdf-page {
       width: 100% !important;
-      max-width:100% !important; 
+max-width:auto !important; 
       margin: 0 !important; 
       padding: 0 !important;
     }
     .pdf-page table {
       width: 100% !important;
-      max-width:100%!important;
+ max-width: auto!important;
       margin-left: 0 !important;
       margin-right: 0 !important;
       table-layout:auto !important; 
@@ -533,7 +533,7 @@ const statementCss = `
   .sign {
     margin-top: 20px; 
     font-weight: 700;
-    font-size: 15px; 
+    font-size: 15.px; 
   }
 `;
 
@@ -623,7 +623,7 @@ export function printHtmlContent(htmlContent: string): void {
           color: #000 !important;
           background: white;
           line-height: 1.5;
-          font-size: 15px;
+          font-size: 17px;
           font-weight: 900 !important;
           width: 100%;
           margin: 0;
@@ -636,7 +636,7 @@ export function printHtmlContent(htmlContent: string): void {
         }
         table {
           width: 100% !important;
-          max-width:100% !important;
+          max-width:auto !important;
           border-collapse: collapse;
           table-layout: auto !important;
           margin: 10px 0;
@@ -646,7 +646,7 @@ export function printHtmlContent(htmlContent: string): void {
           padding: 3px 5px !important;
           text-align: center;
           vertical-align: middle;
-          font-size: clamp(14px, 1.2vw, 16px);
+          font-size: 16px;
           color: #000 !important;
           font-weight: 900 !important;
         }
@@ -656,6 +656,10 @@ export function printHtmlContent(htmlContent: string): void {
           color: #000 !important;
           font-weight: 900 !important;
           white-space: normal !important;
+          font-size: 18px;
+font-family: AlQabas-Bold;
+
+
         }
         td:not(.num):not(.idx):not(.numeric-cell) {
           white-space: nowrap !important;
@@ -685,7 +689,7 @@ export function printHtmlContent(htmlContent: string): void {
           * { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           body { background: white; color: #000 !important; font-weight: 900 !important; width: 100%; margin: 0; padding: 0; }
           table { 
-width: 100% !important; max-width:100%!important; }
+width: 100% !important; max-width:auto!important; }
 th, td { color: #000 !important; font-weight: 900 !important; }
           .no-print { display: none !important; }
         }

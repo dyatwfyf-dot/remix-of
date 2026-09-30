@@ -12,10 +12,10 @@
     padding: 0 !important;
     background: #ffffff !important;
     color: #000000 !important;
-    font-family:Cairo;
+    font-family:'cairo';
     direction: rtl;
     line-height: 1.5;
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 900 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -38,11 +38,14 @@
     font-weight: 900;
     margin: 4px 0 !important;
     color: #000000 !important;
-    text-align: center;
   }
 
-  h1 { font-size: 18px; }
-  h2 { font-size: 16px; }
+  h1 { font-size: 18px; 
+    text-align: center;
+  }
+  h2 { font-size: 16px; 
+    text-align: center;
+  }
 
   /* الفقرات والعناصر الحاوية */
   p,div {
@@ -54,7 +57,7 @@
   /* الجداول: احتواء تلقائي حقيقي */
   table {
     width: 100% !important;
-    min-width:100% !important;
+    min-width:auto !important;
     border: solid 1px black!important;
     table-layout:auto !important;
 margin-top: 6px !important;
@@ -63,8 +66,8 @@ margin-top: 6px !important;
   }
 
   table thead {
-    display: table-header-group;
-    break-after: avoid;
+    display:table-header-group;
+break-after:avoid;
   }
 
   table tbody {
@@ -82,10 +85,10 @@ margin-top: 6px !important;
     padding: 2px 2px !important;
     text-align: center !important;
     vertical-align: middle !important;
-    font-size:13px;
-    line-height: 1 !important;
-    height:auto !important;
-    max-height:auto !important;
+    font-size:16px;
+  line-height: 1 !important;
+    height:100% !important;
+max-height:100% !important;
     overflow: visible !important;
     color: #000000 !important;
     font-weight: 700 !important;
@@ -101,7 +104,7 @@ margin-top: 6px !important;
     word-wrap:break-word !important;
     overflow-wrap:break-word !important;
     hyphens: auto;
-    width: auto !important;
+    width: 100% !important;
     text-align: center !important;
     vertical-align: middle !important;
   }
