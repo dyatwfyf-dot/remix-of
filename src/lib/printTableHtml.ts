@@ -8,22 +8,21 @@ export type TableCol = { key: string; label: string };
 export const REPORT_LETTERHEAD_SRC = reportLetterheadUrl;
 
 export const reportLetterheadHtml = () => `
-  <div class="report-letterhead-block" style="display:flex;position:relative;top:0;width:100%;height:34mm;min-height:34mm;max-height:34mm;overflow:hidden;align-items:stretch;justify-content:center;margin:0 auto 5mm;page-break-before:avoid;page-break-after:avoid;break-before:avoid;break-after:avoid;">
-    <img class="report-letterhead-image" style="display:block;width:100%;max-width:100%;height:100%;max-height:100%;object-fit:fill;object-position:top;margin:0;" src="${REPORT_LETTERHEAD_SRC}" alt="ترويسة المجلس اليمني للاختصاصات الطبية" />
+  <div class="report-letterhead-block">
+    <img class="report-letterhead-image" src="${REPORT_LETTERHEAD_SRC}" alt="ترويسة المجلس اليمني للاختصاصات الطبية" />
   </div>
 `;
 
 export const reportLetterheadRowHtml = (columnCount: number) => `
   <tr class="report-letterhead-row">
     <th class="report-letterhead-cell" colspan="${Math.max(1, Math.floor(columnCount))}">
-      <img class="report-letterhead-image" style="display:block;width:100%;max-width:100%;height:30mm;max-height:30mm;object-fit:fill;object-position:top;margin:0;" src="${REPORT_LETTERHEAD_SRC}" alt="ترويسة المجلس اليمني للاختصاصات الطبية" />
+      <img class="report-letterhead-image" src="${REPORT_LETTERHEAD_SRC}" alt="ترويسة المجلس اليمني للاختصاصات الطبية" />
     </th>
   </tr>
 `;
 
 /**
- * تكرار ترويسة التقرير في أعلى كل صفحة مطبوعة (بدون كرت عنوان)
- * تُستخدم مع reportLetterheadHtml() الموضوعة في بداية المستند.
+ * تكرار ترويسة التقرير في أعلى كل صفحة مطبوعة
  */
 export const runningLetterheadCss = `
   @media print {
@@ -39,7 +38,7 @@ export const runningLetterheadCss = `
     }
     body { padding-top: 37mm !important; }
     thead { display: table-header-group; }
-    tfoot { display: table-row-group; }
+    tfoot { display: table-footer-group; }
   }
 `;
 
@@ -51,8 +50,8 @@ export const escapeHtml = (s: any) =>
     .replace(/"/g, "&quot;");
 
 /**
- * أنماط موحّدة تُستخدم في الطباعة وفي تنزيل PDF وفي واجهة التبويبات
- * تضمن الاحتواء التلقائي وعدم التفاف النصوص وتوسيطها بالكامل (أفقياً وعمودياً).
+ * أنماط موحّدة للطباعة ومعاينة PDF وواجهة الجداول
+ * تضمن الاحتواء التلقائي وعدم التفاف النصوص داخل الخلايا مع السماح بالتفاف رؤوس الأعمدة.
  */
 export const tablePrintStyles = `
   @page {
@@ -60,64 +59,82 @@ export const tablePrintStyles = `
     margin: 2mm;
   }
   
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { margin: 0; padding: 0; }
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
   body {
-    font-family: cairo;
+    font-family: Cairo, Arial, sans-serif;
     padding: 3mm 4mm;
     color: #000 !important;
-    direction:rtl;
-    margin: 0;
+    direction: rtl;
     width: 100%;
-    box-sizing: border-box;
-    font-weight: 1000;
-    font-size: 16px;
+    font-weight: 700;
+    font-size: 13.5px;
     background: #fff;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+
   h1 {
     text-align: center;
     color: #000 !important;
     margin: 0 0 3px;
-    font-size: 19px;
-    font-weight: 1000;
+    font-size: 18px;
+    font-weight: 900;
   }
+
   .sub {
     text-align: center;
     color: #000 !important;
-    margin-bottom: 5px;
-    font-size: 14.5px;
-    font-weight: 800;
-    border-bottom:1px solid #b8860b;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    border-bottom: 1px solid #b8860b;
     padding-bottom: 4px;
   }
   
-  /* احتواء تلقائي كامل للجدول وتوسيط تام للمحتوى */
+  /* احتواء تلقائي كامل للجدول وتكيّف العرض حسب المحتوى */
   table {
-    width: 100%;
-    max-width:auto;
-    border-collapse: collapse;
+    width: 100% !important;
+    border-collapse: collapse !important;
     table-layout: auto !important;
-    font-size:16px;
+    font-size: 13px;
+    margin: 0 auto;
   }
   
   th, td {
-    border: 1px solid #000;
-    padding: 6px 8px !important;
+    border: 1px solid #000 !important;
+    padding: 4px 6px !important;
     text-align: center !important;
     vertical-align: middle !important;
     color: #000 !important;
-    font-weight: 800 !important;
-  line-height: 1.5!important;
-    height: 100% !important;
-    min-height:auto;
-    font-size: clamp(14px, 1.15vw, 14px) !important;
-    white-space: normal !important; 
-    width:100% !important;
-    word-break: keep-all !important;
-    overflow-wrap:normal !important;
+    width: auto !important;
+    max-width: none !important;
   }
+
+  /* 1. رؤوس الأعمدة: التفاف النص التلقائي لاحتواء العناوين الطويلة */
+  thead th,
+  th {
+    background: #f5deb3 !important;
+    color: #171412 !important;
+    font-weight: 900 !important;
+    font-size: 13px !important;
+    line-height: 1.25 !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+  }
+
+  /* 2. خلايا الجدول لجميع الصفوف: منع التفاف النص واحتواء تام للمحتوى */
+  tbody td,
+  tfoot td,
+  tbody td *,
+  tfoot td *,
+  .text-cell,
+  .long-text-cell,
   .num,
   .numeric-cell,
   .date-cell,
@@ -127,100 +144,61 @@ export const tablePrintStyles = `
     word-break: keep-all !important;
     overflow-wrap: normal !important;
     hyphens: none !important;
-    font-family: 'Times New Roman', Times, serif !important;
-    text-align: center !important;
-    vertical-align: middle !important;
-    direction: ltr;
-    color: #000 !important;
-    -webkit-text-fill-color: #000 !important;
-    text-shadow: none !important;
-    font-weight: 900 !important;
-    line-height: 1.15 !important;
-    font-size: clamp(14px, 1.9vw, 14px) !important;
-    width:auto !important;
+  }
+
+  tbody td {
+    font-weight: 700 !important;
+    font-size: 12.5px !important;
+    padding: 3px 5px !important;
   }
 
   .pdf-cell-text {
-    display: flex !important;
-align-items: center !important;     /* توسيط عمودي للعنصر الداخلي */
-    justify-content: center !important; /* توسيط أفقـي للعنصر الداخلي */
-    width: 100% !important;
-    height: 100% !important;
+    display: inline-block !important;
     text-align: center !important;
-    white-space: normal!important;
-    word-break: keep-all !important;
-    overflow-wrap: normal !important;
+    width: auto !important;
+    white-space: inherit !important;
   }
 
-  /* ضمان منع التفاف النصوص الطويلة وإبقائها في سطر واحد داخل المساحة المتاحة */
-  .text-cell,
-  .long-text-cell {
-    white-space: normal !important;
-    overflow-wrap: normal !important;
-    word-break: keep-all !important;
-    width:50% !important;
-    text-align: center !important;
-    vertical-align: middle !important;
-  }
-  .long-text-cell .pdf-cell-text,
-  .text-cell .pdf-cell-text {
-white-space: normal!important;
-    overflow-wrap: normal !important;
-    word-break: keep-all !important;
-  }
-  
-  tbody td,
-  tfoot td,
-  tbody td *,
-  tfoot td * {
-    color: #000 !important;
-    -webkit-text-fill-color: #000 !important;
-    text-shadow: none !important;
-    font-weight: 800 !important;
-    white-space: normal !important;
-    vertical-align: middle !important;
-  }
-  thead th {
-    background: #f5deb3 !important;
-    color: #171412 !important;
+  .num,
+  .numeric-cell,
+  .date-cell,
+  .compact-cell,
+  .idx {
+    font-family: 'Times New Roman', Times, serif !important;
+    direction: ltr !important;
     font-weight: 900 !important;
-    font-size: 18px;
-    white-space: normal !important;
-    vertical-align: middle !important;
+    font-size: 13px !important;
   }
-  tbody tr:nth-child(even) td { background: #f8fafc !important; }
 
-  .idx { 
-    text-align: center !important; 
-    vertical-align: middle !important;
-    color: #000 !important; 
-    font-weight: 900; 
+  tbody tr:nth-child(even) td {
+    background: #f8fafc !important;
   }
-  
+
   .total-row td {
     background: #fef3c7 !important;
-    font-weight: 800;
-    border-top: 1.5pt solid #92400e;
-    white-space: nowrap !important;
-    vertical-align: middle !important;
+    font-weight: 900 !important;
+    font-size: 13.5px !important;
+    border-top: 1.5pt solid #000 !important;
   }
   
+  /* ترويسة التقرير المنفصلة والمضمنة */
   .report-letterhead-block {
     display: flex;
     position: relative;
     top: 0;
     width: 100%;
-    height: 34mm;
-    min-height: 34mm;
-    max-height: 34mm;
+    height: 32mm;
+    min-height: 32mm;
+    max-height: 32mm;
     align-items: stretch;
     justify-content: center;
-    margin: 0 auto 5mm;
+    margin: 0 auto 4mm;
     page-break-before: avoid;
     page-break-after: avoid;
     break-before: avoid;
     break-after: avoid;
   }
+
   .report-letterhead-image {
     display: block;
     width: 100%;
@@ -229,22 +207,29 @@ white-space: normal!important;
     max-height: 100%;
     object-fit: fill;
     object-position: top;
-    image-rendering: auto;
     margin: 0;
   }
+
   @media print and (orientation: portrait) {
     .report-letterhead-block { height: 28mm; min-height: 28mm; max-height: 28mm; }
   }
+
   @media print and (orientation: landscape) {
     .report-letterhead-block { height: 34mm; min-height: 34mm; max-height: 34mm; }
   }
-  .report-letterhead-row { page-break-after: avoid; break-after: avoid; }
-  .doc-title-row { page-break-after: avoid; break-after: avoid; }
+
+  .report-letterhead-row,
+  .doc-title-row {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
   .doc-title-row td.doc-title-cell {
     border: none !important;
     background: #fff !important;
-    padding: 2px 0 6px !important;
+    padding: 2px 0 5px !important;
   }
+
   .report-letterhead-row .report-letterhead-cell {
     height: 30mm !important;
     min-height: 30mm !important;
@@ -252,22 +237,10 @@ white-space: normal!important;
     border: 0 !important;
     background: #fff !important;
   }
+
   .report-letterhead-row .report-letterhead-image {
-    display: flex !important;
-    width: 100% !important;
-    max-width: 100% !important;
     height: 30mm !important;
     max-height: 30mm !important;
-    object-fit: fill !important;
-    object-position:top!important;
-    margin: 0 !important;
-  }
-  .pdf-page .report-letterhead-cell {
-    height: 30mm !important;
-    min-height: 30mm !important;
-    padding: 0 !important;
-    border: 0 !important;
-    background: #fff !important;
   }
 
   thead { display: table-header-group; }
@@ -278,7 +251,7 @@ white-space: normal!important;
   ${runningLetterheadCss}
 `;
 
-/** يبني ترويسة + جدول التبويب (نفس المستخدم في الطباعة وتنزيل PDF) */
+/** يبني ترويسة + جدول التبويب (المستخدم في الطباعة وتنزيل PDF) */
 export function buildTableHtml(opts: {
   title: string;
   columns: TableCol[];
@@ -291,6 +264,7 @@ export function buildTableHtml(opts: {
   
   const isDateColumn = (c: TableCol) =>
     /date|تاريخ|اليوم|الشهر|السنة|year|month|day/i.test(`${c.key} ${c.label}`);
+
   const isCompactColumn = (c: TableCol) =>
     /(^|[-_ ])(no|number|code|key|id)([-_ ]|$)|رقم|رمز|كود|الباب|الفصل|البند|النوع|الشهر|السنة/i.test(`${c.key} ${c.label}`);
 
@@ -309,6 +283,7 @@ export function buildTableHtml(opts: {
 
   const reportDateLabel =
     formatReportDate(reportDate) || new Date().toLocaleDateString("ar-EG-u-nu-latn");
+
   const sub =
     subtitle ??
     `المجلس اليمني للاختصاصات الطبية - صعدة • تاريخ التقرير: ${reportDateLabel} • عدد السجلات: ${rows.length}`;
@@ -329,11 +304,11 @@ export function buildTableHtml(opts: {
     }
   });
 
-  const totalRow = `<tr class="total-row"><td class="idx numeric-cell" style="font-size:14px;"><span class="pdf-cell-text">الإجمالي</span></td>${columns
+  const totalRow = `<tr class="total-row"><td class="idx numeric-cell">الإجمالي</td>${columns
     .map((c) =>
       numericKeys.includes(c.key)
-        ? `<td class="num numeric-cell"><span class="pdf-cell-text" style="color:#000 !important;font-weight:1000 !important;">${escapeHtml(fmt(totals[c.key] || 0))}</span></td>`
-        : `<td class="${isDateColumn(c) ? "date-cell" : ""}"><span class="pdf-cell-text" style="color:#000 !important;font-weight:1000 !important;"></span></td>`
+        ? `<td class="num numeric-cell"><span class="pdf-cell-text">${escapeHtml(fmt(totals[c.key] || 0))}</span></td>`
+        : `<td class="${isDateColumn(c) ? "date-cell" : ""}"><span class="pdf-cell-text"></span></td>`
     )
     .join("")}</tr>`;
 
@@ -346,7 +321,7 @@ export function buildTableHtml(opts: {
             const isNum = numericKeys.includes(c.key) || typeof v === "number";
             const classes = getCellClass(c, v);
             
-            return `<td class="${classes}"><span class="pdf-cell-text" style="color:#000 !important;font-weight:1000 !important;">${
+            return `<td class="${classes}"><span class="pdf-cell-text">${
               isNum ? escapeHtml(fmt(Number(v) || 0)) : escapeHtml(v)
             }</span></td>`;
           })
@@ -354,7 +329,5 @@ export function buildTableHtml(opts: {
     )
     .join("");
 
-  return `
-    <table><thead>${head}</thead><tbody>${body}${totalRow}</tbody></table>
-  `;
+  return `<table><thead>${head}</thead><tbody>${body}${totalRow}</tbody></table>`;
 }
