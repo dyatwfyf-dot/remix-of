@@ -538,7 +538,8 @@ export default function MonthlyStatementTab() {
         <table ref={tableRef} className="w-full text-center text-xs border-collapse">
           {/* ترويسة الجدول الرئيسية الفاتحة */}
           <thead>
-            <tr className="bg-gradient-to-r from-slate-100 via-sky-100/70 to-indigo-100/70 text-slate-800 border-b border-slate-200">
+  
+ <tr className="bg-gradient-to-r from-slate-100 via-sky-100/70 to-indigo-100/70 text-slate-800 border-b border-slate-200">
               <th rowSpan={2} className="p-3 border-l border-slate-200 min-w-[200px] text-right pr-4 font-black text-sky-900 text-sm">
                 بيان أنواع الحسابات
               </th>
@@ -572,17 +573,17 @@ export default function MonthlyStatementTab() {
           </thead>
 
           {/* محتوى الحسابات والمجموعات */}
-          <tbody className="divide-y divide-slate-100 font-medium">
+          <tbody className="divide-y divide-slate-100 font-bold">
             {GROUPS.map((group, gIdx) => {
               let gPrevD = 0, gPrevC = 0, gCurD = 0, gCurC = 0;
               return (
                 <React.Fragment key={gIdx}>
                   {/* عنوان المجموعة الرئيسي */}
-                  <tr className="bg-gradient-to-r from-sky-50/80 via-slate-50 to-indigo-50/60 font-black text-slate-800 border-y border-slate-200">
-                    <td colSpan={9} className="px-4 py-2.5 text-right">
+<tr className="bg-gradient-to-r from-sky-50/80 via-slate-50 to-indigo-50/60 font-black text-slate-800 border-y border-slate-200">
+<td colSpan={9} className="px-4 py-2.5 text-center">
                       <div className="flex items-center gap-2">
-                        <span className="h-2.5 w-2.5 rounded-full bg-sky-500 shadow-sm shadow-sky-300"></span>
-                        <span className="text-xs sm:text-sm font-bold text-sky-950 tracking-wide">{group.title}</span>
+<span className="h-2.5 w-2.5 rounded-full bg-sky-500 shadow-sm shadow-sky-300"></span>
+<span className="text-xl sm:text-xs font-bold text-sky-950 tracking-wide">{group.title}</span>
                       </div>
                     </td>
                   </tr>
@@ -616,9 +617,9 @@ export default function MonthlyStatementTab() {
                             : "hover:bg-sky-50/40 text-slate-700"
                         }`}
                       >
-                        <td className="px-3 py-2 text-right pr-5 border-l border-slate-100 whitespace-nowrap">
+ <td className="px-3 py-2 text-center pr-5 border-l border-black whitespace-normal">
                           {isHighlight ? (
-                            <span className="inline-flex items-center gap-1.5 font-black text-amber-900">
+<span className="inline-flex items-center gap-1.5 font-black text-amber-900">
                               <span className="h-2 w-2 rounded-full bg-amber-500"></span>
                               {acc}
                             </span>
@@ -641,7 +642,7 @@ export default function MonthlyStatementTab() {
                           {rowData.curCredit ? rowData.curCredit.toLocaleString() : "-"}
                         </td>
                         {/* جملة */}
-                        <td className="px-2 py-1.5 border-l border-slate-100 font-mono text-slate-800 bg-indigo-50/30">
+<td className="px-2 py-1.5 border-l border-slate-100 font-extrabold text-black bg-indigo-90/30">
                           {totD ? totD.toLocaleString() : "-"}
                         </td>
                         <td className="px-2 py-1.5 border-l border-slate-100 font-mono text-slate-800 bg-indigo-50/30">
@@ -658,12 +659,12 @@ export default function MonthlyStatementTab() {
                     );
                   })}
 
-                  {/* جملة المجموعة */}
-                  <tr className="bg-slate-100/90 font-bold text-slate-800 border-b border-slate-200 text-xs">
-                    <td className="px-3 py-2 text-right pr-4 border-l border-slate-200 text-sky-900">
+ {/* جملة المجموعة */}
+ <tr className="bg-slate-100/90 font-bold text-slate-800 border-b border-slate-200 text-xl">
+ <td className="px-3 py-2 text-center pr-4 border-l border-black text-black">
                       جملة {group.title}
                     </td>
-                    <td className="px-2 py-2 border-l border-slate-200 font-mono text-slate-700">
+<td className="px-2 py-2 border-l border-slate-200 font-mono text-slate-700">
                       {gPrevD.toLocaleString()}
                     </td>
                     <td className="px-2 py-2 border-l border-slate-200 font-mono text-slate-700">
