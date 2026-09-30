@@ -805,12 +805,12 @@ className="border-b border-indigo-50/70 odd:bg-white even:bg-indigo-50/20 transi
 <td className="min-w-0 max-w-auto font-bold text-black !px-1.5 !py-2 !text-xl sm:!text-sm whitespace-normal">
                         <span className={journalClampCls}>{j.date || "—"}</span>
                       </td> <td
-className="min-w-auto max-w-auto font-medium text-black !px-1.5 !py-2 !text-xl sm:!text-sm whitespace-normal"
+className="w-auto max-w-0 font-medium text-black !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal"
                         title={j.description}
                       >
                         <span className={journalClampCls}>{j.description || "—"}</span>
                       </td>
-<td className="min-w-auto max-w-auto !px-1.5 !py-2 !text-xl sm:!text-sm
+<td className="w-auto max-w-0 !px-1.5 !py-2 !text-xs sm:!text-sm
 whitespace-normal">
 <span className={`${journalClampCls} rounded-full bg-emerald-50 px-2.5 py-1 text-xs sm:text-sm font-bold text-emerald-950 border border-emerald-200/60`}>
                           {j.debitAccount || "—"}
