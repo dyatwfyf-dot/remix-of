@@ -948,28 +948,28 @@ export default function AccountsTab() {
         {/* الجدول بالتنسيق المضغوط والمتوافق مع الهواتف */}
         <div className="p-1 sm:p-2.5">
           <div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-2xl border border-slate-200">
- <table className="w-100% table-layout-auto text-center border-collapse border border-slate-300">
+ <table className="w-100% table-auto text-center border-collapse border border-slate-300">
               {/* ترويسة الجدول */}
  <thead className="sticky top-0 z-20 text-slate-900 font-black text-xs sm:text-sm bg-gradient-to-r from-teal-50 via-slate-100 to-amber-50/50">
                 <tr>
-                  <th className="border border-slate-300 text-center w-9 sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 whitespace-normal bg-slate-100">
+<th className="border border-slate-300 text-center w-9 sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 whitespace-normal bg-slate-100">
                     م
                   </th>
                   {COLS.map((c) => (
                     <th
                       key={c.key}
-                      className="border border-slate-300 cursor-pointer hover:bg-teal-100/60 transition-colors select-none sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap"
+className="border border-slate-300 cursor-pointer hover:bg-teal-100/60 transition-colors select-none sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xl sm:text-sm whitespace-normal"
                       onClick={() => toggleSort(c.key)}
                     >
                       <div className="flex items-center justify-center gap-1">
                         <span>{c.label}</span>
-                        <span className="text-[11px] text-teal-800 font-mono">
+                        <span className="text-[17px] text-teal-800 font-mono">
                           {sortIndicator(sortKey === c.key, sortDir)}
                         </span>
                       </div>
                     </th>
                   ))}
-                  <th className="border border-slate-300 text-center sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap bg-slate-100">
+                  <th className="border border-slate-300 text-center sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal bg-slate-100">
                     إجراءات
                   </th>
                 </tr>
@@ -983,7 +983,7 @@ export default function AccountsTab() {
                         value={filters[c.key] || ""}
                         onChange={(e) => setFilter(c.key, e.target.value)}
                         placeholder="بحث..."
-                        className="w-full min-w-[55px] max-w-[90px] px-1 py-1 text-[11px] border border-slate-300 rounded-lg bg-white text-slate-800 outline-none focus:border-teal-600 font-medium text-center"
+className="w-full min-w-[55px] max-w-[90px] px-1 py-1 text-[11px] border border-slate-300 rounded-lg bg-white text-slate-800 outline-none focus:border-teal-600 font-medium text-center"
                       />
                     </th>
                   ))}
@@ -992,7 +992,7 @@ export default function AccountsTab() {
               </thead>
 
               {/* محتوى الجدول */}
-              <tbody className="text-slate-800 text-xs sm:text-sm font-medium divide-y divide-slate-200">
+<tbody className="text-slate-800 text-xs sm:text-sm font-bold divide-y divide-slate-200">
                 {filteredWithBalance.length === 0 ? (
                   <tr>
                     <td
@@ -1006,18 +1006,18 @@ export default function AccountsTab() {
                   filteredWithBalance.map((acc, index) => (
                     <tr
                       key={acc.id}
-                      className="odd:bg-white even:bg-slate-50/70 hover:bg-teal-50/50 transition-colors group"
+className="odd:bg-white even:bg-slate-50/70 hover:bg-teal-50/50 transition-colors group"
                     >
-                      <td className="border border-slate-300 text-center font-mono tabular-nums !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap font-bold text-slate-600 bg-slate-50/40">
+<td className="border border-slate-300 text-center font-mono tabular-nums !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap font-bold text-slate-600 bg-slate-50/40">
                         {index + 1}
                       </td>
-                      <td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="border border-slate-300 font-bold tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {acc.date}
                       </td>
-                      <td className="border border-slate-300 font-mono tabular-nums font-bold text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap text-amber-700">
+<td className="border border-slate-300 font-bold tabular-nums font-bold text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap text-amber-700">
                         {acc.hafizaNo || "—"}
                       </td>
-                      <td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="border border-slate-300 font-bold tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {acc.notifyNo || "—"}
                       </td>
                       <td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
@@ -1026,19 +1026,19 @@ export default function AccountsTab() {
                       <td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {acc.checkNo || "—"}
                       </td>
-                      <td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {acc.checkDate || "—"}
                       </td>
-                      <td className="border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal text-center font-extrabold">
+<td className="border border-black !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xl sm:text-sm whitespace-normal text-center font-extrabold">
                         {acc.description || "—"}
                       </td>
- <td className="border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-lg sm:text-sm whitespace-normal">
+ <td className="border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xl sm:text-sm whitespace-normal">
                         {acc.specialty || "—"}
                       </td>
 <td className="border border-slate-300 font-bold !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-xs whitespace-normal text-center">
                         {acc.name || "—"}
                       </td>
-                      <td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal">
+<td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal">
                         {Number(acc.hafizaAmount) > 0 ? fmt(Number(acc.hafizaAmount)) : "—"}
                       </td>
                       <td className="border border-slate-300 font-mono tabular-nums font-bold text-center bg-emerald-50/50 text-emerald-700 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
@@ -1057,7 +1057,7 @@ export default function AccountsTab() {
                             updateAccount(acc.id, { ...acc, revenueKey: newKey || undefined });
                             toast.success("تم تحديث رمز الإيراد");
                           }}
-                          className="w-auto py-1 px-1 text-[11px] font-bold text-blue-900 bg-purple-50/80 border border-purple-200 rounded-lg outline-none focus:border-purple-600 cursor-pointer"
+className="w-auto py-1 px-1 text-[11px] font-bold text-blue-900 bg-purple-50/80 border border-purple-200 rounded-lg outline-none focus:border-purple-600 cursor-pointer"
                         >
                           <option value="">— ربط —</option>
                           {revenueTypes.map((t) => (
@@ -1069,7 +1069,7 @@ export default function AccountsTab() {
                       </td>
 
                       {/* الرصيد التراكمي */}
-                      <td className="border border-slate-300 font-mono tabular-nums font-black text-center bg-teal-50/70 text-teal-900 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="border border-slate-300 font-mono tabular-nums font-black text-center bg-teal-50/70 text-teal-900 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {fmt(acc.balance)}
                       </td>
 
