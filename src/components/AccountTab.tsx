@@ -94,6 +94,7 @@ const PRINT_STYLES = `
   .accounts-print-hide { display: none !important; }
   table { width: 100% !important; border-collapse: collapse !important; font-size: 14px !important; 
         table-layout:auto !important; 
+max-with:auto !important;
 
     
   }
@@ -166,7 +167,7 @@ function FormField({
           value={v}
           onChange={(e) => on(e.target.value)}
           placeholder={placeholder}
-className={`w-full ${icon ? "pr-9" : "px-3"} pl-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 bg-white/95 text-slate-900 font-medium placeholder:text-slate-400 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 shadow-sm transition-all outline-none ${className}`}
+className={`w-auto ${icon ? "pr-9" : "px-3"} pl-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 bg-white/95 text-slate-900 font-medium placeholder:text-slate-400 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 shadow-sm transition-all outline-none ${className}`}
         />
       </div>
     </div>
@@ -948,42 +949,39 @@ export default function AccountsTab() {
         {/* الجدول بالتنسيق المضغوط والمتوافق مع الهواتف */}
         <div className="p-1 sm:p-2.5">
           <div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-2xl border border-slate-200">
- <table className="w-auto table-auto text-center border-collapse border border-slate-300">
+ <table className="w-full max-w-auto table-auto text-center border-collapse border border-slate-300">
               {/* ترويسة الجدول */}
  <thead className="sticky top-0 z-20 text-slate-900 font-black text-xs sm:text-sm bg-gradient-to-r from-teal-50 via-slate-100 to-amber-50/50 whitespace-normal">
                 <tr>
-<th className="border border-slate-300 text-center w-auto sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 whitespace-normal bg-slate-100">
-                    م
-                  </th>
-                  {COLS.map((c) => (
-                    <th
-                      key={c.key}
-className="border border-slate-300 cursor-pointer hover:bg-teal-100/60 transition-colors select-none sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xl sm:text-sm whitespace-normal"
+<th className="border border-slate-300 text-center w-auto max-w-auto sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 whitespace-normal bg-slate-100">  م
+</th>
+ {COLS.map((c) => (
+<th key={c.key}
+className="w-auto max-w-auto border border-slate-300 cursor-pointer hover:bg-teal-100/60 transition-colors select-none sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal"
                       onClick={() => toggleSort(c.key)}
                     >
                       <div className="flex items-center justify-center gap-1">
                         <span>{c.label}</span>
-                        <span className="text-[17px] text-teal-800 font-mono">
+<span className="text-[13px] text-teal-800 font-mono">
                           {sortIndicator(sortKey === c.key, sortDir)}
                         </span>
                       </div>
                     </th>
                   ))}
-                  <th className="border border-slate-300 text-center sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal bg-slate-100">
+<th className="border border-slate-300 text-center sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal bg-slate-100">
                     إجراءات
                   </th>
                 </tr>
-
-                {/* سطر مرشحات البحث لكل عمود */}
-                <tr className="accounts-print-hide bg-slate-50">
-                  <th className="border border-slate-300 !px-1 !py-1 text-xs"></th>
+{/* سطر مرشحات البحث لكل عمود */}
+<tr className="accounts-print-hide bg-slate-50">
+<th className="border border-slate-300 !px-1 !py-1 text-xs"></th>
                   {COLS.map((c) => (
                     <th key={c.key} className="border border-slate-300 !px-1 !py-1">
                       <input
                         value={filters[c.key] || ""}
                         onChange={(e) => setFilter(c.key, e.target.value)}
  placeholder="يحث....."
-className="w-auto max-w-0 px-2 py-2 text-[11px] border border-slate-300 rounded-lg bg-white text-slate-800 outline-none focus:border-teal-600 font-medium text-center"
+className="w-2 max-w-0 px-2 py-2 text-[11px] border border-slate-300 rounded-lg bg-white text-slate-800 outline-none focus:border-teal-600 font-medium text-center"
                       />
                     </th>
                   ))}
@@ -992,12 +990,12 @@ className="w-auto max-w-0 px-2 py-2 text-[11px] border border-slate-300 rounded-
               </thead>
 
               {/* محتوى الجدول */}
-<tbody className="text-black text-xs sm:text-xs font-bold divide-y divide-slate-200 w-auto">
+<tbody className="text-black text-xs sm:text-xs font-bold divide-y divide-slate-200 w-auto max-w-auto">
                 {filteredWithBalance.length === 0 ? (
                   <tr>
-                    <td
-                      colSpan={COLS.length + 2}
-                      className="text-center font-bold border border-slate-300 bg-white py-8 text-slate-500"
+    <td
+ colSpan={COLS.length + 2}
+className="text-center font-bold border border-slate-300 bg-white py-8 text-slate-500"
                     >
                       لا توجد قيود مالية تطابق خيارات التصفية.
                     </td>
@@ -1008,7 +1006,7 @@ className="w-auto max-w-0 px-2 py-2 text-[11px] border border-slate-300 rounded-
                       key={acc.id}
 className="odd:bg-white even:bg-slate-50/70 hover:bg-teal-50/50 transition-colors group"
                     >
-<td className="border border-slate-300 text-center font-mono tabular-nums !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap font-bold text-slate-600 bg-slate-50/40">
+<td className="border border-slate-300 text-center font-bold tabular-nums !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal font-bold text-slate-600 bg-slate-50/40">
                         {index + 1}
                       </td>
 <td className="border border-slate-300 font-bold tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
