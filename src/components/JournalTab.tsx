@@ -797,40 +797,36 @@ className="max-w-auto whitespace-normal border-b border-black text-center font-b
                       key={j.id}
 className="border-b border-indigo-50/70 odd:bg-white even:bg-indigo-50/20 transition-colors hover:bg-purple-50/60"
                     >
-<td className="w-auto max-w-auto font-mono text-slate-600 !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-nowrap">
-                        <span className={journalClampCls}>{j.formNo || "—"}</span>
+                      <td className="w-auto font-mono font-bold text-slate-700 !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-nowrap">
+                        {j.formNo || "—"}
                       </td>
- <td className="w-auto max-w-auto text-slate-600 !px-1.5 !py-2 !text-xs sm:!text-sm">
-                        <span className={journalClampCls}>{j.settlement || "—"}</span>
+                      <td className="w-auto font-bold text-slate-800 !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal break-words max-w-[130px] leading-snug">
+                        {j.settlement || "—"}
                       </td>
-<td className="w-auto max-w-auto font-bold text-black !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal">
-                        <span className={journalClampCls}>{j.date || "—"}</span>
-                      </td> <td
-className="w-auto max-w-auto font-bold text-black !px-2 !py-2 !text-xs sm:!text-sm whitespace-normal"
+                      <td className="w-auto font-mono font-bold text-black !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-nowrap">
+                        {j.date || "—"}
+                      </td>
+                      <td
+                        className="w-auto font-bold text-black !px-2 !py-2 !text-xs sm:!text-sm whitespace-normal break-words min-w-[130px] max-w-[240px] leading-snug"
                         title={j.description}
                       >
-                        <span className={journalClampCls}>{j.description || "—"}</span>
+                        {j.description || "—"}
                       </td>
-<td className="w-auto max-w-0 !px-1.5 !py-2 !text-xs sm:!text-sm
-whitespace-normal">
-<span className={`${journalClampCls} rounded-full bg-emerald-50 px-2.5 py-1 text-xs sm:text-sm font-bold text-emerald-950 border border-emerald-200/60`}>
+                      <td className="w-auto !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal break-words min-w-[110px] max-w-[180px]">
+                        <span className="inline-block rounded-xl bg-emerald-50 px-2 py-1 text-xs sm:text-sm font-bold text-emerald-950 border border-emerald-200/60 leading-tight">
                           {j.debitAccount || "—"}
                         </span>
                       </td>
-<td className="min-w-0 max-w-auto !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal">
-                        <span className={`${journalClampCls} rounded-full bg-rose-50 px-2.5 py-1 text-xs sm:text-sm font-bold text-rose-950 border border-rose-200/60`}>
+                      <td className="w-auto !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal break-words min-w-[110px] max-w-[180px]">
+                        <span className="inline-block rounded-xl bg-rose-50 px-2 py-1 text-xs sm:text-sm font-bold text-rose-950 border border-rose-200/60 leading-tight">
                           {j.creditAccount || "—"}
                         </span>
                       </td>
-                      <td className="min-w-0 max-w-auto font-bold font-black text-emerald-800 !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal">
-                        <span className={journalClampCls}>
-                          {j.debit ? j.debit.toLocaleString("en-US") : "—"}
-                        </span>
+                      <td className="w-auto font-mono font-black text-emerald-800 !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-nowrap tabular-nums">
+                        {j.debit ? j.debit.toLocaleString("en-US") : "—"}
                       </td>
-                      <td className="min-w-0 max-w-[105px] font-mono font-black text-rose-800 !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-nowrap">
-                        <span className={journalClampCls}>
-                          {j.credit ? j.credit.toLocaleString("en-US") : "—"}
-                        </span>
+                      <td className="w-auto font-mono font-black text-rose-800 !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-nowrap tabular-nums">
+                        {j.credit ? j.credit.toLocaleString("en-US") : "—"}
                       </td>
                       <td className="min-w-0 !px-1.5 !py-2 !text-xs sm:!text-sm">
                         <div className="flex justify-center gap-1.5">

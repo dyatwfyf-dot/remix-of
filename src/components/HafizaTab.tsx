@@ -447,7 +447,11 @@ className="mt-1 px-1.5 py-0.5 rounded-md text-[10px] w-auto text-center bg-white
                           <TableCell
                             key={c.key}
                             onClick={() => !isEditing && handleCellClick(row.id, c.key, val)}
-                            className="text-center text-xs p-2 cursor-pointer"
+                            className={`text-center text-xs p-2 cursor-pointer w-auto ${
+                              ["name", "batch", "specialty", "description"].includes(c.key)
+                                ? "whitespace-normal break-words min-w-[90px] max-w-[220px]"
+                                : "whitespace-nowrap tabular-nums"
+                            }`}
                           >
                             {isEditing ? (
                               <Input
