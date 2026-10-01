@@ -27,8 +27,8 @@ async function downloadPdfBlob(pdf: any, fileName: string): Promise<void> {
  * مصدر وحيد وموحّد لقواعد احتواء/التفاف الخلايا داخل ".pdf-page".
  */
 function pdfPageCellCss(opts: { padding?: string; fontSize?: string; headerFontSize?: string } = {}): string {
-  const padding = opts.padding ?? '1px 1px';
-  const fontSize = opts.fontSize ?? '15px';
+  const padding = opts.padding ?? '3px 3px';
+  const fontSize = opts.fontSize ?? '18px';
   const headerFontSize = opts.headerFontSize ?? fontSize;
 
   return `
@@ -44,12 +44,10 @@ function pdfPageCellCss(opts: { padding?: string; fontSize?: string; headerFontS
     padding: ${padding} !important;
 
     text-align: center !important;
+vertical-align: middle !important;
 
-    vertical-align: middle !important;
-
-    font-size: 18px !important;
-
-    line-height: 1 !important;
+font-size: 20px !important;
+line-height: 1 !important;
 
     overflow: hidden !important;
 
@@ -73,17 +71,20 @@ function pdfPageCellCss(opts: { padding?: string; fontSize?: string; headerFontS
     padding: ${padding} !important;
     text-align: center !important;
     vertical-align: middle !important;
-    font-size: ${fontSize} !important;
+font-size: 18px !important;
     line-height: 1 !important;
     overflow: hidden !important;
     word-break: break-word !important;
     overflow-wrap: anywhere !important;
     white-space:nowrap !important;
+    font-size: 18px !important;
+    font-family: 'Cairo' !important; 
+
   }
 
   .pdf-page .num { 
-    font-family: 'Times New Roman', Times, serif !important; 
-    font-size: ${fontSize} !important;
+    font-family: 'Cairo' !important; 
+font-size: 18px !important;
     font-weight: 900 !important; 
     white-space: nowrap !important; 
 
@@ -96,6 +97,9 @@ function pdfPageCellCss(opts: { padding?: string; fontSize?: string; headerFontS
     color: #000 !important;
     font-weight: 800 !important;
     margin: 0 auto !important;
+font-size: 18px !important;
+font-family:'Cairo' !important; 
+
   }
 
   .pdf-page .text-cell,
@@ -130,7 +134,7 @@ function forcePdfDataCellTextColor(doc: Document): void {
       textNode.style.setProperty('color', '#000', 'important');
       textNode.style.setProperty('-webkit-text-fill-color', '#000', 'important');
       textNode.style.setProperty('text-shadow', 'none', 'important');
-      textNode.style.setProperty('font-weight', '800', 'important');
+      textNode.style.setProperty('font-weight', '1000', 'important');
     });
   });
 }
@@ -301,21 +305,22 @@ async function htmlTableToPdfPaginated(opts: {
   const pageWidthPx = opts.pageWidthPx ?? (isWideCentered
     ? (orientation === 'portrait' ? 1123 : 1600)
     : (orientation === 'landscape' ? 1123 : 794));
-  const cellPadding = isWideCentered ? '1px 1px' : '1px 1px';
+  const cellPadding = isWideCentered ? '2px 2px' : '2px 2px';
   const cellFontSize = orientation === 'portrait'
     ? (isWideCentered ? 'clamp(18px, 0.9vw, 16px)' : 'clamp(14px, 1vw, 15px)')
     : (isWideCentered ? 'clamp(14px, 0.9vw, 15px)' : 'clamp(14px, 1.05vw, 16px)');
   // ✅ الكود الصحيح بعد دمجه في سطر واحد:
 const headerFontSize = orientation === 'portrait'
-  ? 'clamp(18px, 0.95vw, 16px)'
-  : 'clamp(14px, 0.9vw, 16px)';
+  ? '16px'
+  : '16px';
 
   const layoutCss = isWideCentered ? `
     .pdf-page {
       width: 100% !important;
-max-width:auto !important; 
-      margin: 0 !important; 
-      padding: 0 !important;
+max-width:100% !important; 
+      margin: 0 !important;
+  padding: 0 !important;
+  height:100%
     }
     .pdf-page table {
       width: 100% !important;
@@ -341,7 +346,7 @@ max-width:auto !important;
   measureFrame.style.top = '0';
   measureFrame.style.left = '-10000px';
   measureFrame.style.width = `${pageWidthPx}px`;
-  measureFrame.style.height = '4000px';
+  measureFrame.style.height = '8000px';
   measureFrame.style.border = '0';
   measureFrame.style.opacity = '0';
   measureFrame.style.pointerEvents = 'none';
