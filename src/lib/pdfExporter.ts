@@ -4,6 +4,7 @@ import {
   escapeHtml,
   reportLetterheadHtml,
   tablePrintStyles,
+  twoLineWrapCss,
 } from './printTableHtml';
 import { saveBlobToInternalStorage } from "@/lib/nativeFileStorage";
 import { printReportHtml } from "@/lib/nativePrinter";
@@ -200,7 +201,7 @@ async function htmlToPdf(opts: {
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
       <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       <style>${css}</style>
-      <style>${pdfPageCellCss()}</style></head>
+      <style>${pdfPageCellCss()}</style><style>${twoLineWrapCss}</style></head>
       <body style="margin:0; padding:0;"><div class="pdf-page">${reportLetterheadHtml()}${html}</div></body></html>`);
     fdoc.close();
 
@@ -363,7 +364,7 @@ max-width:100% !important;
       <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       <style>${css}</style>
       <style>${pdfPageCellCss({ padding: cellPadding, fontSize: cellFontSize, headerFontSize })}</style>
-      <style>${layoutCss}</style>
+      <style>${layoutCss}</style><style>${twoLineWrapCss}</style>
       </head><body style="margin:0; padding:0;"><div class="pdf-page">${fullHtml}</div></body></html>`);
     mdoc.close();
     forcePdfDataCellTextColor(mdoc);
@@ -463,7 +464,7 @@ max-width:100% !important;
           <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
           <style>${css}</style>
           <style>${pdfPageCellCss({ padding: cellPadding, fontSize: cellFontSize })}</style>
-          <style>${layoutCss}</style></head>
+          <style>${layoutCss}</style><style>${twoLineWrapCss}</style></head>
           <body style="margin:0; padding:0;"><div class="pdf-page">${pageHtml}</div></body></html>`);
         fdoc.close();
         forcePdfDataCellTextColor(fdoc);
