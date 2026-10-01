@@ -50,6 +50,39 @@ export const escapeHtml = (s: any) =>
     .replace(/"/g, "&quot;");
 
 /**
+ * التفاف الأعمدة النصية ورؤوس الأعمدة في سطرين كحد أقصى، والأرقام في سطر واحد.
+ * يُحقن في آخر الأنماط ليتغلب على أي قواعد سابقة.
+ */
+export const twoLineWrapCss = `
+  table { table-layout: auto !important; }
+  th, td.text-cell, td.long-text-cell, td.desc-cell {
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    max-width: 60mm !important;
+  }
+  th > .pdf-cell-text,
+  td.text-cell > .pdf-cell-text,
+  td.long-text-cell > .pdf-cell-text,
+  td.desc-cell > .pdf-cell-text {
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
+    overflow: hidden !important;
+    white-space: normal !important;
+    line-height: 1.3 !important;
+    max-height: 2.6em !important;
+  }
+  td.num, td.numeric-cell, td.date-cell, td.compact-cell, td.idx,
+  td.num *, td.numeric-cell *, td.date-cell *, td.compact-cell *, td.idx * {
+    white-space: nowrap !important;
+  }
+  .doc-title-cell, .doc-title-cell * { white-space: normal !important; max-width: none !important; }
+  .report-letterhead-cell { max-width: none !important; }
+`;
+
+/**
  * أنماط موحّدة للطباعة ومعاينة PDF وواجهة الجداول
  * تضمن الاحتواء التلقائي وعدم التفاف النصوص داخل الخلايا مع السماح بالتفاف رؤوس الأعمدة.
  */
@@ -250,6 +283,7 @@ font-family: AlQabas-Bold;
 
   ${noteRowCss}
   ${runningLetterheadCss}
+  ${twoLineWrapCss}
 `;
 
 /** يبني ترويسة + جدول التبويب (المستخدم في الطباعة وتنزيل PDF) */
