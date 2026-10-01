@@ -1029,16 +1029,17 @@ className="odd:bg-white even:bg-slate-50/70 hover:bg-teal-50/50 transition-color
 <td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {acc.checkDate || "—"}
                       </td>
-<td className="border border-black !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal break-words min-w-[120px] max-w-[240px] text-center font-extrabold">
+<td className="border border-black !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal text-center font-extrabold">
                         {acc.description || "—"}
                       </td>
-                      <td className="w-auto border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal break-words min-w-[90px] max-w-[150px]">
+ <td className="w-auto
+ max-w-auto border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xl sm:text-sm whitespace-normal">
                         {acc.specialty || "—"}
                       </td>
-                      <td className="w-auto border border-slate-300 font-bold !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal break-words min-w-[110px] max-w-[170px] text-center">
+<td className="w-auto border border-slate-300 font-bold !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-xs whitespace-normal text-center">
                         {acc.name || "—"}
                       </td>
-                      <td className="w-auto border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="w-auto border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal">
                         {Number(acc.hafizaAmount) > 0 ? fmt(Number(acc.hafizaAmount)) : "—"}
                       </td>
                       <td className="border border-slate-300 font-mono tabular-nums font-bold text-center bg-emerald-50/50 text-emerald-700 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
