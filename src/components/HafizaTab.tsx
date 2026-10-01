@@ -404,11 +404,11 @@ className="w-full text-center px-3 py-2 hover:bg-sky-50 text-xs sm:text-xs flex 
         <CardContent className="p-0">
 <div className="w-auto overflow-auto max-h-[72vh]">
 <Table className="w-auto table-auto text-center border-collapse border border-black">
- <TableHeader className="bg-slate-800/90 sticky top-0 z-10 border-b border-slate-200 whitespace-normal">
+ <TableHeader className="bg-slate-300/90 sticky top-0 z-10 border-b border-slate-200 whitespace-normal">
                 <TableRow>
-<TableHead className="w-auto text-center font-bold text-slate-700">م</TableHead>
+<TableHead className="w-auto text-center font-bold text-slate-800">م</TableHead>
                   {COLS.map((c) => (
-<TableHead key={c.key} className="text-center font-bold text-slate-800 text-xs px-2 py-2">
+<TableHead key={c.key} className="text-center font-bold text-emlod-600 text-xs px-2 py-2">
 <div className="flex flex-col items-center">
                         <button onClick={() => toggleSort(c.key)} className="flex items-center gap-1 hover:text-sky-600 transition-colors">
                           <span>{c.label}</span>
@@ -418,26 +418,27 @@ className="w-full text-center px-3 py-2 hover:bg-sky-50 text-xs sm:text-xs flex 
                           value={filters[c.key] || ""}
                           onChange={(e) => setFilter(c.key, e.target.value)}
                           placeholder="فلتر..."
-className="mt-1 px-1.5 py-0.5 rounded-md text-[10px] w-1 text-center bg-white border border-slate-300 focus:outline-none focus:ring-1 focus:ring-sky-400 font-normal"
+className="mt-0 px-1.5 py-0.5 rounded-md text-[10px] w-1 text-center bg-white border border-slate-300 focus:outline-none focus:ring-1 focus:ring-sky-400 font-normal"
                         />
                       </div>
                     </TableHead>
                   ))}
-<TableHead className="w-12 text-center font-bold text-slate-700">حذف</TableHead>
+<TableHead className="w-auto max-w-auto text-center font-bold text-slate-700">حذف</TableHead>
                 </TableRow>
               </TableHeader>
 
 <TableBody>
  {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={COLS.length + 2} className="text-center py-8 text-slate-400 text-xs sm:text-sm">
+<TableCell colSpan={COLS.length + 2} className="text-center py-8 text-slate-400 text-xs sm:text-sm w-auto max-w-auto">
                       لا توجد بيانات حوافظ مطابقة
                     </TableCell>
                   </TableRow>
                 ) : (
                   filtered.map((row, idx) => (
-                    <TableRow key={row.id} className="border-b border-slate-100 hover:bg-sky-50/40 transition-colors">
-                      <TableCell className="text-center text-xs font-mono text-slate-500">{idx + 1}</TableCell>
+<TableRow key={row.id} className="border-b border-slate-100 hover:bg-sky-50/40 transition-colors">
+
+<TableCell className="text-center text-xs font-mono text-slate-500">{idx + 1}</TableCell>
                       {COLS.map((c) => {
                         const isEditing = activeCell?.rowId === row.id && activeCell?.colKey === c.key;
                         const val = (row as any)[c.key];
