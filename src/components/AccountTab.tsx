@@ -119,7 +119,7 @@ const EditModal = ({
       className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-4"
       dir="rtl"
     >
-      <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-2xl shadow-2xl max-h-[92vh] overflow-y-auto border border-slate-200">
+      <div className="bg-white rounded-t-3xl sm:rounded-3xl w-auto max-w-auto shadow-2xl max-h-[92vh] overflow-y-auto border border-slate-200">
         <div className="flex justify-between items-center px-5 py-4 border-b border-slate-100 bg-gradient-to-r from-teal-800 to-slate-900 text-white rounded-t-3xl sticky top-0 z-10">
           <h3 className="text-base sm:text-lg font-black flex items-center gap-2">{title}</h3>
           <button
@@ -166,7 +166,7 @@ function FormField({
           value={v}
           onChange={(e) => on(e.target.value)}
           placeholder={placeholder}
-          className={`w-full ${icon ? "pr-9" : "px-3"} pl-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 bg-white/95 text-slate-900 font-medium placeholder:text-slate-400 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 shadow-sm transition-all outline-none ${className}`}
+className={`w-full ${icon ? "pr-9" : "px-3"} pl-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 bg-white/95 text-slate-900 font-medium placeholder:text-slate-400 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 shadow-sm transition-all outline-none ${className}`}
         />
       </div>
     </div>
@@ -912,7 +912,7 @@ export default function AccountsTab() {
       )}
 
       {/* ===== جدول كشف الحساب الجاري المالي مع الإجماليات ===== */}
-      <div className="accounts-print-area w-full rounded-3xl overflow-hidden border border-slate-200 bg-white shadow-md">
+<div className="accounts-print-area w-auto rounded-3xl overflow-hidden border border-slate-200 bg-white shadow-md">
         {/* شريط أدوات الجدول */}
         <div className="accounts-print-hide px-3 py-3 sm:px-4 sm:py-3.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2.5 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-teal-50/30">
           <div className="flex items-center gap-2">
@@ -952,7 +952,7 @@ export default function AccountsTab() {
               {/* ترويسة الجدول */}
  <thead className="sticky top-0 z-20 text-slate-900 font-black text-xs sm:text-sm bg-gradient-to-r from-teal-50 via-slate-100 to-amber-50/50 whitespace-normal">
                 <tr>
-<th className="border border-slate-300 text-center w-9 sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 whitespace-normal bg-slate-100">
+<th className="border border-slate-300 text-center w-auto sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 whitespace-normal bg-slate-100">
                     م
                   </th>
                   {COLS.map((c) => (
@@ -983,7 +983,7 @@ className="border border-slate-300 cursor-pointer hover:bg-teal-100/60 transitio
                         value={filters[c.key] || ""}
                         onChange={(e) => setFilter(c.key, e.target.value)}
  placeholder="يحث....."
-className="w-auto max-w-auto px-2 py-2 text-[11px] border border-slate-300 rounded-lg bg-white text-slate-800 outline-none focus:border-teal-600 font-medium text-center"
+className="w-auto max-w-0 px-2 py-2 text-[11px] border border-slate-300 rounded-lg bg-white text-slate-800 outline-none focus:border-teal-600 font-medium text-center"
                       />
                     </th>
                   ))}
@@ -992,7 +992,7 @@ className="w-auto max-w-auto px-2 py-2 text-[11px] border border-slate-300 round
               </thead>
 
               {/* محتوى الجدول */}
-<tbody className="text-slate-800 text-xs sm:text-sm font-bold divide-y divide-slate-200">
+<tbody className="text-black text-xs sm:text-xs font-bold divide-y divide-slate-200 w-auto">
                 {filteredWithBalance.length === 0 ? (
                   <tr>
                     <td
@@ -1033,7 +1033,7 @@ className="odd:bg-white even:bg-slate-50/70 hover:bg-teal-50/50 transition-color
                         {acc.description || "—"}
                       </td>
  <td className="w-auto
- max-w-auto border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xl sm:text-sm whitespace-normal">
+ max-w- border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xl sm:text-sm whitespace-normal">
                         {acc.specialty || "—"}
                       </td>
 <td className="w-auto border border-slate-300 font-bold !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-xs whitespace-normal text-center">

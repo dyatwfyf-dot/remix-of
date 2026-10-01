@@ -120,7 +120,7 @@ const inputCls =
   "w-full min-w-0 rounded-xl border border-indigo-200/80 bg-white/90 px-3 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 shadow-sm outline-none transition-all placeholder:text-slate-400 focus:border-purple-600 focus:bg-white focus:ring-4 focus:ring-purple-500/15";
 
 const journalClampCls =
-  "block max-w-[95px] overflow-hidden text-ellipsis whitespace-nowrap leading-snug sm:max-w-[190px]";
+  "block max-w- overflow-hidden text-ellipsis whitespace-nowrap leading-snug sm:max-w-auto";
 
 // ── قائمة اختيار الحسابات مع بحث منبثق ────────────────────────────────────
 function AccountDropdownCell({

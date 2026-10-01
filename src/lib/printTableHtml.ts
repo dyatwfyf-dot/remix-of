@@ -72,7 +72,7 @@ export const tablePrintStyles = `
     direction: rtl;
     width: 100%;
     font-weight: 700;
-    font-size: 13.5px;
+    font-size: 15.5px;
     background: #fff;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -90,7 +90,7 @@ export const tablePrintStyles = `
     text-align: center;
     color: #000 !important;
     margin-bottom: 6px;
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 700;
     border-bottom: 1px solid #b8860b;
     padding-bottom: 4px;
@@ -101,7 +101,7 @@ export const tablePrintStyles = `
     width: 100% !important;
     border-collapse: collapse !important;
     table-layout: auto !important;
-    font-size: 13px;
+    font-size: 16px;
     margin: 0 auto;
   }
   
@@ -112,7 +112,7 @@ export const tablePrintStyles = `
     vertical-align: middle !important;
     color: #000 !important;
     width: auto !important;
-    max-width: none !important;
+    max-width:auto !important;
   }
 
   /* 1. رؤوس الأعمدة: التفاف النص التلقائي لاحتواء العناوين الطويلة */
@@ -122,7 +122,7 @@ export const tablePrintStyles = `
     color: #171412 !important;
     font-weight: 900 !important;
     font-size: 16px !important;
-    line-height: 1.25 !important;
+    line-height: 1. !important;
     white-space: normal !important;
     word-break: normal !important;
     overflow-wrap: break-word !important;
