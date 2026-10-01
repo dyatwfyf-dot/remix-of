@@ -82,6 +82,13 @@ export default function TabActions({
     const html = `<!doctype html><html lang="ar" dir="rtl"><head>${head}</head><body>
       ${reportLetterheadHtml()}
       ${tableHtml()}
+      <script>
+        window.onload = () => {
+          setTimeout(() => {
+            window.print();
+          }, 300);
+        };
+      </script>
     </body></html>`;
     const opened = printReportHtml(html, `${title} - ${reportDateLabel}`);
     if (!opened) toast.error("تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة");

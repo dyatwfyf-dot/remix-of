@@ -1,6 +1,6 @@
 import { Capacitor } from "@capacitor/core";
 import { registerReportWindow } from "@/lib/capacitorNavigation";
-import { REPORT_LETTERHEAD_SRC, twoLineWrapCss } from "@/lib/printTableHtml";
+import { REPORT_LETTERHEAD_SRC } from "@/lib/printTableHtml";
 
 const PRINT_LETTERHEAD_ALT = "ترويسة المجلس اليمني للاختصاصات الطبية";
 
@@ -72,66 +72,14 @@ async function printWithNativePrinter(name: string, html: string): Promise<void>
  * يفتح واجهة الطباعة الأصلية في Android عند التشغيل داخل APK.
  * في الويب يستخدم نافذة التقرير الحالية، لذلك لا يتغير سلوك PWA.
  */
-function withWrapCss(html: string): string {
-  const css = `<style data-two-line-wrap="true">${twoLineWrapCss}</style>`;
-  // إزالة سكربتات الطباعة التلقائية القديمة لأن الإطار المخفي يتولى الطباعة
-  const cleaned = html.replace(/<script\b[^>]*>[\s\S]*?window\.print\(\)[\s\S]*?<\/script>/gi, "");
-  return cleaned.includes("</head>") ? cleaned.replace("</head>", `${css}</head>`) : `${css}${cleaned}`;
-}
-
-function printViaIframe(html: string): boolean {
-  try {
-    document.getElementById("app-print-frame")?.remove();
-    const iframe = document.createElement("iframe");
-    iframe.id = "app-print-frame";
-    iframe.setAttribute("aria-hidden", "true");
-    Object.assign(iframe.style, {
-      position: "fixed", right: "0", bottom: "0", width: "0", height: "0", border: "0", visibility: "hidden",
-    });
-    document.body.appendChild(iframe);
-    const win = iframe.contentWindow;
-    const doc = win?.document;
-    if (!win || !doc) return false;
-    doc.open();
-    doc.write(html);
-    doc.close();
-
-    let done = false;
-    const trigger = () => {
-      if (done) return;
-      done = true;
-      try {
-        win.focus();
-        win.print();
-      } catch (err) {
-        console.error("[Print] iframe print failed", err);
-      }
-    };
-    const images = Array.from(doc.images);
-    const imagesReady = Promise.all(
-      images.map((img) => (img.complete ? Promise.resolve() : new Promise<void>((r) => { img.onload = img.onerror = () => r(); }))),
-    );
-    const fontsReady = (doc as any).fonts?.ready ?? Promise.resolve();
-    Promise.race([
-      Promise.all([imagesReady, fontsReady]),
-      new Promise((r) => setTimeout(r, 2500)),
-    ]).then(() => setTimeout(trigger, 150));
-    return true;
-  } catch (err) {
-    console.error("[Print] iframe setup failed", err);
-    return false;
-  }
-}
-
 export function printReportHtml(html: string, name: string): boolean {
-  const printableHtml = withWrapCss(ensurePrintLetterhead(html));
+  const printableHtml = ensurePrintLetterhead(html);
   if (isNativePrintingAvailable()) {
     void printWithNativePrinter(name, printableHtml).catch((error) => {
       console.error("[Print] Native Android printing failed", error);
     });
     return true;
   }
-  if (printViaIframe(printableHtml)) return true;
 
   const reportWindow = registerReportWindow(window.open("", "_blank", "width=1200,height=800"));
   if (!reportWindow) return false;
@@ -142,14 +90,16 @@ export function printReportHtml(html: string, name: string): boolean {
 }
 
 export async function printReportHtmlAsync(html: string, name: string): Promise<boolean> {
+  const printableHtml = ensurePrintLetterhead(html);
   if (isNativePrintingAvailable()) {
     try {
-      await printWithNativePrinter(name, withWrapCss(ensurePrintLetterhead(html)));
+      await printWithNativePrinter(name, printableHtml);
       return true;
     } catch (error) {
       console.error("[Print] Native Android printing failed", error);
       return false;
     }
   }
+
   return printReportHtml(html, name);
 }
