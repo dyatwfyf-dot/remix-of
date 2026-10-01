@@ -30,6 +30,7 @@ type Props = {
   pdfLayout?: "default" | "wide-centered";
   additionalWebActions?: WebActionItem[];
   webClassName?: string;
+  pdfOrientation?: string;
 };
 
 export default function TabActions({
