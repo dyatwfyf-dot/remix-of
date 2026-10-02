@@ -750,8 +750,7 @@ export default function JournalTab() {
           </div>
         ) : (
 <div className="overflow-auto max-h-[75vh]">
-<table className="w-auto 
-max-w-auto table-auto border-collapse text-center text-xs sm:text-sm font-semibold">
+<table className="journal-ledger-table w-auto max-w-auto table-auto border-collapse text-center text-xs sm:text-sm font-semibold">
  <thead className="sticky top-0 z-20 bg-gradient-to-l from-slate-900 via-indigo-950 to-purple-900 text-white shadow-md whitespace-normal">
                 <tr>
                   {JOURNAL_COLS.map((c) => (
@@ -807,7 +806,7 @@ className="border-b border-indigo-50/70 odd:bg-white even:bg-indigo-50/20 transi
 <td className="w-auto max-w-auto font-bold text-black !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal">
                         <span className={journalClampCls}>{j.date || "—"}</span>
                       </td> <td
-className="w-auto max-w-auto font-bold text-black !px-2 !py-2 !text-xs sm:!text-sm whitespace-normal"
+className="journal-ledger-description w-auto max-w-auto font-bold text-black !px-2 !py-2 !text-xs sm:!text-sm whitespace-normal"
                         title={j.description}
                       >
                         <span className={journalClampCls}>{j.description || "—"}</span>

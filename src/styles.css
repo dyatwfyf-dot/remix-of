@@ -250,6 +250,50 @@ src: url("/Cairo-Regular-normal.ttf") format("truetype");
     overflow-wrap: break-word !important;
   }
 
+  /* جدول الحساب الجاري: احتواء تلقائي للنص في جميع الخلايا */
+  .accounts-ledger-table th,
+  .accounts-ledger-table td {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+  }
+
+  /* عمود البيان في الحساب الجاري يظل محتواه محصوراً في سطرين */
+  .accounts-ledger-table .accounts-ledger-description {
+    width: 220px;
+    min-width: 140px;
+    max-width: 220px;
+  }
+
+  .accounts-ledger-table .accounts-ledger-description > span {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+
+  /* جدول القيود اليومية: نفس قواعد الاحتواء التلقائي دون تغيير منطق البيانات */
+  .journal-ledger-table th,
+  .journal-ledger-table td {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+  }
+
+  /* عمود البيان في القيود اليومية يظل محتواه محصوراً في سطرين */
+  .journal-ledger-table .journal-ledger-description {
+    width: 220px;
+    min-width: 140px;
+    max-width: 220px;
+  }
+
+  .journal-ledger-table .journal-ledger-description > span {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+
   /* حدود خلايا جداول الأقساط */
   .installments-table th,
   .installments-table td {

@@ -949,7 +949,7 @@ export default function AccountsTab() {
         {/* الجدول بالتنسيق المضغوط والمتوافق مع الهواتف */}
         <div className="p-1 sm:p-2.5">
           <div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-2xl border border-slate-200">
- <table className="w-auto max-w-auto table-auto text-center border-collapse border border-slate-300">
+ <table className="accounts-ledger-table w-auto max-w-auto table-auto text-center border-collapse border border-slate-300">
               {/* ترويسة الجدول */}
  <thead className="w-auto max-w-auto sticky top-0 z-20 text-slate-900 font-black text-xs sm:text-sm bg-gradient-to-r from-teal-50 via-slate-100 to-amber-50/50 whitespace-normal">
                 <tr>
@@ -1028,7 +1028,7 @@ className="w-10 odd:bg-white even:bg-slate-50/70 hover:bg-teal-50/50 transition-
                         {acc.checkDate || "—"}
                       </td>
 {/* عمود البيان والشرح: التفاف في سطرين فقط */}
-<td className="border border-slate-300 !px-2 !py-1.5 text-xs sm:text-sm text-center font-bold max-w-[220px] min-w-[140px] whitespace-normal">
+<td className="accounts-ledger-description border border-slate-300 !px-2 !py-1.5 text-xs sm:text-sm text-center font-bold max-w-[220px] min-w-[140px] whitespace-normal">
   <span className="line-clamp-2 leading-snug text-slate-900 block" title={acc.description}>
     {acc.description || "—"}
   </span>
