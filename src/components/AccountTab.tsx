@@ -691,11 +691,11 @@ export default function AccountsTab() {
     style={{
       background: "linear-gradient(135deg, #d4a017, #f0c040)",
       borderColor: "#000",
-      color: "#1a2a3a"
+      color: "green"
     }}
     value={totalIncome}
     tone="income"
-    icon={<ArrowUpRight className="text-[#1a2a3a]" />}
+    icon={<ArrowUpRight className="text-red" />}
   />
 
   <LedgerStat
@@ -703,11 +703,11 @@ export default function AccountsTab() {
     style={{
       background: "linear-gradient(135deg, #9e3a2a, #5c2a1a)",
       borderColor: "#000",
-      color: "#f5f5dc"
+      color: "white"
     }}
     value={totalExpense}
     tone="expense"
-    icon={<ArrowDownLeft className="text-[#f5f5dc]" />}
+    icon={<ArrowDownLeft className="text-yellow" />}
   />
 
   <LedgerStat
@@ -715,11 +715,11 @@ export default function AccountsTab() {
     style={{
       background: "linear-gradient(135deg, #1a2a3a, #2a6b6a)",
       borderColor: "#000",
-      color: "#f5f5dc"
+      color: "red"
     }}
     value={currentBalance}
     tone="balance"
-    icon={<Wallet className="text-[#f5f5dc]" />}
+    icon={<Wallet className="text-gold" />}
   />
 </div>
       {/* ===== التقارير الدورية ===== */}
@@ -876,7 +876,7 @@ export default function AccountsTab() {
         icon={<Calendar className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
         v={form.date}
         on={(v) => setForm({ ...form, date: v })}
-        className="bg-[#f5f5dc] text-[#1a2a3a] font-bold border-black focus:border-[#c5a059]"
+        className="bg-[#f5f5dc] text-white font-bold border-black focus:border-[#c5a059]"
       />
       <Field
         label="رقم الحافظة"
@@ -1000,7 +1000,7 @@ export default function AccountsTab() {
         <select
           value={form.revenueKey}
           onChange={(e) => setForm({ ...form, revenueKey: e.target.value })}
-          className="w-full px-3 py-2 text-[15px] border border-black rounded-xl outline-none shadow-sm bg-[#f5f5dc] text-[#1a2a3a] font-bold focus:border-[#c5a059]"
+ className="w-full px-3 py-2 text-[15px] border border-black rounded-xl outline-none shadow-sm bg-[#f5f5dc] text-[#1a2a3a] font-bold focus:border-[#c5a059]"
         >
           <option value="">-- بدون ربط --</option>
           {revenueTypes.map((t) => (
@@ -1030,8 +1030,8 @@ export default function AccountsTab() {
   </div>
 </div>
       {/* ===== جدول القيود ===== */}
-      <div className="accounts-print-area w-full rounded-2xl overflow-hidden border shadow-sm" style={{ background: "#fff", borderColor: "rgba(0,0,0,0.08)" }}>
-        <div className="accounts-print-hide px-2 py-2 sm:px-5 sm:py-3.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2 border-b" style={{ background: THEME.cream, borderColor: "rgba(0,0,0,0.06)" }}>
+<div className="accounts-print-area w-full rounded-2xl overflow-hidden border shadow-sm" style={{ background: "#fff", borderColor: "rgba(0,0,0,0.08)" }}>
+<div className="accounts-print-hide px-2 py-2 sm:px-5 sm:py-3.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2 border-b" style={{ background: THEME.cream, borderColor: "rgba(0,0,0,0.06)" }}>
           <div className="flex items-center gap-2.5">
             <div className="w-2 h-2 rounded-full bg-[#1E8E5A] animate-pulse"></div>
             <h2 className="text-xs sm:text-sm font-black text-[#0f2f44] tracking-wide">
@@ -1060,12 +1060,12 @@ export default function AccountsTab() {
           </div>
         </div>
 
-        <div className="p-1.5 sm:p-3">
-          <div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-xl">
-            <table className="min-w-max table-auto text-xm xm:text-base text-center font-semibold border-collapse border-2 border-black">
-              <thead className="sticky top-0 z-20 text-[#0f2f44] font-black text-[16px]" style={{ background: THEME.warmCream }}>
+<div className="p-1.5 sm:p-3">
+<div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-xl">
+<table className="min-w-max table-auto text-xm xm:text-base text-center font-semibold border-collapse border-2 border-black">
+<thead className="sticky top-0 z-20 text-[#0f2f44] font-black text-[16px]" style={{ background: THEME.warmCream }}>
                 <tr>
-                  <th className="border border-black text-center w-10 sticky top-0 z-20 px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">م</th>
+                  <th className="border border-black text-center w-10 sticky top-0 z-20 px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-normal">م</th>
                   {COLS.map((c) => (
                     <th
                       key={c.key}
@@ -1132,22 +1132,22 @@ export default function AccountsTab() {
                       <td className="border border-black font-mono tabular-nums numeric-cell text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                         {acc.checkDate || "—"}
                       </td>
-                      <td className="border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-normal">
                         {acc.description || "—"}
                       </td>
-                      <td className="border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-normal">
                         {acc.specialty || "—"}
                       </td>
-                      <td className="border border-black font-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-normal">
                         {acc.name || "—"}
                       </td>
                       <td className="border border-black font-mono tabular-nums numeric-cell text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                         {Number(acc.hafizaAmount) > 0 ? fmt(Number(acc.hafizaAmount)) : "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#1E8E5A]/[0.06] px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#1E8E5A]/[0.09] px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                         {Number(acc.income) > 0 ? fmt(Number(acc.income)) : "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#D14343]/[0.06] px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#D14343]/[0.10] px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                         {Number(acc.expense) > 0 ? fmt(Number(acc.expense)) : "—"}
                       </td>
 
@@ -1200,17 +1200,17 @@ export default function AccountsTab() {
               {filteredWithBalance.length > 0 && (
                 <tfoot>
                   <tr className="bg-[#E7E2D8]">
-                    <td colSpan={10} className="border border-black text-left font-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
-                      رصيد الإقفال
+<td colSpan={10} className="border border-black text-right font-extrabold px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+  الاجمـــــــــالي: 
                     </td>
                     <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                       {fmt(totalIncome)}
                     </td>
-                    <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                    <td className="border border-black font-bold tabular-nums numeric-cell font-black text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                       {fmt(totalExpense)}
                     </td>
                     <td className="border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap"></td>
-                    <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#1f5f7a]/10 px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                    <td className="border border-black font-bold tabular-nums numeric-cell font-black text-center bg-[#1f5f7a]/10 px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                       {fmt(currentBalance)}
                     </td>
                     <td className="accounts-print-hide border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap"></td>
