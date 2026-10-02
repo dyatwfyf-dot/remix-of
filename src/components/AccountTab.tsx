@@ -949,9 +949,9 @@ export default function AccountsTab() {
         {/* الجدول بالتنسيق المضغوط والمتوافق مع الهواتف */}
         <div className="p-1 sm:p-2.5">
           <div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-2xl border border-slate-200">
- <table className="w-full max-w-auto table-auto text-center border-collapse border border-slate-300">
+ <table className="w-auto max-w-auto table-auto text-center border-collapse border border-slate-300">
               {/* ترويسة الجدول */}
- <thead className="sticky top-0 z-20 text-slate-900 font-black text-xs sm:text-sm bg-gradient-to-r from-teal-50 via-slate-100 to-amber-50/50 whitespace-normal">
+ <thead className="w-auto max-w-auto sticky top-0 z-20 text-slate-900 font-black text-xs sm:text-sm bg-gradient-to-r from-teal-50 via-slate-100 to-amber-50/50 whitespace-normal">
                 <tr>
 <th className="border border-slate-300 text-center w-auto max-w-auto sticky top-0 z-20 !px-1 !py-1.5 sm:!px-2 sm:!py-2 whitespace-normal bg-slate-100">  م
 </th>
@@ -974,14 +974,14 @@ className="w-auto max-w-auto border border-slate-300 cursor-pointer hover:bg-tea
                 </tr>
 {/* سطر مرشحات البحث لكل عمود */}
 <tr className="accounts-print-hide bg-slate-50">
-<th className="border border-slate-300 !px-1 !py-1 text-xs"></th>
+<th className="border border-slate-300 !px-1 !py-1 text-sm"></th>
                   {COLS.map((c) => (
                     <th key={c.key} className="border border-slate-300 !px-1 !py-1">
                       <input
                         value={filters[c.key] || ""}
                         onChange={(e) => setFilter(c.key, e.target.value)}
  placeholder="يحث....."
-className="w-2 max-w-0 px-2 py-2 text-[11px] border border-slate-300 rounded-lg bg-white text-slate-800 outline-none focus:border-teal-600 font-medium text-center"
+className="w-auto px-2 py-2 text-[11px] border border-slate-300 rounded-lg bg-white text-slate-800 outline-none focus:border-teal-600 font-medium text-center"
                       />
                     </th>
                   ))}
@@ -990,12 +990,12 @@ className="w-2 max-w-0 px-2 py-2 text-[11px] border border-slate-300 rounded-lg 
               </thead>
 
               {/* محتوى الجدول */}
-<tbody className="text-black text-xs sm:text-xs font-bold divide-y divide-slate-200 w-auto max-w-auto">
+<tbody className="w-auto max-w-auto text-black text-xs sm:text-sm font-bold divide-y divide-slate-200">
                 {filteredWithBalance.length === 0 ? (
                   <tr>
     <td
  colSpan={COLS.length + 2}
-className="text-center font-bold border border-slate-300 bg-white py-8 text-slate-500"
+className="w-auto text-center font-bold border border-slate-300 bg-white py-8 text-slate-500"
                     >
                       لا توجد قيود مالية تطابق خيارات التصفية.
                     </td>
@@ -1004,24 +1004,24 @@ className="text-center font-bold border border-slate-300 bg-white py-8 text-slat
                   filteredWithBalance.map((acc, index) => (
                     <tr
                       key={acc.id}
-className="odd:bg-white even:bg-slate-50/70 hover:bg-teal-50/50 transition-colors group"
+className="w-auto max-w-auto odd:bg-white even:bg-slate-50/70 hover:bg-teal-50/50 transition-colors group"
                     >
-<td className="border border-slate-300 text-center font-bold tabular-nums !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal font-bold text-slate-600 bg-slate-50/40">
+<td className="w-auto max-w-auto border border-slate-300 text-center font-bold tabular-nums !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal font-bold text-slate-600 bg-slate-50/40">
                         {index + 1}
                       </td>
-<td className="border border-slate-300 font-bold tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="w-auto max-w-auto border border-slate-300 font-bold tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal">
                         {acc.date}
                       </td>
-<td className="border border-slate-300 font-bold tabular-nums font-bold text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap text-amber-700">
+<td className="w-auto max-w-auto border border-slate-300 font-bold tabular-nums font-bold text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal text-amber-700">
                         {acc.hafizaNo || "—"}
                       </td>
-<td className="border border-slate-300 font-bold tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="w-auto max-w-auto border border-slate-300 font-bold tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {acc.notifyNo || "—"}
                       </td>
-                      <td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="w-auto max-w-auto border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {acc.notifyDate || "—"}
                       </td>
-                      <td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="w-auto max-w-auto border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {acc.checkNo || "—"}
                       </td>
 <td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
@@ -1031,16 +1031,16 @@ className="odd:bg-white even:bg-slate-50/70 hover:bg-teal-50/50 transition-color
                         {acc.description || "—"}
                       </td>
  <td className="w-auto
- max-w- border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xl sm:text-sm whitespace-normal">
+ max-w-auto border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xl sm:text-sm whitespace-normal">
                         {acc.specialty || "—"}
                       </td>
-<td className="w-auto border border-slate-300 font-bold !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-xs whitespace-normal text-center">
+<td className="w-auto max-w-auto border border-slate-300 font-bold !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-xs whitespace-normal text-center">
                         {acc.name || "—"}
                       </td>
-<td className="w-auto border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal">
+<td className="w-auto max-w-auto border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal">
                         {Number(acc.hafizaAmount) > 0 ? fmt(Number(acc.hafizaAmount)) : "—"}
                       </td>
-                      <td className="border border-slate-300 font-mono tabular-nums font-bold text-center bg-emerald-50/50 text-emerald-700 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="w-auto max-w-auto border border-slate-300 font-mono tabular-nums font-bold text-center bg-emerald-50/50 text-emerald-700 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {Number(acc.income) > 0 ? fmt(Number(acc.income)) : "—"}
                       </td>
                       <td className="border border-slate-300 font-mono tabular-nums font-bold text-center bg-rose-50/50 text-rose-700 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
@@ -1104,13 +1104,11 @@ className="w-auto py-1 px-1 text-[11px] font-bold text-blue-900 bg-purple-50/80 
               {filteredWithBalance.length > 0 && (
                 <tfoot className="sticky bottom-0 z-10 bg-slate-100 font-black text-xs sm:text-sm border-t-2 border-slate-400">
                   <tr className="bg-gradient-to-r from-slate-200 via-teal-100/40 to-slate-200 text-slate-900">
-                    <td
-                      colSpan={10}
-                      className="border border-slate-300 text-left font-black !px-2 !py-2 text-xs sm:text-sm whitespace-nowrap"
-                    >
-                      رصيد الإقفال الإجمالي:
+<td colSpan={10}
+className ="border border-slate-300 text-right font-bold !px-2 !py-2 text-xs sm:text-xs whitespace-nowrap">
+ الإجمالي:
                     </td>
-                    <td className="border border-slate-300 font-mono tabular-nums font-black text-center text-slate-900 !px-1 !py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="border border-slate-300 font-mono tabular-nums font-black text-center text-slate-900 !px-1 !py-2 text-xs sm:text-sm whitespace-nowrap">
                       {fmt(totalHafiza)}
                     </td>
                     <td className="border border-slate-300 font-mono tabular-nums font-black text-center text-emerald-800 bg-emerald-100/60 !px-1 !py-2 text-xs sm:text-sm whitespace-nowrap">
