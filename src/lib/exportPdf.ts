@@ -277,7 +277,7 @@ export async function monthlyStatementPdf(opts: {
   const head = `<meta charset="utf-8"><title>${title} - ${periodLabel}</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-${targetedReportLetterheadStyles}
+${reportLetterheadStyles}
     @page { size: A4 landscape; margin: 8mm; padding: 0; }
     body { 
       font-family: cairo; 
@@ -484,7 +484,7 @@ export async function revenuePdf(
   const head = `<meta charset="utf-8"><title>${REV_SCHEMA.title} - ${MONTHS_PDF[month - 1]} ${year}م</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-${targetedReportLetterheadStyles}
+${reportLetterheadStyles}
     @page { size: A4 landscape; margin: 8mm; padding: 0; }
     body { 
       font-family: Cairo; 
