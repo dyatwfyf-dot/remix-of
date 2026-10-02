@@ -990,7 +990,7 @@ className="w-auto px-2 py-2 text-[11px] border border-slate-300 rounded-lg bg-wh
               </thead>
 
               {/* محتوى الجدول */}
-<tbody className="w-auto max-w-auto text-black text-xs sm:text-sm font-bold divide-y divide-slate-200">
+<tbody className="w-[220px] max-w-auto text-black text-xs sm:text-sm font-bold divide-y divide-slate-200">
                 {filteredWithBalance.length === 0 ? (
                   <tr>
     <td
@@ -1027,23 +1027,28 @@ className="w-auto max-w-auto odd:bg-white even:bg-slate-50/70 hover:bg-teal-50/5
 <td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {acc.checkDate || "—"}
                       </td>
-<td className="border border-black !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal text-center font-extrabold">
-                        {acc.description || "—"}
-                      </td>
- <td className="w-auto
- max-w-auto border border-slate-300 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xl sm:text-sm whitespace-normal">
-                        {acc.specialty || "—"}
-                      </td>
-<td className="w-auto max-w-auto border border-slate-300 font-bold !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-xs whitespace-normal text-center">
-                        {acc.name || "—"}
-                      </td>
-<td className="w-auto max-w-auto border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal">
-                        {Number(acc.hafizaAmount) > 0 ? fmt(Number(acc.hafizaAmount)) : "—"}
-                      </td>
-<td className="w-auto max-w-auto border border-slate-300 font-mono tabular-nums font-bold text-center bg-emerald-50/50 text-emerald-700 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
-                        {Number(acc.income) > 0 ? fmt(Number(acc.income)) : "—"}
-                      </td>
-                      <td className="border border-slate-300 font-mono tabular-nums font-bold text-center bg-rose-50/50 text-rose-700 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+{/* عمود البيان والشرح: التفاف في سطرين فقط */}
+<td className="border border-slate-300 !px-2 !py-1.5 text-xs sm:text-sm text-center font-bold max-w-[220px] min-w-[140px] whitespace-normal">
+  <span className="line-clamp-2 leading-snug text-slate-900 block" title={acc.description}>
+    {acc.description || "—"}
+  </span>
+</td>
+
+{/* التخصص الطبي: احتواء تلقائي بسطر واحد */}
+<td className="border border-slate-300 !px-2 !py-1.5 text-xs sm:text-sm whitespace-nowrap text-center text-slate-700">
+  {acc.specialty || "—"}
+</td>
+
+{/* الاسم الكامل: احتواء تلقائي بسطر واحد */}
+<td className="border border-slate-300 font-bold !px-2 !py-1.5 text-xs sm:text-sm whitespace-nowrap text-center text-slate-900">
+  {acc.name || "—"}
+</td>
+
+{/* مبلغ الحافظة: احتواء تلقائي بسطر واحد */}
+<td className="border border-slate-300 font-mono tabular-nums text-center !px-2 !py-1.5 text-xs sm:text-sm whitespace-nowrap">
+  {Number(acc.hafizaAmount) > 0 ? fmt(Number(acc.hafizaAmount)) : "—"}
+</td>
+          <td className="border border-slate-300 font-mono tabular-nums font-bold text-center bg-rose-50/50 text-rose-700 !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {Number(acc.expense) > 0 ? fmt(Number(acc.expense)) : "—"}
                       </td>
 
