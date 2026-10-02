@@ -3,7 +3,9 @@ import { useStore } from "@/lib/store";
 import { useReportDate } from "@/lib/reportDate";
 import { exportMonthlyStatement, matchStatementAccount } from "@/lib/exportImport";
 import monthlySchema from "@/data/monthlyStatement.json";
-import TabActions from "./TabActions";
+import { monthlyStatementPdf } from "@/lib/exportPdf";
+import { toast } from "sonner";
+import { Printer } from "lucide-react";
 import ImportButton from "./ImportButton";
 import {
   getPeriodRange,
@@ -342,11 +344,27 @@ export default function MonthlyStatementTab() {
 
           <div className="flex items-center gap-2">
             <ImportButton kind="monthly" />
-            <TabActions
-              tableRef={tableRef}
-              title={`كشف_الحساب_الشهري_${periodLabel}`}
-              onExportExcel={() => exportMonthlyStatement(tableRef)}
-            />
+            <button
+              type="button"
+              onClick={() =>
+                void monthlyStatementPdf({ journal, year, startMonth, endMonth, mode, month, quarter, halfYear, reportDate }).catch((e) => {
+                  console.error(e);
+                  toast.error("تعذّرت الطباعة، حاول مرة أخرى");
+                })
+              }
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-sky-100 to-indigo-100 text-indigo-700 border border-indigo-200 font-bold text-xs rounded-xl shadow-sm hover:shadow-md active:scale-95 transition-all"
+              title="طباعة كشف الحساب الشهري"
+            >
+              <Printer className="h-4 w-4" /> طباعة
+            </button>
+            <button
+              type="button"
+              onClick={() => void exportMonthlyStatement(journal, year, reportDate)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-emerald-50 to-teal-100 text-emerald-700 border border-emerald-200 font-bold text-xs rounded-xl shadow-sm hover:shadow-md active:scale-95 transition-all"
+              title="تصدير إلى Excel"
+            >
+              <FileSpreadsheet className="h-4 w-4" /> Excel
+            </button>
           </div>
         </div>
 
