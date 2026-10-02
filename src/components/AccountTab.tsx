@@ -816,13 +816,13 @@ export default function AccountsTab() {
 <div
   className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-black shadow-sm"
   style={{
-    background: "linear-gradient(135deg, #5c6b4a, #1a2a3a)",
+    background: "linear-gradient(100deg, #e9edca, #1a2a3a)",
     borderColor: "#000",
   }}
 >
-  <div
-    className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b border-black"
-    style={{ background: "#f5f5s3" }}
+<div
+className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b border-black"
+    style={{ background: "#e9edca" }}
   >
     <div className="flex items-center gap-2.5">
       <div
