@@ -311,7 +311,7 @@ export default function MonthlyStatementTab() {
     );
   }, [data]);
 
-  const movementLabel = getReportMovementLabel({ mode, month, quarter, halfYear });
+  const movementLabel = getReportMovementLabel({ mode, year, month, quarter, halfYear });
   const periodLabel = getReportPeriodLabel({ mode, year, month, quarter, halfYear });
   const netBalance = totals.curDebit - totals.curCredit;
 
