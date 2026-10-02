@@ -569,7 +569,7 @@ export default function AccountsTab() {
       notifyDate: "",
       checkNo: "",
       checkDate: "",
-      description: "رصيد افتتاحي للفترة",
+      description: "الرصيد الافتتاحي",
       specialty: "",
       name: "",
       hafizaAmount: 0,
@@ -691,7 +691,7 @@ export default function AccountsTab() {
     style={{
       background: "linear-gradient(135deg, #d4a017, #f0c040)",
       borderColor: "#000",
-      color: "green"
+      color: "#ffffff"
     }}
     value={totalIncome}
     tone="income"
@@ -701,9 +701,9 @@ export default function AccountsTab() {
   <LedgerStat
     label="إجمالي المصروفات"
     style={{
-      background: "linear-gradient(135deg, #9e3a2a, #5c2a1a)",
+      background: "linear-gradient(135deg, #9e3e2a, #5c2a1a)",
       borderColor: "#000",
-      color: "white"
+      color: "#ffffff"
     }}
     value={totalExpense}
     tone="expense"
@@ -715,18 +715,18 @@ export default function AccountsTab() {
     style={{
       background: "linear-gradient(135deg, #1a2a3a, #2a6b6a)",
       borderColor: "#000",
-      color: "red"
+      color: "#ffffff"
     }}
     value={currentBalance}
     tone="balance"
-    icon={<Wallet className="text-gold" />}
+    icon={<Wallet className="text-white" />}
   />
 </div>
       {/* ===== التقارير الدورية ===== */}
 <div
   className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-black shadow-sm"
   style={{
-    background: "linear-gradient(135deg, #5c6b4a, #1a2a3a)", // زيتي → كحلي
+    background: "linear-gradient(135deg, #5c9c4a, #1a2a3a)", // زيتي → كحلي
     borderColor: "#000",
   }}
 >
@@ -822,7 +822,7 @@ export default function AccountsTab() {
 >
   <div
     className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b border-black"
-    style={{ background: "#f5f5dc" }}
+    style={{ background: "#f5f5s3" }}
   >
     <div className="flex items-center gap-2.5">
       <div
@@ -883,7 +883,7 @@ export default function AccountsTab() {
         icon={<Hash className={`${ICON_MOBILE} text-[#722f37]`} />}
         v={form.hafizaNo}
         on={(v) => setForm({ ...form, hafizaNo: v })}
-        className="bg-[#e6d7c3] text-[#1a2a3a] font-bold border-black focus:border-[#c5a059]"
+        className="bg-[#e6d7c3] text-[#ffffff] font-bold border-black focus:border-[#c5a059]"
       />
 
       {/* السطر الثاني */}
@@ -892,12 +892,12 @@ export default function AccountsTab() {
         icon={<Hash className={`${ICON_MOBILE} text-[#c5a059]`} />}
         v={form.notifyNo}
         on={(v) => setForm({ ...form, notifyNo: v })}
-        className="bg-[#f5f5dc] text-[#1a2a3a] font-bold border-black focus:border-[#c5a059]"
+        className="bg-[#f5f5dc] text-[#ffffff] font-bold border-black focus:border-[#c5a059]"
       />
       <Field
         label="تاريخ التوريد"
         type="date"
-        icon={<Calendar className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
+        icon={<Calendar className={`${ICON_MOBILE} text-[#ffffff]`} />}
         v={form.notifyDate}
         on={(v) => setForm({ ...form, notifyDate: v })}
         className="bg-[#e6d7c3] text-[#1a2a3a] font-bold border-black focus:border-[#c5a059]"
@@ -909,7 +909,7 @@ export default function AccountsTab() {
         icon={<Ticket className={`${ICON_MOBILE} text-[#722f37]`} />}
         v={form.checkNo}
         on={(v) => setForm({ ...form, checkNo: v })}
-        className="bg-[#f5f5dc] text-[#1a2a3a] font-bold border-black focus:border-[#c5a059]"
+        className="bg-[#f5f5dc] text-[#ffffff] font-bold border-black focus:border-[#c5a059]"
       />
       <Field
         label="تاريخ الشيك"
@@ -917,12 +917,12 @@ export default function AccountsTab() {
         icon={<Calendar className={`${ICON_MOBILE} text-[#c5a059]`} />}
         v={form.checkDate}
         on={(v) => setForm({ ...form, checkDate: v })}
-        className="bg-[#e6d7c3] text-[#1a2a3a] font-bold border-black focus:border-[#c5a059]"
+        className="bg-[#e6d7c3] text-[#ffffff] font-bold border-black focus:border-[#c5a059]"
       />
 
       {/* السطر الرابع: البيان والشرح (يأخذ عمودين) */}
       <div className="sm:col-span-2">
-        <label className="block text-[16px] font-black mb-1.5 mr-0.5 tracking-wide text-[#1a2a3a]">
+        <label className="block text-[16px] font-black mb-1.5 mr-0.5 tracking-wide text-[#ffffff]">
           البيان والشرح
         </label>
         <div className="relative flex items-center">
@@ -934,7 +934,7 @@ export default function AccountsTab() {
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             placeholder="اكتب أو اختر البيان..."
-            className="w-full pr-9 pl-3 py-2 text-[16px] border border-black rounded-xl outline-none shadow-sm bg-[#f5f5dc] text-[#1a2a3a] font-bold focus:border-[#c5a059]"
+            className="w-full pr-9 pl-3 py-2 text-[16px] border border-black rounded-xl outline-none shadow-sm bg-[#f5f5dc] text-[#ffffff] font-bold focus:border-[#c5a059]"
           />
         </div>
         <datalist id="account-descriptions">
@@ -949,28 +949,28 @@ export default function AccountsTab() {
       {/* السطر الخامس */}
       <Field
         label="التخصص الطبي"
-        icon={<Stethoscope className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
+        icon={<Stethoscope className={`${ICON_MOBILE} text-[#ffffff]`} />}
         v={form.specialty}
         on={(v) => setForm({ ...form, specialty: v })}
-        className="bg-[#e6d7c3] text-[#1a2a3a] font-bold border-black focus:border-[#c5a059]"
+        className="bg-[#e6d7c3] text-[#ffffff] font-bold border-black focus:border-[#c5a059]"
       />
       <Field
         label="الاسم الكامل"
-        icon={<User className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
+        icon={<User className={`${ICON_MOBILE} text-[#ffffff]`} />}
         v={form.name}
         on={(v) => setForm({ ...form, name: v })}
         placeholder="اسم المتدرب..."
-        className="bg-[#f5f5dc] text-[#1a2a3a] font-bold border-black focus:border-[#c5a059]"
+        className="bg-[#f5f5dc] text-[#ffffff] font-bold border-black focus:border-[#c5a059]"
       />
 
       {/* السطر السادس */}
       <Field
         label="مبلغ الحافظة"
         type="number"
-        icon={<span className="text-xs text-[#1a2a3a] font-black">ر.ي</span>}
+        icon={<span className="text-xs text-[#ffffff] font-black">ر.ي</span>}
         v={form.hafizaAmount}
         on={(v) => setForm({ ...form, hafizaAmount: v })}
-        className="font-mono tabular-nums numeric-cell bg-[#e6d7c3] text-[#1a2a3a] font-black border-black focus:border-[#2a6b6a]"
+        className="font-mono tabular-nums numeric-cell bg-[#e6d7c3] text-[#ffffff] font-black border-black focus:border-[#2a6b6a]"
       />
       <Field
         label="الإيرادات"
@@ -1062,7 +1062,7 @@ export default function AccountsTab() {
 
 <div className="p-1.5 sm:p-3">
 <div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-xl">
-<table className="min-w-max table-auto text-xm xm:text-base text-center font-semibold border-collapse border-2 border-black">
+<table className="min-w-auto table-auto text-xm xm:text-base text-center font-semibold border-collapse border-2 border-black">
 <thead className="sticky top-0 z-20 text-[#0f2f44] font-black text-[16px]" style={{ background: THEME.warmCream }}>
                 <tr>
                   <th className="border border-black text-center w-10 sticky top-0 z-20 px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-normal">م</th>
@@ -1132,16 +1132,16 @@ export default function AccountsTab() {
                       <td className="border border-black font-mono tabular-nums numeric-cell text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                         {acc.checkDate || "—"}
                       </td>
-                      <td className="border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-normal">
+                      <td className="min-w-auto border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-normal">
                         {acc.description || "—"}
                       </td>
-                      <td className="border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-normal">
+                      <td className="min-w-auto border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-normal">
                         {acc.specialty || "—"}
                       </td>
-                      <td className="border border-black font-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-normal">
+                      <td className="min-w-auto border border-black font-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-normal">
                         {acc.name || "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums numeric-cell text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                      <td className="min-w-auto border border-black font-mono tabular-nums numeric-cell text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                         {Number(acc.hafizaAmount) > 0 ? fmt(Number(acc.hafizaAmount)) : "—"}
                       </td>
                       <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#1E8E5A]/[0.09] px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
