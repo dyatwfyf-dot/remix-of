@@ -990,7 +990,7 @@ className="w-auto px-2 py-2 text-[11px] border border-slate-300 rounded-lg bg-wh
               </thead>
 
               {/* محتوى الجدول */}
-<tbody className="w-[220px] max-w-auto text-black text-xs sm:text-sm font-bold divide-y divide-slate-200">
+<tbody className="w-[220px] text-black text-xs sm:text-sm font-bold divide-y divide-slate-200">
                 {filteredWithBalance.length === 0 ? (
                   <tr>
     <td
@@ -1009,22 +1009,22 @@ className="w-10 odd:bg-white even:bg-slate-50/70 hover:bg-teal-50/50 transition-
 <td className="w-auto border border-slate-300 text-center font-bold tabular-nums !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap font-bold text-slate-600 bg-slate-50/40">
                         {index + 1}
                       </td>
-<td className="w-auto max-w-auto border border-slate-300 font-bold tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal">
+<td className=" border border-slate-300 font-bold tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal">
                         {acc.date}
                       </td>
-<td className="w-auto border border-slate-300 font-bold tabular-nums font-bold text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal text-amber-700">
+<td className="w-[100px] border border-slate-300 font-bold tabular-nums font-bold text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal text-amber-700">
                         {acc.hafizaNo || "—"}
                       </td>
-<td className="w-auto border border-slate-300 font-bold tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="w-[100px] border border-slate-300 font-bold tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {acc.notifyNo || "—"}
                       </td>
-<td className="w-auto border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="w-[100px] border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {acc.notifyDate || "—"}
                       </td>
-<td className="w-auto border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="w-[100px] border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {acc.checkNo || "—"}
                       </td>
-<td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="w-[100px] border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {acc.checkDate || "—"}
                       </td>
 {/* عمود البيان والشرح: التفاف في سطرين فقط */}
@@ -1035,12 +1035,12 @@ className="w-10 odd:bg-white even:bg-slate-50/70 hover:bg-teal-50/50 transition-
 </td>
 
 {/* التخصص الطبي: احتواء تلقائي بسطر واحد */}
-<td className="border border-slate-300 !px-2 !py-1.5 text-xs sm:text-sm whitespace-nowrap text-center text-slate-700">
+<td className="border border-slate-300 !px-2 !py-1.5 text-xs sm:text-sm whitespace-normal text-center text-slate-700">
   {acc.specialty || "—"}
 </td>
 
 {/* الاسم الكامل: احتواء تلقائي بسطر واحد */}
-<td className="border border-slate-300 font-bold !px-2 !py-1.5 text-xs sm:text-sm whitespace-nowrap text-center text-slate-900">
+<td className="border border-slate-300 font-bold !px-2 !py-1.5 text-xs sm:text-sm whitespace-normal text-center text-slate-900">
   {acc.name || "—"}
 </td>
 
