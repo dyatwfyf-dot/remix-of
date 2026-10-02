@@ -1004,24 +1004,24 @@ className="w-auto text-center font-bold border border-slate-300 bg-white py-8 te
                   filteredWithBalance.map((acc, index) => (
                     <tr
                       key={acc.id}
-className="w-auto max-w-auto odd:bg-white even:bg-slate-50/70 hover:bg-teal-50/50 transition-colors group"
+className="w-10 odd:bg-white even:bg-slate-50/70 hover:bg-teal-50/50 transition-colors group"
                     >
-<td className="w-auto max-w-auto border border-slate-300 text-center font-bold tabular-nums !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal font-bold text-slate-600 bg-slate-50/40">
+<td className="w-auto border border-slate-300 text-center font-bold tabular-nums !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap font-bold text-slate-600 bg-slate-50/40">
                         {index + 1}
                       </td>
 <td className="w-auto max-w-auto border border-slate-300 font-bold tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal">
                         {acc.date}
                       </td>
-<td className="w-auto max-w-auto border border-slate-300 font-bold tabular-nums font-bold text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal text-amber-700">
+<td className="w-auto border border-slate-300 font-bold tabular-nums font-bold text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-normal text-amber-700">
                         {acc.hafizaNo || "—"}
                       </td>
-<td className="w-auto max-w-auto border border-slate-300 font-bold tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="w-auto border border-slate-300 font-bold tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {acc.notifyNo || "—"}
                       </td>
-<td className="w-auto max-w-auto border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="w-auto border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {acc.notifyDate || "—"}
                       </td>
-<td className="w-auto max-w-auto border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
+<td className="w-auto border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
                         {acc.checkNo || "—"}
                       </td>
 <td className="border border-slate-300 font-mono tabular-nums text-center !px-1 !py-1.5 sm:!px-2 sm:!py-2 text-xs sm:text-sm whitespace-nowrap">
