@@ -687,27 +687,27 @@ export default function AccountsTab() {
       {/* ===== بطاقات الإجماليات ===== */}
 <div className="accounts-print-hide grid grid-cols-2 gap-2">
   <LedgerStat
-    label="إجمالي الإيرادات"
+  label="إجمالي الإيرادات"
     style={{
-      background: "linear-gradient(135deg, #d4a017, #f0c040)",
+      background: "linear-gradient(120deg, #d4a017, #f0c0f0)",
       borderColor: "#000",
-      color: "#ffffff"
+      color:"#ff595e"
     }}
     value={totalIncome}
     tone="income"
-    icon={<ArrowUpRight className="text-red" />}
+    icon={<ArrowUpRight className="text-white" />}
   />
 
   <LedgerStat
-    label="إجمالي المصروفات"
+ label="إجمالي المصروفات"
     style={{
       background: "linear-gradient(135deg, #9e3e2a, #5c2a1a)",
       borderColor: "#000",
-      color: "#ffffff"
+      color: "#0077b6"
     }}
     value={totalExpense}
     tone="expense"
-    icon={<ArrowDownLeft className="text-yellow" />}
+    icon={<ArrowDownLeft className="text-white" />}
   />
 
   <LedgerStat
@@ -715,7 +715,7 @@ export default function AccountsTab() {
     style={{
       background: "linear-gradient(135deg, #1a2a3a, #2a6b6a)",
       borderColor: "#000",
-      color: "#ffffff"
+      color: "#03045e"
     }}
     value={currentBalance}
     tone="balance"
