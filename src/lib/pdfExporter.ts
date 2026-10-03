@@ -26,21 +26,43 @@ async function downloadPdfBlob(pdf: any, fileName: string): Promise<void> {
 /**
  * مصدر وحيد وموحّد لقواعد احتواء/التفاف الخلايا داخل ".pdf-page".
  */
-function pdfPageCellCss(opts: { padding?: string; fontSize?: string } = {}): string {
-  // تم تكبير حجم الخط الافتراضي وتصغير الحشوة لإتاحة مساحة أكبر للنص
-  const padding = opts.padding ?? '2px 3px';
-  const fontSize = opts.fontSize ?? '15px'; // تم الرفع من 9-10px إلى 13px ثابتة أو أكبر
+function pdfPageCellCss(opts: { padding?: string; fontSize?: string; headerFontSize?: string } = {}): string {
+  const padding = opts.padding ?? '3px 3px';
+  const fontSize = opts.fontSize ?? '18px';
+  const headerFontSize = opts.headerFontSize ?? fontSize;
 
   return `
-  .pdf-page table { 
-    table-layout: auto !important; 
-    width: 100% !important; 
-max-width: auto!important;
+  .pdf-page table {
+    table-layout: auto !important;
+    width: 100% !important;
+    max-width:auto !important;
     border-collapse: collapse !important;
   }
+  .pdf-page th{
+    border: 1 px solid #000 !important;
 
-  /* تكبير الخط وتمركز النصوص أفقياً وشاقولياً */
-  .pdf-page th, 
+    padding: ${padding} !important;
+
+    text-align: center !important;
+vertical-align: middle !important;
+
+font-size: 20px !important;
+line-height: 1 !important;
+
+    overflow: hidden !important;
+
+    word-break: break-word !important;
+
+    overflow-wrap: anywhere !important;
+
+    white-space: normal !important;
+  }
+
+
+
+
+
+
   .pdf-page td, 
   .pdf-page td.acc, 
   .pdf-page td.num, 
@@ -49,23 +71,23 @@ max-width: auto!important;
     padding: ${padding} !important;
     text-align: center !important;
     vertical-align: middle !important;
-    font-size: ${fontSize} !important;     /* تطبيق حجم الخط الكبيرة */
-    line-height: 1.15 !important;          /* ضبط ارتفاع السطر لتوسيط الخط تماماً */
-    white-space: nowrap !important; 
-    word-break: keep-all !important;
-  }
-
-  /* تكبير خط العناوين في رأس الجدول */
-  .pdf-page th {
+font-size: 18px !important;
+    line-height: 1 !important;
+    overflow: hidden !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+    white-space:nowrap !important;
     font-size: 18px !important;
-    font-weight: 900 !important;
+    font-family: 'Cairo' !important; 
+
   }
 
-  /* تكبير الأرقام مع الحفاظ على خط Times New Roman */
   .pdf-page .num { 
-    font-family: 'Times New Roman', Times, serif !important; 
-    font-size: 15.5px !important; 
+    font-family: 'Cairo' !important; 
+font-size: 18px !important;
     font-weight: 900 !important; 
+    white-space: nowrap !important; 
+
   }
 
   .pdf-page .pdf-cell-text {
@@ -75,12 +97,33 @@ max-width: auto!important;
     color: #000 !important;
     font-weight: 800 !important;
     margin: 0 auto !important;
+font-size: 18px !important;
+font-family:'Cairo' !important; 
+
+  }
+
+  .pdf-page .text-cell,
+  .pdf-page .text-cell .pdf-cell-text {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+  }
+
+  .pdf-page .num,
+  .pdf-page .numeric-cell,
+  .pdf-page .date-cell,
+  .pdf-page .compact-cell,
+  .pdf-page .num 
+  .pdf-page .numeric-cell 
+  .pdf-page .date-cell
+  .pdf-page .compact-cell {
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
   }
   `;
 }
 
-
-    
 function forcePdfDataCellTextColor(doc: Document): void {
   doc.querySelectorAll<HTMLElement>('.pdf-page tbody td, .pdf-page tfoot td, .pdf-page .num, .pdf-page .idx').forEach((cell) => {
     cell.style.setProperty('color', '#000', 'important');
@@ -91,7 +134,7 @@ function forcePdfDataCellTextColor(doc: Document): void {
       textNode.style.setProperty('color', '#000', 'important');
       textNode.style.setProperty('-webkit-text-fill-color', '#000', 'important');
       textNode.style.setProperty('text-shadow', 'none', 'important');
-      textNode.style.setProperty('font-weight', '800', 'important');
+      textNode.style.setProperty('font-weight', '1000', 'important');
     });
   });
 }
@@ -134,8 +177,8 @@ async function htmlToPdf(opts: {
   orientation?: 'portrait' | 'landscape';
   pageWidthPx?: number;
 }): Promise<void> {
-  const { html, css, fileName, orientation = 'landscape' } = opts;
-  const pageWidthPx = opts.pageWidthPx ?? (orientation === 'landscape' ? 1123 : 794);
+  const { html, css, fileName, orientation = 'portrait' } = opts;
+  const pageWidthPx = opts.pageWidthPx ?? (orientation === 'portrait' ? 1123 : 794);
 
   const frame = document.createElement('iframe');
   frame.setAttribute('aria-hidden', 'true');
@@ -196,10 +239,10 @@ async function htmlToPdf(opts: {
 
     blackenGreenDataPixels(canvas, page);
 
-    const pdf = new JsPDF({ unit: 'mm', format: 'a4', orientation, compress: true });
+    const pdf = new JsPDF({ unit: 'mm', format: 'A4', orientation, compress: true });
     const pw = pdf.internal.pageSize.getWidth();
     const ph = pdf.internal.pageSize.getHeight();
-    const margin = 3; // تصغير الهوامش لأقصى درجة
+    const margin = 3;
     const imgW = pw - margin * 2;
     const pxPerMm = canvas.width / imgW;
     const pageContentPx = Math.floor((ph - margin * 2) * pxPerMm);
@@ -254,28 +297,42 @@ async function htmlTableToPdfPaginated(opts: {
     numericKeys = [],
     css,
     fileName,
-    orientation = 'landscape',
+    orientation = 'portrait',
     reportDate,
     pdfLayout = 'default',
   } = opts;
   const isWideCentered = pdfLayout === 'wide-centered';
-  const pageWidthPx = opts.pageWidthPx ?? (isWideCentered ? 1600 : (orientation === 'landscape' ? 1123 : 794));
-  const cellPadding = isWideCentered ? '3px 4px' : '3px 4px';
-  const cellFontSize = isWideCentered ? 'clamp(14px, 0.9vw, 15px)' : 'clamp(14px, 1.05vw, 16px)';
+  const pageWidthPx = opts.pageWidthPx ?? (isWideCentered
+    ? (orientation === 'portrait' ? 1123 : 1600)
+    : (orientation === 'landscape' ? 1123 : 794));
+  const cellPadding = isWideCentered ? '2px 2px' : '2px 2px';
+  const cellFontSize = orientation === 'portrait'
+    ? (isWideCentered ? 'clamp(18px, 0.9vw, 16px)' : 'clamp(14px, 1vw, 15px)')
+    : (isWideCentered ? 'clamp(14px, 0.9vw, 15px)' : 'clamp(14px, 1.05vw, 16px)');
+  // ✅ الكود الصحيح بعد دمجه في سطر واحد:
+const headerFontSize = orientation === 'portrait'
+  ? '16px'
+  : '16px';
+
   const layoutCss = isWideCentered ? `
     .pdf-page {
-    width: 100% !important;
-  max-width:none!important; 
-  margin: 0 !important; padding: 0 !important;
-}
+      width: 100% !important;
+max-width:100% !important; 
+      margin: 0 !important;
+  padding: 0 !important;
+  height:100%
+    }
     .pdf-page table {
-  width: 100% !important;
-  max-width: none!important;
-  margin-left: 0!important;
-  margin-right: 0!important; }
+      width: 100% !important;
+ max-width: auto!important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      table-layout:auto !important; 
+
+    }
   ` : '';
   const pageHeightPx = Math.round(
-    pageWidthPx * (orientation === 'landscape' ? 210 / 297 : 297 / 210)
+    pageWidthPx * (orientation === 'portrait' ? 297 / 210 : 210 / 297)
   );
 
   const [{ default: html2canvas }, { default: JsPDF }] = await Promise.all([
@@ -289,7 +346,7 @@ async function htmlTableToPdfPaginated(opts: {
   measureFrame.style.top = '0';
   measureFrame.style.left = '-10000px';
   measureFrame.style.width = `${pageWidthPx}px`;
-  measureFrame.style.height = '4000px';
+  measureFrame.style.height = '8000px';
   measureFrame.style.border = '0';
   measureFrame.style.opacity = '0';
   measureFrame.style.pointerEvents = 'none';
@@ -305,7 +362,7 @@ async function htmlTableToPdfPaginated(opts: {
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
       <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       <style>${css}</style>
-      <style>${pdfPageCellCss({ padding: cellPadding, fontSize: cellFontSize })}</style>
+      <style>${pdfPageCellCss({ padding: cellPadding, fontSize: cellFontSize, headerFontSize })}</style>
       <style>${layoutCss}</style>
       </head><body style="margin:0; padding:0;"><div class="pdf-page">${fullHtml}</div></body></html>`);
     mdoc.close();
@@ -327,7 +384,7 @@ async function htmlTableToPdfPaginated(opts: {
     const dataRows = bodyRows.slice(0, -1);
     const rowHeights = dataRows.map((r) => r.offsetHeight);
 
-    const margin = 3; // تصغير الهوامش لأقصى درجة
+    const margin = 3;
     const DPI = 96;
     const pxPerMm = DPI / 25.4;
     const pdf = new JsPDF({ unit: 'mm', format: 'A4', orientation, compress: true });
@@ -453,33 +510,35 @@ async function htmlTableToPdfPaginated(opts: {
 const statementCss = `
   ${tablePrintStyles}
   body, .pdf-page { 
-  font-size: 15px; 
-  margin: 0;
-  padding: 0;
+    font-size: 18px; 
+    margin: 0;
+    padding: 0;
   }
   table {
-  width: 100% !important; max-width: 100%; 
-table-layout: auto!important; 
+    width: 100% !important;
+    max-width:100%!important; 
+    table-layout:auto !important; 
   }
   .info {
-  width: 100%; 
-border: solid 1px black; 
-margin: 6px 0 10px;
-table-layout: auto !important; 
+    width: 100%; 
+    border: solid 1px black; 
+    margin: 6px 0 10px;
   }
   .info td {
-border: 1px solid #000; padding: 6px 8px; 
-text-align: center; 
-font-weight: 700; 
+    border: 1px solid #000; 
+    padding: 6px 8px; 
+    text-align: center; 
+    font-weight: 700; 
   }
   .info td.lbl { 
-background: #f1f5f9 !important; 
-width: auto; 
-white-space: nowrap !important; }
+    background: #f1f5f9 !important; 
+    width: auto; 
+    white-space: nowrap !important; 
+  }
   .sign {
-margin-top: 20px; 
-font-weight: 700;
-font-size: 15px; 
+    margin-top: 20px; 
+    font-weight: 700;
+    font-size: 15.px; 
   }
 `;
 
@@ -562,29 +621,27 @@ export function printHtmlContent(htmlContent: string): void {
       <title>طباعة</title>
       <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        /* تصغير الهوامش لأقصى درجة في صفحة الطباعة المباشرة */
         @page { size: A4; margin: 5mm; }
         body {
-   font-family: 'Cairo';
+          font-family:cairo;
           direction: rtl;
-  color: #000 !important;
+          color: #000 !important;
           background: white;
           line-height: 1.5;
-          font-size: 15px;
+          font-size: 17px;
           font-weight: 900 !important;
           width: 100%;
           margin: 0;
           padding: 0;
         }
         h1, h2, h3, h4, h5, h6 {
-          font-weight: 800;
-          letter-spacing: -0.01em;
+          font-weight: bold;
           margin: 8px 0;
           color: #000 !important;
         }
         table {
           width: 100% !important;
-          max-width: 100% !important;
+          max-width:auto !important;
           border-collapse: collapse;
           table-layout: auto !important;
           margin: 10px 0;
@@ -594,16 +651,23 @@ export function printHtmlContent(htmlContent: string): void {
           padding: 3px 5px !important;
           text-align: center;
           vertical-align: middle;
-          font-size: clamp(14px, 1.2vw, 16px);
+          font-size: 16px;
           color: #000 !important;
           font-weight: 900 !important;
         }
-        th, td {
-          white-space: nowrap;
-          width: 1%;
+        th {
+          border: 1px solid #000 !important;
+          background: #1f7fb8;
+          color: #000 !important;
+          font-weight: 900 !important;
+          white-space: normal !important;
+          font-size: 18px;
+font-family: AlQabas-Bold;
+
+
         }
         td:not(.num):not(.idx):not(.numeric-cell) {
-          white-space: normal !important;
+          white-space: nowrap !important;
           overflow-wrap: break-word !important;
           word-break: normal !important;
           overflow: visible;
@@ -621,12 +685,7 @@ export function printHtmlContent(htmlContent: string): void {
           color: #000 !important;
           font-weight: 900 !important;
           direction: ltr;
-        }
-        th {
-          background: #1f7fb8;
-          color: #000 !important;
-          font-weight: 900 !important;
-          white-space: nowrap !important;
+ white-space: nowrap !important;
         }
         tr:nth-child(even) td {
           background: #f8fafc;
@@ -634,8 +693,9 @@ export function printHtmlContent(htmlContent: string): void {
         @media print {
           * { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           body { background: white; color: #000 !important; font-weight: 900 !important; width: 100%; margin: 0; padding: 0; }
-          table { width: 100% !important; max-width: 100% !important; }
-          th, td { color: #000 !important; font-weight: 900 !important; }
+          table { 
+width: 100% !important; max-width:auto!important; }
+th, td { color: #000 !important; font-weight: 900 !important; }
           .no-print { display: none !important; }
         }
       </style>
@@ -653,8 +713,7 @@ export function printHtmlContent(htmlContent: string): void {
     </html>
   `;
   
-  printReportHtml(styledContent, 
-  "تقرير للطباعة");
+  printReportHtml(styledContent, "تقرير للطباعة");
 }
 
 export function printTable(title: string, columns: string[], rows: (string | number)[][]): void {
@@ -690,8 +749,18 @@ export async function exportTablePdf(opts: {
   fileName: string;
   reportDate?: string;
   pdfLayout?: 'default' | 'wide-centered';
+  orientation?: 'portrait' | 'landscape';
 }): Promise<void> {
-  const { title, columns, rows, numericKeys = [], fileName, reportDate, pdfLayout = 'default' } = opts;
+  const {
+    title,
+    columns,
+    rows,
+    numericKeys = [],
+    fileName,
+    reportDate,
+    pdfLayout = 'default',
+    orientation = 'portrait',
+  } = opts;
   const safeDate = reportDate || new Date().toISOString().slice(0, 10);
 
   await htmlTableToPdfPaginated({
@@ -701,7 +770,7 @@ export async function exportTablePdf(opts: {
     numericKeys,
     css: tablePrintStyles,
     fileName: `${fileName}-${safeDate}.pdf`,
-    orientation: 'landscape',
+    orientation,
     reportDate,
     pdfLayout,
   });
@@ -819,12 +888,11 @@ export function revenuePdf(revenue: Record<string, number>, year: number, month:
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=Tajawal:wght@400;500;700;900&display=swap">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    /* تصغير الهوامش لأقصى درجة في صفحة التقرير المالي الأفقي */
     @page { size: A4 landscape; margin: 5mm; padding: 0; }
     @page :first { margin-top: 5mm; }
     html { margin: 0; padding: 0; }
     body { 
-      font-family: 'Cairo'; 
+      font-family: Cairo'; 
       direction: rtl; 
       color: #000 !important; 
       margin: 0; 
@@ -856,8 +924,8 @@ export function revenuePdf(revenue: Record<string, number>, year: number, month:
     table { 
       width: 100% !important;
       max-width: 100% !important;
-    border: solid 1px black; 
-font-size: 15px!important; 
+      border: solid 1px black; 
+      font-size: 15px !important; 
       table-layout: auto !important;
       margin-top: 8px;
     }
@@ -866,20 +934,23 @@ font-size: 15px!important;
       padding: 2px 2px !important;
       text-align: center;
       vertical-align: middle;
-      font-size: 16px!important;
+      font-size: 16px !important;
       font-weight: 900 !important;
       color: #000 !important;
     }
-    th, td {
-      white-space: nowrap;
-      width: 1%;
+    th {
+      border: 2px solid #000 !important;
+      background: #1f7fb8;
+      color: #000 !important;
+      font-weight: 900 !important;
+      white-space: nowrap !important;
     }
     td:not(.num):not(.idx) {
-      white-space: nowrap!important;
+      white-space: nowrap !important;
       overflow-wrap: break-word !important;
       word-break: normal !important;
       overflow: visible;
-  width:auto!important; 
+      width: auto !important; 
     }
     td.num, td.idx {
       white-space: nowrap !important;
@@ -894,12 +965,6 @@ font-size: 15px!important;
       font-weight: 900 !important;
       direction: ltr;
     }
-    th { 
-      background: #1f7fb8;
-      color: #000 !important;
-      font-weight: 900 !important;
-      white-space: nowrap !important;
-    }
     td.acc { 
       text-align: center; 
       font-weight: 900 !important; 
@@ -907,18 +972,18 @@ font-size: 15px!important;
     }
     tr.group-row td { 
       background: #fef3c7; 
-      color: #000 !important; 
+      color: white !important; 
       font-weight: 900 !important; 
       text-align: center; 
     }
     tr.subtotal-row td { 
       background: #cbd5e1; 
       font-weight: 900 !important;
-      color: #000 !important;
+      color: white !important;
     }
     tr.total-row td { 
       background: #1f7fb8; 
-      color: #000 !important; 
+      color: white !important; 
       font-weight: 900 !important; 
       white-space: nowrap !important;
     }

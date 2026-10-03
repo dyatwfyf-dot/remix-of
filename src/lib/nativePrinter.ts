@@ -21,7 +21,8 @@ function ensurePrintLetterhead(html: string, forceTable: boolean = true): string
     thead { display: table-header-group !important; }
     .report-letterhead-row { break-inside: avoid; page-break-inside: avoid; }
     .report-letterhead-cell { border: 0 !important; background: #fff !important; padding: 0 0 2mm !important; height: 30mm !important; }
-    .report-letterhead-image { display: block !important; width: 100% !important; max-width: none !important; height: 30mm !important; max-height: 30mm !important; object-fit: fill !important; object-position: top!important; margin: 0 auto !important; }
+    .report-letterhead-image { display: block !important; width: 100% !important; max-width:100% !important; height: 30mm !important; max-height: 30mm !important; object-fit: content !important; 
+object-position: top!important; margin: 0 auto !important; }
     .report-letterhead-block { display: flex !important; width: 100% !important; height: 30mm !important; min-height: 30mm !important; max-height: 30mm !important; align-items: stretch !important; justify-content: center !important; overflow: hidden !important; margin: 0 auto 4mm !important; page-break-before: avoid !important; page-break-after: avoid !important; }
   </style>`;
 
@@ -67,18 +68,65 @@ async function printWithNativePrinter(name: string, html: string): Promise<void>
   await Printer.printHtml({ name, html });
 }
 
+/** يحذف سكربتات الطباعة التلقائية المضمنة لمنع الطباعة المزدوجة */
+function stripAutoPrintScripts(html: string): string {
+  return html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, (s) => (/print\s*\(/.test(s) ? "" : s));
+}
+
+/** طباعة عبر إطار مخفي داخل الصفحة لتفادي حظر النوافذ المنبثقة */
+function printViaIframe(html: string): boolean {
+  try {
+    document.getElementById("app-print-frame")?.remove();
+    const iframe = document.createElement("iframe");
+    iframe.id = "app-print-frame";
+    Object.assign(iframe.style, { position: "fixed", right: "0", bottom: "0", width: "0", height: "0", border: "0", visibility: "hidden" });
+    document.body.appendChild(iframe);
+    const win = iframe.contentWindow;
+    const doc = win?.document;
+    if (!win || !doc) return false;
+    doc.open();
+    doc.write(stripAutoPrintScripts(html));
+    doc.close();
+
+    let done = false;
+    const trigger = () => {
+      if (done) return;
+      done = true;
+      try {
+        win.focus();
+        win.print();
+      } catch (err) {
+        console.error("[Print] iframe print error:", err);
+      }
+    };
+    const imgs = Array.from(doc.images).map((img) =>
+      img.complete ? Promise.resolve() : new Promise<void>((r) => { img.onload = img.onerror = () => r(); }),
+    );
+    const fontsReady = (doc as any).fonts?.ready ?? Promise.resolve();
+    Promise.race([
+      Promise.all([fontsReady, ...imgs]),
+      new Promise((r) => setTimeout(r, 2500)),
+    ]).then(() => setTimeout(trigger, 200));
+    return true;
+  } catch (err) {
+    console.error("[Print] Failed via iframe:", err);
+    return false;
+  }
+}
+
 /**
- * يفتح واجهة الطباعة الأصلية في Android عند التشغيل داخل APK.
- * في الويب يستخدم نافذة التقرير الحالية، لذلك لا يتغير سلوك PWA.
+ * يفتح واجهة الطباعة الأصلية في Android عند التشغيل داخل APK،
+ * وفي الويب يطبع مباشرة عبر إطار مخفي.
  */
 export function printReportHtml(html: string, name: string): boolean {
   const printableHtml = ensurePrintLetterhead(html);
   if (isNativePrintingAvailable()) {
-    void printWithNativePrinter(name, printableHtml).catch((error) => {
+    void printWithNativePrinter(name, stripAutoPrintScripts(printableHtml)).catch((error) => {
       console.error("[Print] Native Android printing failed", error);
     });
     return true;
   }
+  if (printViaIframe(printableHtml)) return true;
 
   const reportWindow = registerReportWindow(window.open("", "_blank", "width=1200,height=800"));
   if (!reportWindow) return false;
@@ -89,16 +137,14 @@ export function printReportHtml(html: string, name: string): boolean {
 }
 
 export async function printReportHtmlAsync(html: string, name: string): Promise<boolean> {
-  const printableHtml = ensurePrintLetterhead(html);
   if (isNativePrintingAvailable()) {
     try {
-      await printWithNativePrinter(name, printableHtml);
+      await printWithNativePrinter(name, stripAutoPrintScripts(ensurePrintLetterhead(html)));
       return true;
     } catch (error) {
       console.error("[Print] Native Android printing failed", error);
       return false;
     }
   }
-
   return printReportHtml(html, name);
 }

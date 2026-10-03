@@ -569,7 +569,7 @@ export default function AccountsTab() {
       notifyDate: "",
       checkNo: "",
       checkDate: "",
-      description: "رصيد افتتاحي للفترة",
+      description: "الرصيد الافتتاحي",
       specialty: "",
       name: "",
       hafizaAmount: 0,
@@ -687,27 +687,27 @@ export default function AccountsTab() {
       {/* ===== بطاقات الإجماليات ===== */}
 <div className="accounts-print-hide grid grid-cols-2 gap-2">
   <LedgerStat
-    label="إجمالي الإيرادات"
+  label="إجمالي الإيرادات"
     style={{
-      background: "linear-gradient(135deg, #d4a017, #f0c040)",
+      background: "linear-gradient(120deg, #d4a017, #f0c0f0)",
       borderColor: "#000",
-      color: "#1a2a3a"
+      color:"#ff595e"
     }}
     value={totalIncome}
     tone="income"
-    icon={<ArrowUpRight className="text-[#1a2a3a]" />}
+    icon={<ArrowUpRight className="text-white" />}
   />
 
   <LedgerStat
-    label="إجمالي المصروفات"
+ label="إجمالي المصروفات"
     style={{
-      background: "linear-gradient(135deg, #9e3a2a, #5c2a1a)",
+      background: "linear-gradient(135deg, #9e3e2a, #5c2a1a)",
       borderColor: "#000",
-      color: "#f5f5dc"
+      color: "#0077b6"
     }}
     value={totalExpense}
     tone="expense"
-    icon={<ArrowDownLeft className="text-[#f5f5dc]" />}
+    icon={<ArrowDownLeft className="text-white" />}
   />
 
   <LedgerStat
@@ -715,18 +715,18 @@ export default function AccountsTab() {
     style={{
       background: "linear-gradient(135deg, #1a2a3a, #2a6b6a)",
       borderColor: "#000",
-      color: "#f5f5dc"
+      color: "#03045e"
     }}
     value={currentBalance}
     tone="balance"
-    icon={<Wallet className="text-[#f5f5dc]" />}
+    icon={<Wallet className="text-white" />}
   />
 </div>
       {/* ===== التقارير الدورية ===== */}
 <div
   className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-black shadow-sm"
   style={{
-    background: "linear-gradient(135deg, #5c6b4a, #1a2a3a)", // زيتي → كحلي
+    background: "linear-gradient(135deg, #5c9c4a, #1a2a3a)", // زيتي → كحلي
     borderColor: "#000",
   }}
 >
@@ -816,13 +816,13 @@ export default function AccountsTab() {
 <div
   className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-black shadow-sm"
   style={{
-    background: "linear-gradient(135deg, #5c6b4a, #1a2a3a)",
+    background: "linear-gradient(100deg, #e9edca, #1a2a3a)",
     borderColor: "#000",
   }}
 >
-  <div
-    className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b border-black"
-    style={{ background: "#f5f5dc" }}
+<div
+className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b border-black"
+    style={{ background: "#e9edca" }}
   >
     <div className="flex items-center gap-2.5">
       <div
@@ -876,14 +876,14 @@ export default function AccountsTab() {
         icon={<Calendar className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
         v={form.date}
         on={(v) => setForm({ ...form, date: v })}
-        className="bg-[#f5f5dc] text-[#1a2a3a] font-bold border-black focus:border-[#c5a059]"
+        className="bg-[#f5f5dc] text-white font-bold border-black focus:border-[#c5a059]"
       />
       <Field
         label="رقم الحافظة"
         icon={<Hash className={`${ICON_MOBILE} text-[#722f37]`} />}
         v={form.hafizaNo}
         on={(v) => setForm({ ...form, hafizaNo: v })}
-        className="bg-[#e6d7c3] text-[#1a2a3a] font-bold border-black focus:border-[#c5a059]"
+        className="bg-[#e6d7c3] text-[#ffffff] font-bold border-black focus:border-[#c5a059]"
       />
 
       {/* السطر الثاني */}
@@ -892,12 +892,12 @@ export default function AccountsTab() {
         icon={<Hash className={`${ICON_MOBILE} text-[#c5a059]`} />}
         v={form.notifyNo}
         on={(v) => setForm({ ...form, notifyNo: v })}
-        className="bg-[#f5f5dc] text-[#1a2a3a] font-bold border-black focus:border-[#c5a059]"
+        className="bg-[#f5f5dc] text-[#ffffff] font-bold border-black focus:border-[#c5a059]"
       />
       <Field
         label="تاريخ التوريد"
         type="date"
-        icon={<Calendar className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
+        icon={<Calendar className={`${ICON_MOBILE} text-[#ffffff]`} />}
         v={form.notifyDate}
         on={(v) => setForm({ ...form, notifyDate: v })}
         className="bg-[#e6d7c3] text-[#1a2a3a] font-bold border-black focus:border-[#c5a059]"
@@ -909,7 +909,7 @@ export default function AccountsTab() {
         icon={<Ticket className={`${ICON_MOBILE} text-[#722f37]`} />}
         v={form.checkNo}
         on={(v) => setForm({ ...form, checkNo: v })}
-        className="bg-[#f5f5dc] text-[#1a2a3a] font-bold border-black focus:border-[#c5a059]"
+        className="bg-[#f5f5dc] text-[#ffffff] font-bold border-black focus:border-[#c5a059]"
       />
       <Field
         label="تاريخ الشيك"
@@ -917,12 +917,12 @@ export default function AccountsTab() {
         icon={<Calendar className={`${ICON_MOBILE} text-[#c5a059]`} />}
         v={form.checkDate}
         on={(v) => setForm({ ...form, checkDate: v })}
-        className="bg-[#e6d7c3] text-[#1a2a3a] font-bold border-black focus:border-[#c5a059]"
+        className="bg-[#e6d7c3] text-[#ffffff] font-bold border-black focus:border-[#c5a059]"
       />
 
       {/* السطر الرابع: البيان والشرح (يأخذ عمودين) */}
       <div className="sm:col-span-2">
-        <label className="block text-[16px] font-black mb-1.5 mr-0.5 tracking-wide text-[#1a2a3a]">
+        <label className="block text-[16px] font-black mb-1.5 mr-0.5 tracking-wide text-[#ffffff]">
           البيان والشرح
         </label>
         <div className="relative flex items-center">
@@ -934,7 +934,7 @@ export default function AccountsTab() {
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             placeholder="اكتب أو اختر البيان..."
-            className="w-full pr-9 pl-3 py-2 text-[16px] border border-black rounded-xl outline-none shadow-sm bg-[#f5f5dc] text-[#1a2a3a] font-bold focus:border-[#c5a059]"
+            className="w-full pr-9 pl-3 py-2 text-[16px] border border-black rounded-xl outline-none shadow-sm bg-[#f5f5dc] text-[#ffffff] font-bold focus:border-[#c5a059]"
           />
         </div>
         <datalist id="account-descriptions">
@@ -949,28 +949,28 @@ export default function AccountsTab() {
       {/* السطر الخامس */}
       <Field
         label="التخصص الطبي"
-        icon={<Stethoscope className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
+        icon={<Stethoscope className={`${ICON_MOBILE} text-[#ffffff]`} />}
         v={form.specialty}
         on={(v) => setForm({ ...form, specialty: v })}
-        className="bg-[#e6d7c3] text-[#1a2a3a] font-bold border-black focus:border-[#c5a059]"
+        className="bg-[#e6d7c3] text-[#ffffff] font-bold border-black focus:border-[#c5a059]"
       />
       <Field
         label="الاسم الكامل"
-        icon={<User className={`${ICON_MOBILE} text-[#1a2a3a]`} />}
+        icon={<User className={`${ICON_MOBILE} text-[#ffffff]`} />}
         v={form.name}
         on={(v) => setForm({ ...form, name: v })}
         placeholder="اسم المتدرب..."
-        className="bg-[#f5f5dc] text-[#1a2a3a] font-bold border-black focus:border-[#c5a059]"
+        className="bg-[#f5f5dc] text-[#ffffff] font-bold border-black focus:border-[#c5a059]"
       />
 
       {/* السطر السادس */}
       <Field
         label="مبلغ الحافظة"
         type="number"
-        icon={<span className="text-xs text-[#1a2a3a] font-black">ر.ي</span>}
+        icon={<span className="text-xs text-[#ffffff] font-black">ر.ي</span>}
         v={form.hafizaAmount}
         on={(v) => setForm({ ...form, hafizaAmount: v })}
-        className="font-mono tabular-nums numeric-cell bg-[#e6d7c3] text-[#1a2a3a] font-black border-black focus:border-[#2a6b6a]"
+        className="font-mono tabular-nums numeric-cell bg-[#e6d7c3] text-[#ffffff] font-black border-black focus:border-[#2a6b6a]"
       />
       <Field
         label="الإيرادات"
@@ -1000,7 +1000,7 @@ export default function AccountsTab() {
         <select
           value={form.revenueKey}
           onChange={(e) => setForm({ ...form, revenueKey: e.target.value })}
-          className="w-full px-3 py-2 text-[15px] border border-black rounded-xl outline-none shadow-sm bg-[#f5f5dc] text-[#1a2a3a] font-bold focus:border-[#c5a059]"
+ className="w-full px-3 py-2 text-[15px] border border-black rounded-xl outline-none shadow-sm bg-[#f5f5dc] text-[#1a2a3a] font-bold focus:border-[#c5a059]"
         >
           <option value="">-- بدون ربط --</option>
           {revenueTypes.map((t) => (
@@ -1030,8 +1030,8 @@ export default function AccountsTab() {
   </div>
 </div>
       {/* ===== جدول القيود ===== */}
-      <div className="accounts-print-area w-full rounded-2xl overflow-hidden border shadow-sm" style={{ background: "#fff", borderColor: "rgba(0,0,0,0.08)" }}>
-        <div className="accounts-print-hide px-2 py-2 sm:px-5 sm:py-3.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2 border-b" style={{ background: THEME.cream, borderColor: "rgba(0,0,0,0.06)" }}>
+<div className="accounts-print-area w-full rounded-2xl overflow-hidden border shadow-sm" style={{ background: "#fff", borderColor: "rgba(0,0,0,0.08)" }}>
+<div className="accounts-print-hide px-2 py-2 sm:px-5 sm:py-3.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2 border-b" style={{ background: THEME.cream, borderColor: "rgba(0,0,0,0.06)" }}>
           <div className="flex items-center gap-2.5">
             <div className="w-2 h-2 rounded-full bg-[#1E8E5A] animate-pulse"></div>
             <h2 className="text-xs sm:text-sm font-black text-[#0f2f44] tracking-wide">
@@ -1060,12 +1060,12 @@ export default function AccountsTab() {
           </div>
         </div>
 
-        <div className="p-1.5 sm:p-3">
-          <div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-xl">
-            <table className="min-w-max table-auto text-xm xm:text-base text-center font-semibold border-collapse border-2 border-black">
-              <thead className="sticky top-0 z-20 text-[#0f2f44] font-black text-[16px]" style={{ background: THEME.warmCream }}>
+<div className="p-1.5 sm:p-3">
+<div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-xl">
+<table className="w-auto table-auto text-xm xm:text-base text-center font-semibold border-collapse border-2 border-black">
+<thead className="w-auto min-w-0 sticky top-0 z-20 text-[#0f2f44] font-black text-[16px]" style={{ background: THEME.warmCream }}>
                 <tr>
-                  <th className="border border-black text-center w-10 sticky top-0 z-20 px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">م</th>
+<th className="border border-black text-center w-10 sticky top-0 z-20 px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-normal">م</th>
                   {COLS.map((c) => (
                     <th
                       key={c.key}
@@ -1132,22 +1132,22 @@ export default function AccountsTab() {
                       <td className="border border-black font-mono tabular-nums numeric-cell text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                         {acc.checkDate || "—"}
                       </td>
-                      <td className="border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                      <td className="min-w-auto border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-normal">
                         {acc.description || "—"}
                       </td>
-                      <td className="border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+ <td className="w-auto min-w-0 border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-normal">
                         {acc.specialty || "—"}
                       </td>
-                      <td className="border border-black font-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+<td className="w-auto min-w-0 border border-black font-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-normal">
                         {acc.name || "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums numeric-cell text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+<td className="w-auto min-w-0 border border-black font-mono tabular-nums numeric-cell text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-normal">
                         {Number(acc.hafizaAmount) > 0 ? fmt(Number(acc.hafizaAmount)) : "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#1E8E5A]/[0.06] px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#1E8E5A]/[0.09] px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                         {Number(acc.income) > 0 ? fmt(Number(acc.income)) : "—"}
                       </td>
-                      <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#D14343]/[0.06] px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                      <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#D14343]/[0.10] px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                         {Number(acc.expense) > 0 ? fmt(Number(acc.expense)) : "—"}
                       </td>
 
@@ -1200,17 +1200,17 @@ export default function AccountsTab() {
               {filteredWithBalance.length > 0 && (
                 <tfoot>
                   <tr className="bg-[#E7E2D8]">
-                    <td colSpan={10} className="border border-black text-left font-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
-                      رصيد الإقفال
+<td colSpan={10} className="border border-black text-right font-extrabold px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+  الاجمـــــــــالي: 
                     </td>
                     <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                       {fmt(totalIncome)}
                     </td>
-                    <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                    <td className="border border-black font-bold tabular-nums numeric-cell font-black text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                       {fmt(totalExpense)}
                     </td>
                     <td className="border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap"></td>
-                    <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center bg-[#1f5f7a]/10 px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+                    <td className="border border-black font-bold tabular-nums numeric-cell font-black text-center bg-[#1f5f7a]/10 px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                       {fmt(currentBalance)}
                     </td>
                     <td className="accounts-print-hide border border-black px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap"></td>

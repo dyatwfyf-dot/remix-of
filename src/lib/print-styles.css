@@ -7,15 +7,15 @@
   /* إزالة الهوامش العامة مع الحفاظ على حشوة العناصر */
   html, body {
     width: 100%;
-    height: auto;
+    height:100%;
     margin: 0 !important;
     padding: 0 !important;
     background: #ffffff !important;
     color: #000000 !important;
-    font-family: 'Cairo';
+    font-family:'Cairo';
     direction: rtl;
-    line-height: 1.35;
-    font-size: 15px;
+    line-height: 1.5;
+    font-size: 17px;
     font-weight: 900 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -24,7 +24,7 @@
   /* إعدادات الصفحة */
   @page {
     size: A4 portrait;
-    margin: 8mm;
+    margin: 2mm;
   }
 
   @page :first {
@@ -38,14 +38,17 @@
     font-weight: 900;
     margin: 4px 0 !important;
     color: #000000 !important;
+  }
+
+  h1 { font-size: 18px; 
+    text-align: center;
+  }
+  h2 { font-size: 16px; 
     text-align: center;
   }
 
-  h1 { font-size: 16px; }
-  h2 { font-size: 14px; }
-
   /* الفقرات والعناصر الحاوية */
-  p, div {
+  p,div {
     page-break-inside: avoid;
     break-inside: avoid;
     margin: 2px 0;
@@ -54,17 +57,17 @@
   /* الجداول: احتواء تلقائي حقيقي */
   table {
     width: 100% !important;
-    min-width: 100% !important;
+    min-width:auto !important;
     border: solid 1px black!important;
-    table-layout: auto !important;
-    margin-top: 6px !important;
+    table-layout:auto !important;
+margin-top: 6px !important;
     margin-bottom: 6px !important;
     page-break-inside: auto;
   }
 
   table thead {
-    display: table-header-group;
-    break-after: avoid;
+    display:table-header-group;
+break-after:avoid;
   }
 
   table tbody {
@@ -79,45 +82,44 @@
   /* رؤوس وخلايا الجداول - التوسيط التام عمودياً وأفقياً ومنع الالتفاف */
   th, td {
     border: 1px solid #000 !important;
-    padding: 6px 8px !important;
+    padding: 2px 2px !important;
     text-align: center !important;
     vertical-align: middle !important;
-    font-size: clamp(14px, 1.1vw, 16px);
-    line-height: 1.4 !important;
-    height: auto !important;
-    max-height: none !important;
+    font-size:16px;
+  line-height: 1 !important;
+    height:100% !important;
+max-height:100% !important;
     overflow: visible !important;
     color: #000000 !important;
     font-weight: 700 !important;
-    white-space: nowrap !important;
+    white-space: normal !important;
     width: 1%;
-    word-wrap: normal;
+    word-wrap: wrap;
     overflow-wrap: normal;
   }
 
   /* خلايا النص العادي المستثناة لتسمح بالالتفاف عند الحاجة */
   td:not(.num):not(.numeric-cell):not(.date-cell):not(.currency):not(.number):not(.amount) {
-    white-space: normal !important;
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
+    white-space:nowrap !important;
+    word-wrap:break-word !important;
+    overflow-wrap:break-word !important;
     hyphens: auto;
-    width: auto !important;
+    width: 100% !important;
     text-align: center !important;
     vertical-align: middle !important;
   }
 
   th {
-    background-color: #1f7fb8 !important;
-    color: #000000 !important;
+    background-color: #003A7D !important;
+    color: #FFFFFF !important;
     font-weight: 900 !important;
-    font-size: clamp(14px, 1.15vw, 15px);
+    font-size:18px;
     white-space: normal !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
-    width: auto !important;
+    width: 100% !important;
     text-align: center !important;
     vertical-align: middle !important;
-    color: #FFFFFF;
   }
 
   /* الأرقام والتواريخ والمبالغ - محاذاة في المنتصف، بدون التفاف مطلقاً */
@@ -128,7 +130,7 @@
   .number,
   .amount {
     font-family: 'Times New Roman' !important;
-    font-size: clamp(14px, vw, 16px) !important;
+    font-size:13px !important;
     color: #000000 !important;
     font-weight: 900 !important;
     direction: ltr !important;
@@ -169,10 +171,10 @@
 
   /* الخلايا النصية المحاذاة */
   td.acc, td.align-right {
-    text-align: center !important;
-    padding-right: 6px !important;
+    text-align:center !important;
+    padding-right:2px !important;
     font-weight: 800 !important;
-    vertical-align: middle !important;
+    vertical-align:middle !important;
   }
 
   /* الروابط والعناصر التفاعلية المخفية */
@@ -197,7 +199,7 @@
   }
 
   .report-letterhead-cell {
-    border: 0 !important;
+    border: sold 1px black !important;
     background: #ffffff !important;
     padding: 0 0 2mm !important;
     height: auto !important;
@@ -205,12 +207,12 @@
 
   .report-letterhead-image {
     display: block;
-    width: 100%;
-    max-height: 20mm;
+    width:100%;
+    max-height:30mm;
     height: auto;
-    object-fit: contain;
-    margin: 0 auto;
-    position:top;
+object-fit:content;
+    margin:0 auto;
+object-position:top !important;
   }
 
   /* أدوات التحكم بالفواصل */
@@ -220,17 +222,17 @@
 
 /* تنسيقات الشاشة قبل الطباعة */
 @media screen {
-  .print-only { display: none !important; }
+  .print-only { display:none !important; }
   .print-button {
     margin: 10px 0;
     padding: 8px 16px;
-    background: #1f7fb8;
+    background: rgba(115, 2, 101, 1);
     color: #ffffff;
-    border: none;
+ border:solid 1px black;
     border-radius: 4px;
     cursor: pointer;
-    font-weight: 900;
-    font-size: 16px;
+    font-weight:900;
+    font-size:13px;
   }
   .print-button:hover {
     background: #1a6a94;

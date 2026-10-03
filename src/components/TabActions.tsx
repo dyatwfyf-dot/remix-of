@@ -28,6 +28,7 @@ type Props = {
   className?: string;
   printLabel?: string;
   pdfLayout?: "default" | "wide-centered";
+  pdfOrientation?: string;
   additionalWebActions?: WebActionItem[];
   webClassName?: string;
 };

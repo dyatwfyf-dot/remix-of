@@ -34,11 +34,11 @@ const baseCss = (
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: #fff; }
   body {
-    font-family: 'Cairo';
+    font-family: cairo;
     direction: rtl;
     color: #000;
-    font-weight: 500;
-    font-size: 16px;
+    font-weight: 800;
+    font-size: 18px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     text-rendering: geometricPrecision;
@@ -50,12 +50,12 @@ const baseCss = (
   /* جداول: احتواء تلقائي للأعمدة بحسب محتواها وتوسيط تام */
   table { 
     width: 100%!important; 
-    max-width: 100%; 
+    max-width:auto; 
     border-collapse: collapse;
 
-    border: solid 1px black; 
-    table-layout: auto !important; 
-font-size: 15px!important;
+    border: solid 1px #000; 
+table-layout:auto !important; 
+font-size: 15px !important;
   }
   thead { display: table-header-group; }
   tfoot { display: table-footer-group; }
@@ -71,8 +71,8 @@ font-size: 15px!important;
     font-size: 15px; 
     color: #000 !important; 
     font-weight: 900 !important; 
-    white-space: nowrap !important;
-    width: max-content !important;
+    white-space:normal !important;
+    width:100% !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
   }
@@ -83,10 +83,10 @@ font-size: 15px!important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 100% !important;
+    width:100% !important;
     height: auto !important;
     text-align: center !important;
-    white-space: nowrap !important;
+    white-space:normal !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
   }
@@ -124,15 +124,15 @@ font-size: 15px!important;
   /* إجبار خلايا النصوص الطويلة أيضاً على الامتداد دون التفاف وتوسيطها */
   .long-text-cell,
   .text-cell {
-    white-space: nowrap !important;
+    white-space: normal !important;
     overflow-wrap: normal !important;
     word-break: keep-all !important;
-    width: max-content !important;
+    width:50% !important;
     text-align: center !important;
     vertical-align: middle !important;
   }
 
-  th { font-weight: 800; white-space: nowrap !important; vertical-align: middle !important; }
+  th { font-weight: 800; white-space:normal !important; vertical-align: middle !important; }
   img { max-width: 100%; height: auto; display: block; }
 
   /* ترويسة التقرير داخل thead تتكرر مع رؤوس الأعمدة في كل صفحة */
@@ -140,20 +140,20 @@ font-size: 15px!important;
   
   .report-letterhead-cell
   {
-    height: 30 mm!important;
-min - height: 30 mm!important;
+    height: 30mm!important;
+min-height: 30mm!important;
 padding: 0!important;
 border: 0!important;
 background: #fff!important;
-vertical-align:top;
+text-align: center; 
   }
   .report-letterhead-cell img {
     display: block;
     width: 100%;
-    max-width: 100%;
+    max-width:auto;
     height: 30mm;
     max-height: 30mm;
-    object-fit: fill;
+    object-fit: content;
     object-position:top;
     margin: 0;
   }
@@ -164,8 +164,11 @@ vertical-align:top;
   /* تحسينات خاصة بالـ print / PDF */
   @media print {
     html, body { width: 100%; }
-    body { margin: 0; padding: 0; font-size: 6
-    16px; line-height: 1.3; }
+    body { 
+    margin: 0; 
+    padding: 0; 
+    font-size:16px; 
+     }
     thead { display: table-header-group; }
     tfoot { display: table-footer-group; }
     .page-break { page-break-after: always; }
@@ -174,10 +177,10 @@ vertical-align:top;
       font-size:16px; 
       color: #000 !important; 
       font-weight: 700 !important; 
-      white-space: nowrap !important;
+      white-space:normal !important;
       word-break: keep-all !important;
       overflow-wrap: normal !important;
-      width: max-content !important;
+      width: 100% !important;
       vertical-align: middle !important;
     }
   }
@@ -190,7 +193,7 @@ export async function openPrintDocument(options: PrintDocumentOptions): Promise<
     css = "",
     orientation = "portrait",
     pageSize = "A4",
-    margin = "8mm",
+    margin = "2mm",
     letterheadPlacement = "table",
     autoPrint = true,
   } = options;

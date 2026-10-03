@@ -86,7 +86,7 @@ export default defineConfig({
             },
             {
               urlPattern: ({ url, request }) =>
-                url.origin === ((globalThis as any).location?.origin ?? url.origin) &&
+                url.origin === self.location.origin &&
                 ["script", "style", "font", "image"].includes(request.destination),
               handler: "CacheFirst",
               options: {
