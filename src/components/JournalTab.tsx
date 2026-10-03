@@ -797,16 +797,16 @@ className="w-auto min-w-auto rounded-lg border border-indigo-200 bg-white px-2 p
                       key={j.id}
 className="border-b border-indigo-50/70 odd:bg-white even:bg-indigo-50/20 transition-colors hover:bg-purple-50/60"
                     >
-<td className="w-auto min-w-auto font-bold text-black !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal">
+<td className="w-auto min-w-0 font-bold text-black !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal">
                         <span className={journalClampCls}>{j.formNo || "—"}</span>
                       </td>
- <td className="w-auto min-w-auto text-slate-600 !px-1.5 !py-2 !text-xs sm:!text-sm">
+ <td className="w-auto min-w-0 text-slate-600 !px-1.5 !py-2 !text-xs sm:!text-sm">
                         <span className={journalClampCls}>{j.settlement || "—"}</span>
                       </td>
-<td className="w-auto min-w-auto font-bold text-black !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal">
+<td className="w-auto min-w-0 font-bold text-black !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal">
                         <span className={journalClampCls}>{j.date || "—"}</span>
                       </td> <td
-className="journal-ledger-description w-auto min-w-auto font-bold text-black !px-2 !py-2 !text-xs sm:!text-sm whitespace-normal"
+className="journal-ledger-description w-auto min-w-0 font-bold text-black !px-2 !py-2 !text-xs sm:!text-sm whitespace-normal"
                         title={j.description}
                       >
                         <span className={journalClampCls}>{j.description || "—"}</span>
