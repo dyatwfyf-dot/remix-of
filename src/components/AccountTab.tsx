@@ -653,16 +653,16 @@ export default function AccountsTab() {
     label: "مطابقة شاملة ٢٠٢٦",
     icon: Zap,
     onSelect: handleSyncFromHafiza,
-    // تم تعديل className ليصبح بتدرج كحلي - بترولي
-    className: "flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white bg-gradient-to-r from-[#1a2a3a] via-[#2a4a5a] to-[#2a6b6a] border border-black shadow-sm hover:from-[#2a4a5a] hover:to-[#1a3a4a] transition-all duration-200",
+    // تدرج فاتح بترولي
+    className: "flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#1f5f7a] bg-gradient-to-r from-[#eaf4fa] to-[#d5e8f5] border shadow-sm hover:from-[#dcecf5] hover:to-[#cfe4ef] transition-all duration-200",
   },
   {
     label: "استيراد Excel",
     icon: FileSpreadsheet,
     onSelect: () => undefined,
     content: (
-      <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#f5f0e6] bg-gradient-to-r from-[#9e3a2a] via-[#7a2a1a] to-[#5c2a1a] border border-black shadow-sm hover:from-[#7a2a1a] hover:to-[#4a1a0a] transition-all duration-200">
-        <FileSpreadsheet className={`${ICON_MOBILE} text-[#f5f0e6]`} />
+      <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#166b4e] bg-gradient-to-r from-[#e9f7f0] to-[#d3eee2] border shadow-sm hover:from-[#dcefe5] hover:to-[#c5e6d5] transition-all duration-200">
+        <FileSpreadsheet className={`${ICON_MOBILE} text-[#166b4e]`} />
         <span>استيراد Excel</span>
         <input
           type="file"
@@ -676,64 +676,63 @@ export default function AccountsTab() {
 ];
   return (
     <div
-      className="accounts-print-scope sheet-tabs-ui apk-tabs-ui w-full space-y-4 p-1.5 sm:p-4 rounded-2xl"
+      className="accounts-print-scope accounts-ui-light sheet-tabs-ui apk-tabs-ui w-full space-y-4 p-1.5 sm:p-4 rounded-2xl"
       dir="rtl"
+      style={{ background: "linear-gradient(160deg, #eef6fb, #d7e7f0)" }}
     >
       <style>{PRINT_STYLES}</style>
 
  {/*شريط العنوان */}
-<div className="accounts-print-hide flex items-center justify-between border border-black p-3 rounded-xl bg-gradient-to-r from-[#1a2a3a] to-[#2a6b6a]">
+<div className="accounts-print-hide relative flex items-center justify-between p-3 rounded-xl border shadow-sm overflow-hidden" style={{ background: "linear-gradient(120deg, #eef6fb, #dcecf5 60%, #cfe4ef)", borderColor: THEME.softBorder }}>
+  <span className="absolute inset-x-0 top-0 h-1" style={{ background: "linear-gradient(90deg, #1f5f7a, #6aa5c8)" }} />
   <div>
-    <h1 className={`${HEADING_MOBILE} text-[#f5f5dc] text-xl font-bold tracking-tight`}>
+    <h1 className={`${HEADING_MOBILE} text-[#0f2f44] text-xl font-bold tracking-tight`}>
       الحساب الجاري
     </h1>
-    <p className="text-xs text-[#d2b48c] font-bold tracking-wide mt-0.5">
+    <p className="text-xs text-[#5b7d90] font-bold tracking-wide mt-0.5">
       سجل الحركات المالية المُرحّلة
     </p>
   </div>
 
-  <div className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#f5f5dc] border border-black shadow-sm">
-    <Landmark className={`${ICON_MOBILE} text-[#1a2a3a]`} />
-    <span className="text-sm text-[#1a2a3a] font-bold">عدد القيود</span>
-    <span className="text-[#2c3e50] font-mono text-base tabular-nums font-black">{accounts.length}</span>
+  <div className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/70 border shadow-sm" style={{ borderColor: THEME.softBorder }}>
+    <Landmark className={`${ICON_MOBILE} text-[#1f5f7a]`} />
+    <span className="text-sm text-[#0f2f44] font-bold">عدد القيود</span>
+    <span className="text-[#1f5f7a] font-mono text-base tabular-nums font-black">{accounts.length}</span>
   </div>
 </div>
       {/* ===== بطاقات الإجماليات ===== */}
 <div className="accounts-print-hide grid grid-cols-2 gap-2">
   <LedgerStat
-  label="إجمالي الإيرادات"
+   label="إجمالي الإيرادات"
     style={{
-      background: "linear-gradient(120deg, #d4a017, #f0c0f0)",
-      borderColor: "#000",
-      color:"#ff595e"
+      background: "linear-gradient(135deg, #e9f7f0, #d3eee2)",
+      borderColor: "rgba(22,107,78,0.18)"
     }}
     value={totalIncome}
     tone="income"
-    icon={<ArrowUpRight className="text-white" />}
+    icon={<ArrowUpRight />}
   />
 
   <LedgerStat
  label="إجمالي المصروفات"
     style={{
-      background: "linear-gradient(135deg, #9e3e2a, #5c2a1a)",
-      borderColor: "#000",
-      color: "#0077b6"
+      background: "linear-gradient(135deg, #fdeeee, #f7dcdc)",
+      borderColor: "rgba(156,61,61,0.18)"
     }}
     value={totalExpense}
     tone="expense"
-    icon={<ArrowDownLeft className="text-white" />}
+    icon={<ArrowDownLeft />}
   />
 
   <LedgerStat
     label="الرصيد الحالي"
     style={{
-      background: "linear-gradient(135deg, #1a2a3a, #2a6b6a)",
-      borderColor: "#000",
-      color: "#03045e"
+      background: "linear-gradient(135deg, #e8f2fa, #d5e8f5)",
+      borderColor: "rgba(31,95,122,0.18)"
     }}
     value={currentBalance}
     tone="balance"
-    icon={<Wallet className="text-white" />}
+    icon={<Wallet />}
   />
 </div>
       {/* ===== التقارير الدورية ===== */}
