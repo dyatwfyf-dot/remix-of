@@ -39,14 +39,17 @@ import schema from "@/data/revenueTemplate.json";
 const THEME = {
   sage: "#d7e7f0",
   paleSage: "#eef6fb",
-  cream: "#f7fbfd",
+  cream: "#eaf4fa",
   warmCream: "#dcecf5",
   accent: "#1f5f7a", // بارز/أزرار أساسية
   text: "#0f2f44",
   muted: "#5b7d90",
   Camel: "#2e6b8a",
-  LightBrown: "#c98a3c",
+  LightBrown: "#dcecf5",
   Lavender: "#eef6fb",
+  cardGrad: "linear-gradient(160deg, #eef6fb, #d7e7f0)",
+  fieldBorder: "#c3dcea",
+  softBorder: "rgba(31,95,122,0.18)",
 };
 
 /* أحجام أيقونات وأزرار محسّنة للمحمول */
@@ -184,6 +187,17 @@ const PRINT_STYLES = `
     max-height: none !important;
   }
 }
+
+/* تنسيقات الشاشة فقط: حدود وخلفيات فاتحة للجدول (الطباعة تبقى بحدود سوداء) */
+@media screen {
+  .accounts-ui-light table th,
+  .accounts-ui-light table td {
+    border-color: rgba(31, 95, 122, 0.18) !important;
+  }
+  .accounts-ui-light .accounts-print-area {
+    background: linear-gradient(180deg, #f4fafd, #e9f3fa) !important;
+  }
+}
 `;
 
 /* ---------- عناصر واجهة أساسية بالهوية الفاتحة ---------- */
@@ -206,10 +220,10 @@ const Modal = ({
       dir="rtl"
     >
       <div
-        className="rounded-t-2xl sm:rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto border border-black"
-  
+        className="rounded-t-2xl sm:rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto border"
+        style={{ borderColor: THEME.softBorder, background: "linear-gradient(180deg, #f7fbfe, #e9f3fa)" }}
       >
-        <div className="flex justify-between items-center px-5 py-4 border-b black top-0 z-10" style={{ borderColor: "#000", background: THEME.LightBrown }}>
+        <div className="flex justify-between items-center px-5 py-4 border-b top-0 z-10" style={{ borderColor: THEME.softBorder, background: "linear-gradient(90deg, #eaf4fa, #dcecf5)" }}>
           <h3 className={`${HEADING_MOBILE} text-[#0f2f44] flex items-center gap-2 tracking-tight`}>{title}</h3>
 <button
  onClick={onClose}
@@ -254,7 +268,7 @@ function Field({
           value={v}
           onChange={(e) => on(e.target.value)}
           placeholder={placeholder}
-          className={`w-full ${icon ? "pr-9" : "px-3"} pl-3 py-2 text-[15px] border rounded-xl outline-none focus:border-[#0f2f44] focus:ring-2 focus:ring-[#0f2f44]/10 bg-white text-[#0f2f44] ${className}`}
+          className={`w-full ${icon ? "pr-9" : "px-3"} pl-3 py-2 text-[15px] border rounded-xl outline-none focus:ring-2 focus:ring-[#1f5f7a]/15 text-[#0f2f44] ${className}`}
         />
       </div>
     </div>
@@ -275,27 +289,27 @@ function LedgerStat({
   style?: React.CSSProperties;
 }) {
   const toneMap = {
-    income: { text: "text-[#1E8E5A]", chipBg: THEME.paleSage },
-    expense: { text: "text-[#D14343]", chipBg: "#FFEDEE" },
-    balance: { text: "text-[#1f5f7a]", chipBg: THEME.warmCream },
+    income: { textClass: "text-[#166b4e]", color: "#166b4e", chipBg: "rgba(22,107,78,0.12)" },
+    expense: { textClass: "text-[#9c3d3d]", color: "#9c3d3d", chipBg: "rgba(156,61,61,0.12)" },
+    balance: { textClass: "text-[#1f5f7a]", color: "#1f5f7a", chipBg: "rgba(31,95,122,0.12)" },
   } as const;
   const t = toneMap[tone];
   return (
     <div
       className="relative rounded-2xl px-2 py-2 sm:px-4 sm:py-3 border shadow-sm"
-      style={{ background: THEME.cream, borderColor: "rgba(0,0,0,0.08)", ...style }}
+      style={{ background: THEME.cream, borderColor: THEME.softBorder, ...style }}
     >
 
       <div className="flex items-center justify-between">
         <div>
           <span className="text-xs sm:text-sm font-black text-[#5b7d90] tracking-wide">{label}</span>
-          <div className={`text-base sm:text-2xl font-black font-mono tabular-nums numeric-cell mt-0.5 sm:mt-1.5 ${t.text}`}>
+          <div className={`text-base sm:text-2xl font-black font-mono tabular-nums numeric-cell mt-0.5 sm:mt-1.5 ${t.textClass}`}>
             {fmt(value)}
           </div>
         </div>
         <div
           className="p-2 rounded-xl flex items-center justify-center"
-          style={{ background: t.chipBg }}
+          style={{ background: t.chipBg, color: t.color }}
         >
           {React.isValidElement(icon) ? React.cloneElement(icon as any, { className: ICON_MOBILE }) : icon}
         </div>
