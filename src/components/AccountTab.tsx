@@ -552,7 +552,7 @@ export default function AccountsTab() {
         : `السنة المالية ${accountReportYear}م`;
 
   const accountReportRows = useMemo(() => {
-    const isOpeningRow = (row: any) => String(row.description ?? "").includes("رصيد افتتاحي");
+const isOpeningRow = (row: any) => String(row.description ?? "").includes("ابرصيد الافتتاحي");
     const openingRow = accounts.find(isOpeningRow);
     let openingBalance = openingRow ? Number(openingRow.income) || 0 : 0;
     const periodRows: any[] = [];
