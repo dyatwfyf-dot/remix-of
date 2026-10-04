@@ -506,8 +506,9 @@ export default function AccountsTab() {
 
   const filteredWithBalance = useMemo(() => {
     // هل بيان الصف يمثّل "رصيد افتتاحي"؟
-    const isOpeningRow = (row: any) =>
-      String(row.description ?? "").includes("رصيد افتتاحي");
+const isOpeningRow = (row: any) =>
+String(row.description ?? "").includes
+("الرصيدالافتتاحي");
 
     // صف الرصيد الافتتاحي ثابت (يُؤخذ من كل السجلات، لا يتأثر بالفرز/الفلترة)
     const openingRow = accounts.find(isOpeningRow);
