@@ -39,14 +39,17 @@ import schema from "@/data/revenueTemplate.json";
 const THEME = {
   sage: "#d7e7f0",
   paleSage: "#eef6fb",
-  cream: "#f7fbfd",
+  cream: "#eaf4fa",
   warmCream: "#dcecf5",
   accent: "#1f5f7a", // بارز/أزرار أساسية
   text: "#0f2f44",
   muted: "#5b7d90",
   Camel: "#2e6b8a",
-  LightBrown: "#c98a3c",
+  LightBrown: "#dcecf5",
   Lavender: "#eef6fb",
+  cardGrad: "linear-gradient(160deg, #eef6fb, #d7e7f0)",
+  fieldBorder: "#c3dcea",
+  softBorder: "rgba(31,95,122,0.18)",
 };
 
 /* أحجام أيقونات وأزرار محسّنة للمحمول */
@@ -184,6 +187,17 @@ const PRINT_STYLES = `
     max-height: none !important;
   }
 }
+
+/* تنسيقات الشاشة فقط: حدود وخلفيات فاتحة للجدول (الطباعة تبقى بحدود سوداء) */
+@media screen {
+  .accounts-ui-light table th,
+  .accounts-ui-light table td {
+    border-color: rgba(31, 95, 122, 0.18) !important;
+  }
+  .accounts-ui-light .accounts-print-area {
+    background: linear-gradient(180deg, #f4fafd, #e9f3fa) !important;
+  }
+}
 `;
 
 /* ---------- عناصر واجهة أساسية بالهوية الفاتحة ---------- */
@@ -206,10 +220,10 @@ const Modal = ({
       dir="rtl"
     >
       <div
-        className="rounded-t-2xl sm:rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto border border-black"
-  
+        className="rounded-t-2xl sm:rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto border"
+        style={{ borderColor: THEME.softBorder, background: "linear-gradient(180deg, #f7fbfe, #e9f3fa)" }}
       >
-        <div className="flex justify-between items-center px-5 py-4 border-b black top-0 z-10" style={{ borderColor: "#000", background: THEME.LightBrown }}>
+        <div className="flex justify-between items-center px-5 py-4 border-b top-0 z-10" style={{ borderColor: THEME.softBorder, background: "linear-gradient(90deg, #eaf4fa, #dcecf5)" }}>
           <h3 className={`${HEADING_MOBILE} text-[#0f2f44] flex items-center gap-2 tracking-tight`}>{title}</h3>
 <button
  onClick={onClose}
@@ -254,7 +268,7 @@ function Field({
           value={v}
           onChange={(e) => on(e.target.value)}
           placeholder={placeholder}
-          className={`w-full ${icon ? "pr-9" : "px-3"} pl-3 py-2 text-[15px] border rounded-xl outline-none focus:border-[#0f2f44] focus:ring-2 focus:ring-[#0f2f44]/10 bg-white text-[#0f2f44] ${className}`}
+          className={`w-full ${icon ? "pr-9" : "px-3"} pl-3 py-2 text-[15px] border rounded-xl outline-none focus:ring-2 focus:ring-[#1f5f7a]/15 text-[#0f2f44] ${className}`}
         />
       </div>
     </div>
@@ -275,27 +289,27 @@ function LedgerStat({
   style?: React.CSSProperties;
 }) {
   const toneMap = {
-    income: { text: "text-[#1E8E5A]", chipBg: THEME.paleSage },
-    expense: { text: "text-[#D14343]", chipBg: "#FFEDEE" },
-    balance: { text: "text-[#1f5f7a]", chipBg: THEME.warmCream },
+    income: { textClass: "text-[#166b4e]", color: "#166b4e", chipBg: "rgba(22,107,78,0.12)" },
+    expense: { textClass: "text-[#9c3d3d]", color: "#9c3d3d", chipBg: "rgba(156,61,61,0.12)" },
+    balance: { textClass: "text-[#1f5f7a]", color: "#1f5f7a", chipBg: "rgba(31,95,122,0.12)" },
   } as const;
   const t = toneMap[tone];
   return (
     <div
       className="relative rounded-2xl px-2 py-2 sm:px-4 sm:py-3 border shadow-sm"
-      style={{ background: THEME.cream, borderColor: "rgba(0,0,0,0.08)", ...style }}
+      style={{ background: THEME.cream, borderColor: THEME.softBorder, ...style }}
     >
 
       <div className="flex items-center justify-between">
         <div>
           <span className="text-xs sm:text-sm font-black text-[#5b7d90] tracking-wide">{label}</span>
-          <div className={`text-base sm:text-2xl font-black font-mono tabular-nums numeric-cell mt-0.5 sm:mt-1.5 ${t.text}`}>
+          <div className={`text-base sm:text-2xl font-black font-mono tabular-nums numeric-cell mt-0.5 sm:mt-1.5 ${t.textClass}`}>
             {fmt(value)}
           </div>
         </div>
         <div
           className="p-2 rounded-xl flex items-center justify-center"
-          style={{ background: t.chipBg }}
+          style={{ background: t.chipBg, color: t.color }}
         >
           {React.isValidElement(icon) ? React.cloneElement(icon as any, { className: ICON_MOBILE }) : icon}
         </div>
@@ -639,16 +653,16 @@ export default function AccountsTab() {
     label: "مطابقة شاملة ٢٠٢٦",
     icon: Zap,
     onSelect: handleSyncFromHafiza,
-    // تم تعديل className ليصبح بتدرج كحلي - بترولي
-    className: "flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white bg-gradient-to-r from-[#1a2a3a] via-[#2a4a5a] to-[#2a6b6a] border border-black shadow-sm hover:from-[#2a4a5a] hover:to-[#1a3a4a] transition-all duration-200",
+    // تدرج فاتح بترولي
+    className: "flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#1f5f7a] bg-gradient-to-r from-[#eaf4fa] to-[#d5e8f5] border shadow-sm hover:from-[#dcecf5] hover:to-[#cfe4ef] transition-all duration-200",
   },
   {
     label: "استيراد Excel",
     icon: FileSpreadsheet,
     onSelect: () => undefined,
     content: (
-      <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#f5f0e6] bg-gradient-to-r from-[#9e3a2a] via-[#7a2a1a] to-[#5c2a1a] border border-black shadow-sm hover:from-[#7a2a1a] hover:to-[#4a1a0a] transition-all duration-200">
-        <FileSpreadsheet className={`${ICON_MOBILE} text-[#f5f0e6]`} />
+      <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#166b4e] bg-gradient-to-r from-[#e9f7f0] to-[#d3eee2] border shadow-sm hover:from-[#dcefe5] hover:to-[#c5e6d5] transition-all duration-200">
+        <FileSpreadsheet className={`${ICON_MOBILE} text-[#166b4e]`} />
         <span>استيراد Excel</span>
         <input
           type="file"
@@ -662,83 +676,82 @@ export default function AccountsTab() {
 ];
   return (
     <div
-      className="accounts-print-scope sheet-tabs-ui apk-tabs-ui w-full space-y-4 p-1.5 sm:p-4 rounded-2xl"
+      className="accounts-print-scope accounts-ui-light sheet-tabs-ui apk-tabs-ui w-full space-y-4 p-1.5 sm:p-4 rounded-2xl"
       dir="rtl"
+      style={{ background: "linear-gradient(160deg, #eef6fb, #d7e7f0)" }}
     >
       <style>{PRINT_STYLES}</style>
 
  {/*شريط العنوان */}
-<div className="accounts-print-hide flex items-center justify-between border border-black p-3 rounded-xl bg-gradient-to-r from-[#1a2a3a] to-[#2a6b6a]">
+<div className="accounts-print-hide relative flex items-center justify-between p-3 rounded-xl border shadow-sm overflow-hidden" style={{ background: "linear-gradient(120deg, #eef6fb, #dcecf5 60%, #cfe4ef)", borderColor: THEME.softBorder }}>
+  <span className="absolute inset-x-0 top-0 h-1" style={{ background: "linear-gradient(90deg, #1f5f7a, #6aa5c8)" }} />
   <div>
-    <h1 className={`${HEADING_MOBILE} text-[#f5f5dc] text-xl font-bold tracking-tight`}>
+    <h1 className={`${HEADING_MOBILE} text-[#0f2f44] text-xl font-bold tracking-tight`}>
       الحساب الجاري
     </h1>
-    <p className="text-xs text-[#d2b48c] font-bold tracking-wide mt-0.5">
+    <p className="text-xs text-[#5b7d90] font-bold tracking-wide mt-0.5">
       سجل الحركات المالية المُرحّلة
     </p>
   </div>
 
-  <div className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#f5f5dc] border border-black shadow-sm">
-    <Landmark className={`${ICON_MOBILE} text-[#1a2a3a]`} />
-    <span className="text-sm text-[#1a2a3a] font-bold">عدد القيود</span>
-    <span className="text-[#2c3e50] font-mono text-base tabular-nums font-black">{accounts.length}</span>
+  <div className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/70 border shadow-sm" style={{ borderColor: THEME.softBorder }}>
+    <Landmark className={`${ICON_MOBILE} text-[#1f5f7a]`} />
+    <span className="text-sm text-[#0f2f44] font-bold">عدد القيود</span>
+    <span className="text-[#1f5f7a] font-mono text-base tabular-nums font-black">{accounts.length}</span>
   </div>
 </div>
       {/* ===== بطاقات الإجماليات ===== */}
 <div className="accounts-print-hide grid grid-cols-2 gap-2">
   <LedgerStat
-  label="إجمالي الإيرادات"
+   label="إجمالي الإيرادات"
     style={{
-      background: "linear-gradient(120deg, #d4a017, #f0c0f0)",
-      borderColor: "#000",
-      color:"#ff595e"
+      background: "linear-gradient(135deg, #e9f7f0, #d3eee2)",
+      borderColor: "rgba(22,107,78,0.18)"
     }}
     value={totalIncome}
     tone="income"
-    icon={<ArrowUpRight className="text-white" />}
+    icon={<ArrowUpRight />}
   />
 
   <LedgerStat
  label="إجمالي المصروفات"
     style={{
-      background: "linear-gradient(135deg, #9e3e2a, #5c2a1a)",
-      borderColor: "#000",
-      color: "#0077b6"
+      background: "linear-gradient(135deg, #fdeeee, #f7dcdc)",
+      borderColor: "rgba(156,61,61,0.18)"
     }}
     value={totalExpense}
     tone="expense"
-    icon={<ArrowDownLeft className="text-white" />}
+    icon={<ArrowDownLeft />}
   />
 
   <LedgerStat
     label="الرصيد الحالي"
     style={{
-      background: "linear-gradient(135deg, #1a2a3a, #2a6b6a)",
-      borderColor: "#000",
-      color: "#03045e"
+      background: "linear-gradient(135deg, #e8f2fa, #d5e8f5)",
+      borderColor: "rgba(31,95,122,0.18)"
     }}
     value={currentBalance}
     tone="balance"
-    icon={<Wallet className="text-white" />}
+    icon={<Wallet />}
   />
 </div>
       {/* ===== التقارير الدورية ===== */}
 <div
-  className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-black shadow-sm"
+  className="accounts-print-hide w-full rounded-2xl overflow-hidden border shadow-sm"
   style={{
-    background: "linear-gradient(135deg, #5c9c4a, #1a2a3a)", // زيتي → كحلي
-    borderColor: "#000",
+    background: "linear-gradient(160deg, #eef6fb, #d7e7f0)",
+    borderColor: THEME.softBorder,
   }}
 >
   <div
-    className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b border-black"
-    style={{ background: "#f5f5dc" }} // عاجي
+    className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b"
+    style={{ background: "rgba(255,255,255,0.55)", borderColor: THEME.softBorder }}
   >
     <div>
       <h2 className="text-base font-black text-[#1a2a3a] tracking-wide">
         تقارير الحساب الدورية
       </h2>
-      <p className="text-xs text-[#5c2a1a] font-bold mt-1">
+      <p className="text-xs text-[#5b7d90] font-bold mt-1">
         اختر الربع أو النصف أو السنة ثم صدّر التقرير
       </p>
     </div>
@@ -796,7 +809,7 @@ export default function AccountsTab() {
         />
       </label>
 
-      <div className="text-xs font-black text-[#5c2a1a] px-2 py-2 bg-[#d2b48c] rounded-lg border border-black">
+      <div className="text-xs font-black text-[#1f5f7a] px-2 py-2 bg-[#dcecf5] rounded-lg border" style={{ borderColor: THEME.softBorder }}>
         {accountReportLabel}
       </div>
 
@@ -814,20 +827,20 @@ export default function AccountsTab() {
       {/* ===== لوحة القيد اليدوي والمطابقة ===== */}
       
 <div
-  className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-black shadow-sm"
+  className="accounts-print-hide w-full rounded-2xl overflow-hidden border shadow-sm"
   style={{
-    background: "linear-gradient(100deg, #e9edca, #1a2a3a)",
-    borderColor: "#000",
+    background: "linear-gradient(160deg, #eef6fb, #dcecf5)",
+    borderColor: THEME.softBorder,
   }}
 >
 <div
-className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b border-black"
-    style={{ background: "#e9edca" }}
+className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b"
+    style={{ background: "rgba(255,255,255,0.55)", borderColor: THEME.softBorder }}
   >
     <div className="flex items-center gap-2.5">
       <div
-        className="p-2 rounded-lg border border-black"
-        style={{ background: "#1a2a3a", color: "#ffffff" }}
+        className="p-2 rounded-lg"
+        style={{ background: "linear-gradient(135deg, #2e7496, #1f5f7a)", color: "#ffffff" }}
       >
         <Plus className={ICON_MOBILE} />
       </div>
@@ -846,16 +859,18 @@ className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b 
     <div className="apk-only-actions flex items-center gap-2.5 flex-wrap">
       <button
         onClick={handleSyncFromHafiza}
-        className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full font-black border border-black shadow-sm transition-all bg-gradient-to-r from-[#1a2a3a] to-[#2a6b6a] text-white`}
+        className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full font-black border shadow-sm transition-all bg-gradient-to-r from-[#dcecf5] to-[#cfe4ef] text-[#1f5f7a]`}
+        style={{ borderColor: THEME.softBorder }}
       >
-        <Zap className={`${ICON_MOBILE} text-white`} />
+        <Zap className={`${ICON_MOBILE} text-[#1f5f7a]`} />
         <span className="text-sm">مطابقة شاملة ٢٠٢٦</span>
       </button>
 
       <label
-        className={`${BTN_MOBILE} relative flex items-center justify-center gap-2 rounded-full border border-black px-3 py-2 cursor-pointer font-bold shadow-sm bg-gradient-to-r from-[#d2b48c] to-[#e6d7c3] text-[#1a2a3a]`}
+        className={`${BTN_MOBILE} relative flex items-center justify-center gap-2 rounded-full border px-3 py-2 cursor-pointer font-bold shadow-sm bg-gradient-to-r from-[#eef6fb] to-[#e2eef7] text-[#0f2f44]`}
+        style={{ borderColor: THEME.softBorder }}
       >
-        <FileSpreadsheet className={`${ICON_MOBILE} text-[#1a2a3a]`} />
+        <FileSpreadsheet className={`${ICON_MOBILE} text-[#1f5f7a]`} />
         <span>استيراد إكسل</span>
         <input
           type="file"
