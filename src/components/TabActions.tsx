@@ -13,24 +13,25 @@ import { toast } from "sonner";
 import { useReportDate } from "@/lib/reportDate";
 import { exportTablePdf } from "@/lib/pdfExporter";
 import { buildTableHtml, escapeHtml, reportLetterheadHtml, tablePrintStyles } from "@/lib/printTableHtml";
-import { printReportHtml } from "@/lib/nativePrinter";
 import WebActionMenu, { type WebActionItem } from "@/components/WebActionMenu";
+import PrintPreviewModal from "@/components/PrintPreviewModal";
 
-export type TabCol = { key: string; label: string };
+export type TabCol = { key: string;label: string };
 
 type Props = {
   title: string;
-  rows: Record<string, any>[];
+  rows: Record < string,
+  any > [];
   columns: TabCol[];
   fileName: string;
-  onClear?: () => void;
-  numericKeys?: string[];
-  className?: string;
-  printLabel?: string;
-  pdfLayout?: "default" | "wide-centered";
-  pdfOrientation?: string;
-  additionalWebActions?: WebActionItem[];
-  webClassName?: string;
+  onClear ? : () => void;
+  numericKeys ? : string[];
+  className ? : string;
+  printLabel ? : string;
+  pdfLayout ? : "default" | "wide-centered";
+  pdfOrientation ? : string;
+  additionalWebActions ? : WebActionItem[];
+  webClassName ? : string;
 };
 
 export default function TabActions({
@@ -47,19 +48,20 @@ export default function TabActions({
   webClassName = "",
 }: Props) {
   const [pdfBusy, setPdfBusy] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewHtml, setPreviewHtml] = useState("");
   const { reportDate, reportDateLabel } = useReportDate();
-
+  
   // نفس محتوى وأنماط الطباعة المستخدمة في تنزيل PDF (مصدر واحد مشترك)
   const tableHtml = () => buildTableHtml({ title, columns, rows, numericKeys, reportDate });
   const printStyles = tablePrintStyles;
-
-
+  
   const handlePrint = () => {
     if (!rows.length) {
       toast.error("لا توجد بيانات للطباعة");
       return;
     }
-
+    
     const head = `
       <meta charset="utf-8" />
       <title>${escapeHtml(title)} - ${escapeHtml(reportDateLabel)}</title>
@@ -69,31 +71,31 @@ export default function TabActions({
       <style>
         ${printStyles}
         @page { 
-        margin: 6mm; }
+          margin: 6mm; 
+        }
         @media print {
           * { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           body { margin: 0; padding: 4mm 6mm; color: #000 !important; font-weight: 600; }
-          th, td { 
-        color: #000 !important; font-weight: 700; }
+          th, td { color: #000 !important; font-weight: 700; }
         }
       </style>
     `;
-
-    const html = `<!doctype html><html lang="ar" dir="rtl"><head>${head}</head><body>
-      ${reportLetterheadHtml()}
-      ${tableHtml()}
-      <script>
-        window.onload = () => {
-          setTimeout(() => {
-            window.print();
-          }, 300);
-        };
-      </script>
-    </body></html>`;
-    const opened = printReportHtml(html, `${title} - ${reportDateLabel}`);
-    if (!opened) toast.error("تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة");
+    
+    const fullDocumentHtml = `<!doctype html>
+      <html lang="ar" dir="rtl">
+        <head>
+          ${head}
+        </head>
+        <body style="background:#fff; padding: 15px; font-family: 'Cairo', sans-serif;">
+          ${reportLetterheadHtml()}
+          ${tableHtml()}
+        </body>
+      </html>`;
+    
+    setPreviewHtml(fullDocumentHtml);
+    setIsPreviewOpen(true);
   };
-
+  
   const handleDownloadPdf = async () => {
     if (!rows.length) {
       toast.error("لا توجد بيانات للتصدير");
@@ -111,14 +113,13 @@ export default function TabActions({
       setPdfBusy(false);
     }
   };
-
-
+  
   const handleExcel = async () => {
     if (!rows.length) {
       toast.error("لا توجد بيانات للتصدير");
       return;
     }
-
+    
     try {
       const headers = ["م", ...columns.map((c) => c.label)];
       const dataRows = rows.map((r, i) => [
@@ -131,23 +132,28 @@ export default function TabActions({
       const totalRow = [
         "الإجمالي",
         ...columns.map((c) =>
-          numericKeys.includes(c.key)
-            ? rows.reduce((sum, r) => sum + (Number(r[c.key]) || 0), 0)
-            : "",
+          numericKeys.includes(c.key) ?
+          rows.reduce((sum, r) => sum + (Number(r[c.key]) || 0), 0) :
+          "",
         ),
       ];
-
+      
       const workbook = await createExcelWorkbook();
       const worksheet = workbook.addWorksheet(title.slice(0, 31) || "Sheet1");
       const imageId = await loadReportLetterhead(workbook);
-      const dataStartRow = addReportHeader(workbook, worksheet, {
-        title,
-        reportDateLabel,
-        recordCount: rows.length,
-        totalColumns: headers.length,
-        palette: getExcelPalette(title),
-      }, imageId);
-
+      const dataStartRow = addReportHeader(
+        workbook,
+        worksheet,
+        {
+          title,
+          reportDateLabel,
+          recordCount: rows.length,
+          totalColumns: headers.length,
+          palette: getExcelPalette(title),
+        },
+        imageId
+      );
+      
       appendRows(worksheet, [headers, ...dataRows, totalRow], dataStartRow);
       formatWorksheet(worksheet, {
         headerRow: dataStartRow,
@@ -161,14 +167,14 @@ export default function TabActions({
       toast.error("تعذّر تصدير ملف Excel، حاول مرة أخرى");
     }
   };
-
+  
   const handleClear = () => {
     if (!onClear) return;
     if (!confirm(`هل أنت متأكد من مسح جميع بيانات: ${title}؟ لا يمكن التراجع.`)) return;
     onClear();
     toast.success("تم مسح البيانات");
   };
-
+  
   const webActions: WebActionItem[] = [
     ...additionalWebActions,
     { label: printLabel, icon: Printer, onSelect: handlePrint },
@@ -181,24 +187,26 @@ export default function TabActions({
     { label: "تصدير Excel", icon: FileSpreadsheet, onSelect: handleExcel },
     ...(onClear ? [{ label: "مسح البيانات", icon: Trash2, onSelect: handleClear, destructive: true }] : []),
   ];
-
+  
   return (
     <>
       <div className={`web-only-actions ${webClassName}`}>
         <WebActionMenu label={`إجراءات ${title}`} actions={webActions} className="w-full sm:w-auto" />
       </div>
+
       <div className={`apk-only-actions flex flex-wrap gap-2 ${className}`}>
         <button
           onClick={handlePrint}
           className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-[#10528e] border border-[#10528e]/30 rounded-lg text-xs font-bold shadow-sm hover:bg-blue-50 active:scale-95 transition-all cursor-pointer"
-          title="طباعة هذا التبويب"
+          title="معاينة وطباعة هذا التبويب"
         >
           <Printer className="w-4 h-4" /> {printLabel}
         </button>
-<button
-onClick={handleDownloadPdf}
-disabled={pdfBusy}
-className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10528e] text-white rounded-lg text-xs font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-wait"
+
+        <button
+          onClick={handleDownloadPdf}
+          disabled={pdfBusy}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10528e] text-white rounded-lg text-xs font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-wait"
           title="تنزيل PDF بنفس تنسيق الطباعة"
         >
           {pdfBusy ? (
@@ -211,6 +219,7 @@ className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10528e] text-white rounded
             </>
           )}
         </button>
+
         <button
           onClick={handleExcel}
           className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700 active:scale-95 transition-all cursor-pointer"
@@ -218,6 +227,7 @@ className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10528e] text-white rounded
         >
           <FileSpreadsheet className="w-4 h-4" /> تصدير Excel
         </button>
+
         {onClear && (
           <button
             onClick={handleClear}
@@ -228,6 +238,15 @@ className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10528e] text-white rounded
           </button>
         )}
       </div>
+
+      {/* نافذة معاينة الطباعة التفاعلية */}
+      <PrintPreviewModal
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        title={title}
+        reportDateLabel={reportDateLabel}
+        htmlContent={previewHtml}
+      />
     </>
   );
 }
