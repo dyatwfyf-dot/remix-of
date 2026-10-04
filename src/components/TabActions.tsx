@@ -12,9 +12,9 @@ import { Printer, FileSpreadsheet, Trash2, Download, Loader2 } from "lucide-reac
 import { toast } from "sonner";
 import { useReportDate } from "@/lib/reportDate";
 import { exportTablePdf } from "@/lib/pdfExporter";
-import { buildTableHtml, escapeHtml, reportLetterheadHtml, tablePrintStyles } from "@/lib/printTableHtml";
+import { buildTableHtml } from "@/lib/printTableHtml";
+import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import WebActionMenu, { type WebActionItem } from "@/components/WebActionMenu";
-import PrintPreviewModal from "@/components/PrintPreviewModal";
 
 export type TabCol = { key: string;label: string };
 
@@ -44,17 +44,15 @@ export default function TabActions({
   className = "",
   printLabel = "طباعة",
   pdfLayout = "default",
+  pdfOrientation,
   additionalWebActions = [],
   webClassName = "",
 }: Props) {
   const [pdfBusy, setPdfBusy] = useState(false);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [previewHtml, setPreviewHtml] = useState("");
   const { reportDate, reportDateLabel } = useReportDate();
   
-  // نفس محتوى وأنماط الطباعة المستخدمة في تنزيل PDF (مصدر واحد مشترك)
+  // توليد كود الـ HTML الخاص بالجدول
   const tableHtml = () => buildTableHtml({ title, columns, rows, numericKeys, reportDate });
-  const printStyles = tablePrintStyles;
   
   const handlePrint = () => {
     if (!rows.length) {
@@ -62,38 +60,21 @@ export default function TabActions({
       return;
     }
     
-    const head = `
-      <meta charset="utf-8" />
-      <title>${escapeHtml(title)} - ${escapeHtml(reportDateLabel)}</title>
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-      <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-      <style>
-        ${printStyles}
-        @page { 
-          margin: 6mm; 
-        }
-        @media print {
-          * { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          body { margin: 0; padding: 4mm 6mm; color: #000 !important; font-weight: 600; }
-          th, td { color: #000 !important; font-weight: 700; }
-        }
-      </style>
-    `;
+    // تحديد الاتجاه الافتراضي بناءً على عدد الأعمدة أو خيار التبويب
+    const defaultOrientation: "portrait" | "landscape" =
+      pdfOrientation === "landscape" || columns.length > 7 ? "landscape" : "portrait";
     
-    const fullDocumentHtml = `<!doctype html>
-      <html lang="ar" dir="rtl">
-        <head>
-          ${head}
-        </head>
-        <body style="background:#fff; padding: 15px; font-family: 'Cairo', sans-serif;">
-          ${reportLetterheadHtml()}
-          ${tableHtml()}
-        </body>
-      </html>`;
+    const opened = openBrowserPrintPreview({
+      title,
+      reportDateLabel,
+      tableHtml: tableHtml(),
+      defaultOrientation,
+      defaultPageSize: "A4",
+    });
     
-    setPreviewHtml(fullDocumentHtml);
-    setIsPreviewOpen(true);
+    if (!opened) {
+      toast.error("تم منع فتح نافذة المتصفح، يرجى السماح بالنوافذ المنبثقة (Popups) في كروم");
+    }
   };
   
   const handleDownloadPdf = async () => {
@@ -198,7 +179,7 @@ export default function TabActions({
         <button
           onClick={handlePrint}
           className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-[#10528e] border border-[#10528e]/30 rounded-lg text-xs font-bold shadow-sm hover:bg-blue-50 active:scale-95 transition-all cursor-pointer"
-          title="معاينة وطباعة هذا التبويب"
+          title="معاينة وطباعة هذا التبويب في نافذة كروم"
         >
           <Printer className="w-4 h-4" /> {printLabel}
         </button>
@@ -238,15 +219,6 @@ export default function TabActions({
           </button>
         )}
       </div>
-
-      {/* نافذة معاينة الطباعة التفاعلية */}
-      <PrintPreviewModal
-        isOpen={isPreviewOpen}
-        onClose={() => setIsPreviewOpen(false)}
-        title={title}
-        reportDateLabel={reportDateLabel}
-        htmlContent={previewHtml}
-      />
     </>
   );
 }
