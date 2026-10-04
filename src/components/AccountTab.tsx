@@ -737,21 +737,21 @@ export default function AccountsTab() {
 </div>
       {/* ===== التقارير الدورية ===== */}
 <div
-  className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-black shadow-sm"
+  className="accounts-print-hide w-full rounded-2xl overflow-hidden border shadow-sm"
   style={{
-    background: "linear-gradient(135deg, #5c9c4a, #1a2a3a)", // زيتي → كحلي
-    borderColor: "#000",
+    background: "linear-gradient(160deg, #eef6fb, #d7e7f0)",
+    borderColor: THEME.softBorder,
   }}
 >
   <div
-    className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b border-black"
-    style={{ background: "#f5f5dc" }} // عاجي
+    className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b"
+    style={{ background: "rgba(255,255,255,0.55)", borderColor: THEME.softBorder }}
   >
     <div>
       <h2 className="text-base font-black text-[#1a2a3a] tracking-wide">
         تقارير الحساب الدورية
       </h2>
-      <p className="text-xs text-[#5c2a1a] font-bold mt-1">
+      <p className="text-xs text-[#5b7d90] font-bold mt-1">
         اختر الربع أو النصف أو السنة ثم صدّر التقرير
       </p>
     </div>
@@ -809,7 +809,7 @@ export default function AccountsTab() {
         />
       </label>
 
-      <div className="text-xs font-black text-[#5c2a1a] px-2 py-2 bg-[#d2b48c] rounded-lg border border-black">
+      <div className="text-xs font-black text-[#1f5f7a] px-2 py-2 bg-[#dcecf5] rounded-lg border" style={{ borderColor: THEME.softBorder }}>
         {accountReportLabel}
       </div>
 
@@ -827,20 +827,20 @@ export default function AccountsTab() {
       {/* ===== لوحة القيد اليدوي والمطابقة ===== */}
       
 <div
-  className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-black shadow-sm"
+  className="accounts-print-hide w-full rounded-2xl overflow-hidden border shadow-sm"
   style={{
-    background: "linear-gradient(100deg, #e9edca, #1a2a3a)",
-    borderColor: "#000",
+    background: "linear-gradient(160deg, #eef6fb, #dcecf5)",
+    borderColor: THEME.softBorder,
   }}
 >
 <div
-className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b border-black"
-    style={{ background: "#e9edca" }}
+className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b"
+    style={{ background: "rgba(255,255,255,0.55)", borderColor: THEME.softBorder }}
   >
     <div className="flex items-center gap-2.5">
       <div
-        className="p-2 rounded-lg border border-black"
-        style={{ background: "#1a2a3a", color: "#ffffff" }}
+        className="p-2 rounded-lg"
+        style={{ background: "linear-gradient(135deg, #2e7496, #1f5f7a)", color: "#ffffff" }}
       >
         <Plus className={ICON_MOBILE} />
       </div>
@@ -859,16 +859,18 @@ className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b 
     <div className="apk-only-actions flex items-center gap-2.5 flex-wrap">
       <button
         onClick={handleSyncFromHafiza}
-        className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full font-black border border-black shadow-sm transition-all bg-gradient-to-r from-[#1a2a3a] to-[#2a6b6a] text-white`}
+        className={`${BTN_MOBILE} flex items-center justify-center gap-2 rounded-full font-black border shadow-sm transition-all bg-gradient-to-r from-[#dcecf5] to-[#cfe4ef] text-[#1f5f7a]`}
+        style={{ borderColor: THEME.softBorder }}
       >
-        <Zap className={`${ICON_MOBILE} text-white`} />
+        <Zap className={`${ICON_MOBILE} text-[#1f5f7a]`} />
         <span className="text-sm">مطابقة شاملة ٢٠٢٦</span>
       </button>
 
       <label
-        className={`${BTN_MOBILE} relative flex items-center justify-center gap-2 rounded-full border border-black px-3 py-2 cursor-pointer font-bold shadow-sm bg-gradient-to-r from-[#d2b48c] to-[#e6d7c3] text-[#1a2a3a]`}
+        className={`${BTN_MOBILE} relative flex items-center justify-center gap-2 rounded-full border px-3 py-2 cursor-pointer font-bold shadow-sm bg-gradient-to-r from-[#eef6fb] to-[#e2eef7] text-[#0f2f44]`}
+        style={{ borderColor: THEME.softBorder }}
       >
-        <FileSpreadsheet className={`${ICON_MOBILE} text-[#1a2a3a]`} />
+        <FileSpreadsheet className={`${ICON_MOBILE} text-[#1f5f7a]`} />
         <span>استيراد إكسل</span>
         <input
           type="file"
