@@ -402,6 +402,14 @@ export function openBrowserPrintPreview({
       const dynamicRule = document.getElementById('dynamic-page-rule');
       const btnPrint = document.getElementById('btnPrint');
       const btnClose = document.getElementById('btnClose');
+      let printInProgress = false;
+
+      function printOnce() {
+        if (printInProgress) return;
+        printInProgress = true;
+        window.print();
+        window.setTimeout(function() { printInProgress = false; }, 1000);
+      }
 
       function updatePageSettings() {
         const orientation = selOrientation.value;
@@ -436,7 +444,7 @@ export function openBrowserPrintPreview({
       selScale.addEventListener('change', updatePageSettings);
 
       btnPrint.addEventListener('click', function() {
-        window.print();
+        printOnce();
       });
 
       btnClose.addEventListener('click', function() {
@@ -447,7 +455,7 @@ export function openBrowserPrintPreview({
       window.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
           e.preventDefault();
-          window.print();
+          printOnce();
         } else if (e.key === 'Escape') {
           window.close();
         }
