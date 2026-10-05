@@ -12,7 +12,7 @@ export interface BrowserPreviewOptions {
 
 /**
  * يفتح نافذة متصفح كروم مستقلة لمعاينة التقرير مع أدوات تحكم كاملة
- * في أبعاد الورقة واتجاهها وهوامشها واحتواء تلقائي داخل حدود A4.
+ * في أبعاد الورقة واتجاهها وهوامشها وتنزيل PDF وطباعة متطابقة 100%.
  */
 export function openBrowserPrintPreview({
   title,
@@ -36,8 +36,10 @@ export function openBrowserPrintPreview({
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <!-- مكتبات حفظ PDF من نافذة المعاينة مباشرة -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    /* أنماط شريط الأدوات العلوي في متصفح كروم */
     * { box-sizing: border-box; }
     body {
       margin: 0;
@@ -107,16 +109,26 @@ export function openBrowserPrintPreview({
       color: #ffffff;
       box-shadow: 0 2px 6px rgba(5, 150, 105, 0.4);
     }
-
     .preview-toolbar button.btn-print:hover {
       background: #10b981;
+    }
+
+    .preview-toolbar button.btn-download-pdf {
+      background: #0284c7;
+      border-color: #38bdf8;
+      padding: 7px 14px;
+      font-size: 13px;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.4);
+    }
+    .preview-toolbar button.btn-download-pdf:hover {
+      background: #0369a1;
     }
 
     .preview-toolbar button.btn-close {
       background: #dc2626;
       border-color: #ef4444;
     }
-
     .preview-toolbar button.btn-close:hover {
       background: #ef4444;
     }
@@ -139,7 +151,6 @@ export function openBrowserPrintPreview({
       transform-origin: top center;
     }
 
-    /* أبعاد الورقة حسب الاتجاه مع إمكانية التمدد */
     .sheet-paper.portrait {
       width: 210mm;
       min-height: 297mm;
@@ -152,12 +163,12 @@ export function openBrowserPrintPreview({
       padding: 6mm;
     }
 
-    /* ترويسة الصفحة */
+    /* ترويسة الصفحة الرسمية */
     .report-letterhead-block {
       display: flex;
       width: 100%;
-      height: 28mm;
-      max-height: 28mm;
+      height: 26mm;
+      max-height: 26mm;
       align-items: stretch;
       justify-content: center;
       margin: 0 auto 3mm;
@@ -171,61 +182,29 @@ export function openBrowserPrintPreview({
       object-position: top;
     }
 
-    /* احتواء الجدول والخلايا التلقائي لضمان عدم خروج أي نص أو عمود */
+    /* تنسيقات الجدول العامة التكيفية */
     table {
-      width: 100% !important;
-      max-width: 100% !important;
-      border-collapse: collapse !important;
-      table-layout: auto !important;
-      font-size: 13px !important;
-      margin: 0 auto !important;
+      width: 100%;
+      max-width: 100%;
+      border-collapse: collapse;
+      table-layout: auto;
+      font-size: 13px;
+      margin: 0 auto;
       word-break: keep-all;
     }
 
-    thead {
-      display: table-header-group;
-    }
-
-    tfoot {
-      display: table-footer-group;
-    }
-
-    tr {
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
+    thead { display: table-header-group; }
+    tfoot { display: table-footer-group; }
+    tr { page-break-inside: avoid; break-inside: avoid; }
 
     th, td {
-      border: 1px solid #000000 !important;
-      text-align: center !important;
-      vertical-align: middle !important;
-      padding: 4px 5px !important;
-      color: #000000 !important;
+      border: 1px solid #000000;
+      text-align: center;
+      vertical-align: middle;
+      padding: 4px 5px;
       box-sizing: border-box;
     }
 
-    /* رؤوس الأعمدة */
-    th {
-      background: #f1f5f9 !important;
-      font-weight: 900 !important;
-      font-size: 13px !important;
-      white-space: normal !important;
-      word-break: normal !important;
-      overflow-wrap: break-word !important;
-      line-height: 1.25 !important;
-    }
-
-    /* خلايا النصوص والبيان: احتواء تلقائي والتفاف في سطرين أو أكثر لمنع خروج الجدول */
-    tbody td {
-      font-weight: 700 !important;
-      font-size: 12.5px !important;
-      line-height: 1.3 !important;
-      white-space: normal !important;
-      word-break: break-word !important;
-      overflow-wrap: break-word !important;
-    }
-
-    /* منع التفاف الأرقام والتواريخ والرموز مع ضغط حشوتها */
     .num, .numeric-cell, .date-cell, .idx, [data-numeric="true"] {
       white-space: nowrap !important;
       word-break: keep-all !important;
@@ -233,48 +212,18 @@ export function openBrowserPrintPreview({
       direction: ltr !important;
       font-weight: 800 !important;
       padding: 3px 4px !important;
-      width: max-content !important;
+      width: max-content;
     }
 
-    tbody tr:nth-child(even) td {
-      background: #fafafa !important;
-    }
-
-    .total-row td {
-      background: #f1f5f9 !important;
-      font-weight: 900 !important;
-      font-size: 13px !important;
-      border-top: 1.5pt solid #000 !important;
-    }
-
-    /* الأنماط الخاصة بالتقرير المعروض */
+    /* تطبيق الأنماط المخصصة للتقرير (مثل كشف الحساب) */
     ${contentCss}
 
-    /* قواعد أمان نهائية لإبقاء المحتوى داخل الورقة المختارة */
+    /* قواعد أمان لضمان بقاء المحتوى داخل حدود الورقة */
     .sheet-paper, .sheet-paper * {
       max-width: 100%;
     }
     .sheet-paper table {
       width: 100% !important;
-      max-width: 100% !important;
-      table-layout: auto !important;
-    }
-    .sheet-paper th, .sheet-paper td {
-      min-width: 0 !important;
-      max-width: 100% !important;
-      white-space: normal !important;
-      overflow-wrap: anywhere !important;
-      word-break: normal !important;
-    }
-    .sheet-paper .num,
-    .sheet-paper .numeric-cell,
-    .sheet-paper .date-cell,
-    .sheet-paper .idx,
-    .sheet-paper [data-numeric="true"] {
-      white-space: nowrap !important;
-      overflow-wrap: normal !important;
-      word-break: keep-all !important;
-      width: auto !important;
     }
 
     /* أنماط أمر الطباعة الحقيقي عبر متصفح كروم */
@@ -286,9 +235,12 @@ export function openBrowserPrintPreview({
         background: #ffffff !important;
         margin: 0 !important;
         padding: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
       .sheet-viewport {
         padding: 0 !important;
+        margin: 0 !important;
         overflow: visible !important;
       }
       .sheet-paper {
@@ -297,6 +249,7 @@ export function openBrowserPrintPreview({
         width: 100% !important;
         min-height: auto !important;
         padding: 0 !important;
+        margin: 0 !important;
         transform: none !important;
       }
       * {
@@ -306,7 +259,6 @@ export function openBrowserPrintPreview({
     }
   </style>
 
-  <!-- نمط أبعاد الطباعة الديناميكي الذي يتحكم فيه المستخدم -->
   <style id="dynamic-page-rule">
     @page {
       size: ${defaultPageSize} ${defaultOrientation};
@@ -316,7 +268,6 @@ export function openBrowserPrintPreview({
 </head>
 <body>
 
-  <!-- شريط الأدوات العلوي -->
   <div class="preview-toolbar">
     <div class="title-box">
       <span>📄 ${escapeHtml(title)}</span>
@@ -324,7 +275,6 @@ export function openBrowserPrintPreview({
     </div>
 
     <div class="controls-group">
-      <!-- اختيار اتجاه الورقة -->
       <label style="font-size: 12px; font-weight: bold;">
         الاتجاه:
         <select id="selOrientation">
@@ -333,7 +283,6 @@ export function openBrowserPrintPreview({
         </select>
       </label>
 
-      <!-- حجم الورق -->
       <label style="font-size: 12px; font-weight: bold;">
         الحجم:
         <select id="selPageSize">
@@ -343,7 +292,6 @@ export function openBrowserPrintPreview({
         </select>
       </label>
 
-      <!-- الهوامش -->
       <label style="font-size: 12px; font-weight: bold;">
         الهوامش:
         <select id="selMargin">
@@ -354,32 +302,32 @@ export function openBrowserPrintPreview({
         </select>
       </label>
 
-      <!-- نسبة التكبير / الملاءمة -->
       <label style="font-size: 12px; font-weight: bold;">
         الملاءمة:
         <select id="selScale">
           <option value="1">100% (طبيعي)</option>
           <option value="0.95">95%</option>
-          <option value="0.90">90% (ملاءمة ضيقة)</option>
+          <option value="0.90">90%</option>
           <option value="0.85">85%</option>
           <option value="0.80">80%</option>
           <option value="0.75">75%</option>
         </select>
       </label>
 
-      <!-- زر تنفيذ الطباعة -->
       <button type="button" class="btn-print" id="btnPrint">
         🖨️ طباعة التقرير (Ctrl+P)
       </button>
 
-      <!-- زر الإغلاق -->
+      <button type="button" class="btn-download-pdf" id="btnDownloadPdf">
+        📥 تنزيل كملف PDF
+      </button>
+
       <button type="button" class="btn-close" id="btnClose">
         ✕ إغلاق
       </button>
     </div>
   </div>
 
-  <!-- مساحة المعاينة الحية للورقة -->
   <div class="sheet-viewport">
     <div id="paperContainer" class="sheet-paper ${defaultOrientation}">
       <div class="report-letterhead-block">
@@ -391,7 +339,6 @@ export function openBrowserPrintPreview({
     </div>
   </div>
 
-  <!-- سكربت التحكم الحي في التنسيقات والطباعة داخل نافذة كروم -->
   <script>
     (function() {
       const selOrientation = document.getElementById('selOrientation');
@@ -401,6 +348,7 @@ export function openBrowserPrintPreview({
       const paperContainer = document.getElementById('paperContainer');
       const dynamicRule = document.getElementById('dynamic-page-rule');
       const btnPrint = document.getElementById('btnPrint');
+      const btnDownloadPdf = document.getElementById('btnDownloadPdf');
       const btnClose = document.getElementById('btnClose');
       let printInProgress = false;
 
@@ -417,11 +365,9 @@ export function openBrowserPrintPreview({
         const margin = selMargin.value;
         const scale = parseFloat(selScale.value) || 1;
 
-        // تحديث الصنف على حاوية الورقة
         paperContainer.classList.remove('portrait', 'landscape');
         paperContainer.classList.add(orientation);
 
-        // تحديث الحجم بالبوصة أو الملليمتر في العرض
         if (pageSize === 'A3') {
           paperContainer.style.width = orientation === 'portrait' ? '297mm' : '420mm';
         } else if (pageSize === 'Letter') {
@@ -430,12 +376,54 @@ export function openBrowserPrintPreview({
           paperContainer.style.width = orientation === 'portrait' ? '210mm' : '297mm';
         }
 
-        // تطبيق الهامش والتدريج
         paperContainer.style.padding = margin;
         paperContainer.style.transform = scale === 1 ? 'none' : 'scale(' + scale + ')';
-
-        // تحديث قاعدة الطباعة الفعلية لكروم
         dynamicRule.innerHTML = '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + margin + '; }';
+      }
+
+      // تنزيل كشف الحساب كملف PDF مطابق 100% لما يظهر على الشاشة
+      async function downloadDirectPdf() {
+        if (!window.html2canvas || !window.jspdf) {
+          alert('جاري تحميل مكتبة PDF، يرجى الانتظار ثانية ثم المحاولة مجدداً');
+          return;
+        }
+        btnDownloadPdf.disabled = true;
+        btnDownloadPdf.innerText = '⏳ جاري إنشاء PDF...';
+
+        try {
+          const orientation = selOrientation.value;
+          const pageSize = selPageSize.value;
+          
+          const canvas = await html2canvas(paperContainer, {
+            scale: 2.5,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            logging: false,
+          });
+
+          const imgData = canvas.toDataURL('image/jpeg', 0.98);
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({
+            orientation: orientation,
+            unit: 'mm',
+            format: pageSize.toLowerCase(),
+            compress: true
+          });
+
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = pdf.internal.pageSize.getHeight();
+          const imgProps = pdf.getImageProperties(imgData);
+          const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, Math.min(imgHeight, pdfHeight));
+          pdf.save('${escapeHtml(title)}.pdf');
+        } catch (err) {
+          console.error(err);
+          alert('حدث خطأ أثناء تنزيل الـ PDF، يمكنك استخدام زر الطباعة واختيار حفظ بتنسيق PDF');
+        } finally {
+          btnDownloadPdf.disabled = false;
+          btnDownloadPdf.innerText = '📥 تنزيل كملف PDF';
+        }
       }
 
       selOrientation.addEventListener('change', updatePageSettings);
@@ -443,15 +431,10 @@ export function openBrowserPrintPreview({
       selMargin.addEventListener('change', updatePageSettings);
       selScale.addEventListener('change', updatePageSettings);
 
-      btnPrint.addEventListener('click', function() {
-        printOnce();
-      });
+      btnPrint.addEventListener('click', printOnce);
+      btnDownloadPdf.addEventListener('click', downloadDirectPdf);
+      btnClose.addEventListener('click', function() { window.close(); });
 
-      btnClose.addEventListener('click', function() {
-        window.close();
-      });
-
-      // اختصار لوحة المفاتيح
       window.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
           e.preventDefault();

@@ -1788,154 +1788,156 @@ td.t-fees { background: ${colorTokens.fees} !important; }
           ? "الرصيد الإضافي (له)"
           : "الحالة: تم السداد بالكامل";
 
-    // ضبط أحجام كروت المعلومات والطباعة (أصغر وأكثر إحكاماً)
+    // ضبط أحجام كروت المعلومات والطباعة (أصغر وأكثر إح    // ضبط أحجام كروت المعلومات والطباعة وتطابق الألوان 100%
     const statementCss = `
-      @page { size: A4 portrait; margin: 8mm; }
+      @page { size: A4 portrait; margin: 6mm; }
       * { box-sizing: border-box; }
-      html, body { width: 100%;  margin: 0; padding: 0; }
+      html, body { width: 100%; margin: 0; padding: 0; background: #fff !important; }
       body {
-        font-family: "Times New Roman", "Noto Naskh Arabic", "Cairo", Tahoma, sans-serif;
+        font-family: "Cairo", "Times New Roman", Tahoma, sans-serif;
         color: #111827;
-        font-size: 12.5px;
+        font-size: 13px;
         line-height: 1.35;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
       .container {
         width: 100%;
-        max-width:auto;
-        margin: 0;
+        max-width: 100%;
+        margin: 0 auto;
       }
 
       .page-frame {
         width: 100%;
-        max-height:auto;
-        padding: 6mm;
-        border: 1px solid #000;
-        border-radius: 3mm;
-        background: #fff;
-        box-shadow: 0 2mm 8mm rgba(15, 118, 110, 0.08);
+        padding: 5mm;
+        border: 1.5px solid #0f766e;
+        border-radius: 4px;
+        background: #ffffff !important;
       }
-      .print-toolbar {
+
+      .statement-title {
+        text-align: center;
+        font-size: 17pt;
+        font-weight: 900;
+        color: #0f766e !important;
+        margin: 0 0 8px;
+        padding-bottom: 6px;
+        border-bottom: 2.5px solid #0f766e;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 12px;
+        margin-top: 6px;
+      }
+
+      /* كروت المعلومات بتنسيق متطابق للشاشة والورق والـ PDF */
+      .info-box {
+        border: 1.2px solid #8b9d62 !important;
+        background: #CDD5AE !important;
+        padding: 6px 8px;
+        min-height: 48px;
+        border-radius: 4px;
+        text-align: center;
+        box-sizing: border-box;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .info-lbl { 
+        font-size: 11pt; 
+        line-height: 1.2; 
+        font-weight: 800; 
+        color: #1a3320 !important; 
+        text-align: center; 
+      }
+      .info-val { 
+        font-size: 11pt; 
+        line-height: 1.2; 
+        font-weight: 900; 
+        margin-top: 3px; 
+        color: #000000 !important;
+        overflow-wrap: anywhere; 
+      }
+
+      table {
+        table-layout: auto !important;
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin-top: 4mm;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      th, td {
+        border: 1px solid #000000 !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+        padding: 6px 8px !important;
+        font-size: 11pt !important;
+        line-height: 1.2 !important;
+        white-space: normal !important;
+        box-sizing: border-box !important;
+      }
+      th { 
+        background: #0f766e !important; 
+        color: #ffffff !important; 
+        font-weight: 900 !important; 
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      td { 
+        color: #000000 !important; 
+        font-weight: 700; 
+      }
+      .lbl { text-align: center; font-weight: 800; }
+      .num { 
+        font-family: "Times New Roman", Times, serif !important; 
+        font-weight: 900 !important; 
+        font-size: 12pt !important; 
+        font-variant-numeric: tabular-nums; 
+        direction: ltr !important; 
+      }
+      .row-fees td { background: #eff6ff !important; -webkit-print-color-adjust: exact !important; }
+      .row-due-old td { background: #fef3c7 !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; }
+      .row-total-due td { background: #fee2e2 !important; color: #991b1b !important; font-weight: 900 !important; -webkit-print-color-adjust: exact !important; }
+      .row-paid td { color: #000000 !important; }
+      .row-total-paid td { background: #d1fae5 !important; color: #065f46 !important; font-weight: 900 !important; -webkit-print-color-adjust: exact !important; }
+      .row-final td { 
+        background: #fef2f2 !important; 
+        font-size: 12pt !important; 
+        font-weight: 900 !important; 
+        color: #991b1b !important; 
+        border-top: 2px solid #000000 !important; 
+        -webkit-print-color-adjust: exact !important;
+      }
+      .foot {
+        margin-top: 8mm;
         display: flex;
-        justify-content: flex-end;
-        margin: 0 0 4mm;
-      }
-      .print-toolbar button {
-        border: 0.6pt solid #0f766e;
-        border-radius: 1.5mm;
-        background: #0f766e;
-        color: #fff;
-        cursor: pointer;
-        font-family: Cairo, Arial, sans-serif;
-        font-size: 12pt;
+        justify-content: space-between;
+        gap: 8mm;
+        font-size: 10pt;
+        line-height: 1.2;
         font-weight: 800;
-        padding: 2mm 4mm;
+        page-break-inside: avoid;
+        break-inside: avoid;
       }
-      .print-toolbar button:hover { background: #115e59; }
-
-      .header {
-        background: #0f766e;
-        color: #fff;
-        padding: 4mm 3mm;
-        border-radius: 2mm;
-        margin-bottom: 5mm;
+      .header, .info-grid { page-break-inside: avoid; break-inside: avoid; }
+      @media print {
+        html, body { width: 100% !important; margin: 0 !important; padding: 0 !important; }
+        .page-frame { border: 1.5px solid #0f766e !important; padding: 4mm !important; }
+        .print-toolbar { display: none !important; }
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
       }
-      .header h1 { margin: 0; font-size: 16pt; line-height: 1.25; font-weight: 800; color: #000; }
-      .header p { margin: 2mm 0 0; font-size: 10.5pt; line-height: 1.25; font-weight: 700; color: #000; }
-
- .statement-title {
-  text-align: center;
-  font-size: 18pt;
-  font-weight: 900;
-  color: #0f766e;
-  margin: 0 0 6px;
-  padding-bottom: 6px;
-  border-bottom: 2px solid #0f766e;
- }
- .info-grid {
- display: grid;
- grid-template-columns: 1fr 1fr;
- gap: 6px;
- margin-bottom: 10px;
- margin-top:6px;
- }
-
-     /* كروت المعلومات مصغّرة لتناسب ورقة A4 عند الطباعة */
-    .info-box {
-      border: 1px solid #000;
-      background: #CDD5AE;
-      padding: 2mm 1.5mm;
-      min-height: 12mm;
-      border-radius: 1.5mm;
-      text-align: center;
-      box-sizing: border-box;
-    }
-    .info-lbl { font-size: 11pt; line-height: 1; font-weight: 800; color:black; text-align: center; }
-    .info-val { font-size: 10.5pt; line-height: 1; font-weight: 800; margin-top: 1mm; overflow-wrap: anywhere; }
-
-    table {
-      table-layout: auto;
-      width: 100%;
-      min-width: 100%;
-      border-collapse: collapse;
-      margin-top: 2mm;
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
-    th, td {
-      border: 0.75pt solid #000;
-      text-align: center;
-      vertical-align: middle;
-      padding: 2.2mm 2mm;
-      font-size: 10.5pt;
-      line-height: 1;
-      white-space: normal;
-      overflow: hidden;
-      text-overflow: clip;
-      overflow-wrap: anywhere;
-      word-break: break-word;
-      hyphens: auto;
-    }
-    th { background: #0f766e; color:white!important; font-weight: 900; }
-    td { color: #000 !important; font-weight: 700; }
-    .lbl { text-align: center; font-weight: 800; }
-    .num { font-family: "Times New Roman", Times, serif; font-weight: 800; font-size: 10.5pt; font-variant-numeric: tabular-nums; direction: ltr; }
-    .row-fees td { background: #eff6ff; }
-    .row-due-old td { background: #fef3c7; color: #000 !important; }
-    .row-total-due td { background: #fee2e2; color: #000 !important; font-weight: 800; }
-    .row-paid td { color: #000 !important; }
-    .row-total-paid td { background: #d1fae5; color: #000 !important; font-weight: 800; }
-    .row-final td { background: #fee2e2; font-size: 11pt; font-weight: 800; color: #000 !important; border-top: 1pt solid #000; }
-    .foot {
-      margin-top: 6mm;
-      display: flex;
-      justify-content: space-between;
-      gap: 8mm;
-      font-size: 9pt;
-      line-height: 1;
-      font-weight: 700;
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
-    .header, .info-grid { page-break-inside: avoid; break-inside: avoid; }
-    @media print {
-      html, body { width:100٪; }
-      body { margin: 0; padding: 0; }
-.page-frame { max-height:100٪;
-border-radius: 0; box-shadow: none; padding: 4mm; }
-      .print-toolbar { display: none !important; }
-      .header, .info-box, th, td {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-    }
     `;
 
     const body = `
       <div class="container">
         <div class="page-frame">
-   <h2 class="statement-title">كشف حساب متدرب — للعام ${year}م</h2>
+          <h2 class="statement-title">كشف حساب متدرب — للعام ${year}م</h2>
           <div class="info-grid">
             ${infoCard("اسم المتدرب", row.name)}
             ${infoCard("الدفعة", row.batch)}
@@ -1973,26 +1975,142 @@ border-radius: 0; box-shadow: none; padding: 4mm; }
     };
   };
 
-  // تنزيل كشف الحساب كملف PDF مستقل
+  // دالة مخصصة لتنزيل كشف حساب المتدرب كملف PDF عالي الدقة مطابق 100% للمعاينة والطباعة
+  const downloadTraineeStatementPdf = async ({
+    title,
+    body,
+    css,
+    fileName,
+  }: {
+    title: string;
+    body: string;
+    css: string;
+    fileName: string;
+  }) => {
+    const frame = document.createElement("iframe");
+    frame.setAttribute("aria-hidden", "true");
+    frame.style.position = "fixed";
+    frame.style.left = "-10000px";
+    frame.style.top = "0";
+    frame.style.width = "794px"; // قياس A4 Portrait بالبكسل بدقة 96DPI
+    frame.style.height = "1123px";
+    frame.style.border = "0";
+    frame.style.opacity = "0";
+    document.body.appendChild(frame);
+
+    try {
+      const fdoc = frame.contentDocument;
+      if (!fdoc) throw new Error("تعذر إنشاء مساحة معالجة PDF");
+
+      fdoc.open();
+      fdoc.write(`<!doctype html>
+      <html lang="ar" dir="rtl">
+        <head>
+          <meta charset="utf-8" />
+          <title>${escapeHtml(title)}</title>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+          <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+          <style>
+            ${css}
+            .report-letterhead-block {
+              display: flex;
+              width: 100%;
+              height: 26mm;
+              align-items: stretch;
+              justify-content: center;
+              margin: 0 auto 4mm;
+            }
+            .report-letterhead-image {
+              width: 100%;
+              max-width: 100%;
+              height: 100%;
+              object-fit: contain;
+              object-position: top;
+            }
+            #statement-target-paper {
+              width: 794px;
+              padding: 6mm;
+              background: #ffffff;
+              box-sizing: border-box;
+            }
+          </style>
+        </head>
+        <body>
+          <div id="statement-target-paper">
+            <div class="report-letterhead-block">
+              <img class="report-letterhead-image" src="${REPORT_LETTERHEAD_SRC}" alt="الترويسة الرسمية" />
+            </div>
+            ${body}
+          </div>
+        </body>
+      </html>`);
+      fdoc.close();
+
+      // انتظار تحميل الترويسة والخطوط
+      const images = Array.from(fdoc.images);
+      await Promise.all(
+        images.map((img) => img.complete ? Promise.resolve() : new Promise<void>((res) => {
+          img.onload = () => res();
+          img.onerror = () => res();
+          setTimeout(res, 2000);
+        }))
+      );
+      if ((fdoc as any).fonts?.ready) {
+        await (fdoc as any).fonts.ready;
+      }
+      await new Promise((res) => setTimeout(res, 100));
+
+      const target = fdoc.getElementById("statement-target-paper");
+      if (!target) throw new Error("تعذر تحديد عنصر الكشف");
+
+      const [{ default: html2canvas }, { default: JsPDF }] = await Promise.all([
+        import("html2canvas"),
+        import("jspdf"),
+      ]);
+
+      const canvas = await html2canvas(target, {
+        scale: 2.5,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+      });
+
+      const pdf = new JsPDF({
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait",
+        compress: true,
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgProps = pdf.getImageProperties(canvas.toDataURL("image/jpeg", 0.98));
+      const renderedHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      pdf.addImage(canvas.toDataURL("image/jpeg", 0.98), "JPEG", 0, 0, pdfWidth, Math.min(renderedHeight, pdfHeight));
+      pdf.save(fileName);
+    } finally {
+      document.body.removeChild(frame);
+    }
+  };
+
+  // تنزيل كشف الحساب كملف PDF متطابق مع المعاينة والطباعة
   const handleExportPdf = async (row: any, year: number) => {
     const { title, body, css } = generateAccountStatement(row, year);
     try {
-      await downloadDetailedHtmlPdf({
-      title,
-      body,
-      css,
-      pageSize: "A4",
-      orientation: "portrait",
-      fileName: `${title}.pdf`,
+      await downloadTraineeStatementPdf({
+        title,
+        body,
+        css,
+        fileName: `${title}.pdf`,
       });
-      toast.success("تم تنزيل كشف الحساب بصيغة PDF");
+      toast.success("تم تنزيل كشف الحساب بصيغة PDF بنجاح");
     } catch (error) {
       console.error("Account statement PDF error:", error);
       toast.error("تعذّر تنزيل كشف الحساب");
     }
   };
 
-  // معاينة كشف الحساب في نافذة كروم قبل الطباعة
   const printStatement = (row: any, year: number) => {
     const { title, body, css } = generateAccountStatement(row, year);
     const opened = openBrowserPrintPreview({
