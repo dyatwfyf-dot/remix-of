@@ -21,7 +21,7 @@ function ensurePrintLetterhead(html: string, forceTable: boolean = true): string
     thead { display: table-header-group !important; }
     .report-letterhead-row { break-inside: avoid; page-break-inside: avoid; }
     .report-letterhead-cell { border: 0 !important; background: #fff !important; padding: 0 0 2mm !important; height: 30mm !important; }
-    .report-letterhead-image { display: block !important; width: 100% !important; max-width:100% !important; height: 30mm !important; max-height: 30mm !important; object-fit: content !important; 
+    .report-letterhead-image { display: block !important; width: 100% !important; max-width:auto!important; height: 30mm !important; max-height: 30mm !important; object-fit:fill !important; 
 object-position: top!important; margin: 0 auto !important; }
     .report-letterhead-block { display: flex !important; width: 100% !important; height: 30mm !important; min-height: 30mm !important; max-height: 30mm !important; align-items: stretch !important; justify-content: center !important; overflow: hidden !important; margin: 0 auto 4mm !important; page-break-before: avoid !important; page-break-after: avoid !important; }
   </style>`;
@@ -128,7 +128,7 @@ export function printReportHtml(html: string, name: string): boolean {
   }
   if (printViaIframe(printableHtml)) return true;
 
-  const reportWindow = registerReportWindow(window.open("", "_blank", "width=1200,height=800"));
+  const reportWindow = registerReportWindow(window.open("", "_blank", "width=1800,height=1800"));
   if (!reportWindow) return false;
   reportWindow.document.open();
   reportWindow.document.write(printableHtml);

@@ -1803,13 +1803,13 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       }
       .container {
         width: 100%;
-        max-width: none;
+        max-width:auto;
         margin: 0;
       }
 
       .page-frame {
         width: 100%;
-        min-height: auto;
+        max-height:auto;
         padding: 6mm;
         border: 1px solid #000;
         border-radius: 3mm;
@@ -1922,7 +1922,8 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     @media print {
       html, body { width:100٪; }
       body { margin: 0; padding: 0; }
-      .page-frame { min-height:100٪; border-radius: 0; box-shadow: none; padding: 4mm; }
+.page-frame { max-height:100٪;
+border-radius: 0; box-shadow: none; padding: 4mm; }
       .print-toolbar { display: none !important; }
       .header, .info-box, th, td {
         -webkit-print-color-adjust: exact;

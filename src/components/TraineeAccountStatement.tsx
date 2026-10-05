@@ -62,13 +62,13 @@ export default function TraineeAccountStatement({
   ];
 
   return (
-    <div className="w-full bg-gradient-to-b from-slate-50/80 to-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden mb-6">
+<div className="w-auto bg-gradient-to-b from-slate-50/80 to-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden mb-6">
       {/* الرأس مع زر التوسع */}
 <div className="bg-gradient-to-l from-teal-600 via-teal-500 to-cyan-600 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center cursor-pointer hover:shadow-md transition-shadow"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-3">
-          <h3 className="text-lg sm:text-xl font-bold text-white">
+          <h3 className="text-xs sm:text-xs font-bold text-white">
             📋 كشف حساب متدرب للعام {year}م
           </h3>
         </div>
@@ -87,8 +87,8 @@ export default function TraineeAccountStatement({
           {/* ========== بيانات المتدرب (الكروت الأربعة) ========== */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
             {/* كرت اسم المتدرب */}
-            <div className="bg-gradient-to-br from-blue-50 to-sky-50 border border-blue-200 rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
-              <div className="text-xs sm:text-sm font-bold text-blue-600 mb-2 text-center">
+<div className="bg-gradient-to-br from-blue-50 to-sky-50 border border-black rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+<div className="text-xs sm:text-sm font-bold text-blue-600 mb-2 text-center">
                 اسم المتدرب
               </div>
               <div className="text-sm sm:text-base font-extrabold text-blue-900 text-center line-clamp-2">
@@ -132,11 +132,11 @@ export default function TraineeAccountStatement({
 
           {/* ========== الجدول المالي ========== */}
           <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
-            <table className="w-full border-collapse text-sm sm:text-base">
+<table className="w-auto border-collapse text-sm sm:text-base">
               {/* رأس الجدول */}
               <thead>
-                <tr className="bg-gradient-to-r from-teal-600 via-teal-500 to-cyan-600 border-b-2 border-teal-700">
-                  <th className="px-3 sm:px-4 py-3 sm:py-4 text-right font-bold text-white">
+<tr className="bg-gradient-to-r from-teal-900 via-teal-900 to-cyan-900 border-b-2 border-teal-700">
+ <th className="px-3 sm:px-4 py-3 sm:py-4 text-center font-bold text-white">
                     البيان
                   </th>
                   <th className="px-3 sm:px-4 py-3 sm:py-4 text-center font-bold text-white">
