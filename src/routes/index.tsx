@@ -39,6 +39,13 @@ export const Route = createFileRoute("/")({
         content:
           "تطبيق إدارة قيود اليومية وحوافظ التوريد للمجلس اليمني للاختصاصات الطبية - يعمل بدون إنترنت",
       },
+      { property: "og:title", content: "قيادة النظام المالي - المجلس اليمني للاختصاصات الطبية" },
+      {
+        property: "og:description",
+        content: "إدارة القيود اليومية والحوافظ والأقساط والتقارير المالية للمجلس اليمني للاختصاصات الطبية.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "theme-color", content: "#2e6b8a" },
     ],
     links: [

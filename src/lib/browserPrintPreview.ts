@@ -4,6 +4,8 @@ export interface BrowserPreviewOptions {
   title: string;
   reportDateLabel?: string;
   tableHtml: string;
+  /** أنماط التقرير الأصلية، مثل تنسيق كشف حساب المتدرب. */
+  contentCss?: string;
   defaultOrientation?: "portrait" | "landscape";
   defaultPageSize?: "A4" | "A3" | "Letter";
 }
@@ -16,6 +18,7 @@ export function openBrowserPrintPreview({
   title,
   reportDateLabel = "",
   tableHtml,
+  contentCss = "",
   defaultOrientation = "portrait",
   defaultPageSize = "A4",
 }: BrowserPreviewOptions): boolean {
@@ -244,6 +247,36 @@ export function openBrowserPrintPreview({
       border-top: 1.5pt solid #000 !important;
     }
 
+    /* الأنماط الخاصة بالتقرير المعروض */
+    ${contentCss}
+
+    /* قواعد أمان نهائية لإبقاء المحتوى داخل الورقة المختارة */
+    .sheet-paper, .sheet-paper * {
+      max-width: 100%;
+    }
+    .sheet-paper table {
+      width: 100% !important;
+      max-width: 100% !important;
+      table-layout: auto !important;
+    }
+    .sheet-paper th, .sheet-paper td {
+      min-width: 0 !important;
+      max-width: 100% !important;
+      white-space: normal !important;
+      overflow-wrap: anywhere !important;
+      word-break: normal !important;
+    }
+    .sheet-paper .num,
+    .sheet-paper .numeric-cell,
+    .sheet-paper .date-cell,
+    .sheet-paper .idx,
+    .sheet-paper [data-numeric="true"] {
+      white-space: nowrap !important;
+      overflow-wrap: normal !important;
+      word-break: keep-all !important;
+      width: auto !important;
+    }
+
     /* أنماط أمر الطباعة الحقيقي عبر متصفح كروم */
     @media print {
       .preview-toolbar {
@@ -352,7 +385,7 @@ export function openBrowserPrintPreview({
       <div class="report-letterhead-block">
         <img class="report-letterhead-image" src="${REPORT_LETTERHEAD_SRC}" alt="الترويسة الرسمية" />
       </div>
-      <div id="tableContainer">
+      <div id="tableContainer" class="preview-report-content">
         ${tableHtml}
       </div>
     </div>
@@ -383,6 +416,8 @@ export function openBrowserPrintPreview({
         // تحديث الحجم بالبوصة أو الملليمتر في العرض
         if (pageSize === 'A3') {
           paperContainer.style.width = orientation === 'portrait' ? '297mm' : '420mm';
+        } else if (pageSize === 'Letter') {
+          paperContainer.style.width = orientation === 'portrait' ? '216mm' : '279mm';
         } else {
           paperContainer.style.width = orientation === 'portrait' ? '210mm' : '297mm';
         }

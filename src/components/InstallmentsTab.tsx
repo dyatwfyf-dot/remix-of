@@ -34,6 +34,7 @@ import PrintSettingsModal, {
   type InstallmentsPrintSettings,
 } from "./PrintSettingsModal";
 import { openPrintDocument } from "@/lib/printDocument";
+import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import { useReportDate } from "@/lib/reportDate";
 import { reportLetterheadHtml } from "@/lib/printTableHtml";
 import { saveBlobToInternalStorage } from "@/lib/nativeFileStorage";
@@ -1971,29 +1972,39 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     };
   };
 
-  // فتح كشف الحساب في نافذة طباعة عالية الجودة (يمكن حفظه كـ PDF)
+  // تنزيل كشف الحساب كملف PDF مستقل
   const handleExportPdf = async (row: any, year: number) => {
     const { title, body, css } = generateAccountStatement(row, year);
-    const ok = await openPrintDocument({
+    try {
+      await downloadDetailedHtmlPdf({
       title,
       body,
       css,
       pageSize: "A4",
       orientation: "portrait",
-      margin: "8mm",
-      letterheadPlacement: "top",
-      autoPrint: false,
-    });
-    if (ok) {
-      toast.success("اختر «حفظ كـ PDF» من نافذة الطباعة للحصول على ملف واضح");
-    } else {
-      toast.error("تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة");
+      fileName: `${title}.pdf`,
+      });
+      toast.success("تم تنزيل كشف الحساب بصيغة PDF");
+    } catch (error) {
+      console.error("Account statement PDF error:", error);
+      toast.error("تعذّر تنزيل كشف الحساب");
     }
   };
 
-  // وظيفة الطباعة
+  // معاينة كشف الحساب في نافذة كروم قبل الطباعة
   const printStatement = (row: any, year: number) => {
-    void handleExportPdf(row, year);
+    const { title, body, css } = generateAccountStatement(row, year);
+    const opened = openBrowserPrintPreview({
+      title,
+      reportDateLabel,
+      tableHtml: body,
+      contentCss: css,
+      defaultOrientation: "portrait",
+      defaultPageSize: "A4",
+    });
+    if (!opened) {
+      toast.error("تم منع فتح نافذة المعاينة، يرجى السماح بالنوافذ المنبثقة في كروم");
+    }
   };
 
   const stats2025 = [

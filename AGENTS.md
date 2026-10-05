@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Route all browser report printing through the shared Chrome preview utility; this keeps page settings and A4 containment consistent.

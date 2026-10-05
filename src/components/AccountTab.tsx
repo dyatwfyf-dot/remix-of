@@ -653,8 +653,6 @@ const isOpeningRow = (row: any) => String(row.description ?? "").includes("اب�
     label: "مطابقة شاملة ٢٠٢٦",
     icon: Zap,
     onSelect: handleSyncFromHafiza,
-    // تدرج فاتح بترولي
-    className: "flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#1f5f7a] bg-gradient-to-r from-[#eaf4fa] to-[#d5e8f5] border shadow-sm hover:from-[#dcecf5] hover:to-[#cfe4ef] transition-all duration-200",
   },
   {
     label: "استيراد Excel",
