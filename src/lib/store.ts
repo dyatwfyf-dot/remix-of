@@ -79,6 +79,7 @@ export type Account = {
   expense: number;
   sourceHafizaId?: string;
   revenueKey?: string;
+  expenseIndex?: number; // فهرس البند في دليل المصروفات
 };
 
 export type Journal = {
@@ -309,13 +310,14 @@ export const useStore = create<State>()(
             checkDate: "",
             expense: 0,
             revenueKey: undefined,
+            expenseIndex: undefined,
           };
           set((state) => {
             const updatedAccounts = [...state.accounts, newAccount];
             return { accounts: updatedAccounts, revenue: recalculateRevenueMap(updatedAccounts) };
           });
         } else {
-          const hasDiff =
+          const hasDifferentData =
             existingAccount.date !== mappedData.date ||
             existingAccount.hafizaNo !== mappedData.hafizaNo ||
             existingAccount.notifyNo !== mappedData.notifyNo ||
@@ -325,7 +327,8 @@ export const useStore = create<State>()(
             existingAccount.name !== mappedData.name ||
             existingAccount.hafizaAmount !== mappedData.hafizaAmount ||
             existingAccount.income !== mappedData.income;
-          if (hasDiff) {
+
+          if (hasDifferentData) {
             set((state) => {
               const updatedAccounts = state.accounts.map((acc) =>
                 acc.id === existingAccount!.id
@@ -333,6 +336,7 @@ export const useStore = create<State>()(
                       ...acc,
                       ...mappedData,
                       revenueKey: acc.revenueKey,
+                      expenseIndex: acc.expenseIndex,
                       expense: acc.expense,
                       checkNo: acc.checkNo,
                       checkDate: acc.checkDate,
@@ -415,6 +419,7 @@ export const useStore = create<State>()(
           hafizaAmount: Number(a.hafizaAmount) || 0,
           income: Number(a.income) || 0,
           expense: Number(a.expense) || 0,
+          expenseIndex: a.expenseIndex !== undefined ? Number(a.expenseIndex) : undefined,
         };
         set((s) => {
           const newAccounts = [...s.accounts, item];
@@ -424,7 +429,20 @@ export const useStore = create<State>()(
       },
       updateAccount: (id, a) =>
         set((s) => {
-          const newAccounts = s.accounts.map((x) => (x.id === id ? { ...x, ...a } : x));
+          const newAccounts = s.accounts.map((x) =>
+            x.id === id
+              ? {
+                  ...x,
+                  ...a,
+                  expenseIndex:
+                    a.expenseIndex !== undefined
+                      ? a.expenseIndex === (null as any) || a.expenseIndex === ("" as any)
+                        ? undefined
+                        : Number(a.expenseIndex)
+                      : x.expenseIndex,
+                }
+              : x,
+          );
           return { accounts: newAccounts, revenue: recalculateRevenueMap(newAccounts) };
         }),
       deleteAccount: (id) =>
@@ -461,45 +479,43 @@ export const useStore = create<State>()(
       clearJournal: () => set({ journal: [] }),
 
       addInstallment: (i, year) => {
-        const newInst = recalcInstallment({
+        const item = recalcInstallment({
           ...i,
-          payments: {},
+          fees: Number(i.fees) || 0,
+          prevDue: Number(i.prevDue) || 0,
+          payments: i.payments || {},
           totalPaid: 0,
-          remaining: Number(i.prevDue) || 0,
-        } as Installment);
-        set((s) => {
-          const key = year === "2025" ? "installments2025" : "installments";
-          return { [key]: [...s[key], newInst] };
+          remaining: 0,
         });
+        if (year === "2025") {
+          set((s) => ({ installments2025: [...s.installments2025, item] }));
+        } else {
+          set((s) => ({ installments: [...s.installments, item] }));
+        }
       },
-      updateInstallment: (index, i, year) =>
-        set((s) => {
-          const key = year === "2025" ? "installments2025" : "installments";
-          return {
-            [key]: s[key].map((inst, idx) =>
-              idx === index ? recalcInstallment({ ...inst, ...i }) : inst,
-            ),
-          };
-        }),
-      updateInstallmentPayment: (index, month, amount, year) =>
-        set((s) => {
-          const key = year === "2025" ? "installments2025" : "installments";
-          return {
-            [key]: s[key].map((inst, idx) =>
-              idx === index
-                ? recalcInstallment({ ...inst, payments: { ...inst.payments, [month]: amount } })
-                : inst,
-            ),
-          };
-        }),
-      deleteInstallment: (index, year) =>
-        set((s) => {
-          const key = year === "2025" ? "installments2025" : "installments";
-          return { [key]: s[key].filter((_, i) => i !== index) };
-        }),
+      updateInstallment: (index, i, year) => {
+        const key = year === "2025" ? "installments2025" : "installments";
+        set((s) => ({
+          [key]: s[key].map((item, idx) => (idx === index ? recalcInstallment({ ...item, ...i }) : item)),
+        }));
+      },
+      updateInstallmentPayment: (index, month, amount, year) => {
+        const key = year === "2025" ? "installments2025" : "installments";
+        set((s) => ({
+          [key]: s[key].map((item, idx) => {
+            if (idx !== index) return item;
+            const payments = { ...item.payments, [month]: Number(amount) || 0 };
+            return recalcInstallment({ ...item, payments });
+          }),
+        }));
+      },
+      deleteInstallment: (index, year) => {
+        const key = year === "2025" ? "installments2025" : "installments";
+        set((s) => ({ [key]: s[key].filter((_, idx) => idx !== index) }));
+      },
       clearInstallments: (year) => {
-        if (year === "2025") set({ installments2025: [] });
-        else set({ installments: [], installments2025: [] });
+        const key = year === "2025" ? "installments2025" : "installments";
+        set({ [key]: [] });
       },
       recalcAllInstallments: () =>
         set((s) => ({
@@ -507,89 +523,32 @@ export const useStore = create<State>()(
           installments2025: s.installments2025.map(recalcInstallment),
         })),
       setInstallmentCustomColumns2026: (columns) => set({ installmentCustomColumns2026: columns }),
-      setInstallmentConditionalRules2026: (rules) =>
-        set({ installmentConditionalRules2026: rules }),
+      setInstallmentConditionalRules2026: (rules) => set({ installmentConditionalRules2026: rules }),
 
       setOpeningBalance: (n) => set({ openingBalance: n }),
-      setRevenue: (year, month, itemKey, amount) =>
-        set((s) => ({ revenue: { ...s.revenue, [`${year}-${month}-${itemKey}`]: amount } })),
+      setRevenue: (year, month, itemKey, amount) => {
+        const compositeKey = `${year}-${month}-${itemKey}`;
+        set((s) => ({ revenue: { ...s.revenue, [compositeKey]: amount } }));
+      },
 
-      importData: (d) =>
-        set((s) => {
-          const importedAccounts = d.accounts
-            ? [
-                ...s.accounts,
-                ...d.accounts.map((a: any) => ({
-                  ...a,
-                  id: a.id || uid(),
-                  hafizaAmount: Number(a.hafizaAmount) || 0,
-                  income: Number(a.income) || 0,
-                  expense: Number(a.expense) || 0,
-                })),
-              ]
-            : s.accounts;
-
-          const rawHafiza = d.hafiza || d.hafizas || [];
-          const importedHafiza = [
-            ...s.hafiza,
-            ...rawHafiza.map((h: any) => ({
-              ...h,
-              id: h.id || uid(),
-              hafizaAmount: Number(h.hafizaAmount) || 0,
-              notifyAmount: Number(h.notifyAmount) || 0,
-            })),
-          ];
-
-          return {
-            trainees: d.trainees ? [...s.trainees, ...d.trainees] : s.trainees,
-            journal: d.journal
-              ? [
-                  ...s.journal,
-                  ...d.journal.map((j: any) => ({
-                    ...j,
-                    id: j.id || uid(),
-                    transactionId: j.transactionId || uid(),
-                    debit: Number(j.debit) || 0,
-                    credit: Number(j.credit) || 0,
-                  })),
-                ]
-              : s.journal,
-            hafiza: importedHafiza,
-            hafizas: importedHafiza,
-            accounts: importedAccounts,
-            revenue: d.accounts
-              ? recalculateRevenueMap(importedAccounts)
-              : d.revenue
-                ? { ...s.revenue, ...d.revenue }
-                : s.revenue,
-            installments: d.installments
-              ? [...s.installments, ...d.installments.map(recalcInstallment)]
-              : s.installments,
-            installments2025: d.installments2025
-              ? [...s.installments2025, ...d.installments2025.map(recalcInstallment)]
-              : s.installments2025,
-            openingBalance: d.openingBalance ?? s.openingBalance,
-            installmentCustomColumns2026:
-              d.installmentCustomColumns2026 ?? s.installmentCustomColumns2026,
-            installmentConditionalRules2026:
-              d.installmentConditionalRules2026 ?? s.installmentConditionalRules2026,
-          };
-        }),
-
-      exportAllData: () => ({
-        trainees: get().trainees,
-        hafiza: get().hafiza,
-        hafizas: get().hafizas,
-        accounts: get().accounts,
-        journal: get().journal,
-        installments: get().installments,
-        installments2025: get().installments2025,
-        openingBalance: get().openingBalance,
-        revenue: get().revenue,
-        customTabs: get().customTabs,
-        installmentCustomColumns2026: get().installmentCustomColumns2026,
-        installmentConditionalRules2026: get().installmentConditionalRules2026,
-      }),
+      importData: (d) => {
+        if (!d) return;
+        set((s) => ({
+          trainees: d.trainees || s.trainees,
+          hafiza: d.hafiza || s.hafiza,
+          hafizas: d.hafizas || s.hafizas,
+          accounts: d.accounts || s.accounts,
+          journal: d.journal || s.journal,
+          installments: d.installments ? d.installments.map(recalcInstallment) : s.installments,
+          installments2025: d.installments2025 ? d.installments2025.map(recalcInstallment) : s.installments2025,
+          openingBalance: d.openingBalance ?? s.openingBalance,
+          revenue: d.revenue || s.revenue,
+          customTabs: d.customTabs || s.customTabs,
+          installmentCustomColumns2026: d.installmentCustomColumns2026 || s.installmentCustomColumns2026,
+          installmentConditionalRules2026: d.installmentConditionalRules2026 || s.installmentConditionalRules2026,
+        }));
+      },
+      exportAllData: () => get(),
       clearAll: () =>
         set({
           hafiza: [],
@@ -599,20 +558,29 @@ export const useStore = create<State>()(
           installments: [],
           installments2025: [],
           revenue: {},
+          customTabs: [],
+          installmentCustomColumns2026: [],
+          installmentConditionalRules2026: [],
         }),
-      clearTab: (tab) =>
-        set((s) => {
-          if (tab === "hafiza" || tab === "hafizas") return { ...s, hafiza: [], hafizas: [] };
-          return { ...s, [tab]: [] };
-        }),
+      clearTab: (tab) => {
+        if (tab === "hafiza") set({ hafiza: [], hafizas: [] });
+        else if (tab === "accounts") set({ accounts: [], revenue: {} });
+        else if (tab === "journal") set({ journal: [] });
+        else if (tab === "installments") set({ installments: [] });
+        else if (tab === "installments2025") set({ installments2025: [] });
+        else if (tab === "trainees") set({ trainees: [] });
+        else if (tab === "revenue") set({ revenue: {} });
+      },
 
       addCustomTab: (name) => {
-        const tab: CustomTab = { id: uid(), name, columns: [], rows: [] };
-        set((s) => ({ customTabs: [...s.customTabs, tab] }));
-        return tab;
+        const newTab: CustomTab = { id: uid(), name, columns: ["البيان", "المبلغ"], rows: [] };
+        set((s) => ({ customTabs: [...s.customTabs, newTab] }));
+        return newTab;
       },
       renameCustomTab: (id, name) =>
-        set((s) => ({ customTabs: s.customTabs.map((t) => (t.id === id ? { ...t, name } : t)) })),
+        set((s) => ({
+          customTabs: s.customTabs.map((t) => (t.id === id ? { ...t, name } : t)),
+        })),
       deleteCustomTab: (id) =>
         set((s) => ({ customTabs: s.customTabs.filter((t) => t.id !== id) })),
       addCustomColumn: (id, col) =>
@@ -634,7 +602,9 @@ export const useStore = create<State>()(
       updateCustomRow: (id, index, row) =>
         set((s) => ({
           customTabs: s.customTabs.map((t) =>
-            t.id === id ? { ...t, rows: t.rows.map((r, i) => (i === index ? row : r)) } : t,
+            t.id === id
+              ? { ...t, rows: t.rows.map((r, i) => (i === index ? { ...r, ...row } : r)) }
+              : t,
           ),
         })),
       deleteCustomRow: (id, index) =>
@@ -646,47 +616,32 @@ export const useStore = create<State>()(
 
       getHafizaById: (id) => get().hafiza.find((h) => h.id === id),
       getAccountById: (id) => get().accounts.find((a) => a.id === id),
-      getTotalIncome: () => get().journal.reduce((sum, j) => sum + (j.credit || 0), 0),
-      getTotalExpenses: () => get().journal.reduce((sum, j) => sum + (j.debit || 0), 0),
+      getTotalIncome: () =>
+        get().accounts.reduce((sum, a) => sum + (Number(a.income) || 0), 0),
+      getTotalExpenses: () =>
+        get().accounts.reduce((sum, a) => sum + (Number(a.expense) || 0), 0),
       getOverdueInstallments: (year) => {
-        const key = year === "2025" ? "installments2025" : "installments";
-        return get()[key].filter((i: Installment) => i.remaining > 0);
+        const list = year === "2025" ? get().installments2025 : get().installments;
+        return list.filter((i) => i.remaining > 0);
       },
       getInstallmentByIndex: (index, year) => {
-        const key = year === "2025" ? "installments2025" : "installments";
-        return get()[key][index];
+        const list = year === "2025" ? get().installments2025 : get().installments;
+        return list[index];
       },
     }),
     {
-      name: "majlis-yemen-v1",
-      version: 2,
+      name: "financial-system-storage-v1",
       storage: createJSONStorage(() => deferredStorage),
-      partialize: (state) => ({
-        trainees: state.trainees,
-        hafiza: state.hafiza,
-        hafizas: state.hafizas,
-        accounts: state.accounts,
-        journal: state.journal,
-        installments: state.installments,
-        installments2025: state.installments2025,
-        openingBalance: state.openingBalance,
-        revenue: state.revenue,
-        customTabs: state.customTabs,
-        installmentCustomColumns2026: state.installmentCustomColumns2026,
-        installmentConditionalRules2026: state.installmentConditionalRules2026,
-      }),
     },
   ),
 );
 
-// تصدير الـ Hooks المخصصة
+// خطافات مساعدة للاستخدام في المكونات
 export const useTrainees = () => useStore((s) => s.trainees);
 export const useHafiza = () => useStore((s) => s.hafiza);
-export const useHafizas = () => useStore((s) => s.hafizas);
 export const useAccounts = () => useStore((s) => s.accounts);
 export const useJournal = () => useStore((s) => s.journal);
-export const useInstallments = () => useStore((s) => s.installments);
-export const useInstallments2025 = () => useStore((s) => s.installments2025);
-export const useCustomTabs = () => useStore((s) => s.customTabs);
+export const useInstallments = (year?: "2025") =>
+  useStore((s) => (year === "2025" ? s.installments2025 : s.installments));
 export const useRevenue = () => useStore((s) => s.revenue);
 export const useOpeningBalance = () => useStore((s) => s.openingBalance);
