@@ -14,6 +14,8 @@ import { useReportDate } from "@/lib/reportDate";
 import { escapeHtml, reportLetterheadHtml, runningLetterheadCss } from "@/lib/printTableHtml";
 import { printReportHtml } from "@/lib/nativePrinter";
 import WebActionMenu, { type WebActionItem } from "./WebActionMenu";
+import { useStore } from "@/lib/store";
+import { buildPostedExpenses } from "@/lib/expenseMapping";
 
 // ====== نوع الصف ======
 type Row = {
@@ -304,10 +306,22 @@ export default function ExpensesTab() {
     saveStore(store);
   }, [store]);
 
+  const accounts = useStore((s) => s.accounts);
+  const { posted, unmatched } = useMemo(
+    () => buildPostedExpenses(accounts as any, year),
+    [accounts, year],
+  );
+
   const monthlyLeaves: Cell[][] = useMemo(
     () =>
-      MONTHS.map((_, m) => schema.rows.map((_, idx) => store[`${year}-${m}-${idx}`] || emptyCell)),
-    [store, year],
+      MONTHS.map((_, m) =>
+        schema.rows.map((_, idx) => {
+          const base = store[`${year}-${m}-${idx}`] || emptyCell;
+          const add = posted[`${m}-${idx}`] || 0;
+          return add ? { f: base.f, r: base.r + add } : base;
+        }),
+      ),
+    [store, year, posted],
   );
 
   const monthlyComputed: Cell[][] = useMemo(
