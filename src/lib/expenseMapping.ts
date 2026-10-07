@@ -1,7 +1,7 @@
 import schemaJson from "@/lib/expensesSchema.json";
 
 type Row = { n: string; lv: string };
-const rows = (schemaJson as { rows: Row[] }).rows;
+export const rows = (schemaJson as { rows: Row[] }).rows;
 
 export function normalizeArabic(s: string): string {
   return String(s ?? "")
@@ -18,7 +18,6 @@ const findRow = (name: string) => {
   return rows.findIndex((r) => r.lv === "type" && normalizeArabic(r.n) === n);
 };
 
-// [keywords, target row name] — longer/more specific first
 const RULES: [string[], string][] = [
   [["بدل امتحان", "بدل اختبار", "عمل اضافي", "اضافي"], "أجور العمل الإضافي"],
   [["بدل طبيعة عمل", "طبيعة عمل"], "بدل طبيعة العمل"],
@@ -26,7 +25,7 @@ const RULES: [string[], string][] = [
   [["بدل ريف"], "بدل ريف"],
   [["بدل مظهر"], "بدل مظهر"],
   [["بدل تحديث"], "بدل تحديث"],
-  [["مكافا", "مكافئ"], "المكافآت"],
+  [["مكافأة", "مكافا", "مكافئ", "مكافآت", "مكافئه"], "المكافآت"],
   [["اجور تعاقديه", "متعاقد"], "أجور تعاقدية ومؤقتة"],
   [["راتب", "رواتب", "مرتبات"], "المرتبات الأساسية"],
   [["مستلزمات طبيه", "ادويه", "دواء"], "أدوية ومستلزمات طبية ومواد أولية ومساندة"],
@@ -35,7 +34,7 @@ const RULES: [string[], string][] = [
   [["كهرباء", "اناره"], "إنــارة"],
   [["قرطاسيه", "ادوات مكتبيه", "ادوات كتابيه", "مطبوعات", "طباعه"], "أدوات كتابية ومكتبية وكتب ومطبوعات"],
   [["بريد", "اتصالات", "انترنت", "رصيد"], "البريد والاتصالات"],
-  [["ضيافه", "احتفال", "مؤتمر"], "مؤتمرات واحتفالات وضيافة"],
+  [["ضيافة", "احتفال", "مؤتمر"], "مؤتمرات واحتفالات وضيافة"],
   [["نظافه"], "نفقات النظافة"],
   [["ايجار"], "إيجار المباني"],
   [["تدريب"], "نفقات التدريب المحلي"],
@@ -52,7 +51,9 @@ export const FALLBACK_ROW = findRow("نفقات أخرى");
 
 export function mapDescriptionToRow(desc: string): { idx: number; matched: boolean } {
   const d = normalizeArabic(desc);
-  for (const r of COMPILED) if (r.kws.some((k) => d.includes(k))) return { idx: r.idx, matched: true };
+  for (const r of COMPILED) {
+    if (r.kws.some((k) => d.includes(k))) return { idx: r.idx, matched: true };
+  }
   return { idx: FALLBACK_ROW, matched: false };
 }
 
@@ -72,17 +73,25 @@ export function buildPostedExpenses(
 ): { posted: Record<string, number>; unmatched: UnmatchedEntry[] } {
   const posted: Record<string, number> = {};
   const unmatched: UnmatchedEntry[] = [];
+
   for (const a of accounts || []) {
     const amount = Number(a.expense) || 0;
     if (!amount) continue;
     if (String(a.description ?? "").includes("الرصيد الافتتاحي")) continue;
+
     const ym = parseYearMonth(a.date);
     if (!ym || ym.y !== year || ym.m < 0 || ym.m > 11) continue;
+
     const { idx, matched } = mapDescriptionToRow(a.description);
     if (idx < 0) continue;
+
     const key = `${ym.m}-${idx}`;
     posted[key] = (posted[key] || 0) + amount;
-    if (!matched) unmatched.push({ date: a.date, description: a.description, amount });
+
+    if (!matched) {
+      unmatched.push({ date: a.date, description: a.description, amount });
+    }
   }
+
   return { posted, unmatched };
 }
