@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Route all browser report printing through the shared Chrome preview utility; this keeps page settings and A4 containment consistent.
+- Current-account expenses post to the Expenses tab by description keywords, computed live from accounts (never stored); rules live in src/lib/expenseMapping.ts.
