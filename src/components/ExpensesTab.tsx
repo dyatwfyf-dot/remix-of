@@ -52,6 +52,11 @@ const QUARTERS = [
 const YEAR_DEFAULT = 2026;
 const STORAGE_KEY = "expenses-data-v1";
 
+const getMonthEndDate = (year: number, monthIndex: number) => {
+  const lastDay = new Date(year, monthIndex + 1, 0).getDate();
+  return `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+};
+
 type Cell = { f: number; r: number };
 type Store = Record<string, Cell>;
 const emptyCell: Cell = { f: 0, r: 0 };
@@ -301,6 +306,25 @@ export default function ExpensesTab() {
   }, [store]);
 
   // دمج المبالغ المدخلة يدوياً مع المبالغ المرحلة تلقائياً من الحساب الجاري
+  useEffect(() => {
+    const syncExpenseToAccount = useStore.getState().syncExpenseToAccount;
+
+    MONTHS.forEach((_, monthIndex) => {
+      schema.rows.forEach((row, rowIndex) => {
+        if (!isLeaf(row)) return;
+        const cell = store[`${year}-${monthIndex}-${rowIndex}`] || emptyCell;
+        const amount = (Number(cell.r) || 0) + (Number(cell.f) || 0) / 100;
+
+        syncExpenseToAccount({
+          sourceExpenseId: `expense-${year}-${monthIndex}-${rowIndex}`,
+          date: getMonthEndDate(year, monthIndex),
+          description: `${row.n} - ${MONTHS[monthIndex]}`,
+          amount,
+        });
+      });
+    });
+  }, [store, year]);
+
   const monthlyLeaves: Cell[][] = useMemo(
     () =>
       MONTHS.map((_, m) =>

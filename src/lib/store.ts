@@ -78,6 +78,7 @@ export type Account = {
   income: number;
   expense: number;
   sourceHafizaId?: string;
+  sourceExpenseId?: string;
   revenueKey?: string;
   expenseIndex?: number; // فهرس البند في دليل المصروفات
 };
@@ -178,6 +179,12 @@ type State = {
   getInstallmentByIndex: (index: number, year?: "2025") => Installment | undefined;
 
   syncHafizaToAccount: (hafiza: Hafiza) => void;
+  syncExpenseToAccount: (expense: {
+    sourceExpenseId: string;
+    date: string;
+    description: string;
+    amount: number;
+  }) => void;
 };
 
 // ==========================================
@@ -347,6 +354,70 @@ export const useStore = create<State>()(
             });
           }
         }
+      },
+
+      syncExpenseToAccount: (expense) => {
+        const amount = Number(expense.amount) || 0;
+        const existingAccount = get().accounts.find(
+          (account) => account.sourceExpenseId === expense.sourceExpenseId,
+        );
+
+        if (amount <= 0) {
+          if (!existingAccount) return;
+          set((state) => {
+            const updatedAccounts = state.accounts.filter(
+              (account) => account.id !== existingAccount.id,
+            );
+            return { accounts: updatedAccounts, revenue: recalculateRevenueMap(updatedAccounts) };
+          });
+          return;
+        }
+
+        const mappedData = {
+          sourceExpenseId: expense.sourceExpenseId,
+          date: expense.date,
+          description: expense.description,
+          hafizaNo: "",
+          notifyNo: "",
+          notifyDate: "",
+          checkNo: "",
+          checkDate: "",
+          specialty: "",
+          name: "",
+          hafizaAmount: 0,
+          income: 0,
+          expense: amount,
+          revenueKey: undefined,
+        };
+
+        if (!existingAccount) {
+          const newAccount: Account = { id: uid(), ...mappedData };
+          set((state) => {
+            const updatedAccounts = [...state.accounts, newAccount];
+            return { accounts: updatedAccounts, revenue: recalculateRevenueMap(updatedAccounts) };
+          });
+          return;
+        }
+
+        const hasDiff =
+          existingAccount.date !== mappedData.date ||
+          existingAccount.description !== mappedData.description ||
+          existingAccount.expense !== mappedData.expense;
+        if (!hasDiff) return;
+
+        set((state) => {
+          const updatedAccounts = state.accounts.map((account) =>
+            account.id === existingAccount.id
+              ? {
+                  ...account,
+                  ...mappedData,
+                  checkNo: account.checkNo,
+                  checkDate: account.checkDate,
+                }
+              : account,
+          );
+          return { accounts: updatedAccounts, revenue: recalculateRevenueMap(updatedAccounts) };
+        });
       },
 
       addTrainee: (t) => set((s) => ({ trainees: [...s.trainees, t] })),
