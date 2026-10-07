@@ -36,7 +36,7 @@ import PrintSettingsModal, {
 import { openPrintDocument } from "@/lib/printDocument";
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import { useReportDate } from "@/lib/reportDate";
-import { reportLetterheadHtml, REPORT_LETTERHEAD_SRC } from "@/lib/printTableHtml";
+import { reportLetterheadHtml } from "@/lib/printTableHtml";
 import { saveBlobToInternalStorage } from "@/lib/nativeFileStorage";
 import {
   addReportHeader,
