@@ -52,11 +52,6 @@ const QUARTERS = [
 const YEAR_DEFAULT = 2026;
 const STORAGE_KEY = "expenses-data-v1";
 
-const getMonthEndDate = (year: number, monthIndex: number) => {
-  const lastDay = new Date(year, monthIndex + 1, 0).getDate();
-  return `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
-};
-
 type Cell = { f: number; r: number };
 type Store = Record<string, Cell>;
 const emptyCell: Cell = { f: 0, r: 0 };
@@ -73,6 +68,45 @@ function saveStore(s: Store) {
 }
 
 const isLeaf = (r: Row) => r.lv === "type";
+
+const normalizeExpenseText = (value: string) =>
+  value
+    .trim()
+    .toLowerCase()
+    .replace(/[أإآ]/g, "ا")
+    .replace(/ة/g, "ه")
+    .replace(/[ًٌٍَُِّْـ]/g, "")
+    .replace(/[\s_-]+/g, "");
+
+const getExpenseCodes = () => {
+  let bab = "";
+  let fasl = "";
+  let band = "";
+
+  return schema.rows.map((row) => {
+    if (row.b !== "") bab = String(row.b);
+    if (row.c !== "") fasl = String(row.c);
+    if (row.d !== "") band = String(row.d);
+    if (!isLeaf(row)) return "";
+    return [bab, fasl, band, row.e].filter((part) => part !== "").join(".");
+  });
+};
+
+const EXPENSE_CODES = getExpenseCodes();
+
+const findExpenseRow = (description: string) => {
+  const value = normalizeExpenseText(description);
+  if (!value) return -1;
+
+  const codeIndex = EXPENSE_CODES.findIndex(
+    (code) => code && (value === normalizeExpenseText(code) || value.includes(normalizeExpenseText(code))),
+  );
+  if (codeIndex >= 0) return codeIndex;
+
+  return schema.rows.findIndex(
+    (row) => isLeaf(row) && value.includes(normalizeExpenseText(row.n)),
+  );
+};
 
 function htmlTableToMatrix(table: HTMLTableElement): string[][] {
   const grid: string[][] = [];
@@ -302,6 +336,7 @@ const TD = ({
 // ============================================================
 export default function ExpensesTab() {
   const [store, setStore] = useState<Store>(() => loadStore());
+  const accounts = useStore((state) => state.accounts);
   const { reportDate, reportDateLabel } = useReportDate();
   const [year] = useState<number>(YEAR_DEFAULT);
   const [view, setView] = useState<string>("cover");
@@ -310,29 +345,37 @@ export default function ExpensesTab() {
     saveStore(store);
   }, [store]);
 
-  useEffect(() => {
-    const syncExpenseToAccount = useStore.getState().syncExpenseToAccount;
-
-    MONTHS.forEach((_, monthIndex) => {
-      schema.rows.forEach((row, rowIndex) => {
-        if (!isLeaf(row)) return;
-        const cell = store[`${year}-${monthIndex}-${rowIndex}`] || emptyCell;
-        const amount = (Number(cell.r) || 0) + (Number(cell.f) || 0) / 100;
-
-        syncExpenseToAccount({
-          sourceExpenseId: `expense-${year}-${monthIndex}-${rowIndex}`,
-          date: getMonthEndDate(year, monthIndex),
-          description: `${row.n} - ${MONTHS[monthIndex]}`,
-          amount,
-        });
-      });
-    });
-  }, [store, year]);
-
   const monthlyLeaves: Cell[][] = useMemo(
-    () =>
-      MONTHS.map((_, m) => schema.rows.map((_, idx) => store[`${year}-${m}-${idx}`] || emptyCell)),
-    [store, year],
+    () => {
+      const linkedAmounts = new Map<string, number>();
+
+      accounts.forEach((account) => {
+        if (account.sourceExpenseId || Number(account.expense) <= 0) return;
+        const rowIndex = findExpenseRow(account.description);
+        if (rowIndex < 0) return;
+
+        const date = new Date(account.date);
+        const accountYear = date.getFullYear();
+        const monthIndex = date.getMonth();
+        if (accountYear !== year || monthIndex < 0 || monthIndex >= MONTHS.length) return;
+
+        const key = `${monthIndex}-${rowIndex}`;
+        linkedAmounts.set(key, (linkedAmounts.get(key) || 0) + Number(account.expense));
+      });
+
+      return MONTHS.map((_, monthIndex) =>
+        schema.rows.map((_, rowIndex) => {
+          const manual = store[`${year}-${monthIndex}-${rowIndex}`] || emptyCell;
+          const amount =
+            (Number(manual.r) || 0) +
+            (Number(manual.f) || 0) / 100 +
+            (linkedAmounts.get(`${monthIndex}-${rowIndex}`) || 0);
+          const r = Math.floor(amount);
+          return { r, f: Math.round((amount - r) * 100) };
+        }),
+      );
+    },
+    [store, year, accounts],
   );
 
   const monthlyComputed: Cell[][] = useMemo(

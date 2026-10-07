@@ -30,6 +30,7 @@ import {
 import TabActions from "./TabActions";
 import WebActionMenu, { type WebActionItem } from "./WebActionMenu";
 import schema from "@/data/revenueTemplate.json";
+import expensesSchemaJson from "@/lib/expensesSchema.json";
 
 /* ============================================================
    الحساب الجاري — لوحة ألوان مخصصة وحجم عناصر مناسب للهواتف
@@ -74,6 +75,27 @@ const COLS = [
   { key: "revenueKey", label: "رمز الإيراد" },
   { key: "balance", label: "الرصيد" },
 ];
+
+const EXPENSE_ITEM_NAMES = (expensesSchemaJson as { rows: { n: string; lv: string }[] }).rows
+  .filter((row) => row.lv === "type")
+  .map((row) => row.n);
+
+const EXPENSE_ITEM_OPTIONS = (() => {
+  const rows = (expensesSchemaJson as {
+    rows: { n: string; b: number | ""; c: number | ""; d: number | ""; e: number | ""; lv: string }[];
+  }).rows;
+  let bab = "";
+  let fasl = "";
+  let band = "";
+  return rows.flatMap((row) => {
+    if (row.b !== "") bab = String(row.b);
+    if (row.c !== "") fasl = String(row.c);
+    if (row.d !== "") band = String(row.d);
+    if (row.lv !== "type") return [];
+    const code = [bab, fasl, band, row.e].filter((part) => part !== "").join(".");
+    return [`${code} | ${row.n}`];
+  });
+})();
 
 type FormType = {
   date: string;
@@ -946,13 +968,18 @@ className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border-b"
             list="account-descriptions"
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
-            placeholder="اكتب أو اختر البيان..."
+            placeholder="اكتب اسم أو رقم بند المصروف..."
             className="w-full pr-9 pl-3 py-2 text-[16px] border border-black rounded-xl outline-none shadow-sm bg-[#f5f5dc] text-[#ffffff] font-bold focus:border-[#c5a059]"
           />
         </div>
         <datalist id="account-descriptions">
           {Array.from(
-            new Set([...DESCRIPTIONS, ...accounts.map((a) => a.description).filter(Boolean)]),
+            new Set([
+              ...DESCRIPTIONS,
+              ...EXPENSE_ITEM_NAMES,
+              ...EXPENSE_ITEM_OPTIONS,
+              ...accounts.map((a) => a.description).filter(Boolean),
+            ]),
           ).map((d) => (
             <option key={d} value={d} />
           ))}

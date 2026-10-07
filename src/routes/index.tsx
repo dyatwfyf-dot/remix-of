@@ -12,6 +12,7 @@ import {
   TrendingUp,
   ReceiptText,
   DownloadCloud,
+  BarChart3,
 } from "lucide-react";
 
 // تحميل ملفات التبويبات عند فتحها فقط لتقليل حجم التشغيل الأول.
@@ -22,6 +23,7 @@ const InstallmentsTab = lazy(() => import("@/components/InstallmentsTab"));
 const MonthlyStatementTab = lazy(() => import("@/components/MonthlyStatementTab"));
 const RevenueTab = lazy(() => import("@/components/RevenueTab"));
 const ExpensesTab = lazy(() => import("@/components/ExpensesTab"));
+const ReportsTab = lazy(() => import("@/components/ReportsTab"));
 const AppTabs = lazy(() => import("@/components/AppTabs"));
 
 // استيراد وظائف الـ PWA
@@ -64,6 +66,7 @@ type Tab =
   | "monthly"
   | "revenue"
   | "expenses-table"
+  | "reports"
   | "general-expenses-ledger";
 
 type TabItem = {
@@ -125,6 +128,13 @@ const tabs: TabItem[] = [
     label: "المصروفات",
     shortLabel: "مصروفات",
     icon: <ReceiptText className="w-5 h-5 sm:w-6 sm:h-6" />,
+    activeClass: ACTIVE_TAB_CLASS,
+  },
+  {
+    value: "reports",
+    label: "التقارير",
+    shortLabel: "تقارير",
+    icon: <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6" />,
     activeClass: ACTIVE_TAB_CLASS,
   },
   {
@@ -296,6 +306,7 @@ function Index() {
           {activeTab === "monthly" && <MonthlyStatementTab />}
           {activeTab === "revenue" && <RevenueTab />}
           {activeTab === "expenses-table" && <ExpensesTab />}
+          {activeTab === "reports" && <ReportsTab />}
           {activeTab === "general-expenses-ledger" && <AppTabs />}
         </Suspense>
       </div>
