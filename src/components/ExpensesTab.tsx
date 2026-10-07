@@ -176,6 +176,7 @@ function computeBabTotals(cur: Cell[], prev: Cell[]): BabTotal[] {
   const labels: Record<number, string> = {
     1: "جملة الباب الأول : أجور وتعويضات العاملين",
     2: "جملة الباب الثاني : نفقات على السلع والخدمات والممتلكات",
+    // يمكن إضافة مسميات أبواب أخرى هنا إن وجدت
   };
   const result: BabTotal[] = [];
   let gc: Cell = emptyCell,
@@ -203,9 +204,10 @@ function computeBabTotals(cur: Cell[], prev: Cell[]): BabTotal[] {
   return result;
 }
 
-// ===== ألوان الصفوف =====
+// ===== ألوان الصفوف (محدثة لدعم ألوان مختلفة لكل باب) =====
 const rowClass = (r: Row) => {
   if (r.lv === "bab") {
+    // إعطاء كل باب لوناً مميزاً بناءً على رقم الباب
     switch (r.b) {
       case 1:
         return "bg-emerald-200 text-emerald-900 font-bold bab-1";
@@ -236,6 +238,7 @@ const rowClass = (r: Row) => {
   }
 };
 
+// الدالة المساعدة لملخصات الأبواب لتطبيق نفس الألوان
 const getBabSummaryColor = (bn: number | null) => {
   if (bn === null) return "bg-sky-700 text-white font-bold";
   switch (bn) {
@@ -250,6 +253,7 @@ const getBabSummaryColor = (bn: number | null) => {
 
 const fmt = (n: number) => (n === 0 ? "0" : n.toLocaleString("en-US"));
 
+// ===== ثوابت ألوان الأعمدة =====
 const CUR_H = "bg-amber-300 text-amber-900"; 
 const CUR_C = "bg-sky-50"; 
 const PREV_H = "bg-sky-300 text-sky-900"; 
@@ -257,6 +261,7 @@ const PREV_C = "bg-sky-50";
 const TOT_H = "bg-emerald-200 text-black-900"; 
 const TOT_C = "bg-emerald-50"; 
 
+// ===== خلية رأس موحدة =====
 const TH = ({
   children,
   cls = "",
@@ -277,6 +282,7 @@ const TH = ({
   </th>
 );
 
+// ===== خلية بيانات موحدة =====
 const TD = ({
   children,
   cls = "",
@@ -296,7 +302,6 @@ const TD = ({
 // ============================================================
 export default function ExpensesTab() {
   const [store, setStore] = useState<Store>(() => loadStore());
-  const accounts = useStore((s) => s.accounts); // قراءة الحركات من الحساب الجاري
   const { reportDate, reportDateLabel } = useReportDate();
   const [year] = useState<number>(YEAR_DEFAULT);
   const [view, setView] = useState<string>("cover");
@@ -305,7 +310,6 @@ export default function ExpensesTab() {
     saveStore(store);
   }, [store]);
 
-  // دمج المبالغ المدخلة يدوياً مع المبالغ المرحلة تلقائياً من الحساب الجاري
   useEffect(() => {
     const syncExpenseToAccount = useStore.getState().syncExpenseToAccount;
 
@@ -327,39 +331,8 @@ export default function ExpensesTab() {
 
   const monthlyLeaves: Cell[][] = useMemo(
     () =>
-      MONTHS.map((_, m) =>
-        schema.rows.map((_, idx) => {
-          const manual = store[`${year}-${m}-${idx}`] || emptyCell;
-          let autoR = 0;
-          let autoF = 0;
-
-          accounts.forEach((acc) => {
-            if (acc.expenseIndex === idx && Number(acc.expense) > 0) {
-              const dateStr = acc.checkDate || acc.notifyDate || acc.date;
-              const d = new Date(dateStr);
-              const accYear = isNaN(d.getFullYear()) ? 2026 : d.getFullYear();
-              const accMonth = isNaN(d.getMonth()) ? 0 : d.getMonth();
-
-              if (accYear === year && accMonth === m) {
-                const val = Number(acc.expense);
-                const r = Math.floor(val);
-                const f = Math.round((val - r) * 100);
-                autoR += r;
-                autoF += f;
-              }
-            }
-          });
-
-          const totalF = manual.f + autoF;
-          const totalR = manual.r + autoR + Math.floor(totalF / 100);
-
-          return {
-            f: totalF % 100,
-            r: totalR,
-          };
-        }),
-      ),
-    [store, year, accounts],
+      MONTHS.map((_, m) => schema.rows.map((_, idx) => store[`${year}-${m}-${idx}`] || emptyCell)),
+    [store, year],
   );
 
   const monthlyComputed: Cell[][] = useMemo(
@@ -432,17 +405,24 @@ export default function ExpensesTab() {
               </tr>
             </thead>
             <tbody>
-              {totals.map((t, i) => (
-                <tr key={i} className={getBabSummaryColor(t.babNum)}>
-                  <TD right cls="font-bold text-right pr-3">{t.label}</TD>
-                  <TD cls="text-center">{t.cur.f || "-"}</TD>
-                  <TD cls="text-center">{fmt(t.cur.r)}</TD>
-                  <TD cls="text-center">{t.prev.f || "-"}</TD>
-                  <TD cls="text-center">{fmt(t.prev.r)}</TD>
-                  <TD cls="text-center font-bold">{t.total.f || "-"}</TD>
-                  <TD cls="text-center font-bold">{fmt(t.total.r)}</TD>
-                </tr>
-              ))}
+              {totals.map((t, i) => {
+                const isGrand = t.babNum === null;
+                const baseClass = getBabSummaryColor(t.babNum);
+                return (
+                  <tr key={i} className={baseClass}>
+                    {/* تم تعديل التنسيق هنا لاحتواء النص تلقائياً والتوسيط */}
+                    <td className="border border-black text-center align-middle whitespace-normal break-words font-semibold px-2 py-1 text-xs sm:text-sm">
+                      {t.label}
+                    </td>
+                    <TD cls={isGrand ? "" : CUR_C}>{fmt(t.cur.f)}</TD>
+                    <TD cls={isGrand ? "" : CUR_C}>{fmt(t.cur.r)}</TD>
+                    <TD cls={isGrand ? "" : PREV_C}>{fmt(t.prev.f)}</TD>
+                    <TD cls={isGrand ? "" : PREV_C}>{fmt(t.prev.r)}</TD>
+                    <TD cls={isGrand ? "" : TOT_C}>{fmt(t.total.f)}</TD>
+                    <TD cls={isGrand ? "" : TOT_C}>{fmt(t.total.r)}</TD>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -450,232 +430,570 @@ export default function ExpensesTab() {
     );
   };
 
-  // ========= تصدير إلى Excel =========
-  const handleExportExcel = async () => {
-    try {
-      const activeTable = document.querySelector(".expenses-active-table table") as HTMLTableElement | null;
-      if (!activeTable) {
-        toast.error("لم يتم العثور على جدول التقرير النشط للتصدير");
-        return;
-      }
-      const rawMatrix = htmlTableToMatrix(activeTable);
-      if (!rawMatrix.length) {
-        toast.error("جدول التقرير فارغ");
-        return;
-      }
+  // ========= الغلاف =========
+  const renderCover = () => (
+    <div
+      className="mx-4 my-6 w-auto max-w-none rounded-[2rem] border-[3px] border-sky-700 bg-white px-5 py-10 text-center shadow-sm sm:mx-auto sm:max-w-2xl sm:px-12 sm:py-12"
+      dir="rtl"
+    >
+      {/* الترويسة العلوية */}
+      <div className="space-y-1">
+        <h3 className="text-[2rem] font-extrabold leading-[1.35] tracking-wide text-sky-800 sm:text-3xl">
+          الجمهورية اليمنية
+        </h3>
+        <h4 className="text-[1.65rem] font-bold leading-[1.45] text-sky-700 sm:text-2xl">
+          وزارة المالية
+        </h4>
+      </div>
 
-      const reportTitle = "كشف الاستخدامات (المصروفات)";
-      const reportPeriod = `للعام المالي ${year}م — ${reportDateLabel || reportDate}`;
-      const headerRows = addReportHeader({
-        title: reportTitle,
-        period: reportPeriod,
-        colSpan: Math.max(1, rawMatrix[0]?.length || 1),
-      });
+      {/* الخط الفاصل الأول */}
+      <hr className="mx-auto my-8 w-[88%] border-t-[3px] border-sky-700 opacity-90" />
 
-      const matrixWithHeader = [...headerRows, ...rawMatrix];
-      const workbook = createExcelWorkbook();
-      const worksheet = appendRows(workbook, matrixWithHeader, "الاستخدامات");
-      const palette = getExcelPalette("emerald");
-      const letterhead = await loadReportLetterhead();
+      {/* العنوان الرئيسي */}
+      <div className="my-9 space-y-3 sm:my-10 sm:space-y-4">
+        <h1 className="text-[3.15rem] font-black leading-[1.18] tracking-tight text-sky-800 sm:text-[4rem]">
+          كشف الحساب
+          <br />
+          الشهري
+        </h1>
+        <p className="mt-5 text-[1.45rem] font-semibold leading-[1.5] text-slate-700 sm:mt-6 sm:text-2xl">
+          عن العام المالي <span className="font-bold text-sky-700">{year}م</span>
+        </p>
+      </div>
 
-      formatWorksheet(worksheet, {
-        palette,
-        titleRows: headerRows.length,
-        headerRows: 2,
-        letterhead,
-      });
+      {/* الخط الفاصل الثاني */}
+      <hr className="mx-auto my-8 w-[88%] border-t-[3px] border-sky-700 opacity-90" />
 
-      await downloadWorkbook(workbook, `الاستخدامات_${year}.xlsx`);
-      toast.success("تم تصدير ملف الإكسل بنجاح");
-    } catch (e: any) {
-      console.error(e);
-      toast.error("حدث خطأ أثناء تصدير ملف الإكسل");
-    }
-  };
+      {/* بيانات الجهة */}
+      <div className="flex flex-col items-center">
+        <div className="w-full max-w-md space-y-4 text-right text-[1.25rem] font-medium leading-[1.7] text-slate-700 sm:space-y-5 sm:text-xl">
+          <p className="flex items-center justify-end gap-3">
+            <span className="w-20 shrink-0 text-slate-600">المحافظة</span>
+            <span className="font-extrabold text-slate-900">: صعـــدة</span>
+          </p>
+          <p className="flex items-center justify-end gap-3">
+            <span className="w-20 shrink-0 text-slate-600">المديرية</span>
+            <span className="font-extrabold text-slate-900">: مركز المحافظة</span>
+          </p>
+          <p className="flex items-center justify-end gap-3">
+            <span className="w-20 shrink-0 text-slate-600">المكتب</span>
+            <span className="font-extrabold text-slate-900 text-[1.1rem] sm:text-xl">: المجلس الطبي فرع صعدة</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 
-  // ========= طباعة التقرير =========
-  const handlePrint = async () => {
-    try {
-      const activeContainer = document.querySelector(".expenses-active-table");
-      if (!activeContainer) {
-        toast.error("لم يتم العثور على التقرير للطباعة");
-        return;
-      }
-
-      const letterhead = await reportLetterheadHtml();
-      const css = `
-        ${runningLetterheadCss}
-        @page { size: A4 landscape; margin: 8mm; }
-        body { font-family: 'Amiri', 'Traditional Arabic', serif; direction: rtl; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
-        th, td { border: 1px solid #000; padding: 3px; text-align: center; }
-        th { background-color: #f1f5f9; -webkit-print-color-adjust: exact; }
-        .bab-1 { background-color: #a7f3d0 !important; -webkit-print-color-adjust: exact; }
-        .bab-2 { background-color: #bfdbfe !important; -webkit-print-color-adjust: exact; }
-      `;
-
-      await printReportHtml({
-        title: `كشف الاستخدامات — ${year}م`,
-        html: `
-          <div dir="rtl">
-            ${letterhead}
-            <div style="text-align:center; font-weight:bold; font-size:16px; margin: 10px 0;">
-              كشف الاستخدامات (المصروفات) للعام المالي ${year}م
-            </div>
-            ${activeContainer.innerHTML}
-          </div>
-        `,
-        css,
-        orientation: "landscape",
-      });
-    } catch (e) {
-      console.error(e);
-      toast.error("حدث خطأ أثناء محاولة الطباعة");
-    }
-  };
-
-  // إجراءات القائمة الموحدة
-  const actionItems: WebActionItem[] = [
-    {
-      id: "print",
-      label: "طباعة التقرير النشط",
-      icon: "Printer",
-      colorClass: "bg-blue-600 hover:bg-blue-700 text-white",
-      onSelect: handlePrint,
-    },
-    {
-      id: "export-excel",
-      label: "تصدير إلى Excel",
-      icon: "FileSpreadsheet",
-      colorClass: "bg-emerald-600 hover:bg-emerald-700 text-white",
-      onSelect: handleExportExcel,
-    },
-  ];
-
-  // دالة عرض جدول الشهر
-  const renderMonthView = (mIdx: number) => {
-    const cur = monthlyComputed[mIdx];
-    const prevArr = monthlyLeaves.slice(0, mIdx);
-    const prev = computeAggregates(sumCells(prevArr));
+  // ========= الجدول الرئيسي =========
+  const renderSheet = (opts: {
+    title: string;
+    subtitle: string;
+    currentLabel: string;
+    previousLabel: string;
+    currentValues: Cell[];
+    previousValues: Cell[];
+    editable: boolean;
+    editMonthIdx?: number;
+  }) => {
+    const totalValues = schema.rows.map((_, idx) => {
+      let f = opts.currentValues[idx].f + opts.previousValues[idx].f;
+      let r = opts.currentValues[idx].r + opts.previousValues[idx].r;
+      r += Math.floor(f / 100);
+      f = f % 100;
+      return { f, r };
+    });
 
     return (
-      <div className="expenses-active-table overflow-x-auto">
-        <table className="w-full min-w-max table-auto border-collapse border border-black text-sm">
-          <thead>
-            <tr>
-              <TH colSpan={5} cls="bg-slate-200">الرمز والتبويب</TH>
-              <TH rowSpan={2} cls="bg-slate-200 w-1/4">البيان</TH>
-              <TH colSpan={2} cls={CUR_H}>{MONTHS[mIdx]}</TH>
-              <TH colSpan={2} cls={PREV_H}>ما قبله</TH>
-              <TH colSpan={2} cls={TOT_H}>الجملة</TH>
-            </tr>
-            <tr className="text-xs">
-              <TH cls="bg-slate-100">باب</TH>
-              <TH cls="bg-slate-100">فصل</TH>
-              <TH cls="bg-slate-100">بند</TH>
-              <TH cls="bg-slate-100">نوع</TH>
-              <TH cls="bg-slate-100">فرعي</TH>
-              <TH cls={CUR_H}>ف</TH><TH cls={CUR_H}>ريال</TH>
-              <TH cls={PREV_H}>ف</TH><TH cls={PREV_H}>ريال</TH>
-              <TH cls={TOT_H}>ف</TH><TH cls={TOT_H}>ريال</TH>
-            </tr>
-          </thead>
-          <tbody>
-            {schema.rows.map((r, rIdx) => {
-              const cCell = cur[rIdx];
-              const pCell = prev[rIdx];
-              const tot = addTwo(cCell, pCell);
-              const leaf = isLeaf(r);
-
-              return (
-                <tr key={rIdx} className={rowClass(r)}>
-                  <TD>{r.b || ""}</TD>
-                  <TD>{r.c || ""}</TD>
-                  <TD>{r.d || ""}</TD>
-                  <TD>{r.e || ""}</TD>
-                  <TD>{r.lv === "sub" ? "-" : ""}</TD>
-                  <TD right cls={r.lv === "header" || r.lv === "bab" ? "font-bold pr-2" : "pr-2"}>
-                    {r.n}
-                  </TD>
-                  {leaf ? (
-                    <>
-                      <td className="border border-black p-0 w-12 text-center bg-amber-50">
-                        <input
-                          type="number"
-                          value={cCell.f || ""}
-                          onChange={(e) => updateCell(mIdx, rIdx, "f", Number(e.target.value) || 0)}
-                          className="w-full text-center outline-none bg-transparent font-mono text-xs"
-                          placeholder="0"
-                        />
-                      </td>
-                      <td className="border border-black p-0 w-24 text-center bg-amber-50">
-                        <input
-                          type="number"
-                          value={cCell.r || ""}
-                          onChange={(e) => updateCell(mIdx, rIdx, "r", Number(e.target.value) || 0)}
-                          className="w-full text-center outline-none bg-transparent font-mono text-sm font-semibold"
-                          placeholder="0"
-                        />
-                      </td>
-                    </>
-                  ) : (
-                    <>
-                      <TD cls={CUR_C}>{cCell.f || "-"}</TD>
-                      <TD cls={CUR_C}>{fmt(cCell.r)}</TD>
-                    </>
-                  )}
-                  <TD cls={PREV_C}>{pCell.f || "-"}</TD>
-                  <TD cls={PREV_C}>{fmt(pCell.r)}</TD>
-                  <TD cls={TOT_C}>{tot.f || "-"}</TD>
-                  <TD cls={TOT_C + " font-bold"}>{fmt(tot.r)}</TD>
+      <div className="space-y-0" dir="rtl">
+        <div className="w-full max-w-full overflow-hidden rounded-lg border border-black bg-white shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[720px] table-auto border-collapse text-sm sm:text-base">
+              <thead className="sticky top-0 z-10 font-bold text-xs">
+                <tr>
+                  {/* تغيير تنسيق الرأس ليكون متوسط النص بدلاً من المحاذاة لليمين فقط */}
+                  <TH rowSpan={2} cls="bg-slate-200 text-slate-800 text-center w-1/3">
+                    بيان مفردات الاستخدامات
+                  </TH>
+                  <TH rowSpan={2} cls="bg-slate-200 text-slate-800">الباب</TH>
+                  <TH rowSpan={2} cls="bg-slate-200 text-slate-800">الفصل</TH>
+                  <TH rowSpan={2} cls="bg-slate-200 text-slate-800">البند</TH>
+                  <TH rowSpan={2} cls="bg-slate-200 text-slate-800">النوع</TH>
+                  <TH colSpan={2} cls={CUR_H}>{opts.currentLabel}</TH>
+                  <TH colSpan={2} cls={PREV_H}>{opts.previousLabel}</TH>
+                  <TH colSpan={2} cls={TOT_H}>الجملة</TH>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                <tr className="text-[11px]">
+                  <TH cls={CUR_H}>ف</TH> <TH cls={CUR_H}>ريال</TH>
+                  <TH cls={PREV_H}>ف</TH> <TH cls={PREV_H}>ريال</TH>
+                  <TH cls={TOT_H}>ف</TH> <TH cls={TOT_H}>ريال</TH>
+                </tr>
+              </thead>
+              <tbody>
+                {schema.rows.map((r, idx) => {
+                  const cur = opts.currentValues[idx];
+                  const prev = opts.previousValues[idx];
+                  const tot = totalValues[idx];
+                  const editable = opts.editable && isLeaf(r) && opts.editMonthIdx !== undefined;
+                  return (
+                    <tr key={idx} className={rowClass(r)}>
+                      {/* تفعيل التفاف النص (break-words whitespace-normal) والتوسيط (text-center align-middle) */}
+                      <td className="border border-black text-center align-middle numeric-cell whitespace-nowrap px-2 py-1 text-[10px] sm:text-xs">
+                        {r.n}
+                      </td>
+                      <TD>{r.b || ""}</TD>
+                      <TD>{r.c || ""}</TD>
+                      <TD>{r.d || ""}</TD>
+                      <TD>{r.e || ""}</TD>
+                      {editable ? (
+                        <>
+                          <td className={`border border-black p-0.5 align-middle text-center numeric-cell whitespace-nowrap ${CUR_C}`}>
+                            <input
+                              type="number"
+                              min={0}
+                              value={cur.f || ""}
+                              onChange={(e) =>
+                                updateCell(opts.editMonthIdx!, idx, "f", Number(e.target.value) || 0)
+                              }
+                              className="w-14 text-center text-sm sm:text-base px-1 py-0.5 outline-none bg-transparent focus:ring-1 focus:ring-amber-500 rounded mx-auto"
+                            />
+                          </td>
+                          <td className={`border border-black p-0.5 align-middle text-center numeric-cell whitespace-nowrap ${CUR_C}`}>
+                            <input
+                              type="number"
+                              min={0}
+                              value={cur.r || ""}
+                              onChange={(e) =>
+                                updateCell(opts.editMonthIdx!, idx, "r", Number(e.target.value) || 0)
+                              }
+                              className="w-24 text-center text-sm sm:text-base px-1 py-0.5 outline-none bg-transparent focus:ring-1 focus:ring-amber-500 rounded mx-auto"
+                            />
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <TD cls={CUR_C}>{fmt(cur.f)}</TD>
+                          <TD cls={CUR_C}>{fmt(cur.r)}</TD>
+                        </>
+                      )}
+                      <TD cls={PREV_C}>{fmt(prev.f)}</TD>
+                      <TD cls={PREV_C}>{fmt(prev.r)}</TD>
+                      <TD cls={`${TOT_C} font-semibold`}>{fmt(tot.f)}</TD>
+                      <TD cls={`${TOT_C} font-semibold`}>{fmt(tot.r)}</TD>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-        {renderBabSummary(cur, prev, MONTHS[mIdx], "ما قبله")}
+        {renderBabSummary(
+          opts.currentValues,
+          opts.previousValues,
+          opts.currentLabel,
+          opts.previousLabel,
+        )}
       </div>
     );
   };
 
-  return (
-    <div className="p-4 space-y-4" dir="rtl">
-      {/* شريط الإجراءات والتحكم */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-slate-700">عرض التقرير:</span>
-          <select
-            value={view}
-            onChange={(e) => setView(e.target.value)}
-            className="px-3 py-1.5 border border-slate-300 rounded-lg text-sm font-bold bg-slate-50 outline-none"
-          >
-            <option value="cover">الغلاف والمعلومات العامة</option>
-            {MONTHS.map((m, idx) => (
-              <option key={idx} value={`m-${idx}`}>
-                شهر {m}
-              </option>
-            ))}
-          </select>
-        </div>
+  const renderMonth = (m: number) =>
+    renderSheet({
+      title: "كشف المصروفات الشهري",
+      subtitle: `عن شهر ${MONTHS[m]} من العام المالي ${year}م`,
+      currentLabel: "الشهر الجاري",
+      previousLabel: "الأشهر السابقة",
+      currentValues: monthlyComputed[m],
+      previousValues: sumCells(monthlyComputed.slice(0, m)),
+      editable: true,
+      editMonthIdx: m,
+    });
 
-        <WebActionMenu items={actionItems} />
-      </div>
+  const renderQuarter = (qIdx: number) => {
+    const q = QUARTERS[qIdx];
+    const prevMonths: number[] = [];
+    for (let p = 0; p < qIdx; p++) prevMonths.push(...QUARTERS[p].months);
+    return renderSheet({
+      title: "كشف حساب المدة",
+      subtitle: `${q.label} من العام المالي ${year}م`,
+      currentLabel: q.label,
+      previousLabel: "المدد السابقة",
+      currentValues: sumCells(q.months.map((mi) => monthlyComputed[mi])),
+      previousValues: sumCells(prevMonths.map((mi) => monthlyComputed[mi])),
+      editable: false,
+    });
+  };
 
-      {/* محتوى التقرير */}
-      {view === "cover" ? (
-        <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm text-center space-y-4">
-          <h2 className="text-2xl font-black text-sky-900">
-            كشف الاستخدامات (المصروفات) الفعلية
-          </h2>
-          <p className="text-slate-600 font-bold">للعام المالي {year}م</p>
-          <div className="p-4 max-w-md mx-auto bg-sky-50 rounded-lg border border-sky-200 text-sm text-sky-800">
-            يتم احتساب ودمج المصروفات المسجلة في تبويب الحساب الجاري تلقائياً مع خيارات الإدخال اليدوي والتجميع المحاسبي للأبواب والفصول.
+  const renderFinal = () =>
+    renderSheet({
+      title: "كشف الحساب النهائي (الأخيرة)",
+      subtitle: `إجمالي العام المالي ${year}م`,
+      currentLabel: "إجمالي العام",
+      previousLabel: "—",
+      currentValues: sumCells(monthlyComputed),
+      previousValues: schema.rows.map(() => emptyCell),
+      editable: false,
+    });
+
+  // ========= كشف السنة =========
+  const renderYear = () => {
+    const cur = sumCells(monthlyComputed);
+    const monthBabTotals = MONTHS.map((_, mi) =>
+      computeBabTotals(monthlyComputed[mi], sumCells(monthlyComputed.slice(0, mi))),
+    );
+    const yearTotals = computeBabTotals(
+      cur,
+      schema.rows.map(() => emptyCell),
+    );
+
+    return (
+      <div className="space-y-4" dir="rtl">
+        <div className="rounded-xl border-2 border-black overflow-hidden shadow-sm">
+          <div className="bg-gradient-to-r from-[#123b52] via-[#1f5f7a] to-[#2e6b8a] text-white p-3 text-center">
+            <h3 className="text-base sm:text-lg font-bold">كشف حساب السنة</h3>
+            <p className="text-xs opacity-90">ملخص جميع الأشهر للعام {year}م</p>
+          </div>
+          <div className="overflow-auto max-h-[65vh]">
+            <table className="w-full min-w-max table-auto border-collapse text-sm sm:text-base">
+              <thead className="font-bold text-xs sticky top-0 z-20">
+                <tr>
+                  <TH cls="bg-slate-200 text-slate-800 text-center w-1/4">البيان</TH>
+                  {MONTHS.map((m) => (
+                    <TH key={m} cls="bg-slate-100 text-slate-800">
+                      {m}
+                    </TH>
+                  ))}
+                  <TH cls={TOT_H}>المجموع</TH>
+                </tr>
+              </thead>
+              <tbody>
+                {schema.rows.map((r, idx) => (
+                  <tr key={idx} className={rowClass(r)}>
+                    <td className="border border-black text-center align-middle whitespace-normal break-words px-2 py-1 text-[10px] sm:text-xs">
+                      {r.n}
+                    </td>
+                    {MONTHS.map((_, mi) => (
+                      <TD key={mi}>{fmt(monthlyComputed[mi][idx].r)}</TD>
+                    ))}
+                    <TD cls={`${TOT_C} font-bold`}>{fmt(cur[idx].r)}</TD>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-      ) : (
-        renderMonthView(Number(view.split("-")[1]))
-      )}
+
+        <div className="rounded-xl border-2 border-black overflow-hidden shadow-sm">
+          <div className="bg-sky-800 text-white p-3 text-center">
+            <h3 className="text-base font-bold">ملخص إجمالي الاستخدامات حسب الأبواب — شهرياً</h3>
+            <p className="text-xs opacity-80">المبالغ بالريال — الشهر الجاري فقط</p>
+          </div>
+          <div className="overflow-auto">
+            <table className="w-full min-w-max table-auto border-collapse text-sm sm:text-base">
+              <thead className="font-bold text-xs sticky top-0 z-10">
+                <tr>
+                  <TH cls="bg-slate-200 text-slate-800 text-center w-1/4">البيان</TH>
+                  {MONTHS.map((m) => (
+                    <TH key={m} cls={CUR_H}>
+                      {m}
+                    </TH>
+                  ))}
+                  <TH cls={TOT_H}>المجموع</TH>
+                </tr>
+              </thead>
+              <tbody>
+                {monthBabTotals[0].map((bt, btIdx) => {
+                  const isGrand = bt.babNum === null;
+                  const baseClass = getBabSummaryColor(bt.babNum);
+                  return (
+                    <tr key={btIdx} className={baseClass}>
+                      <td className="border border-black text-center align-middle whitespace-normal break-words px-2 py-1 text-[10px] sm:text-xs">
+                        {bt.label}
+                      </td>
+                      {MONTHS.map((_, mi) => (
+                        <TD key={mi} cls={isGrand ? "" : CUR_C}>
+                          {fmt(monthBabTotals[mi][btIdx].cur.r)}
+                        </TD>
+                      ))}
+                      <TD cls={isGrand ? "" : TOT_C}>{fmt(yearTotals[btIdx]?.cur.r ?? 0)}</TD>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const subTabs = [
+    { key: "cover", label: "الغلاف", group: "intro" },
+    ...MONTHS.map((m, i) => ({ key: `m${i}`, label: m, group: "month" })),
+    ...QUARTERS.map((q) => ({ key: q.key, label: q.label, group: "period" })),
+    { key: "final", label: "الأخيرة", group: "final" },
+    { key: "year", label: "كشف السنة", group: "year" },
+  ];
+  
+  const groupCls = (g: string) =>
+    g === "intro"
+      ? "bg-slate-700"
+      : g === "month"
+        ? "bg-sky-700"
+        : g === "period"
+          ? "bg-amber-600"
+          : g === "final"
+            ? "bg-rose-700"
+            : "bg-sky-700";
+
+  const triggerExpenseAction = (id: string) => {
+    (document.getElementById(id) as HTMLButtonElement | null)?.click();
+  };
+
+  const expenseWebActions: WebActionItem[] = [
+    { label: "طباعة التقرير", onSelect: () => triggerExpenseAction("expenses-print-action") },
+    { label: "تصدير Excel", onSelect: () => triggerExpenseAction("expenses-excel-action") },
+    {
+      label: "مسح بيانات المصروفات",
+      destructive: true,
+      onSelect: () => triggerExpenseAction("expenses-clear-action"),
+    },
+  ];
+
+  return (
+    <div className="sheet-tabs-ui space-y-3" dir="rtl">
+      {/* شريط التبويبات + أزرار */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="bg-slate-100 p-1.5 rounded-xl border border-slate-200 overflow-x-auto flex-1 min-w-0">
+          <div className="flex gap-1 w-max min-w-full">
+            {subTabs.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setView(t.key)}
+                className={`px-2.5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg transition-all whitespace-nowrap ${
+                  view === t.key
+                    ? `${groupCls(t.group)} text-white shadow-md`
+                    : "bg-white text-slate-700 hover:bg-slate-50 border border-slate-200"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="web-only-actions sm:w-auto">
+          <WebActionMenu label="إجراءات المصروفات" actions={expenseWebActions} />
+        </div>
+        <div className="apk-only-actions flex gap-2">
+          {/* زر الطباعة المحدّث مع دعم ألوان الأبواب والاحتواء التلقائي */}
+          <button
+            id="expenses-print-action"
+            onClick={() => {
+              const el = document.getElementById("expenses-view-content");
+              if (!el) return;
+              const html = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escapeHtml(`المصروفات - ${view} - ${reportDateLabel}`)}</title>
+                <style>
+                @page { size: A4 landscape; margin: 3mm; }
+                * { box-sizing: border-box; }
+                html, body { margin: 0; padding: 0; }
+                body { direction: rtl; background: #f1f5f9; color: #000; font-family: Cairo, Tajawal, Tahoma, Arial, sans-serif; font-weight: 700; }
+                .print-page { min-height: auto; width: 100%; margin: 0; padding: 0; border: 0; background: #fff; }
+                .report-letterhead-block { display: flex; width: 100%; max-width: none; height: 30mm; min-height: 30mm; max-height: 30mm; align-items: stretch; justify-content: center; margin: 0 0 3mm; page-break-before: avoid; page-break-after: avoid; }
+                .report-letterhead-image { display: block; width: 100%; max-width: none; height: 100%; max-height: 100%; object-fit: fill; object-position: center; margin: 0; }
+                ${runningLetterheadCss}
+                #expenses-report { width: 100%; }
+                #expenses-report > * { margin-bottom: 4mm; }
+                #expenses-report .overflow-x-auto, #expenses-report .overflow-auto { overflow: visible !important; }
+                #expenses-report .rounded-xl { border-radius: 9px; }
+                #expenses-report .border-2 { border-width: 2px; }
+                #expenses-report .border-black, #expenses-report .border { border-color: #000 !important; }
+                #expenses-report .shadow, #expenses-report .shadow-sm, #expenses-report .shadow-md { box-shadow: none !important; }
+                #expenses-report .bg-gradient-to-r { background: linear-gradient(90deg, #0f766e, #047857) !important; color: #fff !important; padding: 9px !important; text-align: center; }
+                #expenses-report .bg-sky-800 { background: #115e59 !important; color: #fff !important; padding: 8px !important; text-align: center; }
+                #expenses-report .bg-sky-700 { background: #0f766e !important; color: #fff !important; }
+                #expenses-report .bg-sky-100 { background: #fef3c7 !important; color: #78350f !important; }
+                #expenses-report .bg-sky-50 { background: #f0f9ff !important; color: #1e293b !important; }
+                #expenses-report .bg-slate-50 { background: #f8fafc !important; color: #000 !important; }
+                #expenses-report .bg-white { background: #fff !important; color: #000 !important; }
+                #expenses-report .bg-slate-200 { background: #e2e8f0 !important; color: #000 !important; }
+                #expenses-report .bg-amber-300 { background: #fcd34d !important; color: #78350f !important; }
+                #expenses-report .bg-sky-50 { background: #fffbeb !important; color: #000 !important; }
+                #expenses-report .bg-sky-300 { background: #7dd3fc !important; color: #0c4a6e !important; }
+                #expenses-report .bg-emerald-200 { background: #a7f3d0 !important; color: #064e3b !important; }
+                #expenses-report .bg-emerald-50 { background: #ecfdf5 !important; color: #000 !important; }
+                #expenses-report .bab-1 { background-color: #a7f3d0 !important; color: #064e3b !important; }
+                #expenses-report .bab-2 { background-color: #bfdbfe !important; color: #1e3a8a !important; }
+                #expenses-report .bab-3 { background-color: #f5d0fe !important; color: #701a75 !important; }
+                #expenses-report .bab-4 { background-color: #fed7aa !important; color: #7c2d12 !important; }
+                #expenses-report .bab-5 { background-color: #fecdd3 !important; color: #881337 !important; }
+                #expenses-report .bab-default { background-color: #d1fae5 !important; color: #064e3b !important; }
+                #expenses-report table { width: 100%; max-width: 100%; min-width: 0; table-layout: auto; border-collapse: collapse; font-size: 9px; }
+                #expenses-report th, #expenses-report td { border: 1px solid #000 !important; padding: 2px 3px !important; text-align: center !important; vertical-align: middle !important; white-space: normal !important; overflow: visible !important; overflow-wrap: break-word !important; word-break: normal !important; line-height: 1.2; color: #000 !important; font-weight: 700 !important; }
+                #expenses-report thead th { font-size: 9px; font-weight: 900 !important; }
+                #expenses-report tbody td { font-size: 8.5px; }
+                #expenses-report .numeric-cell, #expenses-report .date-cell, #expenses-report .font-mono, #expenses-report input[type="number"], #expenses-report input[type="date"] { width: 1% !important; min-width: 0 !important; white-space: nowrap !important; overflow: visible !important; overflow-wrap: normal !important; word-break: keep-all !important; font-family: 'Times New Roman', Times, serif !important; font-size: clamp(8px, 1vw, 11px) !important; font-variant-numeric: tabular-nums; direction: ltr; }
+                #expenses-report input { width: 100% !important; min-width: 0 !important; border: 0; background: transparent; color: #000; font: inherit; text-align: center; }
+                #expenses-report .text-white { color: #fff !important; }
+                @media print {
+                  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                  body { background: #fff; }
+                  .print-page { min-height: auto; width: 100%; padding: 0; border: 0; }
+                  #expenses-report { page-break-before: avoid; }
+                  #expenses-report table { page-break-inside: auto; }
+                  #expenses-report thead { display: table-header-group; }
+                  #expenses-report tr { page-break-inside: avoid; }
+                  #expenses-report th, #expenses-report td { white-space: normal !important; }
+                  #expenses-report .numeric-cell, #expenses-report .date-cell, #expenses-report .font-mono { white-space: nowrap !important; }
+                }
+                </style></head><body><div class="print-page">${reportLetterheadHtml()}<div id="expenses-report">${el.innerHTML}</div></div>
+                <script>window.onload=()=>setTimeout(()=>window.print(),300)</script></body></html>`;
+              const opened = printReportHtml(html, `المصروفات - ${view} - ${reportDateLabel}`);
+              if (!opened) toast.error("تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة");
+            }}
+            className="px-3 py-1.5 bg-white text-[#10528e] border border-[#10528e]/30 rounded-lg text-xs font-bold shadow-sm hover:bg-blue-50"
+          >
+            🖨️ طباعة
+          </button>
+          {/* ... باقي الأزرار دون تغيير ... */}
+          <button
+            id="expenses-excel-action"
+            onClick={async () => {
+              const el = document.getElementById("expenses-view-content");
+              if (!el) return;
+              const tables = Array.from(el.querySelectorAll("table")) as HTMLTableElement[];
+              if (!tables.length) {
+                toast.error("لا يوجد جدول للتصدير");
+                return;
+              }
+
+              try {
+                const workbook = await createExcelWorkbook();
+                const imageId = await loadReportLetterhead(workbook);
+                const tableMatrices = tables.map(htmlTableToMatrix);
+                const totalColumns = Math.max(
+                  1,
+                  ...tableMatrices.map((matrix) => matrix[0]?.length || 1),
+                );
+                const worksheet = workbook.addWorksheet("المصروفات", {
+                  views: [{ rightToLeft: true }],
+                });
+                const dataStartRow = addReportHeader(
+                  workbook,
+                  worksheet,
+                  {
+                    title: `المصروفات - ${view} - ${year}م`,
+                    reportDateLabel,
+                    recordCount: tableMatrices.reduce(
+                      (count, matrix) => count + Math.max(0, matrix.length - 2),
+                      0,
+                    ),
+                    totalColumns,
+                    palette: getExcelPalette("المصروفات"),
+                  },
+                  imageId,
+                );
+
+                let nextRow = dataStartRow;
+                let firstHeaderRow = dataStartRow;
+                tableMatrices.forEach((matrix, tableIndex) => {
+                  if (tableIndex > 0) nextRow += 1;
+                  const sectionRow = worksheet.getRow(nextRow);
+                  sectionRow.getCell(1).value =
+                    tableIndex === 0 ? `تفاصيل تقرير ${view}` : "ملخص إجمالي الاستخدامات حسب الأبواب";
+                  worksheet.mergeCells(nextRow, 1, nextRow, totalColumns);
+                  sectionRow.height = 22;
+                  sectionRow.getCell(1).font = {
+                    name: "Arial",
+                    size: 11,
+                    bold: true,
+                    color: { argb: "FF000000" },
+                  };
+                  sectionRow.getCell(1).alignment = {
+                    horizontal: "right",
+                    vertical: "middle",
+                    wrapText: true,
+                    shrinkToFit: true,
+                  };
+                  sectionRow.getCell(1).border = {
+                    top: { style: "thin", color: { argb: "FF000000" } },
+                    left: { style: "thin", color: { argb: "FF000000" } },
+                    bottom: { style: "thin", color: { argb: "FF000000" } },
+                    right: { style: "thin", color: { argb: "FF000000" } },
+                  };
+                  sectionRow.getCell(1).fill = {
+                    type: "pattern",
+                    pattern: "solid",
+                    fgColor: { argb: "FFE7E2D8" },
+                  };
+
+                  const headerRow = nextRow + 1;
+                  if (tableIndex === 0) firstHeaderRow = headerRow;
+                  appendRows(worksheet, matrix, headerRow);
+                  nextRow = headerRow + matrix.length;
+                });
+
+                formatWorksheet(worksheet, {
+                  headerRow: firstHeaderRow,
+                  palette: getExcelPalette("المصروفات"),
+                  maxColumnWidth: 32,
+                });
+                await downloadWorkbook(workbook, `المصروفات-${view}-${year}-${reportDate}.xlsx`);
+                toast.success("تم التصدير");
+              } catch (error) {
+                console.error("Expenses Excel export error:", error);
+                toast.error("تعذّر تصدير ملف Excel");
+              }
+            }}
+            className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700"
+          >
+            📊 Excel
+          </button>
+          <button
+            id="expenses-clear-action"
+            onClick={() => {
+              if (!confirm("هل أنت متأكد من مسح جميع بيانات المصروفات؟")) return;
+              setStore({});
+              localStorage.removeItem(STORAGE_KEY);
+              toast.success("تم مسح البيانات");
+            }}
+            className="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-rose-700"
+          >
+            🗑️ مسح
+          </button>
+        </div>
+      </div>
+
+      {/* محتوى التبويب */}
+      <div id="expenses-view-content">
+        {view === "cover" && renderCover()}
+        {view.startsWith("m") && view.length <= 3 && renderMonth(Number(view.slice(1)))}
+        {view.startsWith("p") && renderQuarter(Number(view.slice(1)) - 1)}
+        {view === "final" && renderFinal()}
+        {view === "year" && renderYear()}
+      </div>
+
+      {/* مفتاح الألوان */}
+      <div
+        className="flex flex-wrap gap-3 justify-center text-[10px] bg-slate-50 p-2 rounded-lg border border-slate-200"
+        dir="rtl"
+      >
+        <span className="flex items-center gap-1">
+          <span className={`inline-block w-4 h-4 rounded ${CUR_C} border border-black`}></span>{" "}
+          الشهر / المدة الجارية
+        </span>
+        <span className="flex items-center gap-1">
+          <span className={`inline-block w-4 h-4 rounded ${PREV_C} border border-black`}></span>{" "}
+          الأشهر / المدد السابقة
+        </span>
+        <span className="flex items-center gap-1">
+          <span className={`inline-block w-4 h-4 rounded ${TOT_C} border border-black`}></span>{" "}
+          الجملة
+        </span>
+        <span className="text-slate-400">|</span>
+        <span className="text-slate-500">
+          الصفوف البيضاء (النوع) قابلة للإدخال — الباقي يُحسب تلقائياً
+        </span>
+      </div>
     </div>
   );
 }
