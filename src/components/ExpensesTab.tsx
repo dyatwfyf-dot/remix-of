@@ -547,15 +547,27 @@ export default function ExpensesTab() {
                             />
                           </td>
                           <td className={`border border-black p-0.5 align-middle text-center numeric-cell whitespace-nowrap ${CUR_C}`}>
-                            <input
-                              type="number"
-                              min={0}
-                              value={cur.r || ""}
-                              onChange={(e) =>
-                                updateCell(opts.editMonthIdx!, idx, "r", Number(e.target.value) || 0)
-                              }
-                              className="w-24 text-center text-sm sm:text-base px-1 py-0.5 outline-none bg-transparent focus:ring-1 focus:ring-amber-500 rounded mx-auto"
-                            />
+                            {(() => {
+                              const p = posted[`${opts.editMonthIdx}-${idx}`] || 0;
+                              return (
+                                <>
+                                  <input
+                                    type="number"
+                                    min={0}
+                                    value={cur.r - p || ""}
+                                    onChange={(e) =>
+                                      updateCell(opts.editMonthIdx!, idx, "r", Number(e.target.value) || 0)
+                                    }
+                                    className="w-24 text-center text-sm sm:text-base px-1 py-0.5 outline-none bg-transparent focus:ring-1 focus:ring-amber-500 rounded mx-auto"
+                                  />
+                                  {p ? (
+                                    <div className="text-[10px] text-emerald-700 font-bold" title="مرحّل من الحساب الجاري">
+                                      + {fmt(p)} من الحساب الجاري
+                                    </div>
+                                  ) : null}
+                                </>
+                              );
+                            })()}
                           </td>
                         </>
                       ) : (
@@ -951,6 +963,23 @@ export default function ExpensesTab() {
           </button>
         </div>
       </div>
+
+      {unmatched.length > 0 && (
+        <details className="mx-2 my-2 rounded-lg border border-amber-300 bg-amber-50 p-2 text-sm">
+          <summary className="cursor-pointer font-bold text-amber-900">
+            قيود من الحساب الجاري رُحّلت إلى «نفقات أخرى» ({unmatched.length}) — لم تُعرف كلمات البيان
+          </summary>
+          <ul className="mt-2 space-y-1 max-h-48 overflow-auto">
+            {unmatched.map((u, i) => (
+              <li key={i} className="flex gap-2 justify-between border-b border-amber-200 pb-1">
+                <span className="whitespace-nowrap">{u.date}</span>
+                <span className="flex-1">{u.description}</span>
+                <span className="font-mono whitespace-nowrap">{fmt(u.amount)}</span>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
 
       {/* محتوى التبويب */}
       <div id="expenses-view-content">
