@@ -28,7 +28,7 @@ const reportLetterheadStyles = `
       height: auto !important;
     }
     .report-letterhead-image {
-      display: block;
+      display: flex;
       width: 100%;
       max-height: 20mm;
       height: auto;
@@ -348,7 +348,7 @@ tr.subtotal-row td {
     width: 100% !important;
     max-width: auto !important;
     height: 30mm !important;
-    object-fit:content !important; 
+    object-fit:fill !important; 
     margin: 0 !important;
     object-position:top;
     }

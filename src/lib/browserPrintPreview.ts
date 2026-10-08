@@ -176,7 +176,7 @@ export function openBrowserPrintPreview({
       width: 100%;
       max-width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: fill;
       object-position: top;
     }
 
@@ -210,7 +210,7 @@ export function openBrowserPrintPreview({
       direction: ltr !important;
       font-weight: 800 !important;
       padding: 3px 4px !important;
-      width: max-content;
+      width: auto;
     }
 
     /* تطبيق الأنماط المخصصة للتقرير (مثل كشف الحساب) */

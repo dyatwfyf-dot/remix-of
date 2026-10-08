@@ -21,23 +21,23 @@ export const reportDocumentCss = `
   .total-row td { background:var(--report-total); font-weight:800; border-top:2px solid var(--report-accent); }
   .doc-title-cell { border:0; background:var(--report-paper); padding:0 0 8px; }
   .report-letterhead-block { width:100%; height:26mm; margin:0 0 3mm; }
-  .report-letterhead-image { display:block; width:100%; height:100%; object-fit:contain; }
+  .report-letterhead-image { display:block; width:100%; height:100%; object-fit:fill; }
   .num,.numeric-cell,.date-cell,.idx { direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums; }
 `;
 
 export const reportContainmentCss = `
   .report-page-content { width:100%; min-width:0; }
   .report-page-content table { width:100% !important; max-width:100% !important; table-layout:auto !important; }
-  .report-page-content th,.report-page-content td { min-width:0 !important; white-space:normal !important;
+  .report-page-content th,.report-page-content td { min-width:auto !important; white-space:normal !important;
     overflow-wrap:anywhere !important; word-break:normal !important; }
   .report-page-content .num,.report-page-content .numeric-cell,.report-page-content .date-cell,
   .report-page-content .idx,.report-page-content .cell-number { direction:ltr !important; unicode-bidi:isolate;
     white-space:nowrap !important; overflow-wrap:normal !important; word-break:keep-all !important; }
-  .report-page-content .pdf-cell-text { white-space:inherit !important; font-size:inherit; }
+  .report-page-content .pdf-cell-text { white-space:normal !important; font-size:inherit; }
   .report-page-content thead { display:table-header-group; }
   .report-page-content tr { break-inside:avoid; }
   .report-page-content .report-letterhead-cell { background:var(--report-paper) !important; border:0 !important; }
-  .report-page-content .report-letterhead-cell img { max-height:26mm; object-fit:contain; }
+  .report-page-content .report-letterhead-cell img { max-height:26mm; object-fit:fill; }
 `;
 
 const dimensions = (size: ReportPaperSize, orientation: ReportOrientation) => {

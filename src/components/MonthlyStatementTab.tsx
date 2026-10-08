@@ -316,8 +316,8 @@ export default function MonthlyStatementTab() {
   const netBalance = totals.curDebit - totals.curCredit;
 
   return (
-    <div
-      className="w-full space-y-6 p-2 sm:p-5 min-h-screen bg-gradient-to-br from-slate-50 via-sky-50/50 to-indigo-50/40 text-slate-800"
+ <div
+ className="w-full space-y-6 p-2 sm:p-5 min-h-screen bg-gradient-to-br from-slate-50 via-sky-50/50 to-indigo-50/40 text-slate-800"
       dir="rtl"
     >
       {/* ══ الترويسة الرئيسية والبطاقات بتصميم فاتح ناصع ══ */}
@@ -329,11 +329,11 @@ export default function MonthlyStatementTab() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-lg sm:text-xl font-black bg-gradient-to-r from-sky-700 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
-                  كشف الحساب الشهري التلقائي
+ <h1 className="text-lg sm:text-xl font-black bg-gradient-to-r from-sky-700 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
+  كشف الحساب الشهري
                 </h1>
                 <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-0.5 text-[11px] font-bold text-sky-700 border border-sky-200">
-                  <Sparkles className="h-3 w-3 text-sky-500" /> ترحيل فوري
+ <Sparkles className="h-3 w-3 text-sky-500" /> ترحيل فوري
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
@@ -413,10 +413,10 @@ export default function MonthlyStatementTab() {
           </div>
 
           {/* صافي الحركة */}
-          <div className="relative overflow-hidden rounded-2xl border border-indigo-200 bg-gradient-to-br from-indigo-50 via-purple-50/40 to-white p-3.5 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between text-xs text-indigo-800 mb-1.5 font-bold">
-              <span>صافي حركة الفترة</span>
-              <div className="p-1.5 rounded-xl bg-indigo-500/15 text-indigo-600">
+<div className="relative overflow-hidden rounded-2xl border border-indigo-200 bg-gradient-to-br from-indigo-50 via-purple-50/40 to-white p-3.5 shadow-sm hover:shadow-md transition-shadow">
+ <div className="flex items-center justify-between text-xs text-indigo-800 mb-1.5 font-bold">
+<span>صافي حركة الفترة</span>
+<div className="p-1.5 rounded-xl bg-indigo-500/15 text-indigo-600">
                 <Scale className="h-4 w-4" />
               </div>
             </div>
@@ -425,10 +425,10 @@ export default function MonthlyStatementTab() {
                 netBalance >= 0 ? "text-indigo-800" : "text-rose-700"
               }`}
             >
-              {netBalance.toLocaleString()}
+{netBalance.toLocaleString()}
             </div>
-            <span className="text-[10px] text-indigo-600 font-medium mt-1 block">
-              {netBalance >= 0 ? "رصيد مدين للفترة" : "رصيد دائن للفترة"}
+<span className="text-[10px] text-indigo-600 font-medium mt-1 block">
+ {netBalance >= 0 ? "رصيد مدين للفترة" : "رصيد دائن للفترة"}
             </span>
           </div>
         </div>
@@ -567,8 +567,8 @@ export default function MonthlyStatementTab() {
               <th colSpan={2} className="p-2 border-l border-slate-200 bg-sky-100/70 font-bold text-sky-900">
                 حركة {movementLabel}
               </th>
-              <th colSpan={2} className="p-2 border-l border-slate-200 bg-indigo-100/70 font-bold text-indigo-900">
-                الجملة (سابق + حالي)
+ <th colSpan={2} className="p-2 border-l border-slate-200 bg-indigo-100/70 font-bold text-indigo-900">
+   الجملة (سابق + حالي)
               </th>
               <th colSpan={2} className="p-2 bg-emerald-100/70 font-bold text-emerald-900">
                 الرصيد في نهاية الفترة
@@ -582,8 +582,8 @@ export default function MonthlyStatementTab() {
               <th className="p-2 border-l border-slate-200 text-sky-800 bg-sky-50">مدين</th>
               <th className="p-2 border-l border-slate-200 text-amber-800 bg-sky-50">دائن</th>
               {/* جملة */}
-              <th className="p-2 border-l border-slate-200 text-indigo-800 bg-indigo-50/50">مدين</th>
-              <th className="p-2 border-l border-slate-200 text-indigo-800 bg-indigo-50/50">دائن</th>
+ <th className="p-2 border-l border-slate-200 text-indigo-800 bg-indigo-50/50">مدين</th>
+  <th className="p-2 border-l border-slate-200 text-indigo-800 bg-indigo-50/50">دائن</th>
               {/* رصيد */}
               <th className="p-2 border-l border-slate-200 text-emerald-800 bg-emerald-50/50">مدين</th>
               <th className="p-2 text-emerald-800 bg-emerald-50/50">دائن</th>
@@ -714,7 +714,7 @@ export default function MonthlyStatementTab() {
 
           {/* الإجمالي العام بشريط فاتح فخم وعالي التباين */}
           <tfoot>
-            <tr className="bg-gradient-to-r from-sky-700 via-blue-700 to-indigo-800 font-black text-white text-xs sm:text-sm border-t-2 border-sky-500 shadow-md">
+            <tr className="bg-gradient-to-r from-sky-900 via-blue-900 to-indigo-800 font-black text-white text-xs sm:text-sm border-t-2 border-sky-500 shadow-md">
               <td className="px-3 py-3.5 text-right pr-4 border-l border-white/10">
                 الإجمالي العام لكافة الحسابات
               </td>
