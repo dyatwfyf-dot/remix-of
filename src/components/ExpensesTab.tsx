@@ -836,13 +836,13 @@ export default function ExpensesTab() {
               if (!el) return;
               const html = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escapeHtml(`المصروفات - ${view} - ${reportDateLabel}`)}</title>
                 <style>
-                @page { size: A4 landscape; margin: 3mm; }
+                @page { size: A4 portrait; margin: 3mm; }
                 * { box-sizing: border-box; }
                 html, body { margin: 0; padding: 0; }
                 body { direction: rtl; background: #f1f5f9; color: #000; font-family: Cairo, Tajawal, Tahoma, Arial, sans-serif; font-weight: 700; }
                 .print-page { min-height: auto; width: 100%; margin: 0; padding: 0; border: 0; background: #fff; }
                 .report-letterhead-block { display: flex; width: 100%; max-width: none; height: 30mm; min-height: 30mm; max-height: 30mm; align-items: stretch; justify-content: center; margin: 0 0 3mm; page-break-before: avoid; page-break-after: avoid; }
-                .report-letterhead-image { display: block; width: 100%; max-width: none; height: 100%; max-height: 100%; object-fit: fill; object-position: center; margin: 0; }
+                .report-letterhead-image { display:flex; width: 100%; max-width: none; height: 100%; max-height: 100%; object-fit: fill; object-position:top; margin: 0; }
                 ${runningLetterheadCss}
                 #expenses-report { width: 100%; }
                 #expenses-report > * { margin-bottom: 4mm; }
