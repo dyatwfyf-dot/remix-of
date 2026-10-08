@@ -1490,25 +1490,27 @@ font-weight: 900;
         border-bottom: 2.5px solid #0f766e;
       }
 
-      .info-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        margin-bottom: 12px;
-        margin-top: 6px;
+.info-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+ gap: 8px;
+margin-bottom: 12px;
+margin-top: 6px;
+font-family:AlQabas-Bold; 
+background-color: red
       }
 
       /* كروت المعلومات بتنسيق متطابق للشاشة والورق والـ PDF */
-      .info-box {
-        border: 1.2px solid #8b9d62 !important;
-        background: #CDD5AE !important;
-        padding: 6px 8px;
-        min-height: 48px;
-        border-radius: 4px;
-        text-align: center;
-        box-sizing: border-box;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
+.info-box {
+border: 1.2px solid #8b9d62 !important;
+background: #CDD5AE !important;
+padding: 6px 8px;
+min-height: 48px;
+border-radius: 4px;
+text-align: center;
+box-sizing: border-box;
+-webkit-print-color-adjust: exact !important;
+print-color-adjust: exact !important;
       }
       .info-lbl { 
         font-size: 11pt; 
@@ -1588,14 +1590,19 @@ font-weight: 900;
         break-inside: avoid;
       }
       .header, .info-grid { page-break-inside: avoid; break-inside: avoid; }
+  
       @media print {
         html, body { 
 width: 100% !important; margin: 0 !important; padding: 0 !important; 
 height:100% !important;
-
+min-height:auto !important;
         }
 .page-frame { 
-border: 1.5px solid #0f766e !important; padding: 5mm !important; }
+border: 1.5px solid #0f766e !important; 
+padding: 5mm !important; 
+height:100% !important;
+min-height:auto !important;
+}
         .print-toolbar { display: none !important; }
         * {
           -webkit-print-color-adjust: exact !important;
@@ -1605,10 +1612,10 @@ border: 1.5px solid #0f766e !important; padding: 5mm !important; }
     `;
 
     const body = `
-      <div class="container">
-        <div class="page-frame">
-          <h2 class="statement-title">كشف حساب متدرب — للعام ${year}م</h2>
-          <div class="info-grid">
+<div class="container">
+<div class="page-frame">
+<h2 class="statement-title">كشف حساب متدرب — للعام ${year}م</h2>
+<div class="info-grid">
             ${infoCard("اسم المتدرب", row.name)}
             ${infoCard("الدفعة", row.batch)}
             ${infoCard("المساق", row.specialty)}

@@ -418,9 +418,8 @@ className="w-full text-center px-3 py-2 hover:bg-sky-50 text-xs sm:text-xs flex 
                           value={filters[c.key] || ""}
                           onChange={(e) => setFilter(c.key, e.target.value)}
                           placeholder="فلتر..."
-className="mt-0 px-1.5 py-0.5 rounded-md text-[10px] w-1 text-center bg-white border border-slate-300 focus:outline-none focus:ring-1 focus:ring-sky-400 font-normal"
-                        />
-                      </div>
+className="mt-0 px-1.5 py-0.5 rounded-md text-[10px] w-4 text-center bg-white border border-slate-300 focus:outline-none focus:ring-1 focus:ring-sky-400 font-normal"/>
+</div>
                     </TableHead>
                   ))}
 <TableHead className="w-auto max-w-auto text-center font-bold text-slate-700">حذف</TableHead>
@@ -525,7 +524,7 @@ function FieldDark({
   className?: string;
 }) {
   return (
-    <div className="w-full">
+<div className="w-full">
       <label className="text-xs font-bold text-slate-800 mb-1 block">{label}</label>
       <div className="relative">
         {icon && (

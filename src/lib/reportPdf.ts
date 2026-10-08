@@ -21,14 +21,14 @@ export const reportDocumentCss = `
   .total-row td { background:var(--report-total); font-weight:800; border-top:2px solid var(--report-accent); }
   .doc-title-cell { border:0; background:var(--report-paper); padding:0 0 8px; }
   .report-letterhead-block { width:100%; height:26mm; margin:0 0 3mm; }
-  .report-letterhead-image { display:block; width:100%; height:100%; object-fit:fill; }
+  .report-letterhead-image { display:flex; width:100%; height:100%; object-fit:fill; }
   .num,.numeric-cell,.date-cell,.idx { direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums; }
 `;
 
 export const reportContainmentCss = `
   .report-page-content { width:100%; min-width:0; }
   .report-page-content table { width:100% !important; max-width:100% !important; table-layout:auto !important; }
-  .report-page-content th,.report-page-content td { min-width:auto !important; white-space:normal !important;
+  .report-page-content th,.report-page-content td { min-width:auto !important; white-space:nowrap !important;
     overflow-wrap:anywhere !important; word-break:normal !important; }
   .report-page-content .num,.report-page-content .numeric-cell,.report-page-content .date-cell,
   .report-page-content .idx,.report-page-content .cell-number { direction:ltr !important; unicode-bidi:isolate;
@@ -53,7 +53,7 @@ async function ready(doc: Document) {
 export async function downloadRenderedReportPdf(source: HTMLElement, options: {
   fileName: string; pageSize?: ReportPaperSize; orientation?: ReportOrientation; marginMm?: number;
 }) {
-  const { fileName, pageSize = 'A4', orientation = 'portrait', marginMm = 5 } = options;
+  const { fileName, pageSize = 'A4', orientation = 'portrait', marginMm = 2} = options;
   const doc = source.ownerDocument;
   await ready(doc);
   const [{ default: html2canvas }, { default: JsPDF }] = await Promise.all([import('html2canvas'), import('jspdf')]);
@@ -65,9 +65,9 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
   paper.style.cssText = `width:${widthMm}mm;height:${heightMm}mm;padding:${marginMm}mm;box-sizing:border-box;background:var(--report-paper,#fff);display:flex;flex-direction:column;`;
   const content = source.cloneNode(true) as HTMLElement;
   content.classList.add('report-page-content');
-  content.style.cssText = 'width:100%;min-height:0;height:auto;padding:0;margin:0;border:0;box-shadow:none;transform:none;';
+  content.style.cssText = 'width:100%;min-height:auto;height:auto;padding:0;margin:0;border:0;box-shadow:none;transform:none;';
   const footer = doc.createElement('div');
-  footer.style.cssText = 'margin-top:auto;padding-top:2mm;text-align:center;font-size:10px;color:var(--report-muted);direction:rtl;';
+  footer.style.cssText = 'margin-top:auto;padding-top:2mm;text-align:center;font-size:16px;color:var(--report-muted);direction:rtl;';
   paper.append(content, footer);
   holder.append(paper);
   doc.body.append(holder);
@@ -133,7 +133,7 @@ export async function downloadReportPdf(options: {
     if (!doc) throw new Error('تعذر تجهيز التقرير');
     doc.open();
     doc.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>${escapeHtml(options.title)}</title>
-      <style>@font-face{font-family:'Report Arabic';src:url('${window.location.origin}/NotoKufiArabic-Medium.ttf')} ${reportDocumentCss}
+      <style>@font-face{font-family:'cairo';src:url('${window.location.origin}/public/Cairo-Regular-normal.js')} ${reportDocumentCss}
       ${options.css || ''} ${reportContainmentCss}</style></head><body><div id="report-source" class="report-page-content">
       ${options.body.includes('report-letterhead') ? '' : reportLetterheadHtml()}${options.body}</div></body></html>`);
     doc.close();

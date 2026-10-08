@@ -18,15 +18,21 @@ const statementCss = `
     font-size: 18px; 
     margin: 0;
     padding: 0;
+width: 100%;
+height: 100%;
+box-sizing: border-box;
   }
   table {
-    width: 100% !important;
-    max-width:100%!important; 
-    table-layout:auto !important; 
+width: 100% !important;
+max-width:auto !important; 
+table-layout:auto !important; 
+height:100% !important;
+min-height:auto !important;
+
   }
   .info {
     width: 100%; 
-    border: solid 1px black; 
+    border: solid 1px black;
     margin: 6px 0 10px;
   }
   .info td {
@@ -37,8 +43,8 @@ const statementCss = `
   }
   .info td.lbl { 
     background: #f1f5f9 !important; 
-    width: auto; 
-    white-space: nowrap !important; 
+    width: 100%; 
+ white-space: nowrap !important; 
   }
   .sign {
     margin-top: 20px; 
@@ -122,11 +128,11 @@ export function printHtmlContent(htmlContent: string): void {
     <html lang="ar" dir="rtl">
     <head>
       <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>طباعة</title>
       <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        @page { size: A4; margin: 5mm; }
+@page { size: A4; margin: 5mm; }
         body {
           font-family:cairo;
           direction: rtl;
