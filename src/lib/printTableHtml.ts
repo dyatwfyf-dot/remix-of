@@ -129,22 +129,15 @@ export const tablePrintStyles = `
 font-family: AlQabas-Bold;
   }
 
-  /* 2. خلايا الجدول لجميع الصفوف: منع التفاف النص واحتواء تام للمحتوى */
+  /* 2. الخلايا النصية تلتف تلقائياً، بينما الأرقام والتواريخ تبقى في سطر واحد */
   tbody td,
   tfoot td,
-  tbody td *,
-  tfoot td *,
   .text-cell,
-  .long-text-cell,
-  .num,
-  .numeric-cell,
-  .date-cell,
-  .compact-cell,
-  .idx {
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-    overflow-wrap: normal !important;
-    hyphens: none !important;
+  .long-text-cell {
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+    hyphens: auto !important;
   }
 
   tbody td {
@@ -154,10 +147,12 @@ font-family: AlQabas-Bold;
   }
 
   .pdf-cell-text {
-    display: inline-block !important;
+    display: block !important;
     text-align: center !important;
-    width: auto !important;
+    width: 100% !important;
     white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
   }
 
   .num,
@@ -169,6 +164,19 @@ font-family: AlQabas-Bold;
     direction: ltr !important;
     font-weight: 900 !important;
     font-size: 15px !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  .num,
+  .numeric-cell,
+  .date-cell,
+  .compact-cell {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+    hyphens: none !important;
   }
 
   tbody tr:nth-child(even) td {
