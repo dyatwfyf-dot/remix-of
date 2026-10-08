@@ -1,3 +1,4 @@
+import { downloadRenderedReportPdf, reportContainmentCss } from "@/lib/reportPdf";
 import { escapeHtml, REPORT_LETTERHEAD_SRC } from "@/lib/printTableHtml";
 
 export interface BrowserPreviewOptions {
@@ -36,9 +37,6 @@ export function openBrowserPrintPreview({
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
-  <!-- مكتبات حفظ PDF من نافذة المعاينة مباشرة -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -217,6 +215,7 @@ export function openBrowserPrintPreview({
 
     /* تطبيق الأنماط المخصصة للتقرير (مثل كشف الحساب) */
     ${contentCss}
+    ${reportContainmentCss}
 
     /* قواعد أمان لضمان بقاء المحتوى داخل حدود الورقة */
     .sheet-paper, .sheet-paper * {
@@ -333,7 +332,7 @@ export function openBrowserPrintPreview({
       <div class="report-letterhead-block">
         <img class="report-letterhead-image" src="${REPORT_LETTERHEAD_SRC}" alt="الترويسة الرسمية" />
       </div>
-      <div id="tableContainer" class="preview-report-content">
+      <div id="tableContainer" class="preview-report-content report-page-content">
         ${tableHtml}
       </div>
     </div>
@@ -377,49 +376,25 @@ export function openBrowserPrintPreview({
         }
 
         paperContainer.style.padding = margin;
-        paperContainer.style.transform = scale === 1 ? 'none' : 'scale(' + scale + ')';
+        const heights = pageSize === 'A3' ? [420,297] : pageSize === 'Letter' ? [279.4,215.9] : [297,210];
+        paperContainer.style.minHeight = heights[orientation === 'portrait' ? 0 : 1] + 'mm';
+        paperContainer.style.transform = 'none';
+        document.getElementById('tableContainer').style.zoom = String(scale);
         dynamicRule.innerHTML = '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + margin + '; }';
       }
 
-      // تنزيل كشف الحساب كملف PDF مطابق 100% لما يظهر على الشاشة
       async function downloadDirectPdf() {
-        if (!window.html2canvas || !window.jspdf) {
-          alert('جاري تحميل مكتبة PDF، يرجى الانتظار ثانية ثم المحاولة مجدداً');
-          return;
-        }
         btnDownloadPdf.disabled = true;
-        btnDownloadPdf.innerText = '⏳ جاري إنشاء PDF...';
-
+        btnDownloadPdf.innerText = 'جارٍ إنشاء PDF...';
         try {
-          const orientation = selOrientation.value;
-          const pageSize = selPageSize.value;
-          
-          const canvas = await html2canvas(paperContainer, {
-            scale: 2.5,
-            useCORS: true,
-            backgroundColor: '#ffffff',
-            logging: false,
+          await window.downloadReportFromPreview({
+            pageSize: selPageSize.value,
+            orientation: selOrientation.value,
+            marginMm: parseFloat(selMargin.value)
           });
-
-          const imgData = canvas.toDataURL('image/jpeg', 0.98);
-          const { jsPDF } = window.jspdf;
-          const pdf = new jsPDF({
-            orientation: orientation,
-            unit: 'mm',
-            format: pageSize.toLowerCase(),
-            compress: true
-          });
-
-          const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = pdf.internal.pageSize.getHeight();
-          const imgProps = pdf.getImageProperties(imgData);
-          const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, Math.min(imgHeight, pdfHeight));
-          pdf.save('${escapeHtml(title)}.pdf');
         } catch (err) {
           console.error(err);
-          alert('حدث خطأ أثناء تنزيل الـ PDF، يمكنك استخدام زر الطباعة واختيار حفظ بتنسيق PDF');
+          alert('تعذر تنزيل PDF؛ جرّب حجم ورقة أكبر أو استخدم حفظ PDF من نافذة الطباعة');
         } finally {
           btnDownloadPdf.disabled = false;
           btnDownloadPdf.innerText = '📥 تنزيل كملف PDF';
@@ -443,11 +418,17 @@ export function openBrowserPrintPreview({
           window.close();
         }
       });
+      updatePageSettings();
     })();
   </script>
 </body>
 </html>`;
 
+  (newWin as Window & { downloadReportFromPreview?: (settings: { pageSize: "A4" | "A3" | "Letter"; orientation: "portrait" | "landscape"; marginMm: number }) => Promise<void> }).downloadReportFromPreview = async (settings) => {
+    const paper = newWin.document.getElementById("paperContainer");
+    if (!paper) throw new Error("تعذر تحديد الورقة");
+    await downloadRenderedReportPdf(paper, { ...settings, fileName: `${title.replace(/[\\/:*?"<>|]/g, "-")}.pdf` });
+  };
   newWin.document.open();
   newWin.document.write(html);
   newWin.document.close();

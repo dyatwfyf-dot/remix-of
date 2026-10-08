@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { useReportDate } from "@/lib/reportDate";
 import { exportTablePdf } from "@/lib/pdfExporter";
 import { buildTableHtml } from "@/lib/printTableHtml";
+import { reportDocumentCss } from "@/lib/reportPdf";
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import WebActionMenu, { type WebActionItem } from "@/components/WebActionMenu";
 
@@ -68,6 +69,7 @@ export default function TabActions({
       title,
       reportDateLabel,
       tableHtml: tableHtml(),
+      contentCss: reportDocumentCss,
       defaultOrientation,
       defaultPageSize: "A4",
     });
@@ -85,7 +87,8 @@ export default function TabActions({
     if (pdfBusy) return;
     setPdfBusy(true);
     try {
-      await exportTablePdf({ title, columns, rows, numericKeys, fileName, reportDate, pdfLayout });
+      await exportTablePdf({ title, columns, rows, numericKeys, fileName, reportDate, pdfLayout,
+        orientation: pdfOrientation === "portrait" ? "portrait" : pdfOrientation === "landscape" || columns.length > 7 ? "landscape" : "portrait" });
       toast.success("تم تنزيل الملف بنجاح");
     } catch (err) {
       console.error("PDF export error:", err);

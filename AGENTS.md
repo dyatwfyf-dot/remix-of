@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Route all browser report printing through the shared Chrome preview utility; this keeps page settings and A4 containment consistent.
+- Route PDF downloads through src/lib/reportPdf.ts with measured row pagination and isolated document styles; this preserves Arabic, report colors, and paper dimensions across tabs.
