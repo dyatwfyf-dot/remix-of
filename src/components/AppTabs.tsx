@@ -7,6 +7,7 @@ import { useReportDate } from "@/lib/reportDate";
 import { toast } from "sonner";
 import { reportLetterheadHtml, runningLetterheadCss } from "@/lib/printTableHtml";
 import { printReportHtml } from "@/lib/nativePrinter";
+import { downloadReportDocumentPdf } from "@/lib/reportPdf";
 import { importUsageInWorker } from "@/lib/excelImportWorkerClient";
 import { saveBlobToInternalStorage } from "@/lib/nativeFileStorage";
 import WebActionMenu from "./WebActionMenu";
@@ -734,8 +735,14 @@ background:#0b3d6d; color:white !important; font-weight:700 !important; -webkit-
     if (!opened) toast.error("تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة");
   };
 
-  const handlePdf = () => {
-    handlePrint();
+  const handlePdf = async () => {
+    try {
+      await downloadReportDocumentPdf(buildAllMonthsHtml(), `سجل النفقات-${reportDate}`, 'landscape');
+      toast.success("تم تنزيل سجل النفقات بصيغة PDF");
+    } catch (error) {
+      console.error(error);
+      toast.error("تعذر تنزيل سجل النفقات");
+    }
   };
 
   return (

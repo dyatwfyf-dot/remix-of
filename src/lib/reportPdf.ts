@@ -142,3 +142,12 @@ export async function downloadReportPdf(options: {
     await downloadRenderedReportPdf(source, options);
   } finally { frame.remove(); }
 }
+
+/** Accept legacy builders without running their embedded automatic-print scripts. */
+export async function downloadReportDocumentPdf(html: string, title: string, orientation: ReportOrientation = 'landscape') {
+  const parsed = new DOMParser().parseFromString(html, 'text/html');
+  parsed.querySelectorAll('script').forEach(script => script.remove());
+  const css = Array.from(parsed.querySelectorAll('style')).map(style => style.textContent || '').join('\n');
+  await downloadReportPdf({ title, body:parsed.body.innerHTML, css, orientation,
+    fileName:`${title.replace(/[\\/:*?"<>|]/g, '-')}.pdf` });
+}
