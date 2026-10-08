@@ -1443,27 +1443,36 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     const statementCss = `
       @page { size: A4 portrait; margin: 6mm; }
       * { box-sizing: border-box; }
-      html, body { width: 100%; margin: 0; padding: 0; background: #fff !important; }
-      body {
-        font-family: "Cairo", "Times New Roman", Tahoma, sans-serif;
-        color: #111827;
-        font-size: 13px;
-        line-height: 1.35;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
+      html, body {
+width: 100%; 
+margin: 0; 
+padding: 0; 
+background: #fff !important; 
+height:auto !important;
+
       }
-      .container {
-        width: 100%;
-        max-width: 100%;
-        margin: 0 auto;
+body {
+font-family: "Cairo", "Times New Roman", Tahoma, sans-serif;
+        color: #111827;
+font-size: 15px;
+ line-height: 1.35;
+-webkit-print-color-adjust: exact !important;
+ print-color-adjust: exact !important;
+      }
+.container {
+ width: 100%;
+max-width: 100%;
+margin: 0 auto;
       }
 
-      .page-frame {
-        width: 100%;
-        padding: 5mm;
-        border: 1.5px solid #0f766e;
-        border-radius: 4px;
+.page-frame {
+width: 100%;
+padding: 5mm;
+ border: 1.5px solid #0f766e;
+border-radius: 4px;
         background: #ffffff !important;
+height:auto !important;
+      
       }
 
       .statement-title {
