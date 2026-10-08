@@ -1441,16 +1441,18 @@ td.t-fees { background: ${colorTokens.fees} !important; }
 
     // ضبط أحجام كروت المعلومات والطباعة (أصغر وأكثر إح    // ضبط أحجام كروت المعلومات والطباعة وتطابق الألوان 100%
     const statementCss = `
-      @page { size: A4 portrait; margin: 6mm; }
+      @page {
+size: A4 portrait;margin:0;
+      }
       * { box-sizing: border-box; }
       html, body {
-width: 100%; 
-margin: 0; 
-padding: 0; 
-background: #fff !important; 
-height:100% !important;
-min-height:auto !important;
-
+  width: 100 % ;
+  margin: 0;
+  padding: 0;
+  background: #fff!important;
+  height: 100% !important;
+  min-height: auto!important;
+  overflow: hidden;
       }
 body {
 font-family: "Cairo", "Times New Roman", Tahoma, sans-serif;
@@ -1469,16 +1471,15 @@ max-width: 100%;
 margin: 0 auto;
       }
 
-.page-frame {
-width: 100%;
-padding: 5mm;
- border: 1.5px solid #0f766e;
-border-radius: 4px;
-        background: #ffffff !important;
-height:100% !important;
-min-height:auto !important;
-      
-      }
+    .page - frame {
+        width: 100% ;
+        height: 100% ;
+        padding: 5mm;
+        border: 1.5px solid #0f766e;
+        border-radius:4px;
+ background: #ffffff!important;
+box-sizing: border-box;
+}
 .statement-title {
 text-align: center;
 font-size: 17pt;
