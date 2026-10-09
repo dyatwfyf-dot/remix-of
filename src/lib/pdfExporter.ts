@@ -24,10 +24,14 @@ box-sizing: border-box;
   }
   table {
 width: 100% !important;
-max-width:auto !important; 
-table-layout:auto !important; 
+max-width:auto !important;
+font-size:18px !important;
+table-layout:auto  
+!important; 
+ font-weight: 900 !important;; 
 height:100% !important;
 min-height:auto !important;
+font-family:cairo;
 
   }
   .info {
@@ -39,7 +43,10 @@ min-height:auto !important;
     border: 1px solid #000; 
     padding: 6px 8px; 
     text-align: center; 
-    font-weight: 700; 
+font-size:18px  
+!important;
+font-family:cairo;
+    font-weight: 900; 
   }
   .info td.lbl { 
     background: #f1f5f9 !important; 
@@ -134,7 +141,7 @@ export function printHtmlContent(htmlContent: string): void {
         * { margin: 0; padding: 0; box-sizing: border-box; }
 @page { size: A4; margin: 5mm; }
         body {
-          font-family:cairo;
+font-family:cairo;
           direction: rtl;
           color: #000 !important;
           background: white;
@@ -431,7 +438,7 @@ export function revenuePdf(revenue: Record<string, number>, year: number, month:
       width: 100% !important;
       max-width: 100% !important;
       border: solid 1px black; 
-      font-size: 15px !important; 
+      font-size: 18px !important; 
       table-layout: auto !important;
       margin-top: 8px;
     }

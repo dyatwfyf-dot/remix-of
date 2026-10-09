@@ -68,7 +68,7 @@ export default function TraineeAccountStatement({
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-3">
-          <h3 className="text-xs sm:text-xs font-bold text-black">
+          <h3 className="text-xl sm:text-xs font-bold text-black">
             📋 كشف حساب متدرب للعام {year}م
           </h3>
         </div>
@@ -88,40 +88,40 @@ export default function TraineeAccountStatement({
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
             {/* كرت اسم المتدرب */}
 <div className="bg-gradient-to-br from-blue-50 to-sky-50 border border-black rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
-<div className="text-xs sm:text-sm font-bold text-blue-600 mb-2 text-center">
+<div className="text-xl sm:text-sm font-bold text-blue-600 mb-2 text-center">
                 اسم المتدرب
               </div>
-              <div className="text-sm sm:text-base font-extrabold text-blue-900 text-center line-clamp-2">
+              <div className="text-xl sm:text-base font-extrabold text-blue-900 text-center line-clamp-2">
                 {trainee.name}
               </div>
             </div>
 
             {/* كرت الدفعة */}
             <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
-              <div className="text-xs sm:text-sm font-bold text-purple-600 mb-2 text-center">
+              <div className="text-xl sm:text-sm font-bold text-purple-600 mb-2 text-center">
                 الدفعة
               </div>
-              <div className="text-sm sm:text-base font-extrabold text-purple-900 text-center line-clamp-2">
+              <div className="text-xl sm:text-base font-extrabold text-purple-900 text-center line-clamp-2">
                 {trainee.batch}
               </div>
             </div>
 
             {/* كرت المساق */}
             <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
-              <div className="text-xs sm:text-sm font-bold text-emerald-600 mb-2 text-center">
+              <div className="text-xl sm:text-sm font-bold text-emerald-600 mb-2 text-center">
                 المساق
               </div>
-              <div className="text-sm sm:text-base font-extrabold text-emerald-900 text-center line-clamp-2">
+              <div className="text-xl sm:text-base font-extrabold text-emerald-900 text-center line-clamp-2">
                 {trainee.specialty}
               </div>
             </div>
 
             {/* كرت رقم الهاتف */}
             <div className="bg-gradient-to-br from-orange-50 to-rose-50 border border-orange-200 rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
-              <div className="text-xs sm:text-sm font-bold text-orange-600 mb-2 text-center">
+              <div className="text-xl sm:text-sm font-bold text-orange-600 mb-2 text-center">
                 رقم الهاتف
               </div>
-              <div className="text-sm sm:text-base font-extrabold text-orange-900 text-center line-clamp-2">
+              <div className="text-xl sm:text-base font-extrabold text-orange-900 text-center line-clamp-2">
                 {trainee.phone}
               </div>
             </div>
@@ -132,7 +132,7 @@ export default function TraineeAccountStatement({
 
           {/* ========== الجدول المالي ========== */}
           <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
-<table className="w-auto border-collapse text-sm sm:text-base">
+<table className="w-auto border-collapse text-xl sm:text-base">
               {/* رأس الجدول */}
               <thead>
 <tr className="bg-gradient-to-r from-teal-900 via-teal-900 to-cyan-900 border-b-2 border-teal-700">
@@ -152,10 +152,10 @@ export default function TraineeAccountStatement({
                     key={idx}
                     className={`border-b border-slate-200 hover:bg-slate-50/50 transition-colors ${row.bgColor}`}
                   >
-                    <td className={`px-3 sm:px-4 py-2.5 sm:py-3 font-bold text-slate-800 ${row.accentColor}`}>
+                    <td className={`px-3 sm:px-4 py-2.5 sm:py-3 font-bold text-black text-xl sm:text-base ${row.accentColor}`}>
                       {row.label}
                     </td>
-                    <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-center font-mono font-extrabold text-slate-900 numeric-cell">
+<td className="px-3 sm:px-4 py-2.5 sm:py-3 text-center font-black font-extrabold text-black numeric-cell text-xl sm:text-base">
                       {fmt(row.amount)}
                     </td>
                   </tr>
