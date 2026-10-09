@@ -879,9 +879,7 @@ export default function InstallmentsTab() {
     number) => {
     const monthsList = year === 2025 ?
       MONTHS_2025 : MONTHS_2026;
-    const
-  opts: { key: string;label: string }
-      [] = [
+    const opts: { key: string; label: string }[] = [
         { key: "batch",
           label: "الدفعة" },
         { key: "specialty",
