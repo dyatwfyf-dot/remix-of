@@ -1,8 +1,10 @@
 /* ملف: src/components/InstallmentsTab.tsx
    ملاحظة: التغييرات تنسيقية فقط (CSS / classNames / ثوابت أحجام)
 */
-import React, { useMemo, useState } from "react";
-import { useStore, type InstallmentCustomColumn } from "@/lib/store";
+import React, { useMemo,
+  useState } from "react";
+import { useStore,
+  type InstallmentCustomColumn } from "@/lib/store";
 import { fmt } from "@/lib/format";
 import { importInstallmentsInWorker } from "@/lib/excelImportWorkerClient";
 import { toast } from "sonner";
@@ -26,7 +28,8 @@ import {
   Download,
 } from "lucide-react";
 import TabActions from "./TabActions";
-import { noteRowClass, noteRowCss } from "@/lib/notesColors";
+import { noteRowClass,
+  noteRowCss } from "@/lib/notesColors";
 import type { WebActionItem } from "./WebActionMenu";
 import PrintSettingsModal, {
   DEFAULT_PRINT_SETTINGS,
@@ -80,42 +83,56 @@ const MONTHS_2026 = [
 ];
 
 // دالة تنظيف الأرقام واستخراج القيم العددية
-const cleanNumber = (val: any): number => {
-  if (!val || isNaN(Number(String(val).replace(/[^0-9.-]/g, "")))) return 0;
-  return Number(String(val).replace(/[^0-9.-]/g, "")) || 0;
-};
+const cleanNumber = (val: any):
+  number => {
+    if (!val || isNaN(Number(String(val)
+        .replace(/[^0-9.-]/g, ""))))
+      return 0;
+    return Number(String(val).replace(
+      /[^0-9.-]/g, "")) || 0;
+  };
 
-const escapeHtml = (value: any): string =>
+const escapeHtml = (value: any):
+  string =>
   String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+  .replace(/&/g, "&amp;")
+  .replace(/</g, "&lt;")
+  .replace(/>/g, "&gt;")
+  .replace(/"/g, "&quot;")
+  .replace(/'/g, "&#39;");
 
-const safePdfFileName = (value: any): string =>
+const safePdfFileName = (value: any):
+  string =>
   String(value || "متدرب")
-    .replace(/[\\/:*?"<>|]/g, "-")
-    .replace(/\s+/g, "_")
-    .trim() || "متدرب";
+  .replace(/[\\/:*?"<>|]/g, "-")
+  .replace(/\s+/g, "_")
+  .trim() || "متدرب";
 
 /* ==========================
    ثوابت تنسيق عامة للموبايل
    ========================== */
 // أحجام أيقونات وأزرار أصغر لتناسب شاشات شاومي
-const ICON_MOBILE = "w-4 h-4"; // أيقونات مضغوطة في الجداول والأزرار
-const ICON_TAP = "w-5 h-5"; // أيقونات لزرّات اللمس المهمة
-const BTN_COMPACT = "px-2 py-1 text-xs rounded-md"; // أزرار أصغر وأكثر إحكامًا
-const HEADING_MOBILE = "text-lg sm:text-xl font-extrabold";
+const ICON_MOBILE =
+"w-4 h-4"; // أيقونات مضغوطة في الجداول والأزرار
+const ICON_TAP =
+"w-5 h-5"; // أيقونات لزرّات اللمس المهمة
+const BTN_COMPACT =
+  "px-2 py-1 text-xs rounded-md"; // أزرار أصغر وأكثر إحكامًا
+const HEADING_MOBILE =
+  "text-lg sm:text-xl font-extrabold";
 
 // All PDF reports use the same paper layout and measured row pagination.
-const downloadDetailedHtmlPdf = downloadReportPdf;
+const downloadDetailedHtmlPdf =
+  downloadReportPdf;
 
 // شبكة إحصائيات علوية بتصميم عصري
-const StatsGrid = ({ stats, columns = 3 }: { stats: any[]; columns?: number }) => {
-  const colClass = columns === 4 ? "grid-cols-4" : "grid-cols-3";
-  return (
-    <div className={`grid ${colClass} gap-1.5 sm:gap-2 mb-3 sm:mb-4`}>
+const StatsGrid = ({ stats, columns =
+  3 }: { stats: any[];columns ? :
+  number }) => {
+const colClass = columns === 4 ?
+  "grid-cols-4" : "grid-cols-3";
+return (
+  <div className={`grid ${colClass} gap-1.5 sm:gap-2 mb-3 sm:mb-4`}>
       {stats.map((stat, idx) => (
         <div
           key={idx}
@@ -132,9 +149,10 @@ className={`${stat.bgClass} relative overflow-hidden min-h-[46px] sm:min-h-[56px
             </div>
           </div>
         </div>
-      ))}
-    </div>
-  );
+))
+}
+</div>
+);
 };
 
 // مكوّن النافذة المنبثقة العامة
@@ -173,15 +191,18 @@ const SortIcon = ({
   sortConfig,
   columnKey,
 }: {
-  sortConfig: { key: string; direction: "asc" | "desc" } | null;
+  sortConfig: { key: string;direction: "asc" |
+      "desc" } | null;
   columnKey: string;
 }) => {
-  if (sortConfig?.key !== columnKey) return <ArrowUpDown className="w-3 h-3 text-white/70" />;
-  return sortConfig.direction === "asc" ? (
-    <ArrowUp className="w-3 h-3 text-emerald-300" />
-  ) : (
-    <ArrowDown className="w-3 h-3 text-emerald-300" />
-  );
+  if (sortConfig?.key !== columnKey)
+    return <ArrowUpDown className="w-3 h-3 text-white/70" />;
+  return sortConfig.direction ===
+    "asc" ? (
+      <ArrowUp className="w-3 h-3 text-emerald-300" />
+    ) : (
+      <ArrowDown className="w-3 h-3 text-emerald-300" />
+    );
 };
 
 export default function InstallmentsTab() {
@@ -194,125 +215,200 @@ export default function InstallmentsTab() {
     setInstallmentCustomColumns2026,
     setInstallmentConditionalRules2026,
   } = useStore() as any;
-  const { reportDate, reportDateLabel } = useReportDate();
-
-  const [paymentModal, setPaymentModal] = useState<{ row: any; month: string } | null>(null);
-  const [payAmount, setPayAmount] = useState("");
-  const [newPaymentModal, setNewPaymentModal] = useState(false);
-  const [newStudentName, setNewStudentName] = useState("");
-  const [newStudentAmount, setNewStudentAmount] = useState("");
-  const [newStudentMonth, setNewStudentMonth] = useState("");
-  const [editPaymentModal, setEditPaymentModal] = useState<{
+  const { reportDate,
+    reportDateLabel } = useReportDate();
+  
+  const [paymentModal,
+  setPaymentModal] = useState <
+    { row: any;month: string } | null >
+    (null);
+  const [payAmount, setPayAmount] =
+  useState("");
+  const [newPaymentModal,
+    setNewPaymentModal
+  ] = useState(false);
+  const [newStudentName,
+    setNewStudentName
+  ] = useState("");
+  const [newStudentAmount,
+    setNewStudentAmount
+  ] = useState("");
+  const [newStudentMonth,
+    setNewStudentMonth
+  ] = useState("");
+  const [editPaymentModal,
+    setEditPaymentModal
+  ] = useState < {
     row: any;
     month: string;
     amount: number;
-  } | null>(null);
-  const [editAmount, setEditAmount] = useState("");
-  const [nameSuggestions, setNameSuggestions] = useState<string[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [, setHoveredCell] = useState<string | null>(null);
-  const [importError, setImportError] = useState<string | null>(null);
-  const [printSettingsYear, setPrintSettingsYear] = useState<number | null>(null);
-  const [detailedPdfBusy2026, setDetailedPdfBusy2026] = useState(false);
-
-  const [search2025, setSearch2025] = useState("");
-  const [search2026, setSearch2026] = useState("");
-
-  const [sortConfig2025, setSortConfig2025] = useState<{
+  } | null > (null);
+  const [editAmount, setEditAmount] =
+  useState("");
+  const [nameSuggestions,
+    setNameSuggestions
+  ] = useState < string[] > ([]);
+  const [showSuggestions,
+    setShowSuggestions
+  ] = useState(false);
+  const [, setHoveredCell] = useState <
+    string | null > (null);
+  const [importError, setImportError] =
+  useState < string | null > (null);
+  const [printSettingsYear,
+    setPrintSettingsYear
+  ] = useState < number | null > (null);
+  const [detailedPdfBusy2026,
+    setDetailedPdfBusy2026
+  ] = useState(false);
+  
+  const [search2025, setSearch2025] =
+  useState("");
+  const [search2026, setSearch2026] =
+  useState("");
+  
+  const [sortConfig2025,
+    setSortConfig2025
+  ] = useState < {
     key: string;
     direction: "asc" | "desc";
-  } | null>(null);
-  const [sortConfig2026, setSortConfig2026] = useState<{
+  } | null > (null);
+  const [sortConfig2026,
+    setSortConfig2026
+  ] = useState < {
     key: string;
     direction: "asc" | "desc";
-  } | null>(null);
-
-  const [editRowModal, setEditRowModal] = useState<{
+  } | null > (null);
+  
+  const [editRowModal,
+  setEditRowModal] = useState < {
     year: number;
     row: any;
     index: number;
-  } | null>(null);
-  const [editRowData, setEditRowData] = useState<any>({});
-
-  const extraCols2026 = (installmentCustomColumns2026 || []) as InstallmentCustomColumn[];
-  const [newColModal, setNewColModal] = useState(false);
-  const [newColName, setNewColName] = useState("");
-  const [newColType, setNewColType] = useState<"text" | "select" | "formula">("text");
-  const [newColOptions, setNewColOptions] = useState("");
-  const [newColFormula, setNewColFormula] = useState("");
-
-  const [editColModal, setEditColModal] = useState<{
+  } | null > (null);
+  const [editRowData, setEditRowData] =
+  useState < any > ({});
+  
+  const extraCols2026 = (
+    installmentCustomColumns2026 || []
+    ) as InstallmentCustomColumn[];
+  const [newColModal, setNewColModal] =
+  useState(false);
+  const [newColName, setNewColName] =
+  useState("");
+  const [newColType, setNewColType] =
+  useState < "text" | "select" |
+    "formula" > ("text");
+  const [newColOptions,
+    setNewColOptions] = useState("");
+  const [newColFormula,
+    setNewColFormula] = useState("");
+  
+  const [editColModal,
+  setEditColModal] = useState < {
     oldName: string;
     name: string;
-    type: "text" | "select" | "formula";
+    type: "text" | "select" |
+      "formula";
     options: string;
     formula: string;
-  } | null>(null);
-
-  const [condFormatModal, setCondFormatModal] = useState(false);
-  const [condFormatParams, setCondFormatParams] = useState({ text: "", color: "bg-sky-100" });
-  const condFormatRules = (installmentConditionalRules2026 || []) as Array<{
+  } | null > (null);
+  
+  const [condFormatModal,
+    setCondFormatModal
+  ] = useState(false);
+  const [condFormatParams,
+    setCondFormatParams
+  ] = useState({ text: "",
+    color: "bg-sky-100" });
+  const condFormatRules = (
+    installmentConditionalRules2026 ||
+    []) as Array < {
     text: string;
     color: string;
-  }>;
-
-  const [newRowModal2026, setNewRowModal2026] = useState(false);
-  const [newRowData2026, setNewRowData2026] = useState({
+  } > ;
+  
+  const [newRowModal2026,
+    setNewRowModal2026
+  ] = useState(false);
+  const [newRowData2026,
+    setNewRowData2026
+  ] = useState({
     name: "",
     batch: "",
     specialty: "",
     prevDue: 0,
     fees: 0,
   });
-
-  const controls2026 = useTableControls(installments || [], [
-    "name",
-    "batch",
-    "specialty",
-    "fees",
-    "prevDue",
-    "totalPaid",
-    "remaining",
-  ]);
-  const controls2025 = useTableControls(installments2025 || [], [
-    "name",
-    "batch",
-    "specialty",
-    "fees",
-    "totalPaid",
-    "remaining",
-  ]);
-
-  const evaluateFormula = (formula: string, row: any) => {
+  
+  const controls2026 = useTableControls(
+    installments || [], [
+      "name",
+      "batch",
+      "specialty",
+      "fees",
+      "prevDue",
+      "totalPaid",
+      "remaining",
+    ]);
+  const controls2025 = useTableControls(
+    installments2025 || [], [
+      "name",
+      "batch",
+      "specialty",
+      "fees",
+      "totalPaid",
+      "remaining",
+    ]);
+  
+  const evaluateFormula = (formula:
+    string, row: any) => {
     if (!formula) return "";
     try {
       let parsedFormula = formula;
-      const variables: Record<string, number> = {
-        fees: cleanNumber(row.fees),
-        prevDue: cleanNumber(row.prevDue),
-        totalPaid: cleanNumber(row.totalPaid),
-        remaining: cleanNumber(row.remaining),
-      };
-
+      const variables: Record <
+        string, number > = {
+          fees: cleanNumber(row.fees),
+          prevDue: cleanNumber(row
+            .prevDue),
+          totalPaid: cleanNumber(row
+            .totalPaid),
+          remaining: cleanNumber(row
+            .remaining),
+        };
+      
       extraCols2026.forEach((col) => {
-        if (col.type !== "formula") {
-          variables[col.name] = cleanNumber(row.customData?.[col.name]);
+        if (col.type !==
+          "formula") {
+          variables[col.name] =
+            cleanNumber(row
+              .customData?.[col
+                .name
+              ]);
         }
       });
-
-      Object.keys(variables).forEach((key) => {
-        const regex = new RegExp(`\\b${key}\\b`, "g");
-        parsedFormula = parsedFormula.replace(regex, variables[key].toString());
+      
+      Object.keys(variables).forEach((
+        key) => {
+        const regex = new RegExp(
+          `\\b${key}\\b`, "g");
+        parsedFormula =
+          parsedFormula.replace(
+            regex, variables[key]
+            .toString());
       });
-
-      const result = new Function(`return ${parsedFormula}`)();
-      return isNaN(result) ? "خطأ" : Number(result).toFixed(2);
+      
+      const result = new Function(
+        `return ${parsedFormula}`)();
+      return isNaN(result) ? "خطأ" :
+        Number(result).toFixed(2);
     } catch (e) {
       return "صيغة غير صالحة";
     }
   };
-
-  const getConditionalRowClass = (row: any) => {
+  
+  const getConditionalRowClass = (row:
+    any) => {
     const searchableValues = [
       row.name,
       row.batch,
@@ -321,190 +417,355 @@ export default function InstallmentsTab() {
       row.fees,
       row.totalPaid,
       row.remaining,
-      ...Object.values(row.payments || {}),
-      ...Object.values(row.customData || {}),
-    ].map((val) => String(val ?? "").toLowerCase());
-
-    const matchedRule = condFormatRules.find((rule) => {
-      const term = rule.text.trim().toLowerCase();
-      return term.length > 0 && searchableValues.some((value) => value.includes(term));
-    });
-
-    return matchedRule?.color || "hover:bg-slate-50/80";
+      ...Object.values(row
+        .payments || {}),
+      ...Object.values(row
+        .customData || {}),
+    ].map((val) => String(val ?? "")
+      .toLowerCase());
+    
+    const matchedRule =
+      condFormatRules.find((rule) => {
+        const term = rule.text
+        .trim().toLowerCase();
+        return term.length > 0 &&
+          searchableValues.some((
+              value) => value
+            .includes(term));
+      });
+    
+    return matchedRule?.color ||
+      "hover:bg-slate-50/80";
   };
-
+  
   const addConditionalRule = () => {
-    if (!condFormatParams.text.trim()) return toast.error("يرجى إدخال نص الشرط");
-    setInstallmentConditionalRules2026([
-      ...condFormatRules,
-      { ...condFormatParams, text: condFormatParams.text.trim() },
-    ]);
-    setCondFormatParams({ text: "", color: "bg-sky-100" });
-    toast.success("تمت إضافة قاعدة التنسيق");
+    if (!condFormatParams.text.trim())
+      return toast.error(
+        "يرجى إدخال نص الشرط");
+    setInstallmentConditionalRules2026
+      ([
+        ...condFormatRules,
+        { ...condFormatParams,
+          text: condFormatParams
+            .text.trim() },
+      ]);
+    setCondFormatParams({ text: "",
+      color: "bg-sky-100" });
+    toast.success(
+      "تمت إضافة قاعدة التنسيق");
   };
-
-  const deleteConditionalRule = (index: number) => {
-    setInstallmentConditionalRules2026(condFormatRules.filter((_, i) => i !== index));
+  
+  const deleteConditionalRule = (index:
+    number) => {
+    setInstallmentConditionalRules2026
+      (condFormatRules.filter((_,
+        i) => i !== index));
   };
-
-  const filteredRows2025 = useMemo(() => {
-    let result = controls2025.rows || [];
+  
+  const filteredRows2025 = useMemo(
+() => {
+    let result = controls2025
+      .rows || [];
     if (search2025) {
-      const term = search2025.toLowerCase();
+      const term = search2025
+        .toLowerCase();
       result = result.filter(
         (r: any) =>
-          (r.name && r.name.toLowerCase().includes(term)) ||
-          (r.batch && String(r.batch).toLowerCase().includes(term)) ||
-          (r.specialty && r.specialty.toLowerCase().includes(term)),
+        (r.name && r.name
+          .toLowerCase().includes(
+            term)) ||
+        (r.batch && String(r
+            .batch).toLowerCase()
+          .includes(term)) ||
+        (r.specialty && r
+          .specialty.toLowerCase()
+          .includes(term)),
       );
     }
     if (sortConfig2025) {
-      result = [...result].sort((a: any, b: any) => {
-        let aVal = a[sortConfig2025.key];
-        let bVal = b[sortConfig2025.key];
-        if (["fees", "totalPaid", "remaining"].includes(sortConfig2025.key)) {
-          aVal = cleanNumber(aVal);
-          bVal = cleanNumber(bVal);
+      result = [...result].sort((a:
+        any, b: any) => {
+        let aVal = a[
+          sortConfig2025.key];
+        let bVal = b[
+          sortConfig2025.key];
+        if (["fees",
+            "totalPaid",
+            "remaining"
+          ].includes(
+            sortConfig2025.key
+            )) {
+          aVal = cleanNumber(
+            aVal);
+          bVal = cleanNumber(
+            bVal);
         } else {
-          aVal = aVal ? String(aVal).toLowerCase() : "";
-          bVal = bVal ? String(bVal).toLowerCase() : "";
+          aVal = aVal ? String(
+            aVal)
+          .toLowerCase() : "";
+          bVal = bVal ? String(
+            bVal)
+          .toLowerCase() : "";
         }
-        if (aVal < bVal) return sortConfig2025.direction === "asc" ? -1 : 1;
-        if (aVal > bVal) return sortConfig2025.direction === "asc" ? 1 : -1;
+        if (aVal < bVal)
+        return sortConfig2025
+          .direction ===
+          "asc" ? -1 : 1;
+        if (aVal > bVal)
+        return sortConfig2025
+          .direction ===
+          "asc" ? 1 : -1;
         return 0;
       });
     }
     return result;
-  }, [controls2025.rows, search2025, sortConfig2025]);
-
-  const filteredRows2026 = useMemo(() => {
-    let result = controls2026.rows || [];
+  }, [controls2025.rows, search2025,
+    sortConfig2025
+  ]);
+  
+  const filteredRows2026 = useMemo(
+() => {
+    let result = controls2026
+      .rows || [];
     if (search2026) {
-      const term = search2026.toLowerCase();
+      const term = search2026
+        .toLowerCase();
       result = result.filter(
         (r: any) =>
-          (r.name && r.name.toLowerCase().includes(term)) ||
-          (r.batch && String(r.batch).toLowerCase().includes(term)) ||
-          (r.specialty && r.specialty.toLowerCase().includes(term)) ||
-          (r.customData &&
-            Object.values(r.customData).some((val) => String(val).toLowerCase().includes(term))),
+        (r.name && r.name
+          .toLowerCase().includes(
+            term)) ||
+        (r.batch && String(r
+            .batch).toLowerCase()
+          .includes(term)) ||
+        (r.specialty && r
+          .specialty.toLowerCase()
+          .includes(term)) ||
+        (r.customData &&
+          Object.values(r
+            .customData).some((
+              val) => String(val)
+            .toLowerCase()
+            .includes(term))),
       );
     }
     if (sortConfig2026) {
-      result = [...result].sort((a: any, b: any) => {
-        let aVal = a[sortConfig2026.key];
-        let bVal = b[sortConfig2026.key];
-        if (["prevDue", "fees", "totalPaid", "remaining"].includes(sortConfig2026.key)) {
-          aVal = cleanNumber(aVal);
-          bVal = cleanNumber(bVal);
+      result = [...result].sort((a:
+        any, b: any) => {
+        let aVal = a[
+          sortConfig2026.key];
+        let bVal = b[
+          sortConfig2026.key];
+        if (["prevDue", "fees",
+            "totalPaid",
+            "remaining"
+          ].includes(
+            sortConfig2026.key
+            )) {
+          aVal = cleanNumber(
+            aVal);
+          bVal = cleanNumber(
+            bVal);
         } else {
-          aVal = aVal ? String(aVal).toLowerCase() : "";
-          bVal = bVal ? String(bVal).toLowerCase() : "";
+          aVal = aVal ? String(
+            aVal)
+          .toLowerCase() : "";
+          bVal = bVal ? String(
+            bVal)
+          .toLowerCase() : "";
         }
-        if (aVal < bVal) return sortConfig2026.direction === "asc" ? -1 : 1;
-        if (aVal > bVal) return sortConfig2026.direction === "asc" ? 1 : -1;
+        if (aVal < bVal)
+        return sortConfig2026
+          .direction ===
+          "asc" ? -1 : 1;
+        if (aVal > bVal)
+        return sortConfig2026
+          .direction ===
+          "asc" ? 1 : -1;
         return 0;
       });
     }
     return result;
-  }, [controls2026.rows, search2026, sortConfig2026]);
-
-  const handleSort2025 = (key: string) => {
-    let direction: "asc" | "desc" = "asc";
-    if (sortConfig2025 && sortConfig2025.key === key && sortConfig2025.direction === "asc")
-      direction = "desc";
-    setSortConfig2025({ key, direction });
-  };
-
-  const handleSort2026 = (key: string) => {
-    let direction: "asc" | "desc" = "asc";
-    if (sortConfig2026 && sortConfig2026.key === key && sortConfig2026.direction === "asc")
-      direction = "desc";
-    setSortConfig2026({ key, direction });
-  };
-
+  }, [controls2026.rows, search2026,
+    sortConfig2026
+  ]);
+  
+  const handleSort2025 = (key:
+    string) => {
+      let direction: "asc" | "desc" =
+        "asc";
+      if (sortConfig2025 &&
+        sortConfig2025.key === key &&
+        sortConfig2025.direction ===
+        "asc")
+        direction = "desc";
+      setSortConfig2025({ key,
+          direction });
+    };
+  
+  const handleSort2026 = (key:
+    string) => {
+      let direction: "asc" | "desc" =
+        "asc";
+      if (sortConfig2026 &&
+        sortConfig2026.key === key &&
+        sortConfig2026.direction ===
+        "asc")
+        direction = "desc";
+      setSortConfig2026({ key,
+          direction });
+    };
+  
   const totals2025 = useMemo(
     () => ({
-      fees: (filteredRows2025 || []).reduce((s, r) => s + cleanNumber(r.fees), 0),
-      paid: (filteredRows2025 || []).reduce((s, r) => s + cleanNumber(r.totalPaid), 0),
-      remaining: (filteredRows2025 || []).reduce((s, r) => s + cleanNumber(r.remaining), 0),
-      months: MONTHS_2025.reduce((acc, m) => {
-        acc[m] = (filteredRows2025 || []).reduce((s, r) => s + cleanNumber(r.payments?.[m]), 0);
-        return acc;
-      }, {} as Record<string, number>),
+      fees: (filteredRows2025 || [])
+        .reduce((s, r) => s +
+          cleanNumber(r.fees), 0),
+      paid: (filteredRows2025 || [])
+        .reduce((s, r) => s +
+          cleanNumber(r.totalPaid),
+          0),
+      remaining: (
+          filteredRows2025 || [])
+        .reduce((s, r) => s +
+          cleanNumber(r.remaining),
+          0),
+      months: MONTHS_2025.reduce((
+          acc, m) => {
+          acc[m] = (
+            filteredRows2025 ||
+            []).reduce((s, r) =>
+            s + cleanNumber(r
+              .payments?.[m]), 0
+            );
+          return acc;
+        }, {} as Record < string,
+        number > ),
     }),
     [filteredRows2025],
   );
-
+  
   const totals2026 = useMemo(
     () => ({
-      prevDue: (filteredRows2026 || []).reduce((s, r) => s + cleanNumber(r.prevDue), 0),
-      fees: (filteredRows2026 || []).reduce((s, r) => s + cleanNumber(r.fees), 0),
-      paid: (filteredRows2026 || []).reduce((s, r) => s + cleanNumber(r.totalPaid), 0),
-      remaining: (filteredRows2026 || []).reduce((s, r) => s + cleanNumber(r.remaining), 0),
-      months: MONTHS_2026.reduce((acc, m) => {
-        acc[m] = (filteredRows2026 || []).reduce((s, r) => s + cleanNumber(r.payments?.[m]), 0);
-        return acc;
-      }, {} as Record<string, number>),
+      prevDue: (filteredRows2026 ||
+          []).reduce((s, r) => s +
+          cleanNumber(r.prevDue), 0
+          ),
+      fees: (filteredRows2026 || [])
+        .reduce((s, r) => s +
+          cleanNumber(r.fees), 0),
+      paid: (filteredRows2026 || [])
+        .reduce((s, r) => s +
+          cleanNumber(r.totalPaid),
+          0),
+      remaining: (
+          filteredRows2026 || [])
+        .reduce((s, r) => s +
+          cleanNumber(r.remaining),
+          0),
+      months: MONTHS_2026.reduce((
+          acc, m) => {
+          acc[m] = (
+            filteredRows2026 ||
+            []).reduce((s, r) =>
+            s + cleanNumber(r
+              .payments?.[m]), 0
+            );
+          return acc;
+        }, {} as Record < string,
+        number > ),
     }),
     [filteredRows2026],
   );
-
+  
   const allNames = useMemo(() => {
-    const n1 = (installments2025 || []).map((s: any) => s.name);
-    const n2 = (installments || []).map((s: any) => s.name);
-    return [...new Set([...n1, ...n2])];
-  }, [installments2025, installments]);
-
-  const handleNameChange = (val: string) => {
-    setNewStudentName(val);
-    setShowSuggestions(val.length > 0);
-    setNameSuggestions(
-      val.length > 0 ? allNames.filter((n) => n.toLowerCase().includes(val.toLowerCase())) : [],
-    );
-  };
-
-  const updateInstallments = (list: any[]) => useStore.setState({ installments: list });
-  const updateInstallments2025 = (list: any[]) => useStore.setState({ installments2025: list });
-
+    const n1 = (installments2025 ||
+      []).map((s: any) => s.name);
+    const n2 = (installments || [])
+      .map((s: any) => s.name);
+    return [...new Set([...n1, ...
+      n2])];
+  }, [installments2025,
+    installments]);
+  
+  const handleNameChange = (val:
+    string) => {
+      setNewStudentName(val);
+      setShowSuggestions(val.length >
+      0);
+      setNameSuggestions(
+        val.length > 0 ? allNames
+        .filter((n) => n.toLowerCase()
+          .includes(val.toLowerCase())
+          ) : [],
+      );
+    };
+  
+  const updateInstallments = (list:
+  any[]) => useStore
+.setState({ installments: list });
+  const updateInstallments2025 = (list:
+    any[]) => useStore
+.setState({ installments2025: list });
+  
   // تصدير ملف Excel مصحح ومكتمل
-  const exportToExcel = async (year: number) => {
+  const exportToExcel = async (year:
+    number) => {
     try {
-      const monthsList = year === 2025 ? MONTHS_2025 : MONTHS_2026;
-      const rows = year === 2025 ? filteredRows2025 : filteredRows2026;
-      const extraCols = year === 2026 ? extraCols2026 : [];
-
+      const monthsList = year ===
+        2025 ? MONTHS_2025 :
+        MONTHS_2026;
+      const rows = year === 2025 ?
+        filteredRows2025 :
+        filteredRows2026;
+      const extraCols = year ===
+        2026 ? extraCols2026 : [];
+      
       const headers =
-        year === 2025
-          ? ["#", "اسم المتدرب", "الدفعة", "المساق", "الرسوم", ...monthsList, "المسدد", "المتبقي"]
-          : [
-              "#",
-              "اسم المتدرب",
-              "الدفعة",
-              "المساق",
-              "المتبقي من 2025",
-              "الرسوم",
-              ...monthsList,
-              ...extraCols.map((c) => c.name),
-              "مسدد 2026",
-              "الرصيد المتبقي",
-              "الحالة",
-            ];
-
-      const data = rows.map((row: any, i: number) => {
+        year === 2025 ?
+        ["#", "اسم المتدرب",
+          "الدفعة", "المساق",
+          "الرسوم", ...monthsList,
+          "المسدد", "المتبقي"
+        ] :
+        [
+          "#",
+          "اسم المتدرب",
+          "الدفعة",
+          "المساق",
+          "المتبقي من 2025",
+          "الرسوم",
+          ...monthsList,
+          ...extraCols.map((c) => c
+            .name),
+          "مسدد 2026",
+          "الرصيد المتبقي",
+          "الحالة",
+        ];
+      
+      const data = rows.map((row:
+        any, i: number) => {
         if (year === 2025) {
           return [
             i + 1,
             row.name || "",
             row.batch || "",
-            row.specialty || "",
+            row.specialty ||
+            "",
             row.fees || 0,
-            ...monthsList.map((m) => row.payments?.[m] || 0),
-            row.totalPaid || 0,
-            row.remaining || 0,
+            ...monthsList.map(
+              (m) => row
+              .payments?.[
+              m] || 0),
+            row.totalPaid ||
+            0,
+            row.remaining ||
+            0,
           ];
         }
-        const status = row.remaining <= 0 ? "له" : "عليه";
+        const status = row
+          .remaining <= 0 ?
+          "له" : "عليه";
         return [
           i + 1,
           row.name || "",
@@ -512,264 +773,450 @@ export default function InstallmentsTab() {
           row.specialty || "",
           row.prevDue || 0,
           row.fees || 0,
-          ...monthsList.map((m) => row.payments?.[m] || 0),
-          ...extraCols.map((col) => {
-            if (col.type === "formula") return evaluateFormula(col.formula || "", row);
-            return row.customData?.[col.name] || "";
+          ...monthsList.map((
+              m) => row
+            .payments?.[m] ||
+            0),
+          ...extraCols.map((
+            col) => {
+            if (col.type ===
+              "formula")
+              return evaluateFormula(
+                col
+                .formula ||
+                "", row);
+            return row
+              .customData?.[
+                col.name
+              ] || "";
           }),
           row.totalPaid || 0,
           row.remaining || 0,
           status,
         ];
       });
-
+      
       const totalRow =
-        year === 2025
-          ? [
-              "الإجمالي", "", "", "", totals2025.fees,
-              ...monthsList.map((m) => totals2025.months[m] || 0),
-              totals2025.paid, totals2025.remaining,
-            ]
-          : [
-              "الإجمالي", "", "", "", totals2026.prevDue, totals2026.fees,
-              ...monthsList.map((m) => totals2026.months[m] || 0),
-              ...extraCols.map(() => ""), totals2026.paid, totals2026.remaining, "",
-            ];
-
-      const workbook = await createExcelWorkbook();
-      const worksheet = workbook.addWorksheet(`أقساط ${year}`, { views: [{ rightToLeft: true }] });
-      const imageId = await loadReportLetterhead(workbook);
-      const dataStartRow = addReportHeader(workbook, worksheet, {
-        title: `أقساط العام ${year}`,
-        reportDateLabel,
-        recordCount: rows.length,
-        totalColumns: headers.length,
-        palette: getExcelPalette(`أقساط العام ${year}`),
-      }, imageId);
-      appendRows(worksheet, [headers, ...data, totalRow], dataStartRow);
+        year === 2025 ?
+        [
+          "الإجمالي", "", "", "",
+          totals2025.fees,
+          ...monthsList.map((m) =>
+            totals2025.months[m] ||
+            0),
+          totals2025.paid,
+          totals2025.remaining,
+        ] :
+        [
+          "الإجمالي", "", "", "",
+          totals2026.prevDue,
+          totals2026.fees,
+          ...monthsList.map((m) =>
+            totals2026.months[m] ||
+            0),
+          ...extraCols.map(() =>
+          ""), totals2026.paid,
+          totals2026.remaining, "",
+        ];
+      
+      const workbook =
+        await createExcelWorkbook();
+      const worksheet = workbook
+        .addWorksheet(
+          `أقساط ${year}`, { views: [
+            { rightToLeft: true }] }
+          );
+      const imageId =
+        await loadReportLetterhead(
+          workbook);
+      const dataStartRow =
+        addReportHeader(workbook,
+          worksheet, {
+            title: `أقساط العام ${year}`,
+            reportDateLabel,
+            recordCount: rows
+              .length,
+            totalColumns: headers
+              .length,
+            palette: getExcelPalette(
+              `أقساط العام ${year}`
+              ),
+          }, imageId);
+      appendRows(worksheet, [
+        headers, ...data,
+        totalRow
+      ], dataStartRow);
       formatWorksheet(worksheet, {
         headerRow: dataStartRow,
-        totalRows: [dataStartRow + data.length + 1],
-        palette: getExcelPalette(`أقساط العام ${year}`),
+        totalRows: [
+          dataStartRow + data
+          .length + 1
+        ],
+        palette: getExcelPalette(
+          `أقساط العام ${year}`
+          ),
         maxColumnWidth: 28,
       });
-      await downloadWorkbook(workbook, `جدول_أقساط_${year}_${reportDate}.xlsx`);
-      toast.success("تم تصدير ملف Excel بنجاح");
+      await downloadWorkbook(
+        workbook,
+        `جدول_أقساط_${year}_${reportDate}.xlsx`
+        );
+      toast.success(
+        "تم تصدير ملف Excel بنجاح"
+        );
     } catch (error) {
-      console.error("Installments Excel export error:", error);
-      toast.error("حدث خطأ أثناء تصدير ملف Excel");
+      console.error(
+        "Installments Excel export error:",
+        error);
+      toast.error(
+        "حدث خطأ أثناء تصدير ملف Excel"
+        );
     }
   };
-
+  
   // خيارات الأعمدة المتاحة في نافذة إعدادات الطباعة
-  const printColumnOptions = (year: number) => {
-    const monthsList = year === 2025 ? MONTHS_2025 : MONTHS_2026;
-    const opts: { key: string; label: string }[] = [
-      { key: "batch", label: "الدفعة" },
-      { key: "specialty", label: "المساق" },
-    ];
-    if (year === 2026) opts.push({ key: "prevDue", label: "مدور 2025" });
-    opts.push({ key: "fees", label: "الرسوم" });
-    monthsList.forEach((m) => opts.push({ key: `month:${m}`, label: m.trim() }));
+  const printColumnOptions = (year:
+    number) => {
+    const monthsList = year === 2025 ?
+      MONTHS_2025 : MONTHS_2026;
+    const
+  opts: { key: string;label: string }
+      [] = [
+        { key: "batch",
+          label: "الدفعة" },
+        { key: "specialty",
+          label: "المساق" },
+      ];
+    if (year === 2026) opts
+  .push({ key: "prevDue",
+      label: "مدور 2025" });
+    opts.push({ key: "fees",
+      label: "الرسوم" });
+    monthsList.forEach((m) => opts
+      .push({ key: `month:${m}`,
+        label: m.trim() }));
     if (year === 2026)
-      extraCols2026.forEach((c) => opts.push({ key: `col:${c.name}`, label: c.name }));
-    opts.push({ key: "totalPaid", label: "إجمالي المسدد" });
-    opts.push({ key: "remaining", label: "الرصيد المتبقي" });
+      extraCols2026.forEach((c) =>
+        opts.push({ key: `col:${c.name}`,
+          label: c.name }));
+    opts.push({ key: "totalPaid",
+      label: "إجمالي المسدد" });
+    opts.push({ key: "remaining",
+      label: "الرصيد المتبقي" });
     if (year === 2026) {
-      opts.push({ key: "status", label: "الحالة" });
-      opts.push({ key: "notes", label: "الملاحظات" });
+      opts.push({ key: "status",
+        label: "الحالة" });
+      opts.push({ key: "notes",
+        label: "الملاحظات" });
     }
     return opts;
   };
-
-
-const exportToPDF = async (
-  year: number,
-  settings: InstallmentsPrintSettings = DEFAULT_PRINT_SETTINGS,
-  options: { download?: boolean } = {},
-): Promise<void> => {
-  try {
-    const monthsList = year === 2025 ? MONTHS_2025 : MONTHS_2026;
-    const rows = year === 2025 ? filteredRows2025 : filteredRows2026;
-    const extraCols = year === 2026 ? extraCols2026 : [];
-    const date = reportDateLabel;
-    const hidden = new Set(settings.hiddenColumns || []);
-
-    type PrintCol = {
-      key: string;
-      label: string;
-      cell: (row: any, i: number) => string;
-      total?: () => string;
-      wide?: boolean;
-      tone?: "paid" | "due" | "fees" | "plain";
-    };
-
-    const sum = (fn: (r: any) => any) =>
-      (rows || []).reduce((s: number, r: any) => s + cleanNumber(fn(r)), 0);
-
-    const allCols: PrintCol[] = [];
-    allCols.push({
-      key: "idx",
-      label: "م",
-      cell: (_r, i) => String(i + 1),
-    });
-    allCols.push({
-      key: "name",
-      label: "اسم المتدرب",
-      cell: (r) => escapeHtml(r.name || ""),
-      wide: true,
-    });
-    allCols.push({ key: "batch", label: "الدفعة", cell: (r) => escapeHtml(r.batch || "—") });
-    allCols.push({
-      key: "specialty",
-      label: "المساق",
-      cell: (r) => escapeHtml(r.specialty || "—"),
-      wide: true,
-    });
-    if (year === 2026) {
+  
+  
+  const exportToPDF = async (
+    year: number,
+    settings:
+    InstallmentsPrintSettings =
+    DEFAULT_PRINT_SETTINGS,
+    options: { download ? :
+    boolean } = {},
+  ): Promise < void > => {
+    try {
+      const monthsList = year ===
+        2025 ? MONTHS_2025 :
+        MONTHS_2026;
+      const rows = year === 2025 ?
+        filteredRows2025 :
+        filteredRows2026;
+      const extraCols = year ===
+        2026 ? extraCols2026 : [];
+      const date = reportDateLabel;
+      const hidden = new Set(
+        settings.hiddenColumns ||
+        []);
+      
+      type PrintCol = {
+        key: string;
+        label: string;
+        cell: (row: any, i:
+          number) => string;
+        total ? : () => string;
+        wide ? : boolean;
+        tone ? : "paid" | "due" |
+          "fees" | "plain";
+      };
+      
+      const sum = (fn: (r: any) =>
+          any) =>
+        (rows || []).reduce((s:
+            number, r: any) => s +
+          cleanNumber(fn(r)), 0);
+      
+      const allCols:
+  PrintCol[] = [];
       allCols.push({
-        key: "prevDue",
-        label: "مدور 2025",
-        cell: (r) => fmt(cleanNumber(r.prevDue)),
-        total: () => fmt(sum((r) => r.prevDue)),
-        tone: "due",
-      });
-    }
-    allCols.push({
-      key: "fees",
-      label: "الرسوم",
-      cell: (r) => fmt(cleanNumber(r.fees)),
-      total: () => fmt(sum((r) => r.fees)),
-      tone: "fees",
-    });
-    monthsList.forEach((m) => {
-      allCols.push({
-        key: `month:${m}`,
-        label: m.trim(),
-        cell: (r) => (cleanNumber(r.payments?.[m]) ? fmt(cleanNumber(r.payments[m])) : "—"),
-        total: () => {
-          const t = sum((r) => r.payments?.[m]);
-          return t > 0 ? fmt(t) : "—";
-        },
-      });
-    });
-    extraCols.forEach((col) => {
-      allCols.push({
-        key: `col:${col.name}`,
-        label: col.name,
-        cell: (r) =>
-          col.type === "formula"
-            ? escapeHtml(evaluateFormula(col.formula || "", r))
-            : escapeHtml(r.customData?.[col.name] || "—"),
-        total:
-          col.type === "formula"
-            ? () => {
-                const t = (rows || []).reduce(
-                  (s: number, r: any) => s + cleanNumber(evaluateFormula(col.formula || "", r)),
-                  0,
-                );
-                return t !== 0 ? fmt(t) : "—";
-              }
-            : undefined,
-      });
-    });
-    allCols.push({
-      key: "totalPaid",
-      label: "إجمالي المسدد",
-      cell: (r) => fmt(cleanNumber(r.totalPaid)),
-      total: () => fmt(sum((r) => r.totalPaid)),
-      tone: "paid",
-    });
-    allCols.push({
-      key: "remaining",
-      label: "الرصيد المتبقي",
-      cell: (r) => fmt(cleanNumber(r.remaining)),
-      total: () => fmt(sum((r) => r.remaining)),
-      tone: "due",
-    });
-    if (year === 2026) {
-      allCols.push({
-        key: "status",
-        label: "الحالة",
-        cell: (r) => (cleanNumber(r.remaining) <= 0 ? "له" : "عليه"),
+        key: "idx",
+        label: "م",
+        cell: (_r, i) => String(
+          i + 1),
       });
       allCols.push({
-        key: "notes",
-        label: "الملاحظات",
-        cell: (r) => escapeHtml(r.notes || "—"),
+        key: "name",
+        label: "اسم المتدرب",
+        cell: (r) => escapeHtml(
+          r.name || ""),
         wide: true,
       });
-    }
-
-    const cols = allCols.filter((c) => !hidden.has(c.key));
-
-    // ملاءمة تلقائية لعرض الصفحة حسب الحجم والاتجاه
-    const pageWidthMm =
-      settings.pageSize === "A4"
-        ? settings.orientation === "portrait"
-          ? 210
-          : 297
-        : settings.orientation === "landscape"
-          ? 297
-          : 210;
-    const marginMm = settings.margin === "narrow" ? 2 : settings.margin === "wide" ? 13 : 8;
-    const usableWidthMm = pageWidthMm - marginMm * 2;
-    const widthUnits = cols.reduce((s, c) => s + (c.wide ? 2.4 : 1), 0);
-    const unitMm = usableWidthMm / Math.max(1, widthUnits);
-    // في A4 الطولي يوجد عدد كبير من أعمدة الأشهر؛ نخفض الخط تلقائيًا
-    // ونمنع القيمة اليدوية من إعادة الجدول إلى عرض يتجاوز الصفحة.
-    const autoFont = Math.max(4.2, Math.min(10, unitMm * 1.18));
-    const fontSizePx = Math.min(
-      settings.fontMode === "manual" ? settings.fontSize : autoFont,
-      autoFont,
-    );
-    const headerFontSizePx = fontSizePx + 0.4;
-
-    const fitStyle = (text: any, base = fontSizePx) => {
-      const len = String(text ?? "").replace(/<[^>]*>/g, "").length;
-      const steps = Math.max(0, Math.ceil(Math.max(0, len - 16) / 10));
-      const final = Math.max(5, base - Math.min(3.5, steps * 0.7));
-      return `font-size:${final.toFixed(2)}px`;
-    };
-
-    const colGroup = `<colgroup>${cols
+      allCols.push({ key: "batch",
+        label: "الدفعة", cell: (
+          r) => escapeHtml(r
+          .batch || "—") });
+      allCols.push({
+        key: "specialty",
+        label: "المساق",
+        cell: (r) => escapeHtml(
+          r.specialty || "—"),
+        wide: true,
+      });
+      if (year === 2026) {
+        allCols.push({
+          key: "prevDue",
+          label: "مدور 2025",
+          cell: (r) => fmt(
+            cleanNumber(r
+              .prevDue)),
+          total: () => fmt(sum((
+              r) => r
+            .prevDue)),
+          tone: "due",
+        });
+      }
+      allCols.push({
+        key: "fees",
+        label: "الرسوم",
+        cell: (r) => fmt(
+            cleanNumber(r.fees)
+            ),
+        total: () => fmt(sum((
+          r) => r.fees)),
+        tone: "fees",
+      });
+      monthsList.forEach((m) => {
+        allCols.push({
+          key: `month:${m}`,
+          label: m.trim(),
+          cell: (r) => (
+            cleanNumber(r
+              .payments?.[
+                m
+              ]) ? fmt(
+              cleanNumber(
+                r
+                .payments[
+                  m])) :
+            "—"),
+          total: () => {
+            const t = sum(
+              (r) => r
+              .payments
+              ?.[m]);
+            return t > 0 ?
+              fmt(t) :
+              "—";
+          },
+        });
+      });
+      extraCols.forEach((col) => {
+        allCols.push({
+          key: `col:${col.name}`,
+          label: col.name,
+          cell: (r) =>
+            col.type ===
+            "formula" ?
+            escapeHtml(
+              evaluateFormula(
+                col
+                .formula ||
+                "", r)) :
+            escapeHtml(r
+              .customData?.[
+                col.name
+              ] || "—"),
+          total: col
+            .type ===
+            "formula" ?
+            () => {
+              const t = (
+                rows || []
+                ).reduce(
+                (s:
+                  number,
+                  r: any
+                  ) => s +
+                cleanNumber(
+                  evaluateFormula(
+                    col
+                    .formula ||
+                    "", r)
+                  ),
+                0,
+              );
+              return t !==
+                0 ? fmt(t) :
+                "—";
+            } :
+            undefined,
+        });
+      });
+      allCols.push({
+        key: "totalPaid",
+        label: "إجمالي المسدد",
+        cell: (r) => fmt(
+          cleanNumber(r
+            .totalPaid)),
+        total: () => fmt(sum((
+            r) => r.totalPaid
+            )),
+        tone: "paid",
+      });
+      allCols.push({
+        key: "remaining",
+        label: "الرصيد المتبقي",
+        cell: (r) => fmt(
+          cleanNumber(r
+            .remaining)),
+        total: () => fmt(sum((
+            r) => r.remaining
+            )),
+        tone: "due",
+      });
+      if (year === 2026) {
+        allCols.push({
+          key: "status",
+          label: "الحالة",
+          cell: (r) => (
+              cleanNumber(r
+                .remaining) <=
+              0 ? "له" : "عليه"
+              ),
+        });
+        allCols.push({
+          key: "notes",
+          label: "الملاحظات",
+          cell: (r) =>
+            escapeHtml(r
+              .notes || "—"),
+          wide: true,
+        });
+      }
+      
+      const cols = allCols.filter((
+          c) => !hidden.has(c
+        .key));
+      
+      // ملاءمة تلقائية لعرض الصفحة حسب الحجم والاتجاه
+      const pageWidthMm =
+        settings.pageSize === "A4" ?
+        settings.orientation ===
+        "portrait" ?
+        210 :
+        297 :
+        settings.orientation ===
+        "landscape" ?
+        297 :
+        210;
+      const marginMm = settings
+        .margin === "narrow" ? 2 :
+        settings.margin === "wide" ?
+        13 : 8;
+      const usableWidthMm =
+        pageWidthMm - marginMm * 2;
+      const widthUnits = cols
+        .reduce((s, c) => s + (c
+          .wide ? 2.4 : 1), 0);
+      const unitMm = usableWidthMm /
+        Math.max(1, widthUnits);
+      // في A4 الطولي يوجد عدد كبير من أعمدة الأشهر؛ نخفض الخط تلقائيًا
+      // ونمنع القيمة اليدوية من إعادة الجدول إلى عرض يتجاوز الصفحة.
+      const autoFont = Math.max(
+        13.2, Math.min(15,
+          unitMm * 1.18));
+      const fontSizePx = Math.min(
+        settings.fontMode ===
+        "manual" ? settings
+        .fontSize : autoFont,
+        autoFont,
+      );
+      const headerFontSizePx =
+        fontSizePx + 0.4;
+      
+      const fitStyle = (text: any,
+        base = fontSizePx) => {
+        const len = String(text ??
+          "").replace(
+          /<[^>]*>/g, "").length;
+        const steps = Math.max(0,
+          Math.ceil(Math.max(0,
+            len - 16) / 10));
+        const final = Math.max(5,
+          base - Math.min(3.5,
+            steps * 0.7));
+        return `font-size:${final.toFixed(2)}px`;
+      };
+      
+      const colGroup = `<colgroup>${cols
       .map(
         (c) =>
           `<col style="width:${(((c.wide ? 2.4 : 1) / widthUnits) * 100).toFixed(3)}%" />`,
       )
       .join("")}</colgroup>`;
-
-    const thead = `<tr>${cols
+      
+      const thead = `<tr>${cols
       .map((c) => `<th class="c-${c.key.replace(/[^a-zA-Z]/g, "")}">${escapeHtml(c.label)}</th>`)
       .join("")}</tr>`;
-
-    const tbody = (rows || [])
-      .map((r: any, i: number) => {
-        const tds = cols
-          .map((c) => {
-            const v = c.cell(r, i);
-            const toneClass = c.tone ? ` t-${c.tone}` : "";
-            const statusClass =
-              c.key === "status" ? (cleanNumber(r.remaining) <= 0 ? " s-ok" : " s-bad") : "";
-            return `<td class="${c.wide ? "wrap" : ""}${toneClass}${statusClass}" style="${fitStyle(v)}"><span class="cell-content">${v}</span></td>`;
-          })
-          .join("");
-        return `<tr class="${noteRowClass(r.notes)}">${tds}</tr>`;
-      })
-      .join("");
-
-    const totalRow = settings.showTotals
-      ? `<tr class="total-row">${cols
+      
+      const tbody = (rows || [])
+        .map((r: any, i:
+        number) => {
+          const tds = cols
+            .map((c) => {
+              const v = c.cell(
+                r, i);
+              const toneClass =
+                c.tone ?
+                ` t-${c.tone}` :
+                "";
+              const
+                statusClass =
+                c.key ===
+                "status" ? (
+                  cleanNumber(r
+                    .remaining
+                    ) <= 0 ?
+                  " s-ok" :
+                  " s-bad") :
+                "";
+              return `<td class="${c.wide ? "wrap" : ""}${toneClass}${statusClass}" style="${fitStyle(v)}"><span class="cell-content">${v}</span></td>`;
+            })
+            .join("");
+          return `<tr class="${noteRowClass(r.notes)}">${tds}</tr>`;
+        })
+        .join("");
+      
+      const totalRow = settings
+        .showTotals ?
+        `<tr class="total-row">${cols
           .map((c, idx) => {
             if (c.key === "idx") return `<td><span class="cell-content">—</span></td>`;
             if (idx === 1) return `<td class="wrap"><span class="cell-content">الإجمالي</span></td>`;
             return `<td style="${fitStyle("")}"><span class="cell-content">${c.total ? c.total() : ""}</span></td>`;
           })
-          .join("")}</tr>`
-      : "";
-
-    const colorTokens = settings.colored
-      ? {
+          .join("")}</tr>` :
+        "";
+      
+      const colorTokens = settings
+        .colored ?
+        {
           head: "#0f766e",
           headText: "#ffffff",
           totals: "#ccfbf1",
@@ -777,8 +1224,8 @@ const exportToPDF = async (
           paid: "#ecfdf5",
           due: "#fff7ed",
           accent: "#0d9488",
-        }
-      : {
+        } :
+        {
           head: "#ffffff",
           headText: "#ffffff",
           zebra: "#ffffff",
@@ -788,8 +1235,8 @@ const exportToPDF = async (
           due: "#ffffff",
           accent: "#000000",
         };
-
- const reportCss = `
+      
+      const reportCss = `
       html, body { 
       margin: 0 !important;
      padding: 0!important; 
@@ -988,8 +1435,8 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         }
       }
     `;
-
-    const body = `
+      
+      const body = `
       ${
         settings.showHeader
           ? `<div class="doc-header">
@@ -1014,271 +1461,443 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         <span>التوقيع: ________________</span>
       </div>
     `;
-
-    if (options.download) {
-      await downloadDetailedHtmlPdf({
-        title: `تقرير_الأقساط_والمدفوعات_${year}_${reportDate}`,
-        body,
-        css: reportCss,
-        pageSize: settings.pageSize,
-        orientation: settings.orientation,
-        fileName: `${safePdfFileName(`اقساط-${year}-تفصيلي-${reportDate}`)}.pdf`,
-      });
-      toast.success(`تم تنزيل تقرير الأقساط التفصيلي لعام ${year}`);
-      return;
+      
+      if (options.download) {
+        await downloadDetailedHtmlPdf
+          ({
+            title: `تقرير_الأقساط_والمدفوعات_${year}_${reportDate}`,
+            body,
+            css: reportCss,
+            pageSize: settings
+              .pageSize,
+            orientation: settings
+              .orientation,
+            fileName: `${safePdfFileName(`اقساط-${year}-تفصيلي-${reportDate}`)}.pdf`,
+          });
+        toast.success(
+          `تم تنزيل تقرير الأقساط التفصيلي لعام ${year}`
+          );
+        return;
+      }
+      
+      const ok =
+        await openPrintDocument({
+          title: `تقرير_الأقساط_والمدفوعات_${year}_${reportDate}`,
+          body,
+          css: reportCss,
+          pageSize: settings
+            .pageSize,
+          orientation: settings
+            .orientation,
+          margin: marginToCss(
+            settings.margin),
+          autoPrint: false,
+        });
+      
+      if (ok) {
+        toast.success(
+          "تم فتح التقرير — اختر «حفظ كـ PDF» للحصول على ملف عالي الجودة"
+          );
+      } else {
+        toast.error(
+          "تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة"
+          );
+      }
+    } catch (error) {
+      toast.error(
+        "فشل إنشاء التقرير");
     }
-
-    const ok = await openPrintDocument({
-      title: `تقرير_الأقساط_والمدفوعات_${year}_${reportDate}`,
-      body,
-      css: reportCss,
-      pageSize: settings.pageSize,
-      orientation: settings.orientation,
-      margin: marginToCss(settings.margin),
-      autoPrint: false,
-    });
-
-    if (ok) {
-      toast.success("تم فتح التقرير — اختر «حفظ كـ PDF» للحصول على ملف عالي الجودة");
-    } else {
-      toast.error("تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة");
-    }
-  } catch (error) {
-    toast.error("فشل إنشاء التقرير");
-  }
-};
-
+  };
   
-  const saveRowEdit = (e: React.FormEvent) => {
+  
+  const saveRowEdit = (e: React
+    .FormEvent) => {
     e.preventDefault();
     if (!editRowModal) return;
-
+    
     if (editRowModal.year === 2025) {
-      const list = [...(installments2025 || [])];
+      const list = [...(
+        installments2025 || [])];
       const updatedRow = {
         ...editRowData,
-        remaining: Math.max(0, cleanNumber(editRowData.fees) - cleanNumber(editRowData.totalPaid)),
+        remaining: Math.max(0,
+          cleanNumber(editRowData
+            .fees) - cleanNumber(
+            editRowData.totalPaid)
+          ),
       };
-      list[editRowModal.index] = updatedRow;
+      list[editRowModal.index] =
+        updatedRow;
       updateInstallments2025(list);
     } else {
-      const list = [...(installments || [])];
+      const list = [...(
+        installments || [])];
       const updatedRow = {
         ...editRowData,
         remaining: Math.max(
           0,
-          (cleanNumber(editRowData.prevDue) + cleanNumber(editRowData.fees)) - cleanNumber(editRowData.totalPaid),
+          (cleanNumber(editRowData
+              .prevDue) +
+            cleanNumber(
+              editRowData.fees)) -
+          cleanNumber(editRowData
+            .totalPaid),
         ),
       };
-      list[editRowModal.index] = updatedRow;
+      list[editRowModal.index] =
+        updatedRow;
       updateInstallments(list);
     }
-
-    toast.success("تم تحديث البيانات بنجاح");
+    
+    toast.success(
+      "تم تحديث البيانات بنجاح");
     setEditRowModal(null);
   };
-
-  const addCustomColumn = (e: React.FormEvent) => {
+  
+  const addCustomColumn = (e: React
+    .FormEvent) => {
     e.preventDefault();
     if (!newColName.trim()) return;
-    if (extraCols2026.some((c) => c.name === newColName))
-      return toast.error("اسم العمود موجود مسبقاً");
-
+    if (extraCols2026.some((c) => c
+        .name === newColName))
+      return toast.error(
+        "اسم العمود موجود مسبقاً");
+    
     setInstallmentCustomColumns2026([
       ...extraCols2026,
       {
         name: newColName,
         type: newColType,
-        options: newColType === "select" ? newColOptions.split(",").map((s) => s.trim()) : [],
-        formula: newColType === "formula" ? newColFormula : "",
+        options: newColType ===
+          "select" ? newColOptions
+          .split(",").map((s) => s
+            .trim()) : [],
+        formula: newColType ===
+          "formula" ?
+          newColFormula : "",
       },
     ]);
-
-    toast.success(`تم إضافة العمود: ${newColName}`);
+    
+    toast.success(
+      `تم إضافة العمود: ${newColName}`
+      );
     setNewColModal(false);
     setNewColName("");
     setNewColType("text");
     setNewColOptions("");
     setNewColFormula("");
   };
-
-  const saveCustomColumnEdit = (e: React.FormEvent) => {
+  
+  const saveCustomColumnEdit = (e: React
+    .FormEvent) => {
     e.preventDefault();
     if (!editColModal) return;
-
+    
     if (
-      editColModal.name !== editColModal.oldName &&
-      extraCols2026.some((c) => c.name === editColModal.name)
+      editColModal.name !==
+      editColModal.oldName &&
+      extraCols2026.some((c) => c
+        .name === editColModal.name)
     ) {
-      return toast.error("اسم العمود موجود مسبقاً");
+      return toast.error(
+        "اسم العمود موجود مسبقاً");
     }
-
-    const updatedCols = extraCols2026.map((c) => {
-      if (c.name === editColModal.oldName) {
-        return {
-          name: editColModal.name,
-          type: editColModal.type,
-          options:
-            editColModal.type === "select"
-              ? editColModal.options.split(",").map((s) => s.trim())
-              : [],
-          formula: editColModal.type === "formula" ? editColModal.formula : "",
-        };
-      }
-      return c;
-    });
-
-    if (editColModal.oldName !== editColModal.name) {
-      const list = [...(installments || [])];
+    
+    const updatedCols = extraCols2026
+      .map((c) => {
+        if (c.name === editColModal
+          .oldName) {
+          return {
+            name: editColModal.name,
+            type: editColModal.type,
+            options: editColModal
+              .type === "select" ?
+              editColModal.options
+              .split(",").map((s) =>
+                s.trim()) :
+              [],
+            formula: editColModal
+              .type === "formula" ?
+              editColModal.formula :
+              "",
+          };
+        }
+        return c;
+      });
+    
+    if (editColModal.oldName !==
+      editColModal.name) {
+      const list = [...(
+        installments || [])];
       list.forEach((row) => {
-        if (row.customData && row.customData[editColModal.oldName] !== undefined) {
-          row.customData[editColModal.name] = row.customData[editColModal.oldName];
-          delete row.customData[editColModal.oldName];
+        if (row.customData && row
+          .customData[editColModal
+            .oldName] !==
+          undefined) {
+          row.customData[
+              editColModal.name] =
+            row.customData[
+              editColModal.oldName
+              ];
+          delete row.customData[
+            editColModal.oldName
+            ];
         }
       });
       updateInstallments(list);
     }
-
-    setInstallmentCustomColumns2026(updatedCols);
+    
+    setInstallmentCustomColumns2026(
+      updatedCols);
     setEditColModal(null);
-    toast.success("تم تعديل العمود بنجاح");
+    toast.success(
+      "تم تعديل العمود بنجاح");
   };
-
-  const deleteCustomColumn = (colName: string) => {
-    if (!confirm(`هل أنت متأكد من حذف العمود "${colName}"؟`)) return;
-    setInstallmentCustomColumns2026(extraCols2026.filter((c) => c.name !== colName));
+  
+  const deleteCustomColumn = (colName:
+    string) => {
+    if (!confirm(
+        `هل أنت متأكد من حذف العمود "${colName}"؟`
+        )) return;
+    setInstallmentCustomColumns2026(
+      extraCols2026.filter((c) => c
+        .name !== colName));
     setEditColModal(null);
     toast.success("تم حذف العمود");
   };
-
-  const recalculate2026Row = (row: any) => {
-    const payments = { ...(row.payments || {}) };
-    const totalPaid = MONTHS_2026.reduce((sum, m) => sum + (Number(payments[m]) || 0), 0);
-    return {
-      ...row,
-      payments,
-      totalPaid,
-      remaining: Math.max(0, (cleanNumber(row.prevDue) + cleanNumber(row.fees)) - totalPaid),
+  
+  const recalculate2026Row = (row:
+    any) => {
+      const payments = { ...(row
+          .payments || {}) };
+      const totalPaid = MONTHS_2026
+        .reduce((sum, m) => sum + (
+            Number(payments[m]) || 0),
+          0);
+      return {
+        ...row,
+        payments,
+        totalPaid,
+        remaining: Math.max(0, (
+            cleanNumber(row.prevDue) +
+            cleanNumber(row.fees)) -
+          totalPaid),
+      };
     };
-  };
-
-  const update2026CellValue = (rowIndex: number, key: string, value: string) => {
+  
+  const update2026CellValue = (rowIndex:
+    number, key: string, value: string
+    ) => {
     if (rowIndex < 0) return;
-    const list = [...(installments || [])];
-    const current = { ...list[rowIndex] };
-    const numericKeys = ["prevDue", "fees", "totalPaid", "remaining"];
-    const nextValue: any = numericKeys.includes(key) ? cleanNumber(value) : value;
+    const list = [...(installments ||
+      [])];
+    const current = { ...list[
+        rowIndex] };
+    const numericKeys = ["prevDue",
+      "fees", "totalPaid",
+      "remaining"
+    ];
+    const nextValue: any = numericKeys
+      .includes(key) ? cleanNumber(
+        value) : value;
     list[rowIndex] =
-      (key === "prevDue" || key === "fees")
-        ? recalculate2026Row({ ...current, [key]: nextValue })
-        : { ...current, [key]: nextValue };
+      (key === "prevDue" || key ===
+        "fees") ?
+      recalculate2026Row({ ...current,
+        [key]: nextValue }) :
+      { ...current, [
+      key]: nextValue };
     updateInstallments(list);
   };
-
-  const update2026PaymentValue = (rowIndex: number, month: string, value: string) => {
+  
+  const update2026PaymentValue = (
+    rowIndex: number, month: string,
+    value: string) => {
     if (rowIndex < 0) return;
-    const list = [...(installments || [])];
-    const row = { ...list[rowIndex], payments: { ...(list[rowIndex]?.payments || {}) } };
-    row.payments[month] = cleanNumber(value);
-    list[rowIndex] = recalculate2026Row(row);
+    const list = [...(installments ||
+      [])];
+    const row = { ...list[rowIndex],
+      payments: { ...(list[rowIndex]
+          ?.payments || {}) } };
+    row.payments[month] = cleanNumber(
+      value);
+    list[rowIndex] =
+      recalculate2026Row(row);
     updateInstallments(list);
   };
-
-  const updateCustomColValue = (rowIndex: number, colName: string, value: string) => {
-    const list = [...(installments || [])];
-    const row = { ...list[rowIndex], customData: { ...(list[rowIndex]?.customData || {}) } };
+  
+  const updateCustomColValue = (
+    rowIndex: number, colName: string,
+    value: string) => {
+    const list = [...(installments ||
+      [])];
+    const row = { ...list[rowIndex],
+      customData: { ...(list[
+          rowIndex]?.customData ||
+        {}) } };
     row.customData[colName] = value;
     list[rowIndex] = row;
     updateInstallments(list);
   };
-
-  const deleteRow2026 = (rowIndex: number, name: string) => {
+  
+  const deleteRow2026 = (rowIndex:
+    number, name: string) => {
     if (rowIndex < 0) return;
-    if (!confirm(`هل أنت متأكد من حذف صف المتدرب "${name}" من جدول 2026؟`)) return;
-    updateInstallments((installments || []).filter((_: any, i: number) => i !== rowIndex));
+    if (!confirm(
+        `هل أنت متأكد من حذف صف المتدرب "${name}" من جدول 2026؟`
+        )) return;
+    updateInstallments((
+      installments || []).filter((
+        _: any, i: number) =>
+      i !== rowIndex));
     toast.success("تم حذف الصف");
   };
-
-  const addNewRow2026 = (e: React.FormEvent) => {
+  
+  const addNewRow2026 = (e: React
+    .FormEvent) => {
     e.preventDefault();
-    if (!newRowData2026.name) return toast.error("يرجى إدخال اسم المتدرب");
-
-    const payments = MONTHS_2026.reduce((acc, m) => ({ ...acc, [m]: 0 }), {} as any);
+    if (!newRowData2026.name)
+    return toast.error(
+        "يرجى إدخال اسم المتدرب");
+    
+    const payments = MONTHS_2026
+      .reduce((acc, m) => ({ ...acc, [
+          m
+        ]: 0 }), {} as any);
     const newRec = {
       name: newRowData2026.name,
       batch: newRowData2026.batch,
-      specialty: newRowData2026.specialty,
-      fees: Number(newRowData2026.fees) || 0,
-      prevDue: Number(newRowData2026.prevDue) || 0,
+      specialty: newRowData2026
+        .specialty,
+      fees: Number(newRowData2026
+        .fees) || 0,
+      prevDue: Number(newRowData2026
+        .prevDue) || 0,
       totalPaid: 0,
-      remaining: Number(newRowData2026.prevDue) || 0,
+      remaining: Number(
+          newRowData2026.prevDue) ||
+        0,
       notes: "",
       phone: "",
       payments,
       customData: {},
     };
-
-    updateInstallments([...(installments || []), newRec]);
-    toast.success("تم إضافة الصف بنجاح");
+    
+    updateInstallments([...(
+        installments || []),
+      newRec
+    ]);
+    toast.success(
+      "تم إضافة الصف بنجاح");
     setNewRowModal2026(false);
-    setNewRowData2026({ name: "", batch: "", specialty: "", prevDue: 0, fees: 0 });
+    setNewRowData2026({ name: "",
+      batch: "", specialty: "",
+      prevDue: 0, fees: 0 });
   };
-
-  const addPayment = (e: React.FormEvent) => {
+  
+  const addPayment = (e: React
+    .FormEvent) => {
     e.preventDefault();
-    if (!paymentModal || !payAmount) return toast.error("يرجى إدخال المبلغ");
-    const amount = Number(payAmount) || 0;
-    if (amount <= 0) return toast.error("مبلغ غير صحيح");
-    const list = [...(installments || [])];
+    if (!paymentModal || !payAmount)
+      return toast.error(
+        "يرجى إدخال المبلغ");
+    const amount = Number(
+      payAmount) || 0;
+    if (amount <= 0) return toast
+      .error("مبلغ غير صحيح");
+    const list = [...(installments ||
+      [])];
     const updated = list.map((s) => {
-      if (s.name !== paymentModal.row.name) return s;
+      if (s.name !== paymentModal
+        .row.name) return s;
       const payments = {
         ...s.payments,
-        [paymentModal.month]: (Number(s.payments[paymentModal.month]) || 0) + amount,
+        [paymentModal.month]: (
+            Number(s.payments[
+              paymentModal
+              .month]) || 0) +
+          amount,
       };
-      const totalPaid = MONTHS_2026.reduce((sum, m) => sum + (Number(payments[m]) || 0), 0);
+      const totalPaid =
+        MONTHS_2026.reduce((sum,
+          m) => sum + (Number(
+          payments[m]) || 0), 0);
       return {
         ...s,
         payments,
         totalPaid,
-        remaining: Math.max(0, (cleanNumber(s.prevDue) + cleanNumber(s.fees)) - totalPaid),
+        remaining: Math.max(0, (
+            cleanNumber(s
+              .prevDue) +
+            cleanNumber(s.fees)
+            ) - totalPaid),
       };
     });
     updateInstallments(updated);
-    toast.success(`تم تسجيل دفعة ${fmt(amount)}`);
+    toast.success(
+      `تم تسجيل دفعة ${fmt(amount)}`
+      );
     setPaymentModal(null);
     setPayAmount("");
   };
-
-  const addNewPayment = (e: React.FormEvent) => {
+  
+  const addNewPayment = (e: React
+    .FormEvent) => {
     e.preventDefault();
-    if (!newStudentName || !newStudentAmount || !newStudentMonth)
-      return toast.error("يرجى إدخال جميع البيانات");
-    const amount = Number(newStudentAmount) || 0;
-    if (amount <= 0) return toast.error("مبلغ غير صحيح");
-    const list = [...(installments || [])];
-    const exist = list.find((s) => s.name === newStudentName);
+    if (!newStudentName || !
+      newStudentAmount || !
+      newStudentMonth)
+      return toast.error(
+        "يرجى إدخال جميع البيانات");
+    const amount = Number(
+      newStudentAmount) || 0;
+    if (amount <= 0) return toast
+      .error("مبلغ غير صحيح");
+    const list = [...(installments ||
+      [])];
+    const exist = list.find((s) => s
+      .name === newStudentName);
     if (exist) {
-      const updated = list.map((s) => {
-        if (s.name !== newStudentName) return s;
+      const updated = list.map((
+      s) => {
+        if (s.name !==
+          newStudentName)
+      return s;
         const payments = {
           ...s.payments,
-          [newStudentMonth]: (Number(s.payments[newStudentMonth]) || 0) + amount,
+          [newStudentMonth]: (
+              Number(s.payments[
+                newStudentMonth
+                ]) || 0) +
+            amount,
         };
-        const totalPaid = MONTHS_2026.reduce((sum, m) => sum + (Number(payments[m]) || 0), 0);
+        const totalPaid =
+          MONTHS_2026.reduce((sum,
+              m) => sum + (Number(
+              payments[m]) || 0),
+            0);
         return {
           ...s,
           payments,
           totalPaid,
-          remaining: Math.max(0, (cleanNumber(s.prevDue) + cleanNumber(s.fees)) - totalPaid),
+          remaining: Math.max(0, (
+              cleanNumber(s
+                .prevDue) +
+              cleanNumber(s
+                .fees)) -
+            totalPaid),
         };
       });
       updateInstallments(updated);
     } else {
-      const payments = MONTHS_2026.reduce(
-        (acc, m) => ({ ...acc, [m]: m === newStudentMonth ? amount : 0 }),
-        {} as any,
-      );
+      const payments = MONTHS_2026
+        .reduce(
+          (acc, m) => ({ ...acc, [
+            m]: m ===
+              newStudentMonth ?
+              amount :
+              0 }), {} as any,
+        );
       const newRec = {
         name: newStudentName,
         batch: "",
@@ -1286,35 +1905,56 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         fees: 0,
         prevDue: 0,
         totalPaid: amount,
-        remaining: Math.max(0, 0 - amount),
+        remaining: Math.max(0, 0 -
+          amount),
         notes: "",
         phone: "",
         payments,
       };
-      updateInstallments([...list, newRec]);
+      updateInstallments([...list,
+        newRec
+      ]);
     }
-    toast.success(`تم إضافة دفعة ${fmt(amount)}`);
+    toast.success(
+      `تم إضافة دفعة ${fmt(amount)}`
+      );
     setNewPaymentModal(false);
     setNewStudentName("");
     setNewStudentAmount("");
     setNewStudentMonth("");
   };
-
-  const editPayment = (e: React.FormEvent) => {
+  
+  const editPayment = (e: React
+    .FormEvent) => {
     e.preventDefault();
-    if (!editPaymentModal || !editAmount)
-    return;
-    const newAmount = Number(editAmount) || 0;
-    const list = [...(installments || [])];
+    if (!editPaymentModal || !
+      editAmount)
+      return;
+    const newAmount = Number(
+      editAmount) || 0;
+    const list = [...(installments ||
+      [])];
     const updated = list.map((s) => {
-      if (s.name !== editPaymentModal.row.name) return s;
-      const payments = { ...s.payments, [editPaymentModal.month]: newAmount };
-      const totalPaid = MONTHS_2026.reduce((sum, m) => sum + (Number(payments[m]) || 0), 0);
+      if (s.name !==
+        editPaymentModal.row.name)
+        return s;
+      const payments = { ...s
+        .payments, [
+          editPaymentModal.month
+        ]: newAmount };
+      const totalPaid =
+        MONTHS_2026.reduce((sum,
+          m) => sum + (Number(
+          payments[m]) || 0), 0);
       return {
         ...s,
         payments,
         totalPaid,
-        remaining: Math.max(0, (cleanNumber(s.prevDue) + cleanNumber(s.fees)) - totalPaid),
+        remaining: Math.max(0, (
+            cleanNumber(s
+              .prevDue) +
+            cleanNumber(s.fees)
+            ) - totalPaid),
       };
     });
     updateInstallments(updated);
@@ -1322,34 +1962,54 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     setEditPaymentModal(null);
     setEditAmount("");
   };
-
-  const deletePayment = (row: any, month: string) => {
-    if (!confirm(`حذف قسط شهر ${month}؟`)) return;
-    const list = [...(installments || [])];
+  
+  const deletePayment = (row: any,
+    month: string) => {
+    if (!confirm(
+        `حذف قسط شهر ${month}؟`))
+      return;
+    const list = [...(installments ||
+      [])];
     const updated = list.map((s) => {
-      if (s.name !== row.name) return s;
-      const payments = { ...s.payments, [month]: 0 };
-      const totalPaid = MONTHS_2026.reduce((sum, m) => sum + (Number(payments[m]) || 0), 0);
+      if (s.name !== row.name)
+        return s;
+      const payments = { ...s
+        .payments, [month]: 0 };
+      const totalPaid =
+        MONTHS_2026.reduce((sum,
+          m) => sum + (Number(
+          payments[m]) || 0), 0);
       return {
         ...s,
         payments,
         totalPaid,
-        remaining: Math.max(0, (cleanNumber(s.prevDue) + cleanNumber(s.fees)) - totalPaid),
+        remaining: Math.max(0, (
+            cleanNumber(s
+              .prevDue) +
+            cleanNumber(s.fees)
+            ) - totalPaid),
       };
     });
     updateInstallments(updated);
-    toast.success(`تم حذف قسط شهر ${month}`);
-    if (editPaymentModal) setEditPaymentModal(null);
+    toast.success(
+      `تم حذف قسط شهر ${month}`);
+    if (editPaymentModal)
+      setEditPaymentModal(null);
   };
-
-  const importFile = async (e: React.ChangeEvent<HTMLInputElement>, year: 2025 | 2026) => {
+  
+  const importFile = async (e: React
+    .ChangeEvent <
+    HTMLInputElement > , year:
+    2025 | 2026) => {
     const input = e.target;
     const file = input.files?.[0];
     if (!file) return;
     try {
       // ملاحظة: لا نصفّر قيمة الحقل قبل القراءة — بعض متصفحات أندرويد/شاومي
       // تُبطل الملف عند التصفير فتخرج النتيجة فارغة بدون خطأ.
-      const formattedData = await importInstallmentsInWorker(file, year);
+      const formattedData =
+        await importInstallmentsInWorker(
+          file, year);
       if (!formattedData?.length) {
         const msg =
           "لم يتم العثور على أسماء متدربين في الملف — تأكد من وجود عمود «اسم المتدرب» في الصف الأول.";
@@ -1358,57 +2018,84 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         return;
       }
       if (year === 2025) {
-        useStore.setState({ installments2025: formattedData });
+        useStore
+      .setState({ installments2025: formattedData });
       } else {
-        useStore.setState({ installments: formattedData });
+        useStore
+      .setState({ installments: formattedData });
       }
-
-      toast.success(`تم استيراد ${formattedData.length} سجلاً للعام ${year} بنجاح!`);
+      
+      toast.success(
+        `تم استيراد ${formattedData.length} سجلاً للعام ${year} بنجاح!`
+        );
       setImportError(null);
     } catch (error) {
-      console.error(`[Excel] Installments ${year} import failed`, error);
-      const detail = error instanceof Error ? error.message : String(error);
-      setImportError(`حدث خطأ في قراءة الملف: ${detail}`);
-      toast.error("فشل استيراد الملف");
+      console.error(
+        `[Excel] Installments ${year} import failed`,
+        error);
+      const detail =
+        error instanceof Error ?
+        error.message : String(
+          error);
+      setImportError(
+        `حدث خطأ في قراءة الملف: ${detail}`
+        );
+      toast.error(
+        "فشل استيراد الملف");
     } finally {
       input.value = "";
     }
   };
-
-
+  
+  
   const getStatusText = (rem: number) =>
-    rem <= 0
-      ? { text: "له", color: "text-emerald-800", bg: "bg-emerald-50" }
-      : { text: "عليه", color: "text-rose-800", bg: "bg-rose-50" };
-
-    // تم تعديل هذه الدالة لتتوافق بشكل أفضل مع صيغة حفظ PDF واللغة العربية
-  const generateAccountStatement = (row: any, year: number) => {
+    rem <= 0 ?
+    { text: "له",
+      color: "text-emerald-800",
+      bg: "bg-emerald-50" } :
+    { text: "عليه",
+      color: "text-rose-800",
+      bg: "bg-rose-50" };
+  
+  // تم تعديل هذه الدالة لتتوافق بشكل أفضل مع صيغة حفظ PDF واللغة العربية
+  const generateAccountStatement = (row:
+    any, year: number) => {
     // 1. تحديد قائمة الأشهر بناءً على السنة المختارة
-    const monthsList = year === 2025 ? MONTHS_2025 : MONTHS_2026;
-
+    const monthsList = year === 2025 ?
+      MONTHS_2025 : MONTHS_2026;
+    
     // 2. تنظيف وتحويل الرسوم والمستحقات السابقة إلى أرقام صحيحة
-    const fees = cleanNumber(row?.fees);
-    const prevDue = cleanNumber(row?.prevDue);
-
+    const fees = cleanNumber(row
+      ?.fees);
+    const prevDue = cleanNumber(row
+      ?.prevDue);
+    
     // 3. حساب إجمالي المدفوعات عبر المرور على قائمة الأشهر
-    const totalPaid = monthsList.reduce((sum, month) => {
-      const payment = Number(row?.payments?.[month]) || 0;
-      return sum + payment;
-    }, 0);
-
+    const totalPaid = monthsList
+      .reduce((sum, month) => {
+        const payment = Number(row
+            ?.payments?.[month]) ||
+          0;
+        return sum + payment;
+      }, 0);
+    
     // 4. حساب إجمالي المستحق:
     // إذا كانت السنة 2026 يتم إضافة المتبقي السابق إلى الرسوم الحالية، وإلا تُحسب الرسوم فقط.
-    const dueTotal = year === 2026 ? prevDue + 0 : fees;
-
+    const dueTotal = year === 2026 ?
+      prevDue + 0 : fees;
+    
     // 5. حساب المبلغ المتبقي
-    const remaining = dueTotal - totalPaid;
-
+    const remaining = dueTotal -
+      totalPaid;
+    
     // استخراج اسم آمن ليستخدمه المتصفح كاسم افتراضي عند الحفظ PDF
-    const safeName = safePdfFileName(row.name);
-
+    const safeName = safePdfFileName(
+      row.name);
+    
     const paidRows = monthsList
       .map((m) => {
-        const amount = Number(row.payments?.[m]) || 0;
+        const amount = Number(row
+          .payments?.[m]) || 0;
         if (amount <= 0) return "";
         return `
           <tr>
@@ -1417,33 +2104,34 @@ td.t-fees { background: ${colorTokens.fees} !important; }
           </tr>`;
       })
       .join("");
-
-    const infoCard = (label: string, value: string) =>
+    
+    const infoCard = (label: string,
+        value: string) =>
       `<div class="info-box">
         <div class="info-lbl">${escapeHtml(label)}</div>
         <div class="info-val">${escapeHtml(value || "—")}</div>
       </div>`;
-
+    
     const prevRow =
-      year === 2026
-        ? `<tr class="row-due-old">
+      year === 2026 ?
+      `<tr class="row-due-old">
           <td class="lbl">متبقي من العام 2025 (مدور)</td>
           <td class="num">${escapeHtml(fmt(prevDue))}</td>
-        </tr>`
-        : "";
-
+        </tr>` :
+      "";
+    
     const remainingLabel =
-      remaining > 0
-        ? "الرصيد المتبقي (عليه)"
-        : remaining < 0
-          ? "الرصيد الإضافي (له)"
-          : "الحالة: تم السداد بالكامل";
-
+      remaining > 0 ?
+      "الرصيد المتبقي (عليه)" :
+      remaining < 0 ?
+      "الرصيد الإضافي (له)" :
+      "الحالة: تم السداد بالكامل";
+    
     // ضبط أحجام كروت المعلومات والطباعة (أصغر وأكثر إح    // ضبط أحجام كروت المعلومات والطباعة وتطابق الألوان 100%
-        const statementCss = `
+    const statementCss = `
       @page {
         size: A4 portrait;
-        margin: 8mm;
+        margin: 0;
       }
       * { box-sizing: border-box; }
       html, body {
@@ -1459,8 +2147,8 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       }
       .container {
         width: 100%;
-        max-width: 194mm; /* عرض A4 (210mm) بعد خصم الهوامش */
-        min-height: 281mm; /* طول A4 (297mm) بعد خصم الهوامش */
+max-width: auto;
+min-height:auto;
         margin: 0 auto;
         display: flex;
         flex-direction: column;
@@ -1537,8 +2225,8 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       }
       .num { 
         font-family: "Times New Roman", Times, serif !important; 
-        font-weight: 900 !important; 
-        font-size: 13pt !important; 
+        font-weight: bold !important; 
+        font-size: 17px !important; 
         direction: ltr !important; 
       }
       .row-fees td { background: #eff6ff !important; }
@@ -1553,22 +2241,26 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         border-top: 2.5px solid #000000 !important; 
       }
       .foot {
-        margin-top: 14mm;
+        margin-top: 6mm;
         display: flex;
         justify-content: space-between;
         align-items: center;
         font-size: 11pt;
         font-weight: 800;
-        padding-top: 6px;
+        padding-top: 3px;
       }
-      @media print {
-        @page { size: A4 portrait; margin: 8mm; }
-        html, body { width: 100% !important; height: 100% !important; margin: 0 !important; padding: 0 !important; }
-        .container { max-width: 100% !important; height: 100% !important; }
+@media print {
+ @page {size: A4 portrait;
+ margin: 3mm; 
+ }
+html, body { width: 100% !important; height: 100% !important; margin: 0 !important; padding: 0 !important; }
+        .container { 
+max-width: 100% !important; 
+height: 100% !important; }
         .page-frame { height: 100% !important; }
       }
     `;
-
+    
     const body = `
 <div class="container">
 <div class="page-frame">
@@ -1602,123 +2294,140 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         </div>
       </div>
     `;
-
+    
     return {
       title: `كشف_حساب_${safeName}_${year}_${reportDate}`,
       body,
       css: statementCss,
     };
   };
-
-  const downloadTraineeStatementPdf = downloadReportPdf;
-
+  
+  const downloadTraineeStatementPdf =
+    downloadReportPdf;
+  
   // تنزيل كشف الحساب كملف PDF متطابق مع المعاينة والطباعة
-    const handleExportPdf = async (row: any, year: number) => {
-    const { title, body, css } = generateAccountStatement(row, year);
+  const handleExportPdf = async (row:
+    any, year: number) => {
+    const { title, body, css } =
+    generateAccountStatement(row,
+      year);
     try {
-      await downloadTraineeStatementPdf({
-        title,
-        body,
-        css,
-        fileName: `${title}.pdf`,
-        pageSize: 'A4',
-        orientation: 'portrait',
-        marginMm: 8,
-      });
-      toast.success("تم تنزيل كشف الحساب بصيغة PDF بنجاح");
+      await downloadTraineeStatementPdf
+        ({
+          title,
+          body,
+          css,
+          fileName: `${title}.pdf`,
+          pageSize: 'A4',
+          orientation: 'portrait',
+          marginMm: 8,
+        });
+      toast.success(
+        "تم تنزيل كشف الحساب بصيغة PDF بنجاح"
+        );
     } catch (error) {
-      console.error("Account statement PDF error:", error);
-      toast.error("تعذّر تنزيل كشف الحساب");
+      console.error(
+        "Account statement PDF error:",
+        error);
+      toast.error(
+        "تعذّر تنزيل كشف الحساب");
     }
   };
-
-
-  const printStatement = (row: any, year: number) => {
-    const { title, body, css } = generateAccountStatement(row, year);
-    const opened = openBrowserPrintPreview({
-      title,
-      reportDateLabel,
-      tableHtml: body,
-      contentCss: css,
-      defaultOrientation: "portrait",
-      defaultPageSize: "A4",
-    });
+  
+  
+  const printStatement = (row: any,
+    year: number) => {
+    const { title, body, css } =
+    generateAccountStatement(row,
+      year);
+    const opened =
+      openBrowserPrintPreview({
+        title,
+        reportDateLabel,
+        tableHtml: body,
+        contentCss: css,
+        defaultOrientation: "portrait",
+        defaultPageSize: "A4",
+      });
     if (!opened) {
-      toast.error("تم منع فتح نافذة المعاينة، يرجى السماح بالنوافذ المنبثقة في كروم");
+      toast.error(
+        "تم منع فتح نافذة المعاينة، يرجى السماح بالنوافذ المنبثقة في كروم"
+        );
     }
   };
-
+  
   const stats2025 = [
-    {
-label: 
-"إجمالي الرسوم التقديرية",
-      value: fmt(totals2025.fees),
-      bgClass: "bg-white",
-      borderClass: "border-sky-100",
-      accentClass: "bg-sky-500",
-    },
-    {
-      label: "إجمالي الأقساط المسددة",
-      value: fmt(totals2025.paid),
-      bgClass: "bg-emerald-50/70",
-      borderClass: "border-emerald-100",
-      accentClass: "bg-emerald-500",
-    },
-    {
-      label: 
-"إجمالي المتبقي",
-      value: fmt(totals2025.remaining),
-      bgClass: "bg-orange-50/70",
-      borderClass: "border-orange-100",
-      accentClass: "bg-orange-500",
-    },
-  ];
-
+  {
+    label: "إجمالي الرسوم التقديرية",
+    value: fmt(totals2025.fees),
+    bgClass: "bg-white",
+    borderClass: "border-sky-100",
+    accentClass: "bg-sky-500",
+  },
+  {
+    label: "إجمالي الأقساط المسددة",
+    value: fmt(totals2025.paid),
+    bgClass: "bg-emerald-50/70",
+    borderClass: "border-emerald-100",
+    accentClass: "bg-emerald-500",
+  },
+  {
+    label: "إجمالي المتبقي",
+    value: fmt(totals2025
+      .remaining),
+    bgClass: "bg-orange-50/70",
+    borderClass: "border-orange-100",
+    accentClass: "bg-orange-500",
+  }, ];
+  
   const stats2026 = [
-    {
-      label: "المدور (متبقي 2025)",
-      value: fmt(totals2026.prevDue),
-      bgClass: "bg-white",
-      borderClass: "border-sky-100",
-      accentClass: "bg-sky-600",
-    },
-    {
-      label: "إجمالي مسدد 2026",
-      value: fmt(totals2026.paid),
-      bgClass: "bg-emerald-50/70",
-      borderClass: "border-emerald-100",
-      accentClass: "bg-emerald-500",
-    },
-    {
-      label: 
-  "صافي الرصيد المتبقي",
-      value: fmt(totals2026.remaining),
-      bgClass: "bg-orange-50/70",
-      borderClass: "border-orange-100",
-      accentClass: "bg-orange-500",
-    },
-  ];
-
-  const handleDetailedPdf2026 = async () => {
-    if (detailedPdfBusy2026) return;
-    if (!filteredRows2026.length) {
-      toast.error("لا توجد بيانات للتصدير");
-      return;
-    }
-    setDetailedPdfBusy2026(true);
-    try {
-      await exportToPDF(2026, { ...DEFAULT_PRINT_SETTINGS }, { download: true });
-    } finally {
-      setDetailedPdfBusy2026(false);
-    }
-  };
-
-const installments2025WebActions: WebActionItem[] = [
-    {
-      label: "استيراد Excel",
-      onSelect: () => undefined,
-      content: (
-        <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold text-slate-700 hover:bg-slate-100">
+  {
+    label: "المدور (متبقي 2025)",
+    value: fmt(totals2026.prevDue),
+    bgClass: "bg-white",
+    borderClass: "border-sky-100",
+    accentClass: "bg-sky-600",
+  },
+  {
+    label: "إجمالي مسدد 2026",
+    value: fmt(totals2026.paid),
+    bgClass: "bg-emerald-50/70",
+    borderClass: "border-emerald-100",
+    accentClass: "bg-emerald-500",
+  },
+  {
+    label: "صافي الرصيد المتبقي",
+    value: fmt(totals2026
+      .remaining),
+    bgClass: "bg-orange-50/70",
+    borderClass: "border-orange-100",
+    accentClass: "bg-orange-500",
+  }, ];
+  
+  const handleDetailedPdf2026 =
+async () => {
+      if (detailedPdfBusy2026) return;
+      if (!filteredRows2026.length) {
+        toast.error(
+          "لا توجد بيانات للتصدير");
+        return;
+      }
+      setDetailedPdfBusy2026(true);
+      try {
+        await exportToPDF(2026, { ...
+          DEFAULT_PRINT_SETTINGS }, { download: true });
+      } finally {
+        setDetailedPdfBusy2026(false);
+      }
+    };
+  
+  const installments2025WebActions:
+    WebActionItem[] = [
+      {
+        label: "استيراد Excel",
+        onSelect: () => undefined,
+        content: (
+          <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold text-slate-700 hover:bg-slate-100">
           <span>استيراد Excel</span>
           <input
             type="file"
@@ -1727,26 +2436,41 @@ const installments2025WebActions: WebActionItem[] = [
             className="absolute h-0 w-0 opacity-0 overflow-hidden"
           />
         </label>
-      ),
-    },
-    { label: "تصدير Excel التفصيلي", icon: FileSpreadsheet, onSelect: () => exportToExcel(2025) },
-    { label: "طباعة تفصيلية", icon: Printer, onSelect: () => setPrintSettingsYear(2025) },
-  ];
-
-const installments2026WebActions: WebActionItem[] = [
-  {
-    label: condFormatRules.length ? `تنسيق نشط (${condFormatRules.length})` : "تنسيق شرطي",
-    icon: Palette,
-    onSelect: () => setCondFormatModal(true),
-  },
-  { label: "طالب جديد", icon: Plus, onSelect: () => setNewRowModal2026(true) },
-  { label: "عمود جديد", icon: Plus, onSelect: () => setNewColModal(true) },
-  { label: "إضافة قسط", icon: Plus, onSelect: () => setNewPaymentModal(true) },
-  {
-    label: "استيراد Excel",
-    onSelect: () => undefined,
-    content: (
-      <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold text-slate-700 hover:bg-slate-100">
+        ),
+      },
+      { label: "تصدير Excel التفصيلي",
+        icon: FileSpreadsheet,
+        onSelect: () => exportToExcel(
+            2025) },
+      { label: "طباعة تفصيلية",
+        icon: Printer, onSelect: () =>
+          setPrintSettingsYear(2025) },
+    ];
+  
+  const installments2026WebActions:
+    WebActionItem[] = [
+      {
+        label: condFormatRules.length ?
+          `تنسيق نشط (${condFormatRules.length})` :
+          "تنسيق شرطي",
+        icon: Palette,
+        onSelect: () =>
+          setCondFormatModal(true),
+      },
+      { label: "طالب جديد", icon: Plus,
+        onSelect: () =>
+          setNewRowModal2026(true) },
+      { label: "عمود جديد", icon: Plus,
+        onSelect: () => setNewColModal(
+          true) },
+      { label: "إضافة قسط", icon: Plus,
+        onSelect: () =>
+          setNewPaymentModal(true) },
+      {
+        label: "استيراد Excel",
+        onSelect: () => undefined,
+        content: (
+          <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold text-slate-700 hover:bg-slate-100">
           <span>استيراد Excel</span>
           <input
             type="file"
@@ -1755,20 +2479,26 @@ const installments2026WebActions: WebActionItem[] = [
             className="absolute h-0 w-0 opacity-0 overflow-hidden"
           />
         </label>
-    ),
-  },
-  { label: "تصدير Excel التفصيلي", icon: FileSpreadsheet, onSelect: () => exportToExcel(2026) },
-  { label: "طباعة تفصيلية", icon: Printer, onSelect: () => setPrintSettingsYear(2026) },
-  {
-    label: detailedPdfBusy2026 ?
-      
-      "جارٍ التحضير…" : "تنزيل PDF التفصيلي",
-    icon: Download,
-    onSelect: handleDetailedPdf2026,
-    disabled: detailedPdfBusy2026,
-  },
-];
-
+        ),
+      },
+      { label: "تصدير Excel التفصيلي",
+        icon: FileSpreadsheet,
+        onSelect: () => exportToExcel(
+            2026) },
+      { label: "طباعة تفصيلية",
+        icon: Printer, onSelect: () =>
+          setPrintSettingsYear(2026) },
+      {
+        label: detailedPdfBusy2026 ?
+          
+          "جارٍ التحضير…" :
+          "تنزيل PDF التفصيلي",
+        icon: Download,
+        onSelect: handleDetailedPdf2026,
+        disabled: detailedPdfBusy2026,
+      },
+    ];
+  
   return (
     <div className="w-full space-y-4 sm:space-y-6 p-0" dir="rtl">
       
