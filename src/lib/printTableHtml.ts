@@ -72,7 +72,7 @@ export const tablePrintStyles = `
     direction: rtl;
     width: 100%;
     font-weight: 700;
-    font-size: 15.5px;
+    font-size: 18.5px;
     background: #fff;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -111,7 +111,7 @@ export const tablePrintStyles = `
     text-align: center !important;
     vertical-align: middle !important;
     color: #000 !important;
-    width: auto !important;
+    width:100٪ !important;
     max-width:auto !important;
   }
 
@@ -209,12 +209,12 @@ font-family: AlQabas-Bold;
   }
 
   .report-letterhead-image {
-    display: block;
+    display: flex;
     width: 100%;
     max-width: 100%;
     height: 100%;
     max-height: 100%;
-    object-fit: content;
+    object-fit: fill;
     object-position: top;
     margin: 0;
   }

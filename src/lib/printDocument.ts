@@ -148,12 +148,12 @@ background: #fff!important;
 text-align: center; 
   }
   .report-letterhead-cell img {
-    display: block;
+    display: flex;
     width: 100%;
     max-width:auto;
     height: 30mm;
     max-height: 30mm;
-    object-fit: content;
+    object-fit: fill;
     object-position:top;
     margin: 0;
   }
@@ -163,7 +163,10 @@ text-align: center;
 
   /* تحسينات خاصة بالـ print / PDF */
   @media print {
-    html, body { width: 100%; }
+    html, body { 
+    width: 100%;
+  height:100%;
+    }
     body { 
     margin: 0; 
     padding: 0; 

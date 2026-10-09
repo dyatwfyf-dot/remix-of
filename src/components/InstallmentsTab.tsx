@@ -2144,10 +2144,10 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         margin-bottom: 8px;
         text-align: center;
       }
-      .report-letterhead-image {
-        width: 100%;
-        max-height: 28mm;
-        object-fit: contain;
+.report-letterhead-image {
+width: 100%;
+ max-height: 28mm;
+object-fit:fill;
       }
       /* الإطار البترولي الدائري المحيط بالبيانات والجدول */
       .card-frame {
@@ -2249,9 +2249,9 @@ td.t-fees { background: ${colorTokens.fees} !important; }
           margin: 0 !important; 
           padding: 0 !important; 
         }
-        .statement-page { 
-          width: 100% !important; 
-          max-width: 100% !important; 
+.statement-page { 
+width: 100% !important; 
+max-width: 100% !important; 
         }
       }
     `;

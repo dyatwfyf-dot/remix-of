@@ -62,13 +62,13 @@ export default function TraineeAccountStatement({
   ];
 
   return (
-<div className="w-auto bg-gradient-to-b from-slate-50/80 to-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden mb-6">
+<div className="w-100٪ bg-gradient-to-b from-slate-50/80 to-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden mb-6">
       {/* الرأس مع زر التوسع */}
 <div className="bg-gradient-to-l from-teal-600 via-teal-500 to-cyan-600 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center cursor-pointer hover:shadow-md transition-shadow"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-3">
-          <h3 className="text-xs sm:text-xs font-bold text-white">
+          <h3 className="text-xs sm:text-xs font-bold text-black">
             📋 كشف حساب متدرب للعام {year}م
           </h3>
         </div>

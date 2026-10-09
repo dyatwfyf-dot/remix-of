@@ -32,7 +32,7 @@ const reportLetterheadStyles = `
       width: 100%;
       max-height: 20mm;
       height: auto;
-      object-fit:contain;
+      object-fit:fill;
       margin: 0 auto;
     object-position:top;
     }

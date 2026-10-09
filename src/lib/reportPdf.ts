@@ -26,7 +26,7 @@ export const reportDocumentCss = `
 `;
 
 export const reportContainmentCss = `
-  .report-page-content { width:100%; min-width:0; }
+  .report-page-content { width:100%; max-width:auto; }
   .report-page-content table { width:100% !important; max-width:100% !important; table-layout:auto !important; }
   .report-page-content th,.report-page-content td { min-width:auto !important; white-space:nowrap !important;
     overflow-wrap:anywhere !important; word-break:normal !important; }
