@@ -1446,16 +1446,16 @@ size: A4 portrait;margin:0;
       }
       * { box-sizing: border-box; }
       html, body {
-  width: 100 % ;
-  margin: 0;
-  padding: 0;
-  background: #fff!important;
-  height: 100% !important;
-  min-height: auto!important;
+  width: 100% ;
+  margin:0;
+  padding:0;
+background: #fff!important;
+  height:100% !important;
+max-height:auto!important;
   overflow: hidden;
       }
 body {
-font-family: "Cairo", "Times New Roman", Tahoma, sans-serif;
+font-family:"Cairo", "Times New Roman", Tahoma, sans-serif;
         color: #111827;
 font-size: 15px;
  line-height: 1.35;
@@ -1472,11 +1472,11 @@ margin: 0 auto;
       }
 
 .page - frame {
-        width: 100% ;
-        height: 100% ;
-        padding: 5mm;
-        border: 1.5px solid #0f766e;
-        border-radius:4px;
+width: 100% ;
+ height: 100% ;
+padding: 5mm;
+border: 1.5px solid #0f766e;
+border-radius:4px;
  background: #ffffff!important;
 box-sizing: border-box;
 }
