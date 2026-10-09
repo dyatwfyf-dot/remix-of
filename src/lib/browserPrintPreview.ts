@@ -9,6 +9,7 @@ export interface BrowserPreviewOptions {
   contentCss?: string;
   defaultOrientation?: "portrait" | "landscape";
   defaultPageSize?: "A4" | "A3" | "Letter";
+  defaultMarginMm?: number;
 }
 
 /**
@@ -22,12 +23,14 @@ export function openBrowserPrintPreview({
   contentCss = "",
   defaultOrientation = "portrait",
   defaultPageSize = "A4",
+  defaultMarginMm = 5,
 }: BrowserPreviewOptions): boolean {
   const newWin = window.open("", "_blank");
   if (!newWin) {
     return false;
   }
 
+  const hasEmbeddedLetterhead = tableHtml.includes("report-letterhead");
   const html = `<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
@@ -261,7 +264,7 @@ export function openBrowserPrintPreview({
   <style id="dynamic-page-rule">
     @page {
       size: ${defaultPageSize} ${defaultOrientation};
-      margin: 5mm;
+      margin: ${defaultMarginMm}mm;
     }
   </style>
 </head>
@@ -294,8 +297,9 @@ export function openBrowserPrintPreview({
       <label style="font-size: 12px; font-weight: bold;">
         الهوامش:
         <select id="selMargin">
-          <option value="3mm">ضيقة (3 مم)</option>
-          <option value="5mm" selected>عادية (5 مم)</option>
+          <option value="0mm"${defaultMarginMm === 0 ? " selected" : ""}>بدون هوامش</option>
+          <option value="3mm"${defaultMarginMm === 3 ? " selected" : ""}>ضيقة (3 مم)</option>
+          <option value="5mm"${defaultMarginMm === 5 ? " selected" : ""}>عادية (5 مم)</option>
           <option value="8mm">متوسطة (8 مم)</option>
           <option value="12mm">واسعة (12 مم)</option>
         </select>
@@ -329,9 +333,9 @@ export function openBrowserPrintPreview({
 
   <div class="sheet-viewport">
     <div id="paperContainer" class="sheet-paper ${defaultOrientation}">
-      <div class="report-letterhead-block">
+      ${hasEmbeddedLetterhead ? "" : `<div class="report-letterhead-block">
         <img class="report-letterhead-image" src="${REPORT_LETTERHEAD_SRC}" alt="الترويسة الرسمية" />
-      </div>
+      </div>`}
       <div id="tableContainer" class="preview-report-content report-page-content">
         ${tableHtml}
       </div>

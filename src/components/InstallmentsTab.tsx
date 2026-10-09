@@ -2114,7 +2114,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     const statementCss = `
       @page {
         size: A4 portrait;
-        margin: 8mm 10mm;
+        margin: 0;
       }
       * { 
         box-sizing: border-box; 
@@ -2132,8 +2132,8 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       }
       .statement-page {
         width: 100%;
-        max-width: 190mm;
-        margin: 0 auto;
+        max-width: none;
+        margin: 0;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
@@ -2243,7 +2243,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       @media print {
         @page { 
           size: A4 portrait; 
-          margin: 8mm 10mm; 
+          margin: 0;
         }
         body { 
           margin: 0 !important; 
@@ -2328,7 +2328,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         fileName: `${title}.pdf`,
         pageSize: "A4",
         orientation: "portrait",
-        marginMm: 8,
+        marginMm: 0,
       });
       toast.success("تم تنزيل كشف الحساب بصيغة PDF بنجاح");
     } catch (error) {
@@ -2346,6 +2346,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       contentCss: css,
       defaultOrientation: "portrait",
       defaultPageSize: "A4",
+      defaultMarginMm: 0,
     });
     if (!opened) {
       toast.error("تم منع فتح نافذة المعاينة، يرجى السماح بالنوافذ المنبثقة في كروم");
