@@ -62,13 +62,13 @@ export default function TraineeAccountStatement({
   ];
 
   return (
-<div className="w-100٪ bg-gradient-to-b from-slate-50/80 to-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden mb-6">
+<div className="w-full bg-gradient-to-b from-slate-50/80 to-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden mb-6text-xl sm:text-base">
       {/* الرأس مع زر التوسع */}
 <div className="bg-gradient-to-l from-teal-600 via-teal-500 to-cyan-600 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center cursor-pointer hover:shadow-md transition-shadow"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-3">
-          <h3 className="text-xl sm:text-xs font-bold text-black">
+<h3 className="text-xl sm:text-xs font-bold text-black">
             📋 كشف حساب متدرب للعام {year}م
           </h3>
         </div>
@@ -91,23 +91,23 @@ export default function TraineeAccountStatement({
 <div className="text-xl sm:text-sm font-bold text-blue-600 mb-2 text-center">
                 اسم المتدرب
               </div>
-              <div className="text-xl sm:text-base font-extrabold text-blue-900 text-center line-clamp-2">
+<div className="text-lg font-extrabold text-black text-center line-clamp-2">
                 {trainee.name}
               </div>
             </div>
 
             {/* كرت الدفعة */}
-            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
-              <div className="text-xl sm:text-sm font-bold text-purple-600 mb-2 text-center">
+ <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+<div className="text-lg font-bold text-purple-600 mb-2 text-center">
                 الدفعة
               </div>
-              <div className="text-xl sm:text-base font-extrabold text-purple-900 text-center line-clamp-2">
+<div className="text-xl font-extrabold text-purple-900 text-center line-clamp-2">
                 {trainee.batch}
               </div>
             </div>
 
             {/* كرت المساق */}
-            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+<div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
               <div className="text-xl sm:text-sm font-bold text-emerald-600 mb-2 text-center">
                 المساق
               </div>
@@ -131,8 +131,8 @@ export default function TraineeAccountStatement({
           <div className="h-1 bg-gradient-to-r from-teal-600 via-cyan-500 to-teal-600 rounded-full opacity-60"></div>
 
           {/* ========== الجدول المالي ========== */}
-          <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
-<table className="w-auto border-collapse text-xl sm:text-base">
+<div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
+<table className="w-auto border-collapse text-lg">
               {/* رأس الجدول */}
               <thead>
 <tr className="bg-gradient-to-r from-teal-900 via-teal-900 to-cyan-900 border-b-2 border-teal-700">
@@ -152,10 +152,10 @@ export default function TraineeAccountStatement({
                     key={idx}
                     className={`border-b border-slate-200 hover:bg-slate-50/50 transition-colors ${row.bgColor}`}
                   >
-                    <td className={`px-3 sm:px-4 py-2.5 sm:py-3 font-bold text-black text-xl sm:text-base ${row.accentColor}`}>
+ <td className={`px-3 sm:px-4 py-2.5 sm:py-3 font-bold text-black text-lg ${row.accentColor}`}>
                       {row.label}
                     </td>
-<td className="px-3 sm:px-4 py-2.5 sm:py-3 text-center font-black font-extrabold text-black numeric-cell text-xl sm:text-base">
+<td className="px-3 sm:px-4 py-2.5 sm:py-3 text-center font-black font-extrabold text-black numeric-cell text-lg">
                       {fmt(row.amount)}
                     </td>
                   </tr>

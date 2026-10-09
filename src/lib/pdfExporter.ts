@@ -15,7 +15,9 @@ async function htmlToPdf(opts: { html: string; css: string; fileName: string; or
 const statementCss = `
   ${tablePrintStyles}
   body, .pdf-page { 
-    font-size: 18px; 
+    font-size:18px; 
+font-family:cairo;
+    font-weight: 900; 
     margin: 0;
     padding: 0;
 width: 100%;
