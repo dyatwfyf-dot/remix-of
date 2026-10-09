@@ -1126,7 +1126,7 @@ export default function InstallmentsTab() {
       const marginMm = settings
         .margin === "narrow" ? 2 :
         settings.margin === "wide" ?
-        13 : 8;
+        5 : 5;
       const usableWidthMm =
         pageWidthMm - marginMm * 2;
       const widthUnits = cols
@@ -1137,7 +1137,7 @@ export default function InstallmentsTab() {
       // في A4 الطولي يوجد عدد كبير من أعمدة الأشهر؛ نخفض الخط تلقائيًا
       // ونمنع القيمة اليدوية من إعادة الجدول إلى عرض يتجاوز الصفحة.
       const autoFont = Math.max(
-        13.2, Math.min(15,
+        18.2, Math.min(15,
           unitMm * 1.18));
       const fontSizePx = Math.min(
         settings.fontMode ===
@@ -1156,8 +1156,8 @@ export default function InstallmentsTab() {
         const steps = Math.max(0,
           Math.ceil(Math.max(0,
             len - 16) / 10));
-        const final = Math.max(5,
-          base - Math.min(3.5,
+        const final = Math.max(18,
+          base - Math.min(16,
             steps * 0.7));
         return `font-size:${final.toFixed(2)}px`;
       };
@@ -2124,7 +2124,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         margin: 0;
         padding: 0;
         background: #ffffff !important;
-        font-family: "Cairo", Tahoma, sans-serif;
+font-family: "Cairo";
         color: #000000;
         direction: rtl;
         -webkit-print-color-adjust: exact !important;
@@ -2177,13 +2177,13 @@ object-fit:fill;
         min-height: 52px;
       }
       .info-lbl {
-        font-size: 11pt;
+        font-size: 18pt;
         font-weight: 700;
         color: #475569;
         margin-bottom: 2px;
       }
       .info-val {
-        font-size: 13.5pt;
+        font-size: 16.5pt;
         font-weight: 900;
         color: #000000;
         line-height: 1.25;
@@ -2203,19 +2203,19 @@ object-fit:fill;
       th {
         background: #0f766e !important;
         color: #ffffff !important;
-        font-size: 13pt !important;
+        font-size: 16pt !important;
         font-weight: 900 !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
       td.lbl {
-        font-size: 12pt;
+        font-size:19px;;
         font-weight: 800;
         color: #000000;
       }
       td.num {
         font-family: "Cairo", "Times New Roman", serif !important;
-        font-size: 13.5pt !important;
+        font-size: 16.5pt !important;
         font-weight: 900 !important;
         direction: ltr !important;
         color: #000000;
