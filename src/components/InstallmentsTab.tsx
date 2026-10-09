@@ -1471,7 +1471,7 @@ max-width: 100%;
 margin: 0 auto;
       }
 
-    .page - frame {
+.page - frame {
         width: 100% ;
         height: 100% ;
         padding: 5mm;
@@ -1496,8 +1496,7 @@ grid-template-columns: 1fr 1fr;
  gap: 8px;
 margin-bottom: 12px;
 margin-top: 6px;
-font-family:AlQabas-Bold; 
-background-color: red
+font-family: AlQabas-Bold; 
       }
 
       /* كروت المعلومات بتنسيق متطابق للشاشة والورق والـ PDF */
@@ -1511,6 +1510,8 @@ text-align: center;
 box-sizing: border-box;
 -webkit-print-color-adjust: exact !important;
 print-color-adjust: exact !important;
+font-family: AlQabas-Bold; 
+
       }
       .info-lbl { 
         font-size: 11pt; 
