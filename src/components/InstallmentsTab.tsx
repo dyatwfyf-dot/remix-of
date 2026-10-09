@@ -39,7 +39,7 @@ import PrintSettingsModal, {
 import { openPrintDocument } from "@/lib/printDocument";
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import { useReportDate } from "@/lib/reportDate";
-import { reportLetterheadHtml } from "@/lib/printTableHtml";
+import { REPORT_LETTERHEAD_SRC, reportLetterheadHtml } from "@/lib/printTableHtml";
 import { downloadReportPdf } from "@/lib/reportPdf";
 import {
   addReportHeader,
