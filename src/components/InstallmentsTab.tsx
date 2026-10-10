@@ -2188,157 +2188,145 @@ td.t-fees { background: ${colorTokens.fees} !important; }
 
     // تنسيقات CSS المطابقة للصورة ولورقة A4 طولي بنسبة 100%
     const statementCss = `
-@page {
-size: A4 portrait;
-margin: 0;
-padding:0;
+@page { size: A4 portrait; margin: 8mm; }
+      * { box-sizing: border-box; }
+      html, body { width: 100%;  margin: 0; padding: 0; }
+      body {
+        font-family: "Times New Roman", "Noto Naskh Arabic", "Cairo", Tahoma, sans-serif;
+        color: #111827;
+        font-size: 12.5px;
+        line-height: 1.35;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
-      * { 
-        box-sizing: border-box; 
-      }
-html, body {
-width: 100%;
-margin: 0;
-height:100%;
- min-height: auto;
- padding: 0;
-background: #ffffff !important;
-font-family: "Cairo";
-color: #000000;
-direction: rtl;
--webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-      .statement-page {
+      .container {
         width: 100%;
-        max-width:auto;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-      }
-      /* الترويسة العلوية الرسمية */
-      .report-letterhead-block {
-        width: 100%;
-        margin-bottom: 8px;
-        text-align: center;
-      }
-.report-letterhead-image {
-width: 100%;
- max-height: 28mm;
-object-fit:fill;
-      }
-      /* الإطار البترولي الدائري المحيط بالبيانات والجدول */
-      .card-frame {
-        width: 100%;
-        border: 2.5px solid #0f766e;
-        border-radius: 14px;
-        padding: 12px;
-        background: #ffffff !important;
-        box-sizing: border-box;
-      }
-      /* شبكة كروت البيانات الأربعة (2×2) */
-      .info-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-bottom: 12px;
-      }
-.info-box {
-border: 1px solid #000;
-background:gold !important;
-border-radius: 8px;
-        padding: 8px 12px;
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        min-height: 52px;
-      }
-      .info-lbl {
-        font-size: 18pt;
-        font-weight: 700;
-        color: #475569;
-        margin-bottom: 2px;
-      }
-      .info-val {
-        font-size: 16.5pt;
-        font-weight: 900;
-        color: #000000;
-        line-height: 1.25;
-      }
-      /* تنسيق الجدول */
-      table {
-        width: 100% !important;
-        border-collapse: collapse !important;
+        max-width: none;
         margin: 0;
       }
-      th, td {
-        border: 1.2px solid #000000 !important;
-        text-align: center !important;
-        vertical-align: middle !important;
-        padding: 6px 10px !important;
+
+      .page-frame {
+        width: 100%;
+        min-height: auto;
+        padding: 6mm;
+        border: 1px solid #000;
+        border-radius: 3mm;
+        background: #fff;
+        box-shadow: 0 2mm 8mm rgba(15, 118, 110, 0.08);
       }
-      th {
-        background: #0f766e !important;
-        color: #ffffff !important;
-        font-size: 16pt !important;
-        font-weight: 900 !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
+      .print-toolbar {
+        display: flex;
+        justify-content: flex-end;
+        margin: 0 0 4mm;
       }
-      td.lbl {
-        font-size:19px;;
+      .print-toolbar button {
+        border: 0.6pt solid #0f766e;
+        border-radius: 1.5mm;
+        background: #0f766e;
+        color: #fff;
+        cursor: pointer;
+        font-family: Cairo, Arial, sans-serif;
+        font-size: 12pt;
         font-weight: 800;
-        color: #000000;
+        padding: 2mm 4mm;
       }
-      td.num {
-        font-family: "Cairo", "Times New Roman", serif !important;
-        font-size: 16.5pt !important;
-        font-weight: 900 !important;
-        direction: ltr !important;
-        color: #000000;
-      }
-      /* ألوان صفوف الجدول المتطابقة مع الصورة */
-      .row-fees td { background: #eff6ff !important; -webkit-print-color-adjust: exact !important; }
-      .row-due-old td { background: #fef3c7 !important; -webkit-print-color-adjust: exact !important; }
-      .row-total-due td { background: #fee2e2 !important; font-weight: 900 !important; -webkit-print-color-adjust: exact !important; }
-      .row-paid td { background: #ffffff !important; }
-      .row-total-paid td { background: #d1fae5 !important; font-weight: 900 !important; -webkit-print-color-adjust: exact !important; }
-      .row-final td { background: #fee2e2 !important; font-weight: 900 !important; -webkit-print-color-adjust: exact !important; }
+      .print-toolbar button:hover { background: #115e59; }
 
-      /* التذييل أسفل الإطار */
-      .foot {
-        margin-top: 14px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 11pt;
-        font-weight: 900;
-        color: #000000;
-        padding: 0 4px;
+      .header {
+        background: #0f766e;
+        color: #fff;
+        padding: 4mm 3mm;
+        border-radius: 2mm;
+        margin-bottom: 5mm;
       }
+      .header h1 { margin: 0; font-size: 16pt; line-height: 1.25; font-weight: 800; color: #000; }
+      .header p { margin: 2mm 0 0; font-size: 10.5pt; line-height: 1.25; font-weight: 700; color: #000; }
 
-      @media print {
-        @page { 
- size: A4 portrait; 
-margin: 0;
-padding: 0;
-        }
-        body { 
-          margin: 0 !important; 
-          padding: 0 !important; 
-  width: 100%
-min-width: auto;
-height: 100%
- max-height: auto;
+ .statement-title {
+  text-align: center;
+  font-size: 18pt;
+  font-weight: 900;
+  color: #0f766e;
+  margin: 0 0 6px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #0f766e;
+ }
+ .info-grid {
+ display: grid;
+ grid-template-columns: 1fr 1fr;
+ gap: 6px;
+ margin-bottom: 10px;
+ margin-top:6px;
+ }
 
-        }
-.statement-page { 
-width: 100% !important; 
-max-width: auto !important; 
-        }
+     /* كروت المعلومات مصغّرة لتناسب ورقة A4 عند الطباعة */
+    .info-box {
+      border: 1px solid #000;
+      background: #CDD5AE;
+      padding: 2mm 1.5mm;
+      min-height: 12mm;
+      border-radius: 1.5mm;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    .info-lbl { font-size: 11pt; line-height: 1.15; font-weight: 800; color:black; text-align: center; }
+    .info-val { font-size: 10.5pt; line-height: 1.15; font-weight: 800; margin-top: 1mm; overflow-wrap: anywhere; }
+
+    table {
+      table-layout: auto;
+      width: 100%;
+      min-width: 100%;
+      border-collapse: collapse;
+      margin-top: 2mm;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    th, td {
+      border: 0.75pt solid #000;
+      text-align: center;
+      vertical-align: middle;
+      padding: 2.2mm 2mm;
+      font-size: 10.5pt;
+      line-height: 1.25;
+      white-space: normal;
+      overflow: hidden;
+      text-overflow: clip;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      hyphens: auto;
+    }
+    th { background: #0f766e; color:white!important; font-weight: 900; }
+    td { color: #000 !important; font-weight: 700; }
+    .lbl { text-align: center; font-weight: 800; }
+    .num { font-family: "Times New Roman", Times, serif; font-weight: 800; font-size: 10.5pt; font-variant-numeric: tabular-nums; direction: ltr; }
+    .row-fees td { background: #eff6ff; }
+    .row-due-old td { background: #fef3c7; color: #000 !important; }
+    .row-total-due td { background: #fee2e2; color: #000 !important; font-weight: 800; }
+    .row-paid td { color: #000 !important; }
+    .row-total-paid td { background: #d1fae5; color: #000 !important; font-weight: 800; }
+    .row-final td { background: #fee2e2; font-size: 11pt; font-weight: 800; color: #000 !important; border-top: 1pt solid #000; }
+    .foot {
+      margin-top: 6mm;
+      display: flex;
+      justify-content: space-between;
+      gap: 8mm;
+      font-size: 9pt;
+      line-height: 1.3;
+      font-weight: 700;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .header, .info-grid { page-break-inside: avoid; break-inside: avoid; }
+    @media print {
+      html, body { width: auto; }
+      body { margin: 0; padding: 0; }
+      .page-frame { min-height: auto; border-radius: 0; box-shadow: none; padding: 4mm; }
+      .print-toolbar { display: none !important; }
+      .header, .info-box, th, td {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
+    }
     `;
 
     const body = `
