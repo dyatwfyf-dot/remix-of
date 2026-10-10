@@ -2188,13 +2188,14 @@ td.t-fees { background: ${colorTokens.fees} !important; }
 
     // تنسيقات CSS المطابقة للصورة ولورقة A4 طولي بنسبة 100%
     const statementCss = `
-@page { size: A4 portrait; margin: 8mm; }
+@page { size: A4 portrait; margin: 0; }
       * { box-sizing: border-box; }
       html, body { width: 100%;  margin: 0; padding: 0; }
       body {
-        font-family: "Times New Roman", "Noto Naskh Arabic", "Cairo", Tahoma, sans-serif;
-        color: #111827;
-        font-size: 12.5px;
+        font-family: "Cairo", Tahoma, sans-serif;
+        color: #000;
+        font-size: 16px;
+        font-weight: 900;
         line-height: 1.35;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
@@ -2203,12 +2204,20 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         width: 100%;
         max-width: none;
         margin: 0;
+        min-height: 268mm;
+        height: 268mm;
+        display: flex;
+        flex-direction: column;
       }
 
       .page-frame {
         width: 100%;
-        min-height: auto;
-        padding: 6mm;
+        min-height: 0;
+        height: 100%;
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        padding: 4mm;
         border: 1px solid #000;
         border-radius: 3mm;
         background: #fff;
@@ -2251,12 +2260,13 @@ td.t-fees { background: ${colorTokens.fees} !important; }
   padding-bottom: 6px;
   border-bottom: 2px solid #0f766e;
  }
- .info-grid {
+      .info-grid {
  display: grid;
  grid-template-columns: 1fr 1fr;
  gap: 6px;
  margin-bottom: 10px;
- margin-top:6px;
+        margin-top:6px;
+        flex: 0 0 auto;
  }
 
      /* كروت المعلومات مصغّرة لتناسب ورقة A4 عند الطباعة */
@@ -2273,9 +2283,11 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     .info-val { font-size: 10.5pt; line-height: 1.15; font-weight: 800; margin-top: 1mm; overflow-wrap: anywhere; }
 
     table {
-      table-layout: auto;
+      table-layout: fixed;
       width: 100%;
       min-width: 100%;
+      height: 100%;
+      flex: 1 1 auto;
       border-collapse: collapse;
       margin-top: 2mm;
       page-break-inside: avoid;
@@ -2285,8 +2297,8 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       border: 0.75pt solid #000;
       text-align: center;
       vertical-align: middle;
-      padding: 2.2mm 2mm;
-      font-size: 10.5pt;
+      padding: 0 2mm;
+      font-size: 16px;
       line-height: 1.25;
       white-space: normal;
       overflow: hidden;
@@ -2298,7 +2310,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     th { background: #0f766e; color:white!important; font-weight: 900; }
     td { color: #000 !important; font-weight: 700; }
     .lbl { text-align: center; font-weight: 800; }
-    .num { font-family: "Times New Roman", Times, serif; font-weight: 800; font-size: 10.5pt; font-variant-numeric: tabular-nums; direction: ltr; }
+    .num { font-family: "Cairo", Tahoma, sans-serif; font-weight: 900; font-size: 16px; font-variant-numeric: tabular-nums; direction: ltr; }
     .row-fees td { background: #eff6ff; }
     .row-due-old td { background: #fef3c7; color: #000 !important; }
     .row-total-due td { background: #fee2e2; color: #000 !important; font-weight: 800; }
@@ -2306,7 +2318,8 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     .row-total-paid td { background: #d1fae5; color: #000 !important; font-weight: 800; }
     .row-final td { background: #fee2e2; font-size: 11pt; font-weight: 800; color: #000 !important; border-top: 1pt solid #000; }
     .foot {
-      margin-top: 6mm;
+      margin-top: 3mm;
+      flex: 0 0 auto;
       display: flex;
       justify-content: space-between;
       gap: 8mm;
@@ -2320,7 +2333,8 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     @media print {
       html, body { width: auto; }
       body { margin: 0; padding: 0; }
-      .page-frame { min-height: auto; border-radius: 0; box-shadow: none; padding: 4mm; }
+      .container { min-height: 268mm !important; height: 268mm !important; }
+      .page-frame { min-height: 0; height: 100%; border-radius: 0; box-shadow: none; padding: 4mm; }
       .print-toolbar { display: none !important; }
       .header, .info-box, th, td {
         -webkit-print-color-adjust: exact;
