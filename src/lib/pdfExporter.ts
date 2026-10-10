@@ -270,6 +270,8 @@ export async function exportTablePdf(opts: {
   reportDate?: string;
   pdfLayout?: 'default' | 'wide-centered';
   orientation?: 'portrait' | 'landscape';
+  marginMm?: number;
+  css?: string;
 }): Promise<void> {
   const {
     title,
@@ -288,6 +290,8 @@ export async function exportTablePdf(opts: {
     body: buildTableHtml({ title, columns, rows, numericKeys, reportDate }),
     fileName: `${fileName}-${safeDate}.pdf`,
     orientation: opts.orientation ?? (columns.length > 7 || pdfLayout === 'wide-centered' ? 'landscape' : 'portrait'),
+    marginMm: opts.marginMm,
+    css: opts.css,
   });
 }
 

@@ -121,6 +121,17 @@ const BTN_COMPACT =
 const HEADING_MOBILE =
   "text-lg sm:text-xl font-extrabold";
 
+const INSTALLMENTS_SUMMARY_REPORT_CSS = `
+  html, body { margin: 0 !important; padding: 0 !important; }
+  .report-page-content { width: 100% !important; min-width: 0 !important; }
+  .report-page-content table { width: 100% !important; table-layout: fixed !important; border-collapse: collapse !important; }
+  .report-page-content th, .report-page-content td { padding: 5px 4px !important; vertical-align: middle !important; text-align: center !important; white-space: normal !important; line-height: 1.3 !important; }
+  .report-page-content th { background: #0f766e !important; color: #fff !important; font-weight: 800 !important; }
+  .report-page-content td { color: #172b35 !important; overflow-wrap: anywhere !important; word-break: normal !important; }
+  .report-page-content .num, .report-page-content .numeric-cell { white-space: nowrap !important; word-break: keep-all !important; direction: ltr !important; }
+  .report-page-content h1, .report-page-content h2 { margin: 0 0 5px !important; text-align: center !important; }
+`;
+
 // All PDF reports use the same paper layout and measured row pagination.
 const downloadDetailedHtmlPdf =
   downloadReportPdf;
@@ -1217,6 +1228,7 @@ export default function InstallmentsTab() {
         {
           head: "#0f766e",
           headText: "#ffffff",
+          zebra: "#ffffff",
           totals: "#ccfbf1",
           fees: "#eff6ff",
           paid: "#ecfdf5",
@@ -1419,6 +1431,30 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         padding-top: 3px;
       }
       ${settings.colored ? noteRowCss : ""}
+      /* تنسيق موحد لصفحات التقرير الإجمالي والتفصيلي عند الطباعة أو تنزيل PDF */
+      .doc-header {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 4px 6px 7px;
+        margin: 0 0 8px;
+        border-bottom: 2px solid ${colorTokens.accent};
+      }
+      .doc-header .title { flex: 1; text-align: center; }
+      .doc-header h1, .doc-header h2 { margin: 0; line-height: 1.35; }
+      .doc-header h1 { font-size: 18px; font-weight: 900; color: ${colorTokens.accent}; }
+      .doc-header h2 { margin-top: 3px; font-size: 15px; font-weight: 800; color: #172b35; }
+      .doc-header .meta { min-width: 105px; font-size: 11px; line-height: 1.6; text-align: right; color: #334155; }
+      table { width: 100% !important; max-width: 100% !important; table-layout: fixed !important; border-collapse: collapse !important; }
+      th, td { box-sizing: border-box !important; vertical-align: middle !important; text-align: center !important; }
+      th { white-space: normal !important; line-height: 1.2 !important; }
+      td { white-space: normal !important; line-height: 1.25 !important; }
+      td.wrap, td.wrap .cell-content { white-space: normal !important; overflow-wrap: anywhere !important; word-break: normal !important; }
+      .cell-content { display: block !important; width: 100% !important; overflow-wrap: anywhere !important; word-break: normal !important; }
+      td.numeric-cell, td.date-cell, td.compact-cell, td.numeric-cell .cell-content { white-space: nowrap !important; overflow-wrap: normal !important; word-break: keep-all !important; }
+      .doc-foot { width: 100%; margin-top: 8px; padding-top: 5px; border-top: 1px solid ${colorTokens.accent}; font-size: 11px; }
       @media print {
         .print-toolbar { display: none !important; }
         tr { page-break-inside: avoid; }
@@ -1470,6 +1506,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
               .pageSize,
             orientation: settings
               .orientation,
+            marginMm: settings.margin === "narrow" ? 1 : settings.margin === "wide" ? 12 : 6,
             fileName: `${safePdfFileName(`اقساط-${year}-تفصيلي-${reportDate}`)}.pdf`,
           });
         toast.success(
@@ -2564,6 +2601,10 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
               numericKeys={["fees", "totalPaid", "remaining"]}
               onClear={() => clearInstallments("2025")}
               printLabel="الأقساط/إجمالي"
+              pdfLayout="wide-centered"
+              pdfOrientation="landscape"
+              pdfMarginMm={1}
+              pdfCss={INSTALLMENTS_SUMMARY_REPORT_CSS}
               additionalWebActions={installments2025WebActions}
  className="col-span-2 w-auto grid !grid-cols-2 sm:!flex !gap-1 sm:!gap-2 [&>button]:min-w-auto [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-1 sm:[&>button]:py-1"
             />
@@ -2882,6 +2923,10 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-black rounded-m
         numericKeys={["prevDue", "fees", "totalPaid", "remaining"]}
         onClear={() => clearInstallments()}
         printLabel="الأقساط/إجمالي"
+        pdfLayout="wide-centered"
+        pdfOrientation="landscape"
+        pdfMarginMm={1}
+        pdfCss={INSTALLMENTS_SUMMARY_REPORT_CSS}
         additionalWebActions={installments2026WebActions}
         className="col-span-2 w-full !grid !grid-cols-2 gap-2 [&>button]:w-full [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-sm [&>button]:font-bold [&>button]:rounded-md [&>button]:shadow"
       />

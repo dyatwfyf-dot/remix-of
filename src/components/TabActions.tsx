@@ -31,6 +31,8 @@ type Props = {
   printLabel ? : string;
   pdfLayout ? : "default" | "wide-centered";
   pdfOrientation ? : string;
+  pdfMarginMm ? : number;
+  pdfCss ? : string;
   additionalWebActions ? : WebActionItem[];
   webClassName ? : string;
 };
@@ -46,6 +48,8 @@ export default function TabActions({
   printLabel = "طباعة",
   pdfLayout = "default",
   pdfOrientation,
+  pdfMarginMm,
+  pdfCss,
   additionalWebActions = [],
   webClassName = "",
 }: Props) {
@@ -69,9 +73,10 @@ export default function TabActions({
       title,
       reportDateLabel,
       tableHtml: tableHtml(),
-      contentCss: reportDocumentCss,
+      contentCss: pdfCss ? `${reportDocumentCss}\n${pdfCss}` : reportDocumentCss,
       defaultOrientation,
       defaultPageSize: "A4",
+      ...(pdfMarginMm === undefined ? {} : { defaultMarginMm: pdfMarginMm }),
     });
     
     if (!opened) {
@@ -88,7 +93,9 @@ export default function TabActions({
     setPdfBusy(true);
     try {
       await exportTablePdf({ title, columns, rows, numericKeys, fileName, reportDate, pdfLayout,
-        orientation: pdfOrientation === "portrait" ? "portrait" : pdfOrientation === "landscape" || columns.length > 7 ? "landscape" : "portrait" });
+        orientation: pdfOrientation === "portrait" ? "portrait" : pdfOrientation === "landscape" || columns.length > 7 ? "landscape" : "portrait",
+        marginMm: pdfMarginMm,
+        css: pdfCss });
       toast.success("تم تنزيل الملف بنجاح");
     } catch (err) {
       console.error("PDF export error:", err);
