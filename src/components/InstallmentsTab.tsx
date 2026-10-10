@@ -2329,15 +2329,10 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     }
     `;
 
-    const body = `
-      <div class="statement-page">
-        <!-- الترويسة الرسمية -->
-        <div class="report-letterhead-block">
-          <img class="report-letterhead-image" src="${REPORT_LETTERHEAD_SRC}" alt="ترويسة المجلس اليمني للاختصاصات الطبية" />
-        </div>
-
-        <!-- الإطار البترولي الدائري -->
-        <div class="card-frame">
+        const body = `
+      <div class="container">
+        <div class="page-frame">
+   <h2 class="statement-title">كشف حساب متدرب — للعام ${year}م</h2>
           <div class="info-grid">
             ${infoCard("اسم المتدرب", row.name)}
             ${infoCard("الدفعة", row.batch)}
@@ -2347,37 +2342,23 @@ td.t-fees { background: ${colorTokens.fees} !important; }
           <table>
             <thead>
               <tr>
-                <th style="width: 58%">البيان</th>
-                <th style="width: 42%">المبلغ</th>
+                <th style="width: 60%">البيان</th>
+                <th style="width: 40%">المبلغ</th>
               </tr>
             </thead>
             <tbody>
-              <tr class="row-fees">
-                <td class="lbl">إجمالي الرسوم المستحقة</td>
-                <td class="num">${escapeHtml(fmt(fees))}</td>
-              </tr>
+              <tr class="row-fees"><td class="lbl">إجمالي الرسوم المستحقة</td><td class="num">${escapeHtml(fmt(fees))}</td></tr>
               ${prevRow}
-              <tr class="row-total-due">
-                <td class="lbl">إجمالي المبلغ المطلوب</td>
-                <td class="num">${escapeHtml(fmt(dueTotal))}</td>
-              </tr>
+              <tr class="row-total-due"><td class="lbl">إجمالي المبلغ المطلوب</td><td class="num">${escapeHtml(fmt(dueTotal))}</td></tr>
               ${paidRows}
-              <tr class="row-total-paid">
-                <td class="lbl">إجمالي المسدد (له)</td>
-                <td class="num">${escapeHtml(fmt(totalPaid))}</td>
-              </tr>
-              <tr class="row-final">
-                <td class="lbl">${escapeHtml(remainingLabel)}</td>
-                <td class="num">${escapeHtml(fmt(Math.abs(remaining)))}</td>
-              </tr>
+              <tr class="row-total-paid"><td class="lbl">إجمالي المسدد (له)</td><td class="num">${escapeHtml(fmt(totalPaid))}</td></tr>
+              <tr class="row-final"><td class="lbl">${escapeHtml(remainingLabel)}</td><td class="num">${escapeHtml(fmt(Math.abs(remaining)))}</td></tr>
             </tbody>
           </table>
-        </div>
-
-        <!-- التذييل خارج الإطار -->
-        <div class="foot">
-          <span>تاريخ التقرير: ${escapeHtml(reportDateLabel || reportDate)}</span>
-          <span>التوقيع: ________________</span>
+          <div class="foot">
+            <span>تاريخ التقرير: ${escapeHtml(reportDateLabel)}</span>
+            <span>التوقيع: ________________</span>
+          </div>
         </div>
       </div>
     `;
