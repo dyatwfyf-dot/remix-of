@@ -2234,9 +2234,9 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         background: #0f766e;
         color: #fff;
         cursor: pointer;
-        font-family: Cairo, Arial, sans-serif;
-        font-size: 12pt;
-        font-weight: 800;
+ font-family: Cairo;
+font-size: 18px;
+ font-weight: 800;
         padding: 2mm 4mm;
       }
       .print-toolbar button:hover { background: #115e59; }
@@ -2248,7 +2248,11 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         border-radius: 2mm;
         margin-bottom: 5mm;
       }
-      .header h1 { margin: 0; font-size: 16pt; line-height: 1.25; font-weight: 800; color: #000; }
+      .header h1 {
+margin: 0; 
+font-size: 16px; 
+line-height: 1.25; 
+font-weight: 800; color: #000; }
       .header p { margin: 2mm 0 0; font-size: 10.5pt; line-height: 1.25; font-weight: 700; color: #000; }
 
  .statement-title {
@@ -2279,8 +2283,8 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       text-align: center;
       box-sizing: border-box;
     }
-    .info-lbl { font-size: 11pt; line-height: 1.15; font-weight: 800; color:black; text-align: center; }
-    .info-val { font-size: 10.5pt; line-height: 1.15; font-weight: 800; margin-top: 1mm; overflow-wrap: anywhere; }
+    .info-lbl { font-size: 20px; line-height: 1.15; font-weight: 800; color:black; text-align: center; }
+    .info-val { font-size: 18px; line-height: 1.15; font-weight: 800; margin-top: 1mm; overflow-wrap: anywhere; }
 
     table {
       table-layout: fixed;
@@ -2298,7 +2302,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       text-align: center;
       vertical-align: middle;
       padding: 0 2mm;
-      font-size: 16px;
+      font-size: 20px;
       line-height: 1.25;
       white-space: normal;
       overflow: hidden;
@@ -2307,25 +2311,31 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       word-break: break-word;
       hyphens: auto;
     }
-    th { background: #0f766e; color:white!important; font-weight: 900; }
-    td { color: #000 !important; font-weight: 700; }
+    th { 
+background: #0f766e;
+color: white !important; 
+font-weight: 900; }
+    td { color: #000 !important; font-weight: 900; }
     .lbl { text-align: center; font-weight: 800; }
-    .num { font-family: "Cairo", Tahoma, sans-serif; font-weight: 900; font-size: 16px; font-variant-numeric: tabular-nums; direction: ltr; }
+.num { 
+font-family: Cairo; 
+font-weight: 900; 
+font-size: 20px; font-variant-numeric: tabular-nums; direction: ltr; }
     .row-fees td { background: #eff6ff; }
     .row-due-old td { background: #fef3c7; color: #000 !important; }
     .row-total-due td { background: #fee2e2; color: #000 !important; font-weight: 800; }
     .row-paid td { color: #000 !important; }
     .row-total-paid td { background: #d1fae5; color: #000 !important; font-weight: 800; }
-    .row-final td { background: #fee2e2; font-size: 11pt; font-weight: 800; color: #000 !important; border-top: 1pt solid #000; }
+    .row-final td { background: #fee2e2; font-size: 16px; font-weight: 800; color: #000 !important; border-top: 1pt solid #000; }
     .foot {
       margin-top: 3mm;
       flex: 0 0 auto;
       display: flex;
       justify-content: space-between;
       gap: 8mm;
-      font-size: 9pt;
+      font-size: 16px;
       line-height: 1.3;
-      font-weight: 700;
+      font-weight: 900;
       page-break-inside: avoid;
       break-inside: avoid;
     }
