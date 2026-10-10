@@ -125,9 +125,10 @@ const INSTALLMENTS_SUMMARY_REPORT_CSS = `
   html, body { margin: 0 !important; padding: 0 !important; }
   .report-page-content { width: 100% !important; min-width: 0 !important; }
   .report-page-content table { width: 100% !important; table-layout: fixed !important; border-collapse: collapse !important; }
-  .report-page-content th, .report-page-content td { padding: 5px 4px !important; vertical-align: middle !important; text-align: center !important; white-space: normal !important; line-height: 1.3 !important; }
-  .report-page-content th { background: #0f766e !important; color: #fff !important; font-weight: 800 !important; }
-  .report-page-content td { color: #172b35 !important; overflow-wrap: anywhere !important; word-break: normal !important; }
+  .report-page-content, .report-page-content table, .report-page-content th, .report-page-content td, .report-page-content * { font-family: Cairo, Arial, sans-serif !important; font-size: 16px !important; font-weight: 900 !important; }
+  .report-page-content th, .report-page-content td { padding: 0 4px !important; margin: 0 !important; vertical-align: middle !important; text-align: center !important; white-space: normal !important; line-height: 1.2 !important; }
+  .report-page-content th { background: #0f766e !important; color: #000 !important; }
+  .report-page-content td { color: #000 !important; overflow-wrap: anywhere !important; word-break: break-word !important; }
   .report-page-content .num, .report-page-content .numeric-cell { white-space: nowrap !important; word-break: keep-all !important; direction: ltr !important; }
   .report-page-content h1, .report-page-content h2 { margin: 0 0 5px !important; text-align: center !important; }
 `;
@@ -1467,6 +1468,44 @@ td.t-fees { background: ${colorTokens.fees} !important; }
           white-space: normal !important;
           word-break: break-word !important;
         }
+      }
+      /* قواعد PDF النهائية: Cairo، حجم 16px، أسود غامق، وبدون حشو رأسي */
+      html, body, table, th, td, .cell-content, .doc-header, .doc-foot {
+        font-family: Cairo, Arial, sans-serif !important;
+        font-size: 16px !important;
+        font-weight: 900 !important;
+        color: #000 !important;
+      }
+      table { table-layout: fixed !important; width: 100% !important; }
+      th, td {
+        padding: 0 4px !important;
+        margin: 0 !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+        line-height: 1.2 !important;
+      }
+      .cell-content {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        text-align: center !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+        line-height: 1.2 !important;
+      }
+      th *, td * { font-family: Cairo, Arial, sans-serif !important; font-size: 16px !important; font-weight: 900 !important; color: #000 !important; }
+      td.numeric-cell, th.numeric-cell, td.date-cell, th.date-cell, td.compact-cell, th.compact-cell,
+      td.numeric-cell .cell-content, th.numeric-cell .cell-content {
+        white-space: nowrap !important;
+        overflow-wrap: normal !important;
+        word-break: keep-all !important;
       }
     `;
       

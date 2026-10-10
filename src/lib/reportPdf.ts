@@ -28,8 +28,10 @@ export const reportDocumentCss = `
 export const reportContainmentCss = `
   .report-page-content { width:100%; max-width:auto; }
   .report-page-content table { width:100% !important; max-width:100% !important; table-layout:auto !important; }
-  .report-page-content th,.report-page-content td { min-width:auto !important; white-space:nowrap !important;
-    overflow-wrap:anywhere !important; word-break:normal !important; }
+  .report-page-content th,.report-page-content td { min-width:auto !important; padding:0 4px !important;
+    margin:0 !important; text-align:center !important; vertical-align:middle !important; white-space:normal !important;
+    overflow-wrap:anywhere !important; word-break:break-word !important; font-family:Cairo,Arial,sans-serif !important;
+    font-size:16px !important; font-weight:900 !important; color:#000 !important; line-height:1.2 !important; }
   .report-page-content .num,.report-page-content .numeric-cell,.report-page-content .date-cell,
   .report-page-content .idx,.report-page-content .cell-number { direction:ltr !important; unicode-bidi:isolate;
     white-space:nowrap !important; overflow-wrap:normal !important; word-break:keep-all !important; }
