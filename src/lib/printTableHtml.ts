@@ -90,7 +90,7 @@ export const tablePrintStyles = `
     text-align: center;
     color: #000 !important;
     margin-bottom: 6px;
-    font-size: 16px;
+    font-size: 19px;
     font-weight: 700;
     border-bottom: 1px solid #b8860b;
     padding-bottom: 4px;
@@ -101,28 +101,28 @@ export const tablePrintStyles = `
     width: 100% !important;
     border-collapse: collapse !important;
     table-layout: auto !important;
-    font-size: 16px;
-    margin: 0 auto;
+    font-size: 19px;
+    margin: auto;
   }
   
   th, td {
     border: 1px solid #000 !important;
-    padding: 4px 6px !important;
+    padding: 2px 2px !important;
     text-align: center !important;
     vertical-align: middle !important;
     color: #000 !important;
     width:100٪ !important;
-    max-width:auto !important;
+    min-width: auto !important;
   }
 
   /* 1. رؤوس الأعمدة: التفاف النص التلقائي لاحتواء العناوين الطويلة */
   thead th,
   th {
     background: #f5deb3 !important;
-    color: #171412 !important;
+    color: white !important;
     font-weight: 900 !important;
-    font-size: 16px !important;
-    line-height: 1. !important;
+    font-size: 19px !important;
+    line-height: 1.5 !important;
     white-space: normal !important;
     word-break: normal !important;
     overflow-wrap: break-word !important;
@@ -134,7 +134,7 @@ font-family: AlQabas-Bold;
   tfoot td,
   .text-cell,
   .long-text-cell {
-    white-space: normal !important;
+    white-space: nowrap !important;
     word-break: break-word !important;
     overflow-wrap: anywhere !important;
     hyphens: auto !important;
@@ -142,18 +142,20 @@ font-family: AlQabas-Bold;
 
   tbody td {
     font-weight: 700 !important;
-    font-size: 15.5px !important;
-    padding: 3px 5px !important;
+    font-size: 19.5px !important;
+    padding: 2px 2px !important;
   }
 
   .pdf-cell-text {
     display: block !important;
     text-align: center !important;
     width: 100% !important;
-        font-size: 18px; 
-  font-family:cairo;
+max-width: auto !important;
+
+  font-size: 18px; 
+  font-family: cairo;
     font-weight: 900; 
-    white-space: normal !important;
+    white-space: nowrap !important;
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
   }
@@ -189,7 +191,7 @@ font-family: AlQabas-Bold;
   .total-row td {
     background: #fef3c7 !important;
     font-weight: 900 !important;
-    font-size: 13.5px !important;
+    font-size: 16.5px !important;
     border-top: 1.5pt solid #000 !important;
   }
   
@@ -239,7 +241,7 @@ font-family: AlQabas-Bold;
   .doc-title-row td.doc-title-cell {
     border: none !important;
     background: #fff !important;
-    padding: 2px 0 5px !important;
+    padding: 2px 0 2px !important;
   }
 
   .report-letterhead-row .report-letterhead-cell {

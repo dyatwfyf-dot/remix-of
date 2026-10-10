@@ -2194,9 +2194,9 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       body {
         font-family: "Cairo", Tahoma, sans-serif;
         color: #000;
-        font-size: 16px;
+        font-size: 20px;
         font-weight: 900;
-        line-height: 1.35;
+        line-height: 1.5;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -2210,15 +2210,15 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         flex-direction: column;
       }
 
-      .page-frame {
-        width: 100%;
-        min-height: 0;
-        height: 100%;
-        flex: 1 1 auto;
-        display: flex;
-        flex-direction: column;
-        padding: 4mm;
-        border: 1px solid #000;
+ .page-frame {
+width: 100%;
+ min-height: 0;
+height: 100%;
+flex: 1 1 auto;
+ display: flex;
+ flex-direction: column;
+ padding: 4mm;
+ border: 1px solid #000;
         border-radius: 3mm;
         background: #fff;
         box-shadow: 0 2mm 8mm rgba(15, 118, 110, 0.08);
@@ -2284,7 +2284,7 @@ font-weight: 800; color: #000; }
       box-sizing: border-box;
     }
     .info-lbl { font-size: 20px; line-height: 1.15; font-weight: 800; color:black; text-align: center; }
-    .info-val { font-size: 18px; line-height: 1.15; font-weight: 800; margin-top: 1mm; overflow-wrap: anywhere; }
+    .info-val { font-size: 18px; line-height: 1.15; font-weight: 1000; margin-top: 2px; overflow-wrap: anywhere; }
 
     table {
       table-layout: fixed;
@@ -2293,7 +2293,7 @@ font-weight: 800; color: #000; }
       height: 100%;
       flex: 1 1 auto;
       border-collapse: collapse;
-      margin-top: 2mm;
+      margin-top: 6px;
       page-break-inside: avoid;
       break-inside: avoid;
     }
@@ -2301,12 +2301,12 @@ font-weight: 800; color: #000; }
       border: 0.75pt solid #000;
       text-align: center;
       vertical-align: middle;
-      padding: 0 2mm;
+ padding: 0 2px;
       font-size: 20px;
-      line-height: 1.25;
-      white-space: normal;
-      overflow: hidden;
-      text-overflow: clip;
+line-height: 1.25;
+white-space: normal;
+overflow: hidden;
+text-overflow: clip;
       overflow-wrap: anywhere;
       word-break: break-word;
       hyphens: auto;
@@ -2315,12 +2315,15 @@ font-weight: 800; color: #000; }
 background: #0f766e;
 color: white !important; 
 font-weight: 900; }
-    td { color: #000 !important; font-weight: 900; }
-    .lbl { text-align: center; font-weight: 800; }
+    td { color: #000 !important;
+font-weight: 900; }
+    .lbl { 
+text-align: center; font-weight: 800; }
 .num { 
 font-family: Cairo; 
 font-weight: 900; 
-font-size: 20px; font-variant-numeric: tabular-nums; direction: ltr; }
+font-size: 20px; 
+font-variant-numeric: tabular-nums; direction: ltr; }
     .row-fees td { background: #eff6ff; }
     .row-due-old td { background: #fef3c7; color: #000 !important; }
     .row-total-due td { background: #fee2e2; color: #000 !important; font-weight: 800; }
@@ -2343,7 +2346,7 @@ font-size: 20px; font-variant-numeric: tabular-nums; direction: ltr; }
     @media print {
       html, body { width: auto; }
       body { margin: 0; padding: 0; }
-      .container { min-height: 268mm !important; height: 268mm !important; }
+      .container { min-height: 250mm !important; height: 250mm !important; }
       .page-frame { min-height: 0; height: 100%; border-radius: 0; box-shadow: none; padding: 4mm; }
       .print-toolbar { display: none !important; }
       .header, .info-box, th, td {

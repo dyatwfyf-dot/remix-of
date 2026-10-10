@@ -55,7 +55,7 @@ const baseCss = (
 
     border: solid 1px #000; 
 table-layout:auto !important; 
-font-size: 15px !important;
+font-size: 19px !important;
   }
   thead { display: table-header-group; }
   tfoot { display: table-footer-group; }
@@ -68,7 +68,7 @@ font-size: 15px !important;
     vertical-align: middle !important; 
     padding: 6px 8px !important; 
     line-height: 1.5 !important; 
-    font-size: 15px; 
+    font-size: 18px; 
     color: #000 !important; 
     font-weight: 900 !important; 
     white-space:normal !important;
@@ -86,7 +86,7 @@ font-size: 15px !important;
     width:100% !important;
     height: auto !important;
     text-align: center !important;
-    white-space:normal !important;
+    white-space:nowrap !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
   }
@@ -127,13 +127,13 @@ font-size: 15px !important;
     white-space: normal !important;
     overflow-wrap: normal !important;
     word-break: keep-all !important;
-    width:50% !important;
+    width: 100% !important;
     text-align: center !important;
     vertical-align: middle !important;
   }
 
   th { font-weight: 800; white-space:normal !important; vertical-align: middle !important; }
-  img { max-width: 100%; height: auto; display: block; }
+  img { max-width: 100%; height: auto; display: flex; }
 
   /* ترويسة التقرير داخل thead تتكرر مع رؤوس الأعمدة في كل صفحة */
   .report-letterhead-row { page-break-after: avoid; break-after: avoid; }
@@ -168,18 +168,21 @@ text-align: center;
   height:100%;
     }
     body { 
+width: 100%;
+min-height: auto;
+height: 100%;
     margin: 0; 
     padding: 0; 
-    font-size:16px; 
+    font-size:18px; 
      }
     thead { display: table-header-group; }
     tfoot { display: table-footer-group; }
     .page-break { page-break-after: always; }
     th, td { 
       padding: 2px 2px !important; 
-      font-size:16px; 
+      font-size:18px; 
       color: #000 !important; 
-      font-weight: 700 !important; 
+      font-weight: 900 !important; 
       white-space:normal !important;
       word-break: keep-all !important;
       overflow-wrap: normal !important;

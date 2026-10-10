@@ -15,20 +15,22 @@ async function htmlToPdf(opts: { html: string; css: string; fileName: string; or
 const statementCss = `
   ${tablePrintStyles}
   body, .pdf-page { 
-    font-size:18px; 
-font-family:cairo;
+font-size:18px; 
+font-family: cairo;
     font-weight: 900; 
     margin: 0;
     padding: 0;
 width: 100%;
 height: 100%;
+min-height: 260mm;
 box-sizing: border-box;
   }
-  table {
+
+table {
 width: 100% !important;
 max-width:auto !important;
-font-size:18px !important;
-table-layout:auto  
+font-size: 20px !important;
+table-layout:fixed 
 !important; 
  font-weight: 900 !important;; 
 height:100% !important;
@@ -47,7 +49,7 @@ font-family:cairo;
     text-align: center; 
 font-size:18px  
 !important;
-font-family:cairo;
+font-family: cairo;
     font-weight: 900; 
   }
   .info td.lbl { 

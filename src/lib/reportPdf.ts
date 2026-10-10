@@ -11,9 +11,9 @@ export const reportDocumentCss = `
     --report-total:#e4f1de; --report-accent:#176b74; }
   * { box-sizing:border-box; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   body { margin:0; padding:0; direction:rtl; background:var(--report-paper);
-    color:var(--report-ink); font-family:'Report Arabic','Cairo',Tahoma,sans-serif; font-size:13px; line-height:1.45; }
+    color:var(--report-ink); font-family:'Report Arabic','Cairo',Tahoma,sans-serif; font-size:18px; line-height:1.5; }
   h1,h2 { text-align:center; color:var(--report-accent); font-size:20px; margin:0 0 6px; }
-  .sub,.meta { text-align:center; color:var(--report-muted); font-size:12px; margin-bottom:10px; }
+  .sub,.meta { text-align:center; color:var(--report-muted); font-size:18px; margin-bottom:10px; }
   table { width:100%; border-collapse:collapse; table-layout:auto; }
   th,td { border:1px solid var(--report-rule); padding:5px 6px; text-align:center; vertical-align:middle; }
   thead th { background:var(--report-header); color:var(--report-ink); font-weight:800; }
@@ -31,11 +31,13 @@ export const reportContainmentCss = `
   .report-page-content th,.report-page-content td { min-width:auto !important; padding:0 4px !important;
     margin:0 !important; text-align:center !important; vertical-align:middle !important; white-space:normal !important;
     overflow-wrap:anywhere !important; word-break:break-word !important; font-family:Cairo,Arial,sans-serif !important;
-    font-size:16px !important; font-weight:900 !important; color:#000 !important; line-height:1.2 !important; }
+    font-size: 20px !important; font-weight:900 !important; color:#000 !important; line-height:1.2 !important; }
   .report-page-content .num,.report-page-content .numeric-cell,.report-page-content .date-cell,
   .report-page-content .idx,.report-page-content .cell-number { direction:ltr !important; unicode-bidi:isolate;
     white-space:nowrap !important; overflow-wrap:normal !important; word-break:keep-all !important; }
-  .report-page-content .pdf-cell-text { white-space:normal !important; font-size:inherit; }
+  .report-page-content .pdf-cell-text { white-space:nowrap !important; 
+  font-size:18px;
+  }
   .report-page-content thead { display:table-header-group; }
   .report-page-content tr { break-inside:avoid; }
   .report-page-content .report-letterhead-cell { background:var(--report-paper) !important; border:0 !important; }
@@ -67,9 +69,9 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
   paper.style.cssText = `width:${widthMm}mm;height:${heightMm}mm;padding:${marginMm}mm;box-sizing:border-box;background:var(--report-paper,#fff);display:flex;flex-direction:column;`;
   const content = source.cloneNode(true) as HTMLElement;
   content.classList.add('report-page-content');
-  content.style.cssText = 'width:100%;min-height:auto;height:auto;padding:0;margin:0;border:0;box-shadow:none;transform:none;';
+  content.style.cssText = 'width:100%;min-height:auto;height:100%;padding:0;margin:0;border:0;box-shadow:none;transform:none;';
   const footer = doc.createElement('div');
-  footer.style.cssText = 'margin-top:auto;padding-top:2mm;text-align:center;font-size:16px;color:var(--report-muted);direction:rtl;';
+  footer.style.cssText = 'margin-top:auto;padding-top:2mm;text-align:center;font-size:20px;color:var(--report-muted);direction:rtl;';
   paper.append(content, footer);
   holder.append(paper);
   doc.body.append(holder);
@@ -79,6 +81,7 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
     const body = table?.tBodies[0];
     const rows = body ? Array.from(body.rows).map(row => row.cloneNode(true) as HTMLTableRowElement) : [];
     if (body) body.replaceChildren();
+    
     const maxHeight = (heightMm - marginMm * 2) * pxPerMm - 22;
     const fitWidth = () => {
       content.style.zoom = '1';
