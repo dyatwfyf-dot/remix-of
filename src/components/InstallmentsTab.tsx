@@ -2188,27 +2188,30 @@ td.t-fees { background: ${colorTokens.fees} !important; }
 
     // تنسيقات CSS المطابقة للصورة ولورقة A4 طولي بنسبة 100%
     const statementCss = `
-      @page {
-        size: A4 portrait;
-        margin: 0;
+@page {
+size: A4 portrait;
+margin: 0;
+padding:0;
       }
       * { 
         box-sizing: border-box; 
       }
-      html, body {
-        width: 100%;
-        margin: 0;
-        padding: 0;
-        background: #ffffff !important;
+html, body {
+width: 100%;
+margin: 0;
+height:100%;
+ min-height: auto;
+ padding: 0;
+background: #ffffff !important;
 font-family: "Cairo";
-        color: #000000;
-        direction: rtl;
-        -webkit-print-color-adjust: exact !important;
+color: #000000;
+direction: rtl;
+-webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
       .statement-page {
         width: 100%;
-        max-width: none;
+        max-width:auto;
         margin: 0;
         display: flex;
         flex-direction: column;
@@ -2241,10 +2244,10 @@ object-fit:fill;
         gap: 10px;
         margin-bottom: 12px;
       }
-      .info-box {
-        border: 1.5px solid #cbd5e1;
-        background: #ffffff !important;
-        border-radius: 8px;
+.info-box {
+border: 1px solid #000;
+background:gold !important;
+border-radius: 8px;
         padding: 8px 12px;
         text-align: center;
         display: flex;
@@ -2318,16 +2321,22 @@ object-fit:fill;
 
       @media print {
         @page { 
-          size: A4 portrait; 
-          margin: 0;
+ size: A4 portrait; 
+margin: 0;
+padding: 0;
         }
         body { 
           margin: 0 !important; 
           padding: 0 !important; 
+  width: 100%
+min-width: auto;
+height: 100%
+ max-height: auto;
+
         }
 .statement-page { 
 width: 100% !important; 
-max-width: 100% !important; 
+max-width: auto !important; 
         }
       }
     `;
