@@ -1211,10 +1211,10 @@ className="border border-black cursor-pointer hover:bg-[#cfe4ef] transition-colo
                         </select>
                       </td>
 
-<td className="border border-black font-bold tabular-nums numeric-cell font-white text-center text-white bg-[#1f5f7a] px-1 py-1.5 sm:px-2 sm:py-2 text-xm whitespace-nowrap">
+<td className="border border-black font-bold tabular-nums numeric-cell font-black text-center bg-[#1f5f7a] px-1 py-1.5 sm:px-2 sm:py-2 text-xm whitespace-nowrap">
                         {fmt(acc.balance)}
                       </td>
-                      <td className="accounts-print-hide border border-black text-center px-1 py-1.5 sm:px-2 sm:py-2 text-xs whitespace-nowrap">
+                      <td className="accounts-print-hide border border-black text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
                         <div className="flex justify-center gap-1.5">
                           <button
                             onClick={() => setEditingRow(acc)}

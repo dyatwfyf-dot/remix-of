@@ -487,13 +487,13 @@ className="mt-0 px-1.5 py-0.5 rounded-md text-[10px] w-4 text-center bg-white bo
                 <TableFooter className="bg-slate-100 font-bold border-t-2 border-slate-300">
                   <TableRow>
                     <TableCell className="text-center font-bold">∑</TableCell>
- <TableCell className="font-bold text-xs">الإجمالي</TableCell>
-                    <TableCell colSpan={5}></TableCell>
+                    <TableCell className="font-bold text-xs">الإجمالي</TableCell>
+                    <TableCell colSpan={4}></TableCell>
                     <TableCell className="text-center font-mono font-extrabold text-xs text-emerald-700">
                       {fmt(totalHafizaAmount)}
                     </TableCell>
- <TableCell colSpan={3}></TableCell>
- <TableCell className="text-center font-mono font-extrabold text-xs text-sky-700">
+                    <TableCell colSpan={2}></TableCell>
+                    <TableCell className="text-center font-mono font-extrabold text-xs text-sky-700">
                       {fmt(totalNotifyAmount)}
                     </TableCell>
                     <TableCell></TableCell>
