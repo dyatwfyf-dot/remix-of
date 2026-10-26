@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { BarChart3, CalendarDays, FileText, UserRound, Wallet, Coins } from "lucide-react";
-import { useStore } from "@/lib/store";
+import { useStore, type Account } from "@/lib/store";
 import TabActions, { type TabCol } from "./TabActions";
 import revenueSchema from "@/data/revenueTemplate.json";
 
@@ -343,7 +343,7 @@ export default function ReportsTab() {
 
     if (value === null || value === undefined || value === "") return null;
     if (typeof value === "number") return value;
-    const normalized = String(value).replace(/[,\\s]/g, "");
+    const normalized = String(value).replace(/[,\s]/g, "");
     if (!Number.isNaN(Number(normalized)) && normalized !== "") return Number(normalized);
     if (key === "date" || key === "notifyDate") {
       const date = normalizeDate(value);
@@ -872,7 +872,7 @@ export default function ReportsTab() {
                       className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
                     >
                       <option value="detail">تفصيلي فقط</option>
-                      <option value="summary">إجمالي فقط</option>
+                      <option value="summary">إجم��لي فقط</option>
                       <option value="both">تفصيلي وإجمالي</option>
                     </select>
                   </label>
@@ -1045,8 +1045,8 @@ export default function ReportsTab() {
                   if (!summaryRows.length) return null;
 
                   const cardStyles = [
-                    { label: "مبلغ العهدة الافتتاحي للعام 2026", bg: "bg-amber-200", text: "text-amber-950", border: "border-amber-500", cls: "summary-card-0" },
-                    { label: "المنصرف من العهدة خلال العام", bg: "bg-rose-200", text: "text-rose-950", border: "border-rose-500", cls: "summary-card-1" },
+                    { label: "مبلغ العهدة الافتتاحي للعام 2026",   bg: "bg-amber-200",   text: "text-amber-950",   border: "border-amber-500",   cls: "summary-card-0" },
+                    { label: "المنصرف من العهدة خلال العام",        bg: "bg-rose-200",    text: "text-rose-950",    border: "border-rose-500",    cls: "summary-card-1" },
                     { label: "المتبقي من العهدة حتى تاريخ التقرير", bg: "bg-emerald-200", text: "text-emerald-950", border: "border-emerald-500", cls: "summary-card-2" },
                   ];
 

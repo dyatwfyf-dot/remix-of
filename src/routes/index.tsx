@@ -1,4 +1,3 @@
-/* ملف: src/routes/index.tsx */
 import { lazy, Suspense, startTransition, useCallback, useEffect, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Toaster, toast } from "sonner";
@@ -27,7 +26,7 @@ const ExpensesTab = lazy(() => import("@/components/ExpensesTab"));
 const ReportsTab = lazy(() => import("@/components/ReportsTab"));
 const AppTabs = lazy(() => import("@/components/AppTabs"));
 
-// استيراد وظائف الـ PWA و Capacitor
+// استيراد وظائف الـ PWA
 import { canInstall, onInstallAvailability, promptInstall } from "@/lib/pwa";
 import { installAndroidBackButton } from "@/lib/capacitorNavigation";
 import NativePrintPreviewHost from "@/components/NativePrintPreviewHost";
@@ -40,7 +39,8 @@ export const Route = createFileRoute("/")({
       { title: "مِيزان | النظام المالي" },
       {
         name: "description",
-        content: "مِيزان — نظام مالي عصري لإدارة القيود والحوافظ والأقساط والتقارير",
+        content:
+          "مِيزان — نظام مالي عصري لإدارة القيود والحوافظ والأقساط والتقارير",
       },
       { property: "og:title", content: "مِيزان | النظام المالي" },
       {
@@ -78,13 +78,14 @@ type TabItem = {
   activeClass: string;
 };
 
-// تعريف قائمة التبويبات مع بياناتها وألوانها
+// تعريف قائمة التبويبات مع بياناتها (التعديل: لكل تبويب لون مميز عند التفعيل)
 const tabs: TabItem[] = [
   {
     value: "installments",
     label: "كشف الأقساط",
     shortLabel: "أقساط",
     icon: <WalletCards className="w-5 h-5 sm:w-6 sm:h-6" />,
+    // أزرق: افتراضي
     activeClass: "bg-gradient-to-b from-[#2e6b8a] to-[#6ba3c8]",
   },
   {
@@ -92,6 +93,7 @@ const tabs: TabItem[] = [
     label: "حوافظ التوريد",
     shortLabel: "حوافظ",
     icon: <FileBox className="w-5 h-5 sm:w-6 sm:h-6" />,
+    // أخضر
     activeClass: "bg-gradient-to-b from-[#166b4e] to-[#3fa270]",
   },
   {
@@ -99,6 +101,7 @@ const tabs: TabItem[] = [
     label: "الحساب الجاري",
     shortLabel: "حساب",
     icon: <FileSpreadsheet className="w-5 h-5 sm:w-6 sm:h-6" />,
+    // تركوازي/أزرق مخضر
     activeClass: "bg-gradient-to-b from-[#1f5f7a] to-[#4b8db0]",
   },
   {
@@ -106,6 +109,7 @@ const tabs: TabItem[] = [
     label: "القيود اليومية",
     shortLabel: "قيود",
     icon: <BookOpenText className="w-5 h-5 sm:w-6 sm:h-6" />,
+    // بنفسجي
     activeClass: "bg-gradient-to-b from-[#6b3d9c] to-[#b77ac1]",
   },
   {
@@ -113,6 +117,7 @@ const tabs: TabItem[] = [
     label: "كشف شهري",
     shortLabel: "شهري",
     icon: <PieChart className="w-5 h-5 sm:w-6 sm:h-6" />,
+    // برتقالي
     activeClass: "bg-gradient-to-b from-[#b96b00] to-[#f0a54a]",
   },
   {
@@ -120,6 +125,7 @@ const tabs: TabItem[] = [
     label: "الإيرادات",
     shortLabel: "إيرادات",
     icon: <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" />,
+    // أخضر فاتح
     activeClass: "bg-gradient-to-b from-[#1f7a2e] to-[#6bc97a]",
   },
   {
@@ -127,6 +133,7 @@ const tabs: TabItem[] = [
     label: "المصروفات",
     shortLabel: "مصروفات",
     icon: <ReceiptText className="w-5 h-5 sm:w-6 sm:h-6" />,
+    // أحمر
     activeClass: "bg-gradient-to-b from-[#9c3d3d] to-[#d67b7b]",
   },
   {
@@ -134,6 +141,7 @@ const tabs: TabItem[] = [
     label: "التقارير",
     shortLabel: "تقارير",
     icon: <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6" />,
+    // كحلي/أزرق متدرج
     activeClass: "bg-gradient-to-b from-[#2e5e9a] to-[#5f8fd0]",
   },
   {
@@ -141,6 +149,7 @@ const tabs: TabItem[] = [
     label: "سجل النفقات",
     shortLabel: "السجل",
     icon: <FileSpreadsheet className="w-5 h-5 sm:w-6 sm:h-6" />,
+    // بنفسجي عميق
     activeClass: "bg-gradient-to-b from-[#4b2e6a] to-[#7a58a0]",
   },
 ];
@@ -159,12 +168,6 @@ function Index() {
   const activeTabRef = useRef(activeTab);
   const tabHistoryRef = useRef<Tab[]>([getInitialTab()]);
   const [pwaInstallable, setPwaInstallable] = useState<boolean>(false);
-  const [isMounted, setIsMounted] = useState<boolean>(false);
-
-  // تفعيل العرض بمجرد تحميل المتصفح لتفادي ثقل الخادم
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   useEffect(() => {
     const handleStorageError = () => {
@@ -254,14 +257,17 @@ function Index() {
   };
 
   return (
+    // الحاوية الرئيسية بهوية "صقيع قطبي" الفاتحة
     <div
       className="apk-tabs-ui w-full min-h-screen bg-[#e8f0ff] selection:bg-[#6ba3c8]/30 text-base"
       dir="rtl"
     >
-      {/* قسم الهيدر العلوي */}
+      {/* قسم الهيدر العلوي — أزرق ثلجي عصري */}
       <div className="app-header relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 bg-gradient-to-l from-[#2e6b8a] via-[#3d7fa0] to-[#2e6b8a] px-3 py-3 sm:px-5 sm:py-4 border-b border-[#b8d4e8] shadow-sm text-white overflow-hidden">
+        {/* خيط زخرفي أعلى الهيدر */}
         <div className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,#b8d4e8,#e8f0f8,#b8d4e8)] opacity-80" />
 
+        {/* الجزء الأيمن: الشعار والعنوان والوصف */}
         <div className="flex items-center gap-2.5 min-w-0">
           <div className="app-brand-logo relative shrink-0 flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center overflow-hidden rounded-2xl border border-white/35 bg-white/15 p-1 shadow-lg shadow-[#102f46]/20">
             <img src="/app-logo.png" alt="شعار مِيزان" className="h-full w-full object-contain" />
@@ -279,6 +285,7 @@ function Index() {
           </div>
         </div>
 
+        {/* الجزء الأيسر: زر تثبيت التطبيق */}
         <div className="flex items-center gap-2 shrink-0">
           {pwaInstallable && (
             <button
@@ -294,40 +301,30 @@ function Index() {
 
       {/* محتوى التبويب النشط */}
       <div className="app-tab-content w-full min-w-0 bg-[#f4f9fd] p-0 pb-28 sm:p-0 sm:pb-24 md:p-0 min-h-[calc(100vh-140px)]">
-        {isMounted ? (
-          <Suspense
-            fallback={
-              <div
-                className="flex min-h-[40vh] items-center justify-center rounded-2xl border border-[#b8d4e8] bg-white/80 p-6 text-sm font-bold text-[#2e6b8a] shadow-sm"
-                role="status"
-                aria-live="polite"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#2e6b8a] border-t-transparent" />
-                  <span>جارٍ فتح التبويب…</span>
-                </div>
-              </div>
-            }
-          >
-            {activeTab === "installments" && <InstallmentsTab />}
-            {activeTab === "hafiza" && <HafizaTab />}
-            {activeTab === "account" && <AccountTab />}
-            {activeTab === "journal" && <JournalTab />}
-            {activeTab === "monthly" && <MonthlyStatementTab />}
-            {activeTab === "revenue" && <RevenueTab />}
-            {activeTab === "expenses-table" && <ExpensesTab />}
-            {activeTab === "reports" && <ReportsTab />}
-            {activeTab === "general-expenses-ledger" && <AppTabs />}
-          </Suspense>
-        ) : (
-          <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 p-6 text-center" dir="rtl">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#2e6b8a] border-t-transparent" />
-            <p className="text-sm font-bold text-[#2e6b8a]">جارٍ تجهيز النظام المالي...</p>
-          </div>
-        )}
+        <Suspense
+          fallback={
+            <div
+              className="flex min-h-[35vh] items-center justify-center rounded-2xl border border-[#b8d4e8] bg-gold/95 p-6 text-xs font-semibold text-[#2e6b8a]"
+              role="status"
+              aria-live="polite"
+            >
+              جارٍ فتح التبويب…
+            </div>
+          }
+        >
+          {activeTab === "installments" && <InstallmentsTab />}
+          {activeTab === "hafiza" && <HafizaTab />}
+          {activeTab === "account" && <AccountTab />}
+          {activeTab === "journal" && <JournalTab />}
+          {activeTab === "monthly" && <MonthlyStatementTab />}
+          {activeTab === "revenue" && <RevenueTab />}
+          {activeTab === "expenses-table" && <ExpensesTab />}
+          {activeTab === "reports" && <ReportsTab />}
+          {activeTab === "general-expenses-ledger" && <AppTabs />}
+        </Suspense>
       </div>
 
-      {/* شريط التبويبات السفلي */}
+      {/* شريط التبويبات السفلي — عائم زجاجي فاتح */}
       <nav
         className="app-main-nav fixed inset-x-0 bottom-0 z-[60] border-t border-[#b8d4e8] bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_12px_rgba(46,107,138,0.12)]"
         dir="rtl"
