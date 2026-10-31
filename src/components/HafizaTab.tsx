@@ -195,13 +195,13 @@ export default function HafizaTab() {
       dir="rtl"
     >
       {/* الترويسة الرئيسية */}
-<div className="rounded-2xl p-3.5 mb-3.5 bg-emerald-50/80 backdrop-blur-md border border-black shadow-xs">
+<div className="rounded-2xl p-3.5 mb-3.5 bg-[#FFC194] border border-black shadow-xs">
         <div className="flex items-center gap-3">
-<div className="w-10 h-10 rounded-xl bg-[#FFC194] flex items-center justify-center text-white shadow-md shadow-sky-500/30">
+<div className="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-md shadow-sky-500/30">
             <Wallet className="w-5 h-5" />
           </div>
           <div>
-<h1 className="text-base text-lg font-extrabold text-[#4D0000]">تبويب حــوافـظ
+<h1 className="text-lg font-extrabold text-[#4D0000]">تبويب حــوافـظ
 التوريـد</h1>
   <p className="text-[15px] sm:text-xs text-slate-600">إدارة وتدقيق حوافظ التوريد</p>
           </div>
