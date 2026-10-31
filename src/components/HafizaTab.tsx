@@ -253,9 +253,9 @@ export default function HafizaTab() {
   <CardHeader className="p-3.5 pb-2 border border-black bg-slate-200/50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-     <div className="w-8 h-8 rounded-lg bg-[hsla(214, 92%,47%,1)] text-black flex items-center justify-center font-bold">
-                  <Plus className="w-4 h-4" />
-                </div>
+     <div className="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center font-bold">
+   <Plus className="w-4 h-4" />
+            </div>
    <div>
      <CardTitle className="text-xl font-bold text-slate-black">إدخال حافظة توريد جديدة</CardTitle>
 <CardDescription className="text-[11px] text-slate-500">لادخال حافظة توريد جديدة بشكل سريع وسهل
