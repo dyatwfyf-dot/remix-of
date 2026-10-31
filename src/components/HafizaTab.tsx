@@ -249,11 +249,11 @@ export default function HafizaTab() {
 
       {/* نموذج إضافة حافظة */}
       <div className={`transition-all duration-300 ${showForm ? "max-h-[1400px] mb-3.5 opacity-100" : "max-h-0 overflow-hidden opacity-0"}`}>
-<Card className="border border-black rounded-2xl bg-[hsla(214,92%,47%,1)] shadow-lg overflow-hidden">
-  <CardHeader className="p-3.5 pb-2 border border-black bg-slate-200/50">
+<Card className="border border-black rounded-2xl shadow-lg overflow-hidden">
+  <CardHeader className="p-3.5 pb-2 border border-black bg-[hsla(214,92%,47%,1)]">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-     <div className="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center font-bold">
+     <div className="w-8 h-8 rounded-lg bg-[#ffffff] text-black flex items-center justify-center font-bold">
    <Plus className="w-4 h-4" />
             </div>
    <div>
