@@ -215,7 +215,7 @@ export default function HafizaTab() {
           <button
             type="button"
             onClick={() => setShowForm((s) => !s)}
-            className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-teal-500 to-emerald-600 shadow-xs shadow-emerald-500/25 hover:shadow-lg hover:shadow-emerald-500/40 active:scale-95 transition-all"
+            className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm text-[#FFD7D7] bg-[#290B8E] shadow-xs shadow-emerald-500/25 hover:shadow-lg hover:shadow-emerald-500/40 active:scale-95 transition-all"
           >
  <Plus className="w-4 h-4" />
      {showForm ? "إخفاء النموذج" : "إضافة حافظة"}
