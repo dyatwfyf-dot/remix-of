@@ -257,8 +257,8 @@ export default function HafizaTab() {
    <Plus className="w-4 h-4" />
             </div>
    <div>
-     <CardTitle className="text-xl font-bold text-slate-black">إدخال حافظة توريد جديدة</CardTitle>
-<CardDescription className="text-[11px] text-slate-500">لادخال حافظة توريد جديدة بشكل سريع وسهل
+     <CardTitle className="text-xl font-bold text-white ">إدخال حافظة توريد جديدة</CardTitle>
+<CardDescription className="text-[11px] text-gold">لادخال حافظة توريد جديدة بشكل سريع وسهل
 </CardDescription>
                 </div>
               </div>
@@ -266,7 +266,7 @@ export default function HafizaTab() {
           </CardHeader>
 
           <CardContent className="p-3 sm:p-4">
- <div className="grid grid-cols-3 gap-2.5 sm:gap-3.5 bg-teal/200 border border-black">
+ <div className="grid grid-cols-3 gap-2.5 sm:gap-3.5 bg-teal/700 border border-black">
               {/* السطر 1: الاسم الكامل | الدفعة */}
               <div className="relative">
                 <label className="text-sm font-bold text-slate-800 block mb-1">الاسم الكامل *</label>
