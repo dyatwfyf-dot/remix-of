@@ -209,7 +209,7 @@ export default function HafizaTab() {
       </div>
 
       {/* شريط الأزرار الرئيسي - كل سطر يحتوي على زرين */}
-      <div className="mb-3.5 bg-[#cdd5ae] backdrop-blur-md p-3 rounded-2xl border border-black shadow-md">
+      <div className="mb-3.5 backdrop-blur-md p-3 rounded-2xl border border-black shadow-md">
         <div className="grid grid-cols-2 gap-2.5">
           {/* السطر 1: زر النموذج وزر نسخ المبالغ */}
           <button
@@ -224,14 +224,14 @@ export default function HafizaTab() {
           <button
             type="button"
             onClick={handleCopyAmountsToNotify}
-            className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm border border-black text-white bg-gradient-to-r from-sky-500 to-blue-600 shadow-md shadow-sky-500/25 hover:shadow-lg hover:shadow-sky-500/40 active:scale-95 transition-all"
+            className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm border border-black text-white bg-[#870808] shadow-md shadow-sky-500/25 hover:shadow-lg hover:shadow-sky-500/40 active:scale-95 transition-all"
           >
             <CheckSquare className="w-4 h-4" />
             نسخ للإشعار
           </button>
 
           {/* السطر 2: زر الاستيراد وزر مسح الكل */}
-          <div className="flex items-center justify-center rounded-xl overflow-hidden bg-gradient-to-r from-indigo-900 to-violet-800 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-500/25 hover:shadow-lg active:scale-95 transition-all">
+          <div className="flex items-center justify-center rounded-xl overflow-hidden bg-[#255706] text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-500/25 hover:shadow-lg active:scale-95 transition-all">
             <ImportButton kind="hafiza" />
           </div>
 
@@ -239,7 +239,7 @@ export default function HafizaTab() {
             type="button"
             onClick={handleClearHafiza}
             disabled={hafiza.length === 0}
-            className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-rose-500 to-red-600 shadow-md shadow-rose-500/25 hover:shadow-lg hover:shadow-rose-500/40 active:scale-95 transition-all disabled:opacity-40"
+            className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm text-white bg-[#255706] shadow-md shadow-rose-500/25 hover:shadow-lg hover:shadow-rose-500/40 active:scale-95 transition-all disabled:opacity-40"
           >
             <Trash2 className="w-4 h-4" />
             مسح السجلات
