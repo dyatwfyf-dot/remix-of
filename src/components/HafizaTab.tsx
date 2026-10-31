@@ -249,15 +249,15 @@ export default function HafizaTab() {
 
       {/* نموذج إضافة حافظة */}
       <div className={`transition-all duration-300 ${showForm ? "max-h-[1400px] mb-3.5 opacity-100" : "max-h-0 overflow-hidden opacity-0"}`}>
-        <Card className="border border-black rounded-2xl bg-sky/200 backdrop-blur-md shadow-lg overflow-hidden">
+<Card className="border border-black rounded-2xl bg-[hsla(214,92%,47%,1)] shadow-lg overflow-hidden">
   <CardHeader className="p-3.5 pb-2 border border-black bg-slate-200/50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-     <div className="w-8 h-8 rounded-lg bg-teal-400 text-black-700 flex items-center justify-center font-bold">
+     <div className="w-8 h-8 rounded-lg bg-[hsla(214, 92%,47%,1)] text-black flex items-center justify-center font-bold">
                   <Plus className="w-4 h-4" />
                 </div>
    <div>
-     <CardTitle className="text-sm sm:text-base font-bold text-slate-900">إدخال حافظة توريد جديدة</CardTitle>
+     <CardTitle className="text-xl font-bold text-slate-black">إدخال حافظة توريد جديدة</CardTitle>
 <CardDescription className="text-[11px] text-slate-500">لادخال حافظة توريد جديدة بشكل سريع وسهل
 </CardDescription>
                 </div>
