@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
 import seedTrainees from "@/data/trainees.json";
@@ -23,6 +24,9 @@ export const INSTALLMENT_MONTHS = [
   "نوفمبر",
   "ديسمبر",
 ] as const;
+
+// أول سنة مالية يدعمها النظام (السنة التي بدأ فيها التطبيق)
+export const FIRST_FISCAL_YEAR = 2026;
 
 export type InstallmentCustomColumn = {
   name: string;
@@ -116,13 +120,32 @@ type State = {
   hafizas: Hafiza[];
   accounts: Account[];
   journal: Journal[];
-  installments: Installment[];
+  installments: Installment[]; // جدول أقساط عام 2026 (كما كان)
   installments2025: Installment[];
-  openingBalance: number;
+  openingBalance: number; // الرصيد الافتتاحي لعام 2026 (كما كان)
   revenue: RevenueMap;
   customTabs: CustomTab[];
   installmentCustomColumns2026: InstallmentCustomColumn[];
   installmentConditionalRules2026: InstallmentConditionalRule[];
+
+  // ===== دعم السنوات المتعددة (جديد) =====
+  selectedYear: number;
+  installmentsByYear: Record<string, Installment[]>; // أقساط السنوات 2027 وما بعدها
+  installmentCustomColumnsByYear: Record<string, InstallmentCustomColumn[]>;
+  installmentConditionalRulesByYear: Record<string, InstallmentConditionalRule[]>;
+  openingBalanceByYear: Record<string, number>;
+
+  setSelectedYear: (year: number) => void;
+  getInstallmentsForYear: (year: number) => Installment[];
+  setInstallmentsForYear: (year: number, list: Installment[]) => void;
+  getCustomColumnsForYear: (year: number) => InstallmentCustomColumn[];
+  setCustomColumnsForYear: (year: number, columns: InstallmentCustomColumn[]) => void;
+  getConditionalRulesForYear: (year: number) => InstallmentConditionalRule[];
+  setConditionalRulesForYear: (year: number, rules: InstallmentConditionalRule[]) => void;
+  getOpeningBalanceForYear: (year: number) => number;
+  setOpeningBalanceForYear: (year: number, amount: number) => void;
+  // إنشاء سنة جديدة: ينسخ المتدربين والأعمدة والقواعد من السنة السابقة ويرحّل المتبقي
+  startNewYear: (year: number) => void;
 
   addTrainee: (t: Trainee) => void;
   updateTrainee: (index: number, t: Trainee) => void;
@@ -192,6 +215,20 @@ type State = {
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 const getToday = () => new Date().toISOString().split("T")[0];
 
+// أصغر سنة افتراضية: 2026 أو السنة الحالية إن كانت أحدث
+const getDefaultYear = () => Math.max(FIRST_FISCAL_YEAR, new Date().getFullYear());
+
+// استخراج السنة من تاريخ نصي (2027-03-15 أو 15/03/2027 ...) — يعيد null إن لم يُفهم
+export const getYearFromDate = (value: string | undefined | null): number | null => {
+  if (!value) return null;
+  const text = String(value).trim();
+  const match = text.match(/(?:^|[^0-9])(20\d{2})(?:[^0-9]|$)/);
+  if (match) return Number(match[1]);
+  const d = new Date(text);
+  const y = d.getFullYear();
+  return Number.isFinite(y) ? y : null;
+};
+
 let pendingStorageWrite: { name: string; value: string } | null = null;
 let storageWriteTimer: ReturnType<typeof setTimeout> | null = null;
 const STORAGE_WRITE_DELAY_MS = 1200;
@@ -246,13 +283,42 @@ const recalculateRevenueMap = (accounts: Account[]): RevenueMap => {
     if (acc.revenueKey && acc.income > 0) {
       const dateStr = acc.notifyDate || acc.date;
       const d = new Date(dateStr);
-      const year = isNaN(d.getFullYear()) ? 2026 : d.getFullYear();
+      const year = isNaN(d.getFullYear()) ? getDefaultYear() : d.getFullYear();
       const month = isNaN(d.getMonth()) ? 1 : d.getMonth() + 1;
       const compositeKey = `${year}-${month}-${acc.revenueKey}`;
       newRevenue[compositeKey] = (newRevenue[compositeKey] || 0) + acc.income;
     }
   });
   return newRevenue;
+};
+
+// حساب قائمة السنوات المتاحة من البيانات المحفوظة + السنة الحالية + السنة المختارة
+export const computeAvailableYears = (src: {
+  accounts?: Account[];
+  journal?: Journal[];
+  hafiza?: Hafiza[];
+  installmentsByYear?: Record<string, Installment[]>;
+  selectedYear?: number;
+}): number[] => {
+  const years = new Set<number>([FIRST_FISCAL_YEAR, getDefaultYear()]);
+  if (src.selectedYear) years.add(src.selectedYear);
+  (src.accounts || []).forEach((a) => {
+    const y = getYearFromDate(a.date) ?? getYearFromDate(a.notifyDate);
+    if (y && y >= 2000 && y <= 2100) years.add(y);
+  });
+  (src.journal || []).forEach((j) => {
+    const y = getYearFromDate(j.date);
+    if (y && y >= 2000 && y <= 2100) years.add(y);
+  });
+  (src.hafiza || []).forEach((h) => {
+    const y = getYearFromDate(h.date);
+    if (y && y >= 2000 && y <= 2100) years.add(y);
+  });
+  Object.keys(src.installmentsByYear || {}).forEach((k) => {
+    const y = Number(k);
+    if (Number.isFinite(y)) years.add(y);
+  });
+  return Array.from(years).sort((a, b) => a - b);
 };
 
 // ==========================================
@@ -274,9 +340,134 @@ export const useStore = create<State>()(
       installmentCustomColumns2026: [],
       installmentConditionalRules2026: [],
 
+      selectedYear: getDefaultYear(),
+      installmentsByYear: {},
+      installmentCustomColumnsByYear: {},
+      installmentConditionalRulesByYear: {},
+      openingBalanceByYear: {},
+
+      setSelectedYear: (year) => {
+        if (!Number.isFinite(year)) return;
+        set({ selectedYear: year });
+      },
+
+      getInstallmentsForYear: (year) => {
+        if (year === 2025) return get().installments2025;
+        if (year === 2026) return get().installments;
+        return get().installmentsByYear[String(year)] || [];
+      },
+      setInstallmentsForYear: (year, list) => {
+        if (year === 2025) set({ installments2025: list });
+        else if (year === 2026) set({ installments: list });
+        else
+          set((s) => ({
+            installmentsByYear: { ...s.installmentsByYear, [String(year)]: list },
+          }));
+      },
+
+      getCustomColumnsForYear: (year) => {
+        if (year === 2026) return get().installmentCustomColumns2026 || [];
+        return get().installmentCustomColumnsByYear[String(year)] || [];
+      },
+      setCustomColumnsForYear: (year, columns) => {
+        if (year === 2026) set({ installmentCustomColumns2026: columns });
+        else
+          set((s) => ({
+            installmentCustomColumnsByYear: {
+              ...s.installmentCustomColumnsByYear,
+              [String(year)]: columns,
+            },
+          }));
+      },
+
+      getConditionalRulesForYear: (year) => {
+        if (year === 2026) return get().installmentConditionalRules2026 || [];
+        return get().installmentConditionalRulesByYear[String(year)] || [];
+      },
+      setConditionalRulesForYear: (year, rules) => {
+        if (year === 2026) set({ installmentConditionalRules2026: rules });
+        else
+          set((s) => ({
+            installmentConditionalRulesByYear: {
+              ...s.installmentConditionalRulesByYear,
+              [String(year)]: rules,
+            },
+          }));
+      },
+
+      getOpeningBalanceForYear: (year) => {
+        if (year === 2026) return get().openingBalance;
+        return Number(get().openingBalanceByYear[String(year)]) || 0;
+      },
+      setOpeningBalanceForYear: (year, amount) => {
+        const value = Number(amount) || 0;
+        if (year === 2026) set({ openingBalance: value });
+        else
+          set((s) => ({
+            openingBalanceByYear: { ...s.openingBalanceByYear, [String(year)]: value },
+          }));
+      },
+
+      startNewYear: (year) => {
+        if (!Number.isFinite(year) || year <= FIRST_FISCAL_YEAR) {
+          set({ selectedYear: Number.isFinite(year) ? year : get().selectedYear });
+          return;
+        }
+        const state = get();
+        const prev = year - 1;
+
+        // 1) جدول الأقساط: ينسخ المتدربين ويرحّل المتبقي كمدور (إن لم تكن السنة موجودة)
+        if (!state.installmentsByYear[String(year)]) {
+          const prevRows = state.getInstallmentsForYear(prev);
+          const newRows: Installment[] = prevRows.map((row) => {
+            const carried = Math.max(0, Number(row.remaining) || 0);
+            const fees = Number(row.fees) || 0;
+            return {
+              no: row.no ?? null,
+              name: row.name,
+              batch: row.batch,
+              specialty: row.specialty,
+              fees,
+              prevDue: carried,
+              payments: {},
+              totalPaid: 0,
+              remaining: carried + fees,
+              notes: "",
+              phone: row.phone || "",
+              customData: {},
+            };
+          });
+          set((s) => ({
+            installmentsByYear: { ...s.installmentsByYear, [String(year)]: newRows },
+          }));
+        }
+
+        // 2) الأعمدة المخصصة والقواعد الشرطية تُنسخ من السنة السابقة (إن لم تكن موجودة)
+        if (!get().installmentCustomColumnsByYear[String(year)]) {
+          const cols = state.getCustomColumnsForYear(prev);
+          set((s) => ({
+            installmentCustomColumnsByYear: {
+              ...s.installmentCustomColumnsByYear,
+              [String(year)]: cols.map((c) => ({ ...c })),
+            },
+          }));
+        }
+        if (!get().installmentConditionalRulesByYear[String(year)]) {
+          const rules = state.getConditionalRulesForYear(prev);
+          set((s) => ({
+            installmentConditionalRulesByYear: {
+              ...s.installmentConditionalRulesByYear,
+              [String(year)]: rules.map((r) => ({ ...r })),
+            },
+          }));
+        }
+
+        set({ selectedYear: year });
+      },
+
       syncHafizaToAccount: (hafiza: Hafiza) => {
         const year = Number(hafiza.date?.split("-")[0]);
-        if (!Number.isFinite(year) || year < 2026) return;
+        if (!Number.isFinite(year) || year < FIRST_FISCAL_YEAR) return;
 
         let existingAccount = get().accounts.find((acc) => acc.sourceHafizaId === hafiza.id);
         if (!existingAccount && hafiza.hafizaNo) {
@@ -645,6 +836,18 @@ export const useStore = create<State>()(
               d.installmentCustomColumns2026 ?? s.installmentCustomColumns2026,
             installmentConditionalRules2026:
               d.installmentConditionalRules2026 ?? s.installmentConditionalRules2026,
+            installmentsByYear: d.installmentsByYear
+              ? { ...s.installmentsByYear, ...d.installmentsByYear }
+              : s.installmentsByYear,
+            installmentCustomColumnsByYear: d.installmentCustomColumnsByYear
+              ? { ...s.installmentCustomColumnsByYear, ...d.installmentCustomColumnsByYear }
+              : s.installmentCustomColumnsByYear,
+            installmentConditionalRulesByYear: d.installmentConditionalRulesByYear
+              ? { ...s.installmentConditionalRulesByYear, ...d.installmentConditionalRulesByYear }
+              : s.installmentConditionalRulesByYear,
+            openingBalanceByYear: d.openingBalanceByYear
+              ? { ...s.openingBalanceByYear, ...d.openingBalanceByYear }
+              : s.openingBalanceByYear,
           };
         }),
 
@@ -661,6 +864,10 @@ export const useStore = create<State>()(
         customTabs: get().customTabs,
         installmentCustomColumns2026: get().installmentCustomColumns2026,
         installmentConditionalRules2026: get().installmentConditionalRules2026,
+        installmentsByYear: get().installmentsByYear,
+        installmentCustomColumnsByYear: get().installmentCustomColumnsByYear,
+        installmentConditionalRulesByYear: get().installmentConditionalRulesByYear,
+        openingBalanceByYear: get().openingBalanceByYear,
       }),
       clearAll: () =>
         set({
@@ -670,6 +877,7 @@ export const useStore = create<State>()(
           journal: [],
           installments: [],
           installments2025: [],
+          installmentsByYear: {},
           revenue: {},
         }),
       clearTab: (tab) =>
@@ -731,6 +939,8 @@ export const useStore = create<State>()(
     }),
     {
       name: "majlis-yemen-v1",
+      // مهم: يبقى الإصدار 2 حتى لا تُمسح بيانات المستخدم المحفوظة.
+      // الحقول الجديدة تأخذ قيمها الافتراضية تلقائياً إذا لم تكن موجودة في التخزين القديم.
       version: 2,
       storage: createJSONStorage(() => deferredStorage),
       partialize: (state) => ({
@@ -746,6 +956,11 @@ export const useStore = create<State>()(
         customTabs: state.customTabs,
         installmentCustomColumns2026: state.installmentCustomColumns2026,
         installmentConditionalRules2026: state.installmentConditionalRules2026,
+        selectedYear: state.selectedYear,
+        installmentsByYear: state.installmentsByYear,
+        installmentCustomColumnsByYear: state.installmentCustomColumnsByYear,
+        installmentConditionalRulesByYear: state.installmentConditionalRulesByYear,
+        openingBalanceByYear: state.openingBalanceByYear,
       }),
     },
   ),
@@ -762,3 +977,18 @@ export const useInstallments2025 = () => useStore((s) => s.installments2025);
 export const useCustomTabs = () => useStore((s) => s.customTabs);
 export const useRevenue = () => useStore((s) => s.revenue);
 export const useOpeningBalance = () => useStore((s) => s.openingBalance);
+
+// ===== Hooks السنوات المتعددة =====
+export const useSelectedYear = () => useStore((s) => s.selectedYear);
+
+export const useAvailableYears = (): number[] => {
+  const accounts = useStore((s) => s.accounts);
+  const journal = useStore((s) => s.journal);
+  const hafiza = useStore((s) => s.hafiza);
+  const installmentsByYear = useStore((s) => s.installmentsByYear);
+  const selectedYear = useStore((s) => s.selectedYear);
+  return useMemo(
+    () => computeAvailableYears({ accounts, journal, hafiza, installmentsByYear, selectedYear }),
+    [accounts, journal, hafiza, installmentsByYear, selectedYear],
+  );
+};
