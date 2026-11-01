@@ -179,6 +179,7 @@ const reportsTabPrintCss = `
   tbody tr.report-opening-row td,
   tbody tr.report-period-row td { background: #fef3c7 !important; color: #451a03 !important; font-weight: 900 !important; }
   tbody tr.report-fee-row td { background: #e0f2fe !important; color: #082f49 !important; font-weight: 900 !important; }
+  tbody tr.report-trainee-name-total-row td { background: #d1fae5 !important; color: #022c22 !important; font-weight: 900 !important; }
 
   tbody tr.total-row td {
     background: #0437bb !important;
@@ -260,6 +261,7 @@ const reportsTabPrintCss = `
   .report-page-content table tbody tr.report-opening-row td,
   .report-page-content table tbody tr.report-period-row td { background: #fef3c7 !important; color: #451a03 !important; font-weight: 900 !important; }
   .report-page-content table tbody tr.report-fee-row td { background: #e0f2fe !important; color: #082f49 !important; font-weight: 900 !important; }
+  .report-page-content table tbody tr.report-trainee-name-total-row td { background: #d1fae5 !important; color: #022c22 !important; font-weight: 900 !important; }
   .report-page-content table tbody tr.report-grand-total-row td {
     background: #0437bb !important;
     color: #ffffff !important;
