@@ -136,6 +136,11 @@ const isPreservedFromColumnFilter = (row: ReportRow) =>
 
 // أنماط الطباعة
 const reportsTabPrintCss = `
+  .reports-data-table thead th,
+  .reports-data-table thead th * {
+    color: #ffffff !important;
+  }
+
   thead th {
     background: #0f283a !important;
     color: #ffffff !important;
@@ -1066,7 +1071,7 @@ export default function ReportsTab() {
 
         {/* الجدول */}
         <div className="overflow-x-auto p-3 sm:p-4">
-          <table className="w-full min-w-[900px] border-collapse overflow-hidden rounded-2xl text-center text-xs sm:text-sm">
+          <table className="reports-data-table w-full min-w-[900px] border-collapse overflow-hidden rounded-2xl text-center text-xs sm:text-sm">
             <thead className="bg-[#0f283a] text-white">
               <tr>
                 <th className="border border-[#1f5f7a] px-3 py-2.5 font-bold text-white">م</th>
