@@ -122,15 +122,12 @@ const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "ot
 };
 
 /* ====== تصنيف الصفوف (بنية الجدول) ====== */
-// صفوف «رأس» تظهر أول الجدول
 const isHeadRow = (row: ReportRow) => row.summaryLevel === "opening";
-// صفوف «تذييل» تظهر آخر الجدول (ثابتة لا تتأثر بالفرز)
 const isFootRow = (row: ReportRow) =>
   row.summaryLevel === "total" ||
   row.summaryLevel === "fee" ||
   row.summaryLevel === "summary-card" ||
   row.summaryLevel === "trainee-name-total";
-// الصفوف التي لا تُصفّى بالتصفية العمودية (تحافظ على ظهورها)
 const isPreservedFromColumnFilter = (row: ReportRow) =>
   row.summaryLevel === "opening" ||
   row.summaryLevel === "total" ||
@@ -276,6 +273,36 @@ export default function ReportsTab() {
   const [traineeSortColumn, setTraineeSortColumn] = useState<string>("notifyDate");
   const [traineeSortDirection, setTraineeSortDirection] = useState<"asc" | "desc">("asc");
 
+  // ====== بيانات يدوية لكل صف (رقم كشف التسوية + الملاحظات + المبلغ) تُحفظ في localStorage ======
+  const [rowMeta, setRowMeta] = useState<Record<string, { settlementNo?: string; notes?: string; amount?: string }>>(() => {
+    try { return JSON.parse(localStorage.getItem("custody_rows_meta") || "{}"); } catch { return {}; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem("custody_rows_meta", JSON.stringify(rowMeta)); } catch {}
+  }, [rowMeta]);
+
+  const getRowKey = (row: ReportRow) =>
+    `${row.date || ""}|${row.docNo || ""}|${row.description || ""}|${row.name || ""}|${row.debit || ""}|${row.credit || ""}`;
+
+  const setRowMetaField = (row: ReportRow, field: "settlementNo" | "notes" | "amount", value: string) => {
+    const key = getRowKey(row);
+    setRowMeta((prev) => ({
+      ...prev,
+      [key]: { ...(prev[key] || {}), [field]: value },
+    }));
+  };
+
+  const getRowMeta = (row: ReportRow) => rowMeta[getRowKey(row)] || {};
+
+  const getRowAmount = (row: ReportRow): number => {
+    const meta = getRowMeta(row);
+    if (meta.amount !== undefined && meta.amount !== "") {
+      const parsed = Number(meta.amount);
+      if (!Number.isNaN(parsed)) return parsed;
+    }
+    return amountValue(row.income);
+  };
+
   // ====== توقيعات أسماء المدراء (تُحفظ لكل سنة) ======
   const [financeManager, setFinanceManager] = useState<string>(() => {
     try { return localStorage.getItem(`signature_finance_${year}`) || ""; } catch { return ""; }
@@ -311,7 +338,6 @@ export default function ReportsTab() {
   const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
   const [deletedRows, setDeletedRows] = useState<Set<ReportRow>>(() => new Set());
 
-  // إعادة ضبط التصفية والفرز العام والحذف المؤقت عند تغيير المصدر
   useEffect(() => {
     setColumnFilters({});
     setSortColumn("");
@@ -392,9 +418,12 @@ export default function ReportsTab() {
       docNo: "افتتاحي",
       description: "الرصيد الافتتاحي المدور",
       name: "د/ يوسف",
+      settlementNo: "",
+      notes: "",
       debit: youssefOpeningBalance > 0 ? youssefOpeningBalance : 0,
       credit: youssefOpeningBalance < 0 ? Math.abs(youssefOpeningBalance) : 0,
       balance: running,
+      income: youssefOpeningBalance > 0 ? youssefOpeningBalance : 0,
       summaryLevel: "opening",
     });
 
@@ -421,9 +450,12 @@ export default function ReportsTab() {
         docNo,
         description: row.description || "عهدة د/ يوسف",
         name: row.name || "د/ يوسف",
+        settlementNo: "",
+        notes: "",
         debit,
         credit,
         balance: running,
+        income: debit,
       });
     });
 
@@ -432,9 +464,12 @@ export default function ReportsTab() {
       docNo: "—",
       description: "الإجمالي الكلي",
       name: "—",
+      settlementNo: "—",
+      notes: "—",
       debit: sumDebit,
       credit: sumCredit,
       balance: running,
+      income: sumDebit,
       summaryLevel: "total",
     });
 
@@ -482,9 +517,12 @@ export default function ReportsTab() {
       docNo: "افتتاحي",
       description: "الرصيد الافتتاحي للعهدة",
       name: "توفيق الداعي",
+      settlementNo: "",
+      notes: "",
       debit: tawfiqOpeningBalance > 0 ? tawfiqOpeningBalance : 0,
       credit: tawfiqOpeningBalance < 0 ? Math.abs(tawfiqOpeningBalance) : 0,
       balance: running,
+      income: tawfiqOpeningBalance > 0 ? tawfiqOpeningBalance : 0,
       summaryLevel: "opening",
     });
 
@@ -511,9 +549,12 @@ export default function ReportsTab() {
         docNo,
         description: row.description || "عهدة توفيق الداعي",
         name: row.name || "توفيق الداعي",
+        settlementNo: "",
+        notes: "",
         debit,
         credit,
         balance: running,
+        income: debit,
       });
     });
 
@@ -522,9 +563,12 @@ export default function ReportsTab() {
       docNo: "—",
       description: "الإجمالي الكلي",
       name: "—",
+      settlementNo: "—",
+      notes: "—",
       debit: sumDebit,
       credit: sumCredit,
       balance: running,
+      income: sumDebit,
       summaryLevel: "total",
     });
 
@@ -584,7 +628,7 @@ export default function ReportsTab() {
     return { date: `${MONTHS[rowMonth] || parts[1]} ${rowYear}`, item: revenueName(key), amount: amountValue(amount), _year: rowYear, _month: rowMonth };
   }).filter((row) => (period === "all" ? row._year >= 2026 : row._year === year && selectedMonthSet.has(row._month as number))).map(({ _year, _month, ...row }) => row), [revenue, year, selectedMonthSet, period]);
 
-  // ====== كشف المتدربين (مع إضافة إجمالي كل اسم حسب السنة) ======
+  // ====== كشف المتدربين ======
   const traineeRows = useMemo<ReportRow[]>(() => {
     const payments = hafiza.flatMap((row) => {
       const date = normalizeDate(row.notifyDate);
@@ -641,7 +685,6 @@ export default function ReportsTab() {
       });
     });
 
-    // ====== إجمالي مدفوعات كل متدرب حسب السنة (سواء مكرر أو منفرد) ======
     if (traineeDisplayMode === "summary" || traineeDisplayMode === "both") {
       const nameYearMap = new Map<string, { trainee: string; year: number; amount: number }>();
       payments.forEach((row) => {
@@ -702,23 +745,23 @@ export default function ReportsTab() {
           { key: "docNo", label: "رقم المستند / الشيك" },
           { key: "description", label: "البيان" },
           { key: "name", label: "الاسم" },
-          { key: "debit", label: "مدين (المنصرف)" },
-          { key: "credit", label: "دائن (المسدد)" },
-          { key: "balance", label: "الرصيد المتبقي" },
+          { key: "settlementNo", label: "رقم كشف التسوية" },
+          { key: "notes", label: "الملاحظات" },
+          { key: "income", label: "المبلغ" },
         ] satisfies TabCol[],
       };
     }
     if (source === "tawfiqCustody") {
       return {
- title: "مسير اخلاء عهدة توفيق الداعي",
+        title: "مسير اخلاء عهدة توفيق الداعي",
         columns: [
           { key: "date", label: "التاريخ" },
           { key: "docNo", label: "رقم المستند / الشيك" },
           { key: "description", label: "البيان" },
           { key: "name", label: "الاسم" },
-          { key: "debit", label: "مدين (الوارد)" },
-          { key: "credit", label: "دائن (المنصرف)" },
-          { key: "balance", label: "الرصيد المتبقي" },
+          { key: "settlementNo", label: "رقم كشف التسوية" },
+          { key: "notes", label: "الملاحظات" },
+          { key: "income", label: "المبلغ" },
         ] satisfies TabCol[],
       };
     }
@@ -748,12 +791,11 @@ export default function ReportsTab() {
     ];
   }, [source, youssefRows, tawfiqRows, traineeRows, hafizaRows, accountRows, expenseRows, revenueRows, feeTotalsRows]);
 
-  // ====== الصفوف المعالجة (تصفية + فرز + حذف مؤقت) — تُستخدم أيضاً في الطباعة/PDF ======
+  // ====== الصفوف المعالجة (تصفية + فرز + حذف مؤقت) ======
   const processedRows = useMemo<ReportRow[]>(() => {
     const activeSortCol = source === "trainee" ? traineeSortColumn : sortColumn;
     const activeSortDir = source === "trainee" ? traineeSortDirection : sortDirection;
 
-    // 1) تصفية: حذف مؤقت + تصفية أعمدة (مع الحفاظ على الصفوف البنيوية)
     const filtered = reportRows.filter((row) => {
       if (deletedRows.has(row)) return false;
       if (isPreservedFromColumnFilter(row)) return true;
@@ -776,7 +818,6 @@ export default function ReportsTab() {
       return true;
     });
 
-    // 2) تصنيف: رأس / جسم / تذييل
     const headRows: ReportRow[] = [];
     const bodyRows: ReportRow[] = [];
     const footRows: ReportRow[] = [];
@@ -786,7 +827,6 @@ export default function ReportsTab() {
       else bodyRows.push(row);
     });
 
-    // 3) فرز صفوف الجسم فقط
     if (activeSortCol) {
       bodyRows.sort((a, b) => {
         let va = a[activeSortCol];
@@ -809,9 +849,27 @@ export default function ReportsTab() {
       });
     }
 
-    // 4) إعادة التجميع: الرأس → الجسم المفروز → التذييل الثابت في النهاية
     return [...headRows, ...bodyRows, ...footRows];
   }, [reportRows, columnFilters, sortColumn, sortDirection, source, traineeSortColumn, traineeSortDirection, deletedRows]);
+
+  // ====== إجمالي مبلغ العهدة (يشمل التعديلات اليدوية) ======
+  const custodyTotalAmount = useMemo(() => {
+    if (!(source === "youssefLoan" || source === "tawfiqCustody")) return 0;
+    return processedRows
+      .filter((r) =>
+        r.summaryLevel !== "total" &&
+        r.summaryLevel !== "summary-card" &&
+        r.summaryLevel !== "signature"
+      )
+      .reduce((sum, r) => {
+        const meta = getRowMeta(r);
+        if (meta.amount !== undefined && meta.amount !== "") {
+          const parsed = Number(meta.amount);
+          return sum + (Number.isNaN(parsed) ? 0 : parsed);
+        }
+        return sum + amountValue(r.income);
+      }, 0);
+  }, [processedRows, rowMeta, source]);
 
   const title = source === "trainee"
     ? `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFee === "all" ? "كل الرسوم" : selectedFee} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}`
@@ -821,7 +879,7 @@ export default function ReportsTab() {
 
   const numericKeys =
     source === "youssefLoan" || source === "tawfiqCustody"
-      ? ["debit", "credit", "balance"]
+      ? ["income"]
       : source === "hafiza"
       ? ["amount", "income"]
       : source === "account"
@@ -836,17 +894,55 @@ export default function ReportsTab() {
 
   const isLoanOrCustody = source === "youssefLoan" || source === "tawfiqCustody";
 
-  // الصفوف المعروضة (بدون بطاقات الملخص وبدون صف التوقيعات لأنها تُعرض كقسم مستقل)
+  // الصفوف المعروضة (بدون بطاقات الملخص وبدون صف التوقيعات)
   const displayRows = useMemo(
     () => processedRows.filter((row) => row.summaryLevel !== "summary-card" && row.summaryLevel !== "signature"),
     [processedRows]
   );
 
-  // ====== صفوف PDF: بدون بطاقات الملخص + إضافة صف التوقيعات لملفات العهد ======
+  // ====== صفوف PDF: بدون بطاقات الملخص + إضافة صف التوقيعات + دمج التعديلات اليدوية ======
   const pdfRows = useMemo<ReportRow[]>(() => {
-    const base = processedRows.filter(
-      (row) => row.summaryLevel !== "summary-card" && row.summaryLevel !== "signature"
-    );
+    const base = processedRows
+      .filter((row) => row.summaryLevel !== "summary-card" && row.summaryLevel !== "signature")
+      .map((row) => {
+        if (!(source === "youssefLoan" || source === "tawfiqCustody")) return row;
+        const meta = getRowMeta(row);
+
+        // صف الإجمالي: قيمته = المجموع المحسوب
+        if (row.summaryLevel === "total") {
+          return {
+            ...row,
+            settlementNo: "—",
+            notes: "—",
+            income: custodyTotalAmount,
+          };
+        }
+
+        // صف الافتتاحي: settlement/notes يدوي، المبلغ read-only (من income)
+        if (row.summaryLevel === "opening") {
+          return {
+            ...row,
+            settlementNo: meta.settlementNo || "",
+            notes: meta.notes || "",
+            income: amountValue(row.income),
+          };
+        }
+
+        // صف حركة: القيم من rowMeta، والمبلغ من rowMeta.amount أو income
+        let displayAmount: number;
+        if (meta.amount !== undefined && meta.amount !== "") {
+          displayAmount = Number(meta.amount) || 0;
+        } else {
+          displayAmount = amountValue(row.income);
+        }
+        return {
+          ...row,
+          settlementNo: meta.settlementNo || "",
+          notes: meta.notes || "",
+          income: displayAmount,
+        };
+      });
+
     if (!(source === "youssefLoan" || source === "tawfiqCustody")) return base;
 
     const sigs = [
@@ -869,13 +965,13 @@ export default function ReportsTab() {
     });
 
     return [...base, sigRow];
-  }, [processedRows, source, sourceConfig.columns, financeManager, viceManager, presidentManager]);
+  }, [processedRows, source, sourceConfig.columns, financeManager, viceManager, presidentManager, rowMeta, custodyTotalAmount]);
 
   const activeSortColumn = source === "trainee" ? traineeSortColumn : sortColumn;
   const activeSortDirection = source === "trainee" ? traineeSortDirection : sortDirection;
   const hasAnyFilter = Object.values(columnFilters).some((v) => String(v || "").trim() !== "");
 
-  const colCount = sourceConfig.columns.length + 2; // م + أعمدة + حذف
+  const colCount = sourceConfig.columns.length + 2;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-sky-50 to-indigo-50 p-2 sm:p-4" dir="rtl">
@@ -1151,7 +1247,6 @@ export default function ReportsTab() {
                 })}
                 <th className="border border-[#1f5f7a] px-1 py-2.5 font-bold text-white print:hidden" style={{ width: "44px" }} title="حذف مؤقت">حذف</th>
               </tr>
-              {/* صف التصفية — يظهر على الشاشة فقط */}
               <tr className="bg-slate-200/80 print:hidden">
                 <td className="border border-slate-300 px-2 py-1 text-center">
                   {hasAnyFilter && (
@@ -1209,6 +1304,70 @@ export default function ReportsTab() {
                           {isTotal ? "★" : index + 1}
                         </td>
                         {sourceConfig.columns.map((column) => {
+                          const meta = getRowMeta(row);
+                          const isCustody = source === "youssefLoan" || source === "tawfiqCustody";
+
+                          // ===== الحقول اليدوية الثلاثة (settlementNo / notes / income) في تقارير العهدة =====
+                          if (isCustody && (column.key === "settlementNo" || column.key === "notes" || column.key === "income")) {
+                            // صف الإجمالي: قيم محسوبة للعرض فقط
+                            if (isTotal) {
+                              if (column.key === "income") {
+                                return (
+                                  <td key={column.key} className="border border-blue-900 px-3 py-2 text-white font-mono font-black">
+                                    {custodyTotalAmount.toLocaleString()}
+                                  </td>
+                                );
+                              }
+                              return (
+                                <td key={column.key} className="border border-blue-900 px-3 py-2 text-white font-black">
+                                  —
+                                </td>
+                              );
+                            }
+
+                            // صف الافتتاحي: المبلغ read-only، والبقية إدخال يدوي
+                            if (isOpening && column.key === "income") {
+                              return (
+                                <td key={column.key} className="border border-slate-200 px-3 py-2 font-mono font-bold text-slate-900">
+                                  {amountValue(row.income).toLocaleString()}
+                                </td>
+                              );
+                            }
+
+                            // إدخال يدوي
+                            let inputValue: string;
+                            let placeholder: string;
+                            let inputType: "text" | "number";
+                            if (column.key === "income") {
+                              inputValue = meta.amount !== undefined ? String(meta.amount) : String(amountValue(row.income));
+                              placeholder = "المبلغ";
+                              inputType = "number";
+                            } else if (column.key === "settlementNo") {
+                              inputValue = meta.settlementNo || "";
+                              placeholder = "رقم كشف التسوية";
+                              inputType = "text";
+                            } else {
+                              inputValue = meta.notes || "";
+                              placeholder = "ملاحظات";
+                              inputType = "text";
+                            }
+
+                            return (
+                              <td key={column.key} className="border border-slate-200 px-1 py-1">
+                                <input
+                                  type={inputType}
+                                  value={inputValue}
+                                  onChange={(e) => setRowMetaField(row, column.key as "settlementNo" | "notes" | "amount", e.target.value)}
+                                  placeholder={placeholder}
+                                  className={`w-full rounded border border-slate-300 bg-white px-1.5 py-0.5 text-[11px] font-semibold text-slate-900 outline-none focus:border-sky-600 print:border-0 print:bg-transparent print:shadow-none ${
+                                    column.key === "income" ? "text-center font-mono" : "text-center"
+                                  }`}
+                                />
+                              </td>
+                            );
+                          }
+
+                          // ===== باقي الأعمدة (عرض عادي) =====
                           const val = row[column.key];
                           const isNum = numericKeys.includes(column.key);
                           return (
@@ -1240,7 +1399,7 @@ export default function ReportsTab() {
           </table>
         </div>
 
-        {/* ====== قسم التوقيعات الثلاثة (بديل ملخص العهدة) ====== */}
+        {/* ====== قسم التوقيعات الثلاثة ====== */}
         {isLoanOrCustody && (
           <div
             className="border-t-2 border-slate-300 bg-slate-50 p-4 sm:p-6"
