@@ -276,6 +276,35 @@ export default function ReportsTab() {
   const [traineeSortColumn, setTraineeSortColumn] = useState<string>("notifyDate");
   const [traineeSortDirection, setTraineeSortDirection] = useState<"asc" | "desc">("asc");
 
+  // ====== توقيعات أسماء المدراء (تُحفظ لكل سنة) ======
+  const [financeManager, setFinanceManager] = useState<string>(() => {
+    try { return localStorage.getItem(`signature_finance_${year}`) || ""; } catch { return ""; }
+  });
+  const [viceManager, setViceManager] = useState<string>(() => {
+    try { return localStorage.getItem(`signature_vice_${year}`) || ""; } catch { return ""; }
+  });
+  const [presidentManager, setPresidentManager] = useState<string>(() => {
+    try { return localStorage.getItem(`signature_president_${year}`) || ""; } catch { return ""; }
+  });
+
+  useEffect(() => {
+    try {
+      setFinanceManager(localStorage.getItem(`signature_finance_${year}`) || "");
+      setViceManager(localStorage.getItem(`signature_vice_${year}`) || "");
+      setPresidentManager(localStorage.getItem(`signature_president_${year}`) || "");
+    } catch {}
+  }, [year]);
+
+  useEffect(() => {
+    try { localStorage.setItem(`signature_finance_${year}`, financeManager); } catch {}
+  }, [financeManager, year]);
+  useEffect(() => {
+    try { localStorage.setItem(`signature_vice_${year}`, viceManager); } catch {}
+  }, [viceManager, year]);
+  useEffect(() => {
+    try { localStorage.setItem(`signature_president_${year}`, presidentManager); } catch {}
+  }, [presidentManager, year]);
+
   // ====== الحالة العامة للفرز والتصفية والحذف المؤقت ======
   const [sortColumn, setSortColumn] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -667,7 +696,7 @@ export default function ReportsTab() {
   const sourceConfig = useMemo(() => {
     if (source === "youssefLoan") {
       return {
-        title: "كشف حساب سلفة د/ يوسف",
+        title: "مسير اخلاء عهدة د/ يوسف المداني",
         columns: [
           { key: "date", label: "التاريخ" },
           { key: "docNo", label: "رقم المستند / الشيك" },
@@ -807,8 +836,40 @@ export default function ReportsTab() {
 
   const isLoanOrCustody = source === "youssefLoan" || source === "tawfiqCustody";
 
-  // الصفوف المعروضة (بدون بطاقات الملخص لأنها تُعرض كصفوف مدمجة أسفل الجدول)
-  const displayRows = useMemo(() => processedRows.filter((row) => row.summaryLevel !== "summary-card"), [processedRows]);
+  // الصفوف المعروضة (بدون بطاقات الملخص وبدون صف التوقيعات لأنها تُعرض كقسم مستقل)
+  const displayRows = useMemo(
+    () => processedRows.filter((row) => row.summaryLevel !== "summary-card" && row.summaryLevel !== "signature"),
+    [processedRows]
+  );
+
+  // ====== صفوف PDF: بدون بطاقات الملخص + إضافة صف التوقيعات لملفات العهد ======
+  const pdfRows = useMemo<ReportRow[]>(() => {
+    const base = processedRows.filter(
+      (row) => row.summaryLevel !== "summary-card" && row.summaryLevel !== "signature"
+    );
+    if (!(source === "youssefLoan" || source === "tawfiqCustody")) return base;
+
+    const sigs = [
+      `الشؤون المالية - ${financeManager || "____________"}`,
+      `نائب رئيس المجلس - ${viceManager || "____________"}`,
+      `رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة - ${presidentManager || "____________"}`,
+    ];
+
+    const sigRow: ReportRow = { summaryLevel: "signature", signature: true };
+    const cols = sourceConfig.columns;
+    const total = cols.length;
+    const step = Math.max(1, Math.ceil(total / sigs.length));
+    cols.forEach((col, i) => {
+      if (i % step === 0) {
+        const sigIdx = Math.floor(i / step);
+        sigRow[col.key] = sigIdx < sigs.length ? sigs[sigIdx] : "";
+      } else {
+        sigRow[col.key] = "";
+      }
+    });
+
+    return [...base, sigRow];
+  }, [processedRows, source, sourceConfig.columns, financeManager, viceManager, presidentManager]);
 
   const activeSortColumn = source === "trainee" ? traineeSortColumn : sortColumn;
   const activeSortDirection = source === "trainee" ? traineeSortDirection : sortDirection;
@@ -1036,13 +1097,13 @@ export default function ReportsTab() {
 
           <TabActions
             title={title}
-            rows={processedRows}
+            rows={pdfRows}
             columns={sourceConfig.columns}
             fileName={
               source === "youssefLoan"
-                ? `كشف-حساب-سلفة-د-يوسف-${year}`
+                ? `مسير اخلاء-عهدة-د-يوسف-${year}`
                 : source === "tawfiqCustody"
-                ? `كشف-حساب-عهدة-توفيق-الداعي-${year}`
+                ? `مسير اخلاء-عهدة-توفيق-الداعي-${year}`
                 : `تقرير-${source}-${year}`
             }
             numericKeys={numericKeys}
@@ -1059,11 +1120,11 @@ export default function ReportsTab() {
           <table className="w-full min-w-[900px] border-collapse overflow-hidden rounded-2xl text-center text-xs sm:text-sm">
             <thead className="bg-[#0f283a] text-white">
               <tr>
-<th className="border border-[#1f5f7a] px-3 py-2.5 font-bold text-white">م</th>
+                <th className="border border-[#1f5f7a] px-3 py-2.5 font-bold text-white">م</th>
                 {sourceConfig.columns.map((column) => {
                   const isSortActive = activeSortColumn === column.key;
                   return (
-  <th
+                    <th
                       key={column.key}
                       onClick={() => {
                         if (source === "trainee") {
@@ -1074,21 +1135,21 @@ export default function ReportsTab() {
                           else { setSortColumn(column.key); setSortDirection("asc"); }
                         }
                       }}
-   className="border border-[#1f5f7a] px-3 py-2.5 font-bold text-white cursor-pointer hover:bg-[#1a4b64] select-none transition-colors"
+                      className="border border-[#1f5f7a] px-3 py-2.5 font-bold text-white cursor-pointer hover:bg-[#1a4b64] select-none transition-colors"
                       title="انقر للفرز تصاعدياً أو تنازلياً"
                     >
-  <div className="flex items-center justify-center gap-1.5 text-white">
-  <span className="text-white font-bold">{column.label}</span>
-
-<span className="text-[11px] font-bold text-white">
- {isSortActive ? (activeSortDirection === "asc" ? "▲" : "▼") : (
-  <span className="text-white opacity-70">⇅</span>)}
-               </span>
+                      <div className="flex items-center justify-center gap-1.5 text-white">
+                        <span className="text-white font-bold">{column.label}</span>
+                        <span className="text-[11px] font-bold text-white">
+                          {isSortActive ? (activeSortDirection === "asc" ? "▲" : "▼") : (
+                            <span className="text-white opacity-70">⇅</span>
+                          )}
+                        </span>
                       </div>
                     </th>
                   );
                 })}
-<th className="border border-[#1f5f7a] px-1 py-2.5 font-bold text-white print:hidden" style={{ width: "44px" }} title="حذف مؤقت">حذف</th>
+                <th className="border border-[#1f5f7a] px-1 py-2.5 font-bold text-white print:hidden" style={{ width: "44px" }} title="حذف مؤقت">حذف</th>
               </tr>
               {/* صف التصفية — يظهر على الشاشة فقط */}
               <tr className="bg-slate-200/80 print:hidden">
@@ -1173,55 +1234,63 @@ export default function ReportsTab() {
                       </tr>
                     );
                   })}
-
-                  {/* بطاقات ملخص العهدة */}
-                  {isLoanOrCustody && (() => {
-                    const summaryRows = processedRows.filter((r) => r.summaryLevel === "summary-card");
-                    if (!summaryRows.length) return null;
-
-                    const cardStyles = [
-                      { label: `مبلغ العهدة الافتتاحي للعام ${year}`,   bg: "bg-amber-200",   text: "text-amber-950",   border: "border-amber-500",   cls: "summary-card-0" },
-                      { label: "المنصرف من العهدة خلال العام",        bg: "bg-rose-200",    text: "text-rose-950",    border: "border-rose-500",    cls: "summary-card-1" },
-                      { label: "المتبقي من العهدة حتى تاريخ التقرير", bg: "bg-emerald-200", text: "text-emerald-950", border: "border-emerald-500", cls: "summary-card-2" },
-                    ];
-
-                    return (
-                      <>
-                        <tr className="summary-spacer" aria-hidden="true">
-                          <td colSpan={colCount} className="border-0 bg-transparent p-0" style={{ height: "14px" }} />
-                        </tr>
-
-                        {summaryRows.map((row, i) => {
-                          const style = cardStyles[i % cardStyles.length];
-                          const value = amountValue(row.credit);
-                          return (
-                            <tr key={`summary-${i}`} className={`summary-card-row ${style.cls} ${style.bg} ${style.text} font-black`}>
-                              <td colSpan={sourceConfig.columns.length - 1} className={`border ${style.border} px-3 py-2.5 text-center text-xs sm:text-sm font-black`}>
-                                {style.label}
-                              </td>
-                              <td colSpan={2} className={`border ${style.border} px-3 py-2.5 text-center font-mono text-sm sm:text-base font-black`}>
-                                {value.toLocaleString()}
-                              </td>
-                              <td className={`border ${style.border} px-1 py-1 print:hidden`}>
-                                <button
-                                  onClick={() => deleteRow(row)}
-                                  className={`rounded p-1 ${style.text} hover:bg-white/30`}
-                                  title="حذف مؤقت"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </>
-                    );
-                  })()}
                 </>
               )}
             </tbody>
           </table>
         </div>
+
+        {/* ====== قسم التوقيعات الثلاثة (بديل ملخص العهدة) ====== */}
+        {isLoanOrCustody && (
+          <div
+            className="border-t-2 border-slate-300 bg-slate-50 p-4 sm:p-6"
+            dir="rtl"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+              {/* يمين: الشؤون المالية */}
+              <div className="flex flex-col items-center gap-2 text-center">
+                <div className="text-xs sm:text-sm font-black text-slate-800">
+                  الشؤون المالية
+                </div>
+                <input
+                  type="text"
+                  value={financeManager}
+                  onChange={(e) => setFinanceManager(e.target.value)}
+                  placeholder="اسم المدير المالي"
+                  className="w-full max-w-[240px] rounded-lg border border-slate-300 bg-white px-3 py-2 text-center text-xs sm:text-sm font-bold text-slate-900 outline-none focus:border-sky-600 print:border-0 print:bg-transparent print:p-0 print:shadow-none"
+                />
+              </div>
+
+              {/* وسط: نائب رئيس المجلس */}
+              <div className="flex flex-col items-center gap-2 text-center">
+                <div className="text-xs sm:text-sm font-black text-slate-800">
+                  نائب رئيس المجلس
+                </div>
+                <input
+                  type="text"
+                  value={viceManager}
+                  onChange={(e) => setViceManager(e.target.value)}
+                  placeholder="اسم نائب رئيس المجلس"
+                  className="w-full max-w-[240px] rounded-lg border border-slate-300 bg-white px-3 py-2 text-center text-xs sm:text-sm font-bold text-slate-900 outline-none focus:border-sky-600 print:border-0 print:bg-transparent print:p-0 print:shadow-none"
+                />
+              </div>
+
+              {/* يسار: رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة */}
+              <div className="flex flex-col items-center gap-2 text-center">
+                <div className="text-xs sm:text-sm font-black text-slate-800 leading-relaxed">
+                  رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة
+                </div>
+                <input
+                  type="text"
+                  value={presidentManager}
+                  onChange={(e) => setPresidentManager(e.target.value)}
+                  placeholder="اسم رئيس المجلس"
+                  className="w-full max-w-[240px] rounded-lg border border-slate-300 bg-white px-3 py-2 text-center text-xs sm:text-sm font-bold text-slate-900 outline-none focus:border-sky-600 print:border-0 print:bg-transparent print:p-0 print:shadow-none"
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </section>
     </div>
   );
