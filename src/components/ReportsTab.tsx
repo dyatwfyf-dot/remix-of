@@ -238,7 +238,7 @@ const getYearOptions = (dates: unknown[]): number[] => {
 };
 
 export default function ReportsTab() {
-  const { hafiza, accounts, expenses } = useStore();
+const { hafiza, accounts } = useStore();
   const year = useFiscalYear((s) => s.year);
 
   const [source, setSource] = useState<ReportSource>("youssefLoan");
@@ -480,7 +480,8 @@ export default function ReportsTab() {
     description: row.description || "—",
     name: row.name || "—",
     hafizaNo: row.hafizaNo || "—",
-    amount: amountValue(row.amount),
+    amount: amountValue(row.hafizaAmount),
+
     income: amountValue(row.income)
   })), [hafiza, period, month, year]);
 
@@ -492,13 +493,12 @@ export default function ReportsTab() {
     expense: amountValue(row.expense)
   })), [accounts, period, month, year]);
 
-  const expenseRows = useMemo<ReportRow[]>(() => expenses.filter((row) => inPeriod(row.date)).map((row) => ({
-    date: row.date,
-    item: row.item,
-    name: row.name || "—",
-    expense: amountValue(row.amount)
-  })), [expenses, period, month, year]);
-
+  const expenseRows = useMemo<ReportRow[]>(() => accountRows.filter((row) => Number(row.expense) > 0).map((row) => ({
+  date: row.date,
+  item: row.description,
+  name: row.name || "—",
+  expense: amountValue(row.expense)
+})), [accountRows]);
   const revenueRows = useMemo<ReportRow[]>(() => {
     const months = selectedMonths;
     return months.map((monthIndex) => {
