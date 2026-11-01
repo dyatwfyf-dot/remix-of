@@ -363,8 +363,9 @@ export default function ReportsTab() {
     setLoanManualData((prev) => ({
       ...prev,
       [rowKey]: {
-        ...prev[rowKey],
-        [field]: field === "amount" ? Number(val) || 0 : String(val),
+        settlementNo: field === "settlementNo" ? String(val) : prev[rowKey]?.settlementNo,
+        notes: field === "notes" ? String(val) : prev[rowKey]?.notes,
+        amount: field === "amount" ? Number(val) || 0 : prev[rowKey]?.amount,
       },
     }));
   };
