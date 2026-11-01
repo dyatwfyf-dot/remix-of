@@ -304,8 +304,15 @@ export default function ReportsTab() {
   const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
   const [deletedRows, setDeletedRows] = useState<Set<ReportRow>>(() => new Set());
 
-  // حالة لتخزين البيانات اليدوية للأعمدة المضافة حديثاً (رقم كشف التسوية، الملاحظات، المبلغ)
-  const [loanManualData, setLoanManualData] = useState<Record<string, { settlementNo: string; notes: string; amount: number }>>({});
+  // حفظ القيم اليدوية لأعمدة رقم كشف التسوية والملاحظات والمبلغ محلياً.
+  const [loanManualData, setLoanManualData] = useState<Record<string, { settlementNo?: string; notes?: string; amount?: number }>>(() => {
+    try {
+      const saved = localStorage.getItem("reports-loan-manual-data-v1");
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
 
   // حالة لتخزين مسميات الإدارات والمدراء لصفوف التوقيعات يدوياً
   const [signaturesMeta, setSignaturesMeta] = useState({
@@ -323,6 +330,14 @@ export default function ReportsTab() {
     setSortDirection("asc");
     setDeletedRows(new Set());
   }, [source]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("reports-loan-manual-data-v1", JSON.stringify(loanManualData));
+    } catch (error) {
+      console.error("تعذر حفظ بيانات أعمدة تقارير العهد محلياً:", error);
+    }
+  }, [loanManualData]);
 
   const [youssefOpeningBalance, setYoussefOpeningBalance] = useState<number>(() => {
     const saved = localStorage.getItem("youssef_loan_opening_balance");
@@ -348,9 +363,9 @@ export default function ReportsTab() {
     setLoanManualData((prev) => ({
       ...prev,
       [rowKey]: {
-        settlementNo: field === "settlementNo" ? String(val) : prev[rowKey]?.settlementNo || "",
-        notes: field === "notes" ? String(val) : prev[rowKey]?.notes || "",
-        amount: field === "amount" ? Number(val) || 0 : prev[rowKey]?.amount || 0,
+        settlementNo: field === "settlementNo" ? String(val) : prev[rowKey]?.settlementNo,
+        notes: field === "notes" ? String(val) : prev[rowKey]?.notes,
+        amount: field === "amount" ? Number(val) || 0 : prev[rowKey]?.amount,
       },
     }));
   };
@@ -422,7 +437,7 @@ export default function ReportsTab() {
       const rowKey = `youssef-${index}-${row.date}`;
       const defaultAmt = amountValue(row.income || row.hafizaAmount || row.expense);
       const manual = loanManualData[rowKey];
-      const amt = manual ? manual.amount : defaultAmt;
+      const amt = manual?.amount ?? defaultAmt;
       sumAmount += amt;
 
       const docNo = row.checkNo
@@ -439,8 +454,8 @@ export default function ReportsTab() {
         docNo,
         description: row.description || "عهدة د/ يوسف",
         name: row.name || "د/ يوسف",
-        settlementNo: manual ? manual.settlementNo : (row.hafizaNo || row.notifyNo || ""),
-        notes: manual ? manual.notes : (row.description || ""),
+        settlementNo: manual?.settlementNo ?? "",
+        notes: manual?.notes ?? "",
         amount: amt,
       });
     });
@@ -496,7 +511,7 @@ export default function ReportsTab() {
       const rowKey = `tawfiq-${index}-${row.date}`;
       const defaultAmt = amountValue(row.income || row.hafizaAmount || row.expense);
       const manual = loanManualData[rowKey];
-      const amt = manual ? manual.amount : defaultAmt;
+      const amt = manual?.amount ?? defaultAmt;
       sumAmount += amt;
 
       const docNo = row.checkNo
@@ -513,8 +528,8 @@ export default function ReportsTab() {
         docNo,
         description: row.description || "عهدة توفيق الداعي",
         name: row.name || "توفيق الداعي",
-        settlementNo: manual ? manual.settlementNo : (row.hafizaNo || row.notifyNo || ""),
-        notes: manual ? manual.notes : (row.description || ""),
+        settlementNo: manual?.settlementNo ?? "",
+        notes: manual?.notes ?? "",
         amount: amt,
       });
     });
