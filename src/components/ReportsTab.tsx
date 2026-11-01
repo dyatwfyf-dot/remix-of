@@ -1063,7 +1063,7 @@ export default function ReportsTab() {
                 {sourceConfig.columns.map((column) => {
                   const isSortActive = activeSortColumn === column.key;
                   return (
-  <th className="border border-[#1f5f7a] px-3 py-2.5 font-bold text-white"
+  <th
                       key={column.key}
                       onClick={() => {
                         if (source === "trainee") {
