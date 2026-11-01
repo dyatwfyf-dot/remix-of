@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 // تحميل ملفات التبويبات عند فتحها فقط لتقليل حجم التشغيل الأول.
+import { useFiscalYear, getAvailableYears } from "@/lib/fiscalYear";
 const HafizaTab = lazy(() => import("@/components/HafizaTab"));
 const AccountTab = lazy(() => import("@/components/AccountTab"));
 const JournalTab = lazy(() => import("@/components/JournalTab"));
@@ -155,6 +156,8 @@ const getInitialTab = (): Tab => {
 
 function Index() {
   const [activeTab, setActiveTab] = useState<Tab>(() => getInitialTab());
+  const fiscalYear = useFiscalYear((s) => s.year);
+  const setFiscalYear = useFiscalYear((s) => s.setYear);
   const activeTabRef = useRef(activeTab);
   const tabHistoryRef = useRef<Tab[]>([getInitialTab()]);
   const [pwaInstallable, setPwaInstallable] = useState<boolean>(false);
@@ -263,7 +266,21 @@ function Index() {
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center">
+        <div className="flex shrink-0 items-center gap-1.5">
+          <label className="flex items-center gap-1 rounded-lg bg-white/15 px-1.5 py-1 text-[10.5px] font-bold text-white sm:text-[11.5px]">
+            <span>السنة</span>
+            <select
+              value={fiscalYear}
+              onChange={(e) => setFiscalYear(Number(e.target.value))}
+              className="rounded-md bg-white px-1 py-0.5 text-[#2e6b8a] font-black"
+              aria-label="السنة المالية"
+            >
+              {getAvailableYears([fiscalYear]).map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+          </label>
+
           {pwaInstallable && (
             <button
               onClick={handlePWAInstall}

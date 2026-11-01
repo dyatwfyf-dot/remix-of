@@ -275,8 +275,8 @@ export const useStore = create<State>()(
       installmentConditionalRules2026: [],
 
       syncHafizaToAccount: (hafiza: Hafiza) => {
-        const year = hafiza.date?.split("-")[0];
-        if (year !== "2026") return;
+        const year = Number(hafiza.date?.split("-")[0]);
+        if (!Number.isFinite(year) || year < 2026) return;
 
         let existingAccount = get().accounts.find((acc) => acc.sourceHafizaId === hafiza.id);
         if (!existingAccount && hafiza.hafizaNo) {
