@@ -61,7 +61,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Make Gradle wrapper executable
         run: chmod +x android/gradlew
