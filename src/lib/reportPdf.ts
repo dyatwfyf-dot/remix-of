@@ -22,7 +22,7 @@ export const reportDocumentCss = `
     background: var(--report-paper);
     color: #000000; 
     font-family: Cairo !important; 
-    font-size: 15px; 
+    font-size: 16px; 
     line-height: 1.4; 
     font-weight: 800;
     width: 100% !important;
@@ -38,7 +38,14 @@ export const reportDocumentCss = `
     text-align: center; 
     font-weight: 800;
   }
-  th, td { padding: 4px 5px; text-align: center; vertical-align: middle; border: 1px solid #000000 !important; }
+  th, td {
+    padding: 4px 5px;
+    text-align: center !important;
+    vertical-align: middle !important;
+    font-size: 16px !important;
+    line-height: 1.45 !important;
+    border: 1px solid #000000 !important;
+  }
   thead th { 
     background: #047958 !important; 
     color: #fff !important; 
@@ -168,7 +175,7 @@ margin: 0 !important;
 text-align: center !important;
 vertical-align: middle !important;
 font-family: Cairo !important;
-font-size: 14px !important;
+font-size: 16px !important;
 font-weight: 800!important;
 line-height: 1.35!important;
 border: 1px solid #000000 !important;
@@ -181,14 +188,14 @@ border: 1px solid #000000 !important;
 text-align: center !important;
 vertical-align: middle !important; 
 font-family: Cairo !important;
-font-size: 14px !important;
+font-size: 16px !important;
 font-weight: 800 !important;
 line-height: 1.35 !important;
 border: 1px solid #000000 !important;
 
   }
   .report-page-content thead th { 
-    font-size: 14.5px !important; 
+    font-size: 16px !important; 
     padding: 6px 5px !important; 
     font-weight: 900 !important; 
     background: #00883f !important;
@@ -236,7 +243,7 @@ border: 1px solid #000000 !important;
   .report-page-content .pdf-cell-text {
   border: 1px solid #000000 !important;
     font-family: Cairo !important;
-    font-size: 16.5px !important;
+    font-size: 16px !important;
     text-align: center !important;
     vertical-align: middle !important;
   }
@@ -254,6 +261,26 @@ border: 1px solid #000000 !important;
     width: 100% !important;
     margin: 0 auto 3mm !important;
   }
+  /* Override inherited styles that place cell content at the bottom. */
+  .report-page-content table th,
+  .report-page-content table td {
+    display: table-cell !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+    font-size: 16px !important;
+    line-height: 1.45 !important;
+  }
+  .report-page-content table th > *,
+  .report-page-content table td > * {
+    vertical-align: middle !important;
+  }
+  .report-page-content .pdf-cell-text {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    font-size: 16px !important;
+    line-height: 1.45 !important;
+  }
+
   .report-page-content .report-letterhead-frame {
     display: flex !important;
     flex-direction: row !important;
