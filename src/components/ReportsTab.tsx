@@ -145,11 +145,11 @@ const reportsTabPrintCss = `
     background: #0f283a !important;
     color: #ffffff !important;
     font-weight: 900 !important;
-    font-size: 15.5px !important;
-    padding: 6px 4px !important;
+    font-size: 12px !important;
+    padding: 5px 3px !important;
     white-space: normal !important;
     word-break: keep-all !important;
-    border: 1px solid #1f5f7a !important;
+    border: 1px solid #000000 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -162,9 +162,9 @@ const reportsTabPrintCss = `
   tbody td {
     color: #000000 !important;
     font-weight: 800 !important;
-    border: 1px solid #e2e8f0 !important;
-    font-size: 15.5px !important;
-    padding: 4px 5px !important;
+    border: 1px solid #000000 !important;
+    font-size: 12px !important;
+    padding: 4px 3px !important;
     text-align: center !important;
   }
   tbody td .pdf-cell-text {
@@ -274,6 +274,12 @@ const reportsTabPrintCss = `
   #report-source table td {
     border: 1px solid #ffffff !important;
   }
+  /* تنسيق موحد لكل جداول تقارير التبويب في الطباعة وPDF */
+  .report-page-content table, #tableContainer table, #report-source table { width: 100% !important; table-layout: auto !important; }
+  .report-page-content table th, .report-page-content table td, #tableContainer table th, #tableContainer table td, #report-source table th, #report-source table td { border: 1px solid #000000 !important; }
+  .report-page-content table td.desc-cell, .report-page-content table td.text-cell, .report-page-content table td.name-cell, .report-page-content table td.specialty-cell, .report-page-content table td.batch-cell, #tableContainer table td.desc-cell, #tableContainer table td.text-cell, #tableContainer table td.name-cell, #tableContainer table td.specialty-cell, #tableContainer table td.batch-cell { white-space: normal !important; word-break: normal !important; overflow-wrap: break-word !important; }
+  .report-page-content table td.num, .report-page-content table td.numeric-cell, .report-page-content table td.date-cell, .report-page-content table td.ref-cell, #tableContainer table td.num, #tableContainer table td.numeric-cell, #tableContainer table td.date-cell, #tableContainer table td.ref-cell { white-space: nowrap !important; }
+  @media print { #tableContainer table th, #tableContainer table td, .report-page-content table th, .report-page-content table td { border: 1px solid #000000 !important; } }
   @media print {
     #tableContainer table th,
     #tableContainer table td {
@@ -431,7 +437,7 @@ export default function ReportsTab() {
       summaryLevel: "opening",
     });
 
-    let sumAmount = youssefOpeningBalance;
+    let sumAmount = 0;
 
     matched.forEach((row, index) => {
       const rowKey = `youssef-${index}-${row.date}`;
@@ -505,7 +511,7 @@ export default function ReportsTab() {
       summaryLevel: "opening",
     });
 
-    let sumAmount = tawfiqOpeningBalance;
+    let sumAmount = 0;
 
     matched.forEach((row, index) => {
       const rowKey = `tawfiq-${index}-${row.date}`;
@@ -837,6 +843,8 @@ export default function ReportsTab() {
       : ["income", "expense", "amount"];
 
   const isLoanOrCustody = source === "youssefLoan" || source === "tawfiqCustody";
+  // استبعاد الرصيد الافتتاحي والإجمالي السابق من التصدير ليُحسب الإجمالي من الحركات فقط.
+  const actionRows = isLoanOrCustody ? processedRows.filter((row) => row.summaryLevel !== "opening" && row.summaryLevel !== "total") : processedRows;
 
   const displayRows = useMemo(() => processedRows, [processedRows]);
 
@@ -1066,7 +1074,7 @@ export default function ReportsTab() {
 
           <TabActions
             title={title}
-            rows={processedRows}
+            rows={actionRows}
             columns={sourceConfig.columns}
             fileName={
               source === "youssefLoan"
@@ -1079,7 +1087,7 @@ export default function ReportsTab() {
             pdfLayout="wide-centered"
             pdfOrientation="landscape"
             pdfCss={reportsTabPrintCss}
-            includeTotalRow={false}
+            includeTotalRow={isLoanOrCustody}
             className="w-full sm:w-auto"
           />
         </div>
@@ -1089,7 +1097,7 @@ export default function ReportsTab() {
           <table className="reports-data-table w-full min-w-[900px] border-collapse overflow-hidden rounded-2xl text-center text-xs sm:text-sm">
             <thead className="bg-[#0f283a] text-white">
               <tr>
-                <th className="border border-[#1f5f7a] px-3 py-2.5 font-bold text-white">م</th>
+                <th className="border border-black px-3 py-2.5 font-bold text-white">م</th>
                 {sourceConfig.columns.map((column) => {
                   const isSortActive = activeSortColumn === column.key;
                   return (
@@ -1104,7 +1112,7 @@ export default function ReportsTab() {
                           else { setSortColumn(column.key); setSortDirection("asc"); }
                         }
                       }}
-                      className="border border-[#1f5f7a] px-3 py-2.5 font-bold text-white cursor-pointer hover:bg-[#1a4b64] select-none transition-colors"
+                      className="border border-black px-3 py-2.5 font-bold text-white cursor-pointer hover:bg-[#1a4b64] select-none transition-colors"
                       title="انقر للفرز تصاعدياً أو تنازلياً"
                     >
                       <div className="flex items-center justify-center gap-1.5 text-white">
@@ -1116,11 +1124,11 @@ export default function ReportsTab() {
                     </th>
                   );
                 })}
-                <th className="border border-[#1f5f7a] px-1 py-2.5 font-bold text-white print:hidden" style={{ width: "44px" }} title="حذف مؤقت">حذف</th>
+                <th className="border border-black px-1 py-2.5 font-bold text-white print:hidden" style={{ width: "44px" }} title="حذف مؤقت">حذف</th>
               </tr>
               {/* صف التصفية */}
               <tr className="bg-slate-200/80 print:hidden">
-                <td className="border border-slate-300 px-2 py-1 text-center">
+                <td className="border border-black px-2 py-1 text-center">
                   {hasAnyFilter && (
                     <button
                       onClick={() => setColumnFilters({})}
@@ -1130,17 +1138,17 @@ export default function ReportsTab() {
                   )}
                 </td>
                 {sourceConfig.columns.map((column) => (
-                  <td key={column.key} className="border border-slate-300 px-1 py-1">
+                  <td key={column.key} className="border border-black px-1 py-1">
                     <input
                       type="text"
                       value={columnFilters[column.key] || ""}
                       onChange={(e) => setColumnFilters((prev) => ({ ...prev, [column.key]: e.target.value }))}
                       placeholder="تصفية..."
-                      className="w-full rounded border border-slate-300 bg-white px-1.5 py-0.5 text-[11px] font-semibold text-slate-900 outline-none focus:border-sky-600"
+                      className="w-full rounded border border-black bg-white px-1.5 py-0.5 text-[11px] font-semibold text-slate-900 outline-none focus:border-sky-600"
                     />
                   </td>
                 ))}
-                <td className="border border-slate-300 px-1 py-1 print:hidden"></td>
+                <td className="border border-black px-1 py-1 print:hidden"></td>
               </tr>
             </thead>
             <tbody>
@@ -1172,8 +1180,8 @@ export default function ReportsTab() {
                     const sigKey = row.id;
                     return (
                       <tr key={`signature-${index}`} className={`transition-colors ${rowStyle}`}>
-                        <td className="border border-slate-300 px-2 py-2 font-bold">—</td>
-                        <td colSpan={sourceConfig.columns.length} className="border border-slate-300 px-4 py-3 text-right font-bold text-slate-900">
+                        <td className="border border-black px-2 py-2 font-bold">—</td>
+                        <td colSpan={sourceConfig.columns.length} className="border border-black px-4 py-3 text-right font-bold text-slate-900">
                           <div className="flex flex-wrap items-center justify-between gap-4">
                             <div className="flex items-center gap-2">
                               <span>المسمى / الإدارة:</span>
@@ -1190,7 +1198,7 @@ export default function ReportsTab() {
                                     [sigKey === "sig-1" ? "sig1Dept" : sigKey === "sig-2" ? "sig2Dept" : "sig3Dept"]: val
                                   }));
                                 }}
-                                className="rounded border border-slate-300 bg-white px-2 py-1 text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
+                                className="rounded border border-black bg-white px-2 py-1 text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
                               />
                             </div>
                             <div className="flex items-center gap-2">
@@ -1208,12 +1216,12 @@ export default function ReportsTab() {
                                     [sigKey === "sig-1" ? "sig1Name" : sigKey === "sig-2" ? "sig2Name" : "sig3Name"]: val
                                   }));
                                 }}
-                                className="rounded border border-slate-300 bg-white px-2 py-1 text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
+                                className="rounded border border-black bg-white px-2 py-1 text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
                               />
                             </div>
                           </div>
                         </td>
-                        <td className="border border-slate-300 px-1 py-1 print:hidden">
+                        <td className="border border-black px-1 py-1 print:hidden">
                           <button
                             onClick={() => deleteRow(row)}
                             className="rounded p-1 text-rose-600 hover:bg-rose-50"
@@ -1247,7 +1255,7 @@ export default function ReportsTab() {
                                 type={column.key === "amount" ? "number" : "text"}
                                 value={val ?? ""}
                                 onChange={(e) => handleManualChange(row.id, column.key as any, column.key === "amount" ? Number(e.target.value) || 0 : e.target.value)}
-                                className="w-full rounded border border-slate-300 bg-white px-2 py-1 text-xs font-bold text-slate-900 outline-none focus:border-sky-600 text-center font-mono"
+                                className="w-full rounded border border-black bg-white px-2 py-1 text-xs font-bold text-slate-900 outline-none focus:border-sky-600 text-center font-mono"
                               />
                             </td>
                           );
