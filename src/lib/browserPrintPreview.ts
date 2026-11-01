@@ -785,7 +785,6 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
           : pageSize === 'Letter'
             ? (orientation === 'portrait' ? 215.9 : 279.4)
             : (orientation === 'portrait' ? 210 : 297);
-        const pageFactor = pageWidthMm >= 290 ? 1 : 0;
         // توحيد حجم خط جميع التقارير دون تصغيره حسب عدد الأعمدة.
         const fontSize = 16;
         const horizontalPadding = columnCount > 12 ? 4 : 5;
