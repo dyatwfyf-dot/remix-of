@@ -1078,8 +1078,9 @@ export default function ReportsTab() {
 
           <TabActions
             title={title}
-            rows={actionRows}
+            rows={actionRows.filter((row) => !isLoanOrCustody || row.summaryLevel !== "opening")}
             columns={sourceConfig.columns}
+            printColumns={isLoanOrCustody ? sourceConfig.columns.filter((column) => column.key !== "name") : sourceConfig.columns}
             fileName={
               source === "youssefLoan"
                 ? `مسير-إخلاء-عهدة-د-يوسف-${year}`
