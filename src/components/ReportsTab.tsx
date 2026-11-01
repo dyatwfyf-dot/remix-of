@@ -138,12 +138,13 @@ const isPreservedFromColumnFilter = (row: ReportRow) =>
 const reportsTabPrintCss = `
   .reports-data-table thead th,
   .reports-data-table thead th * {
-    color: #ffffff !important;
+    background: #FFD700 !important;
+    color: #000000 !important;
   }
 
   thead th {
-    background: #0f283a !important;
-    color: #ffffff !important;
+    background: #FFD700 !important;
+    color: #000000 !important;
     font-weight: 900 !important;
     font-size: 12px !important;
     padding: 5px 3px !important;
@@ -156,7 +157,8 @@ const reportsTabPrintCss = `
   thead th .pdf-cell-text,
   th .pdf-cell-text {
     background: transparent !important;
-    color: #ffffff !important;
+    color: #000000 !important;
+    background: transparent !important;
     font-weight: 900 !important;
   }
   tbody td {
@@ -250,9 +252,9 @@ const reportsTabPrintCss = `
   }
 
   .report-page-content table thead th {
-    background: #0f283a !important;
-    color: #ffffff !important;
-    border-color: #1f5f7a !important;
+    background: #FFD700 !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
   }
   .report-page-content table tbody td { border-color: #e2e8f0 !important; }
   .report-page-content table tbody td .pdf-cell-text { color: inherit !important; background: transparent !important; }

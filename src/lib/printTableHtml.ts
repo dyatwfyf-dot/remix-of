@@ -216,8 +216,8 @@ export const tablePrintStyles = `
   }
 
   thead th {
-    background: #174258 !important;
-    color: #ffffff !important;
+    background: #FFD700 !important;
+    color: #000000 !important;
     font-weight: 900 !important;
     font-size: 13px !important;
     padding: 5px 3px !important;
@@ -229,19 +229,19 @@ export const tablePrintStyles = `
   #tableContainer table thead th,
   #tableContainer table thead th.desc-cell,
   #tableContainer table thead th[data-col-key="description"] {
-    background: #174258 !important;
-    color: #ffffff !important;
+    background: #FFD700 !important;
+    color: #000000 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
   #tableContainer table thead th .pdf-cell-text {
-    color: #ffffff !important;
+    color: #000000 !important;
     background: transparent !important;
   }
 
   thead th .pdf-cell-text {
-    color: #ffffff !important;
+    color: #000000 !important;
   }
 
   tbody td {
@@ -513,7 +513,7 @@ export function buildTableHtml(opts: {
     .join("")}</tr>`;
 
   // احتساب الإجماليات
-  const dataRowsForTotals = rows.filter((r) => r && !r.__summaryCard && r.summaryLevel !== "summary-card" && r.summaryLevel !== "total" && r.summaryLevel !== "signature");
+  const dataRowsForTotals = rows.filter((r) => r && !r.__summaryCard && r.summaryLevel !== "summary-card" && r.summaryLevel !== "total" && r.summaryLevel !== "opening" && r.summaryLevel !== "signature");
   const totals: Record<string, number> = {};
   columns.forEach((c) => {
     if (numericKeys.includes(c.key)) {
@@ -636,5 +636,12 @@ export function buildTableHtml(opts: {
     return buildRows(beforeRows, 0) + spacerHtml + buildRows(afterRows, summaryIndex);
   })();
 
-  return `<table class="reports-data-table"><thead>${head}</thead><tbody>${bodyWithSpacer}${totalRow}</tbody></table>`;
+  // ضع الإجمالي بعد آخر حركة وقبل كتلة التوقيعات، وليس بعدها.
+  const bodyWithTotal = includeTotalRow
+    ? (bodyWithSpacer.includes('<tr class="signature-block-row')
+        ? bodyWithSpacer.replace(/(?=<tr class="signature-block-row)/, totalRow)
+        : bodyWithSpacer + totalRow)
+    : bodyWithSpacer;
+
+  return `<table class="reports-data-table"><thead>${head}</thead><tbody>${bodyWithTotal}</tbody></table>`;
 }
