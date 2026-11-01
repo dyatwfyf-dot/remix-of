@@ -118,315 +118,132 @@ export const tablePrintStyles = `
   /* جدول باحتواء تلقائي متكيف مع أبعاد A4 */
   table {
     width: 100% !important;
-    max-width: auto !important;
-    border-collapse: collapse !important;
     table-layout: auto !important;
-    margin: 0 auto;
-    text-align: center !important;
-  }
-  
-  th, td {
-    border: 1px solid #000000 !important; 
-    padding: 4px 5px !important;
-    text-align: center !important;
-    vertical-align: middle !important;
-    box-sizing: border-box;
+    border-collapse: collapse !important;
+    font-size: 12px !important;
+    margin-bottom: 6px !important;
   }
 
-  /* رؤوس الأعمدة: خلفية داكنة وخط أبيض عريض */
-  thead th {
-    background: #028611 !important;
-    color: #ffffff !important;
-    font-weight: 800 !important;
-    font-size: 14px !important;
-    padding: 6px 4px !important;
-    white-space: normal !important;
-    word-break: keep-all !important;
+  /* الرؤوس والتذييلات تتكرر تلقائياً على كل ورقة */
+  thead {
+    display: table-header-group !important;
+  }
+  tfoot {
+    display: table-footer-group !important;
+  }
+
+  /* منع كسر الصف الواحد عبر الصفحات */
+  tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  th, td {
     border: 1px solid #000000 !important;
+    padding: 4px 3px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    font-family: Cairo, sans-serif !important;
+  }
+
+  thead th {
+    background: #174258 !important;
+    color: #ffffff !important;
+    font-weight: 900 !important;
+    font-size: 13px !important;
+    padding: 5px 3px !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  thead th .pdf-cell-text,
-  th .pdf-cell-text {
-    background: transparent !important;
-    color: #ffffff !important;
-    font-weight: 800 !important;
-    white-space: normal !important;
-  }
-
-  thead th.desc-cell,
-  thead th[data-col-key="description"] {
+  /* لون موحد لخلفية ترويسة التقارير في كل التبويبات */
+  #tableContainer table thead th,
+  #tableContainer table thead th.desc-cell,
+  #tableContainer table thead th[data-col-key="description"] {
     background: #174258 !important;
     color: #ffffff !important;
-    white-space: normal !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  /* القاعدة العامة لصفوف البيانات */
+  #tableContainer table thead th .pdf-cell-text {
+    color: #ffffff !important;
+    background: transparent !important;
+  }
+
+  thead th .pdf-cell-text {
+    color: #ffffff !important;
+  }
+
   tbody td {
     color: #000000 !important;
-    white-space: normal !important;
     font-weight: 800 !important;
-    font-size: 14.5px !important;
-    padding: 3px 4px !important;
-    text-align: center !important;
-    line-height: 1.3 !important;
-    word-break: break-word !important;
+    background: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  .pdf-cell-text {
-    background: #2ed6e7 !important;
-    color: #000000 !important;
-    text-align: center !important;
-    font-family: Cairo !important;
-    font-weight: 800;
-    line-height: 1.4 !important;
-    white-space: nowrap !important;
-    font-size: 13.5px !important;
-  }
-
-  /* استثناء خاص: عمود البيان يلتف تلقائياً */
-  td.desc-cell.pdf-cell-text,
-  td.details-cell.pdf-cell-text,
-  td.description-cell.pdf-cell-text,
-  tbody td.desc-cell,
-  tbody td.details-cell,
-  tbody td.description-cell,
-  tbody td[data-col-key="description"] {
-    white-space: normal !important;
-    word-break: break-word !important;
-    overflow-wrap: normal !important;
-    text-align: center !important;
-    direction: rtl !important;
-    padding: 2px 4px !important;
-    line-height: 1.35 !important;
-    min-width: 180px !important;
-  }
-
-  tbody td.desc-cell .pdf-cell-text,
-  tbody td.details-cell .pdf-cell-text,
-  tbody td.description-cell .pdf-cell-text,
-  tbody td[data-col-key="description"] .pdf-cell-text {
-    white-space: normal !important;
-    word-break: break-word !important;
-    overflow-wrap: normal !important;
-    display: inline-block;
-  }
-
-  /* أعمدة الأسماء: سطر واحد دون التفاف */
-  tbody td.name-cell,
-  tbody td[data-col-key="name"],
-  tbody td.name-cell .pdf-cell-text {
-    font-weight: 800 !important;
-    color: #000000 !important;
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-    text-align: center !important;
-    padding: 3px 6px !important;
-  }
-
-  /* أعمدة التخصص والدفعة */
-  tbody td.specialty-cell,
-  tbody td.batch-cell,
-  tbody td[data-col-key="specialty"],
-  tbody td[data-col-key="batch"] {
-    color: #000000 !important;
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-    text-align: center !important;
-  }
-
-  /* الأرقام والتواريخ والمبالغ والأكواد: سطر واحد */
-  .num,
-  .numeric-cell,
-  .date-cell,
-  .compact-cell,
-  .ref-cell,
-  .idx {
-    font-family: Cairo !important;
-    direction: ltr !important;
-    font-weight: 800 !important;
-    font-size: 14px !important;
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-    overflow-wrap: normal !important;
-    text-align: center !important;
-  }
-
-  .num .pdf-cell-text,
-  .numeric-cell .pdf-cell-text,
-  .date-cell .pdf-cell-text,
-  .compact-cell .pdf-cell-text,
-  .ref-cell .pdf-cell-text,
-  .idx .pdf-cell-text {
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-    text-align: center !important;
-  }
-
-  tbody tr:nth-child(even) td {
+  .report-row-striped td {
     background: #f8fafc !important;
   }
 
-  /* صف الإجمالي النهائي */
+  /* الإجمالي الكلي الموحد */
+  .report-grand-total-row td,
   .total-row td {
-    background: #067601 !important;
+    background: #174258 !important;
     color: #ffffff !important;
     font-weight: 900 !important;
-    font-size: 13.5px !important;
+    font-size: 13px !important;
     border-top: 2px solid #000000 !important;
-    white-space: nowrap !important;
-    padding: 5px 4px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
+
+  .report-grand-total-row td .pdf-cell-text,
   .total-row td .pdf-cell-text {
     color: #ffffff !important;
   }
 
-  /* ===== إطار الترويسة الموحّد والنصوص الرسمية ===== */
-  .report-letterhead-block {
-    display: block !important;
-    position: relative !important;
-    width: 100% !important;
-    margin: 0 auto 3mm !important;
-    page-break-before: avoid !important;
-    page-break-after: avoid !important;
-    break-before: avoid !important;
-    break-after: avoid !important;
-  }
-
-  .report-letterhead-frame {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    width: 100% !important;
-    border: 1.5px solid #000000 !important;
-    border-radius: 4px !important;
-    padding: 5px 12px !important;
-    background: #ffffff !important;
-    box-sizing: border-box !important;
-    color: #000000 !important;
-  }
-
-  .report-letterhead-side {
-    flex: 1 1 36% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    color: #000000 !important;
-  }
-
-  .report-letterhead-right {
-    text-align: right !important;
-    direction: rtl !important;
-  }
-
-  .letterhead-title-ar {
-    font-family: Cairo, sans-serif !important;
-    font-size: 13.5px !important;
-    font-weight: 900 !important;
-    line-height: 1.3 !important;
-    color: #000000 !important;
-  }
-
-  .letterhead-sub-ar {
-    font-family: Cairo, sans-serif !important;
-    font-size: 12px !important;
-    font-weight: 800 !important;
-    line-height: 1.3 !important;
-    color: #000000 !important;
-  }
-
-  .letterhead-branch-ar {
-    font-family: Cairo, sans-serif !important;
-    font-size: 12.5px !important;
-    font-weight: 900 !important;
-    line-height: 1.3 !important;
-    color: #000000 !important;
-  }
-
-  .report-letterhead-center {
-    flex: 0 0 28% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    padding: 0 4px !important;
-  }
-
-  .letterhead-bismillah {
-    font-family: Cairo, sans-serif !important;
-    font-size: 14.5px !important;
-    font-weight: 900 !important;
-    color: #000000 !important;
-    white-space: nowrap !important;
-    text-align: center !important;
-  }
-
-  .letterhead-center-divider {
-    width: 75px !important;
-    height: 1.5px !important;
-    background: #000000 !important;
-    margin: 3px auto 0 !important;
-  }
-
-  .report-letterhead-left {
-    text-align: left !important;
+  /* احتواء خلايا الأرقام والتواريخ والأكواد لمنع تمددها */
+  .num, .numeric-cell, .date-cell, .compact-cell, .ref-cell, .idx {
     direction: ltr !important;
-  }
-
-  .letterhead-title-en {
-    font-family: Arial, Cairo, sans-serif !important;
-    font-size: 12px !important;
-    font-weight: 900 !important;
-    line-height: 1.25 !important;
-    color: #000000 !important;
-  }
-
-  .letterhead-sub-en {
-    font-family: Arial, Cairo, sans-serif !important;
-    font-size: 10.5px !important;
+    font-family: Cairo !important;
     font-weight: 800 !important;
-    line-height: 1.25 !important;
-    color: #000000 !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    text-align: center !important;
   }
 
-  .letterhead-branch-en {
-    font-family: Arial, Cairo, sans-serif !important;
-    font-size: 11px !important;
-    font-weight: 900 !important;
-    line-height: 1.25 !important;
-    color: #000000 !important;
+  /* التفاف حصري لعمود البيان والتفاصيل فقط */
+  td.desc-cell,
+  td.details-cell,
+  td.description-cell,
+  td[data-col-key="description"],
+  td[data-col-name*="البيان"],
+  td[data-col-name*="بيان"],
+  td[data-col-name*="التفاصيل"],
+  td[data-col-name*="تفاصيل"],
+  td[data-col-name*="الوصف"] {
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: normal !important;
+    text-align: center !important;
+    direction: rtl !important;
+    min-width: 180px !important;
   }
 
-  .report-letterhead-row,
-  .doc-title-row {
-    page-break-after: avoid;
-    break-after: avoid;
+  /* باقي الخلايا لا يُسمح لها بالالتفاف إطلاقاً */
+  tbody td:not(.desc-cell):not(.details-cell):not(.description-cell):not([data-col-key="description"]) {
+    white-space: normal !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
   }
 
-  .doc-title-row td.doc-title-cell {
-    border: none !important;
-    background: #ffffff !important;
-    padding: 2px 0 4px !important;
-  }
-
-  .report-letterhead-row .report-letterhead-cell {
-    padding: 0 !important;
-    border: 0 !important;
-    background: #ffffff !important;
-  }
-
-  thead { display: table-header-group; }
-  tfoot { display: table-footer-group; }
-  tr { page-break-inside: avoid; }
-
-  /* صفوف ملخص العهدة */
+  /* بطاقات ملخص العهدة الملونة */
   .summary-spacer-row td {
-    height: 12px !important;
-    background: transparent !important;
     border: none !important;
+    background: transparent !important;
+    height: 12px !important;
     padding: 0 !important;
   }
   .summary-card-row td {
@@ -440,12 +257,12 @@ export const tablePrintStyles = `
     white-space: nowrap !important;
   }
   .summary-card-row .summary-label-cell {
-  background: #51c4ec !important;
+    background: #51c4ec !important;
     text-align: center !important;
     font-weight: 900 !important;
   }
   .summary-card-row .summary-value-cell {
-  background: #51c4ec !important;
+    background: #51c4ec !important;
     text-align: center !important;
     font-family: Cairo !important;
     font-weight: 900 !important;
@@ -465,6 +282,45 @@ export const tablePrintStyles = `
     background: #a7f3d0 !important;
     color: #064e3b !important;
     border: 1px solid #059669 !important;
+  }
+
+  /* كتلة التوقيعات الثلاثة لتقارير العهد */
+  .signature-block-row td {
+    background: #ffffff !important;
+    border: 1.5px solid #000000 !important;
+    padding: 14px 18px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .signature-block-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+    direction: rtl !important;
+  }
+  .signature-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    flex: 1 !important;
+    padding: 4px 8px !important;
+  }
+  .sig-title {
+    font-family: Cairo, sans-serif !important;
+    font-weight: 900 !important;
+    font-size: 13px !important;
+    color: #000000 !important;
+    margin-bottom: 12px !important;
+  }
+  .sig-name {
+    font-family: Cairo, sans-serif !important;
+    font-weight: 800 !important;
+    font-size: 13px !important;
+    color: #000000 !important;
+    min-height: 24px !important;
   }
 
   ${noteRowCss}
@@ -522,21 +378,23 @@ export function buildTableHtml(opts: {
 
     return [
       isNumeric ? "num numeric-cell amount-cell" : "",
-      isDate ? "num date-cell" : "",
-      isRef ? "num compact-cell ref-cell" : "",
+      isDate ? "date-cell" : "",
+      isRef ? "ref-cell compact-cell" : "",
       !isNumeric && !isDate && !isRef ? "text-cell" : "",
     ]
       .filter(Boolean)
       .join(" ");
   };
 
-  const getReportRowClass = (row: Record<string, any>, index: number) => {
-    const level = String(row?.summaryLevel || "");
+  const getReportRowClass = (row: any, index: number) => {
+    const noteClass = noteRowClass(row?.notes);
+    if (noteClass) return noteClass;
+
+    const level = row?.summaryLevel;
     return [
-      noteRowClass(row?.notes),
       level === "opening" ? "report-opening-row" : "",
-      level === "fee" ? "report-fee-row" : "",
-      level === "period" ? "report-period-row" : "",
+      level === "month-total" ? "report-subtotal-row" : "",
+      level === "year-total" ? "report-subtotal-row" : "",
       level === "total" || row?.description === "الإجمالي الكلي" ? "report-grand-total-row" : "",
       index % 2 === 1 ? "report-row-striped" : "report-row-plain",
     ].filter(Boolean).join(" ");
@@ -570,7 +428,7 @@ export function buildTableHtml(opts: {
     .join("")}</tr>`;
 
   // احتساب الإجماليات
-  const dataRowsForTotals = rows.filter((r) => r && !r.__summaryCard && r.summaryLevel !== "summary-card" && r.summaryLevel !== "total");
+  const dataRowsForTotals = rows.filter((r) => r && !r.__summaryCard && r.summaryLevel !== "summary-card" && r.summaryLevel !== "total" && r.summaryLevel !== "signature");
   const totals: Record<string, number> = {};
   columns.forEach((c) => {
     if (numericKeys.includes(c.key)) {
@@ -588,9 +446,35 @@ export function buildTableHtml(opts: {
     )
     .join("")}</tr>` : "";
 
-  // بناء صفوف البيانات مع دعم صفوف الملخص
+  // بناء صفوف البيانات مع دعم صفوف الملخص وكتلة التوقيعات
   const body = rows
     .map((r, i) => {
+      // كتلة التوقيعات الثلاثة
+      if (r && (r.summaryLevel === "signature" || r.signature)) {
+        const finance = r.__signatureFinance || r.financeManager || "";
+        const vice = r.__signatureVice || r.viceManager || "";
+        const president = r.__signaturePresident || r.presidentManager || "";
+
+        return `<tr class="signature-block-row">
+          <td colspan="${columns.length + 1}" class="signature-block-cell">
+            <div class="signature-block-grid">
+              <div class="signature-item">
+                <div class="sig-title">الشؤون المالية</div>
+                <div class="sig-name">${escapeHtml(finance || "....................")}</div>
+              </div>
+              <div class="signature-item">
+                <div class="sig-title">نائب رئيس المجلس</div>
+                <div class="sig-name">${escapeHtml(vice || "....................")}</div>
+              </div>
+              <div class="signature-item">
+                <div class="sig-title">رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة</div>
+                <div class="sig-name">${escapeHtml(president || "....................")}</div>
+              </div>
+            </div>
+          </td>
+        </tr>`;
+      }
+
       if (r && (r.__summaryCard || r.summaryLevel === "summary-card")) {
         const cardIndex = Number(r.__summaryCard?.index ?? r.summaryCardIndex ?? 0) || 0;
         const label = String(r.__summaryCard?.label ?? r.description ?? "");
@@ -641,6 +525,32 @@ export function buildTableHtml(opts: {
     const buildRows = (arr: Record<string, any>[], startIndex: number) =>
       arr.map((r, i) => {
         const globalIndex = startIndex + i;
+
+        if (r && (r.summaryLevel === "signature" || r.signature)) {
+          const finance = r.__signatureFinance || r.financeManager || "";
+          const vice = r.__signatureVice || r.viceManager || "";
+          const president = r.__signaturePresident || r.presidentManager || "";
+
+          return `<tr class="signature-block-row">
+            <td colspan="${columns.length + 1}" class="signature-block-cell">
+              <div class="signature-block-grid">
+                <div class="signature-item">
+                  <div class="sig-title">الشؤون المالية</div>
+                  <div class="sig-name">${escapeHtml(finance || "....................")}</div>
+                </div>
+                <div class="signature-item">
+                  <div class="sig-title">نائب رئيس المجلس</div>
+                  <div class="sig-name">${escapeHtml(vice || "....................")}</div>
+                </div>
+                <div class="signature-item">
+                  <div class="sig-title">رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة</div>
+                  <div class="sig-name">${escapeHtml(president || "....................")}</div>
+                </div>
+              </div>
+            </td>
+          </tr>`;
+        }
+
         if (r && (r.__summaryCard || r.summaryLevel === "summary-card")) {
           const cardIndex = Number(r.__summaryCard?.index ?? r.summaryCardIndex ?? 0) || 0;
           const label = String(r.__summaryCard?.label ?? r.description ?? "");
