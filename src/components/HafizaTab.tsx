@@ -374,7 +374,7 @@ className="w-full text-center px-3 py-2 hover:bg-sky-50 text-xs sm:text-xs flex 
               </div>
               <div>
 <CardTitle className="text-lg sm:text-base font-bold text-slate-900">كشف قيود الحوافظ</CardTitle>
-<CardDescription classNam="text-[13px] text-slate-900">كشف 
+<CardDescription className="text-[13px] text-slate-900">كشف 
 حوافظ التوريد وسجلاتها
 </CardDescription>
               </div>
