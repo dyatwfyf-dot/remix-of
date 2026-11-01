@@ -475,6 +475,9 @@ export function buildTableHtml(opts: {
     const level = row?.summaryLevel;
     return [
       level === "opening" ? "report-opening-row" : "",
+      level === "period" ? "report-period-row" : "",
+      level === "fee" ? "report-fee-row" : "",
+      level === "trainee-name-total" ? "report-trainee-name-total-row" : "",
       level === "month-total" ? "report-subtotal-row" : "",
       level === "year-total" ? "report-subtotal-row" : "",
       level === "total" || row?.description === "الإجمالي الكلي" ? "report-grand-total-row" : "",
@@ -633,5 +636,5 @@ export function buildTableHtml(opts: {
     return buildRows(beforeRows, 0) + spacerHtml + buildRows(afterRows, summaryIndex);
   })();
 
-  return `<table><thead>${head}</thead><tbody>${bodyWithSpacer}${totalRow}</tbody></table>`;
+  return `<table class="reports-data-table"><thead>${head}</thead><tbody>${bodyWithSpacer}${totalRow}</tbody></table>`;
 }
