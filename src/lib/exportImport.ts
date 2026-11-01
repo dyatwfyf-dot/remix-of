@@ -894,7 +894,7 @@ export async function importFromExcel(
         }
         const accDate = toDate(get(r, "التاريخ"));
         let revenueKey: string | undefined;
-        if (income > 0 && accDate.slice(0, 4) === "2026") {
+        if (income > 0 && Number(accDate.slice(0, 4)) >= 2026) {
           revenueKey = description.includes("امتحان") ? "3-2-3-8" : "3-2-3-7";
         }
         result.accounts.push({

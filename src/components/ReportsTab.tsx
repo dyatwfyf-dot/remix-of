@@ -1,3 +1,4 @@
+import { useFiscalYear, getAvailableYears, readYearNumber, writeYearNumber } from "@/lib/fiscalYear";
 import { useEffect, useMemo, useState } from "react";
 import { BarChart3, CalendarDays, FileText, UserRound, Wallet, Coins, Trash2 } from "lucide-react";
 import { useStore, type Account } from "@/lib/store";
@@ -69,7 +70,7 @@ const periodLabel = (period: PeriodType, month: number, year: number) => {
 };
 
 const getYearOptions = (values: unknown[]) => {
-  const years = new Set<number>([2024, 2025, 2026]);
+  const years = new Set<number>(getAvailableYears());
   values.forEach((value) => {
     const date = normalizeDate(value);
     if (date) years.add(date.getFullYear());
@@ -263,7 +264,9 @@ export default function ReportsTab() {
 
   const [source, setSource] = useState<ReportSource>("youssefLoan");
   const [period, setPeriod] = useState<PeriodType>("all");
-  const [year, setYear] = useState<number>(2026);
+  const fiscalYear = useFiscalYear((s) => s.year);
+  const [year, setYear] = useState<number>(fiscalYear);
+  useEffect(() => setYear(fiscalYear), [fiscalYear]);
   const [month, setMonth] = useState<number>(0);
   const [selectedTrainee, setSelectedTrainee] = useState<string>("all");
   const [traineeGrouping, setTraineeGrouping] = useState<TraineeGrouping>("month");
@@ -287,24 +290,22 @@ export default function ReportsTab() {
     setDeletedRows(new Set());
   }, [source]);
 
-  const [youssefOpeningBalance, setYoussefOpeningBalance] = useState<number>(() => {
-    const saved = localStorage.getItem("youssef_loan_opening_balance");
-    return saved ? Number(saved) || 0 : 0;
-  });
+  const [youssefOpeningBalance, setYoussefOpeningBalance] = useState<number>(() => readYearNumber("youssef_loan_opening_balance", year));
+  const [tawfiqOpeningBalance, setTawfiqOpeningBalance] = useState<number>(() => readYearNumber("tawfiq_custody_opening_balance", year));
 
-  const [tawfiqOpeningBalance, setTawfiqOpeningBalance] = useState<number>(() => {
-    const saved = localStorage.getItem("tawfiq_custody_opening_balance");
-    return saved ? Number(saved) || 0 : 0;
-  });
+  useEffect(() => {
+    setYoussefOpeningBalance(readYearNumber("youssef_loan_opening_balance", year));
+    setTawfiqOpeningBalance(readYearNumber("tawfiq_custody_opening_balance", year));
+  }, [year]);
 
   const handleYoussefOpeningChange = (val: number) => {
     setYoussefOpeningBalance(val);
-    localStorage.setItem("youssef_loan_opening_balance", String(val));
+    writeYearNumber("youssef_loan_opening_balance", year, val);
   };
 
   const handleTawfiqOpeningChange = (val: number) => {
     setTawfiqOpeningBalance(val);
-    localStorage.setItem("tawfiq_custody_opening_balance", String(val));
+    writeYearNumber("tawfiq_custody_opening_balance", year, val);
   };
 
   const deleteRow = (row: ReportRow) =>
@@ -358,7 +359,7 @@ export default function ReportsTab() {
     const result: ReportRow[] = [];
 
     result.push({
-      date: "2026-01-01",
+      date: `${year}-01-01`,
       docNo: "افتتاحي",
       description: "الرصيد الافتتاحي المدور",
       name: "د/ يوسف",
@@ -412,8 +413,8 @@ export default function ReportsTab() {
     const remainingForSummary = youssefOpeningBalance - paidForSummary;
 
     result.push({
-      __summaryCard: { index: 0, label: "مبلغ العهدة الافتتاحي للعام 2026", value: youssefOpeningBalance },
-      description: "مبلغ العهدة الافتتاحي للعام 2026",
+      __summaryCard: { index: 0, label: `مبلغ العهدة الافتتاحي للعام ${year}`, value: youssefOpeningBalance },
+      description: `مبلغ العهدة الافتتاحي للعام ${year}`,
       credit: youssefOpeningBalance,
       summaryLevel: "summary-card",
     });
@@ -448,7 +449,7 @@ export default function ReportsTab() {
     const result: ReportRow[] = [];
 
     result.push({
-      date: "2026-01-01",
+      date: `${year}-01-01`,
       docNo: "افتتاحي",
       description: "الرصيد الافتتاحي للعهدة",
       name: "توفيق الداعي",
@@ -502,8 +503,8 @@ export default function ReportsTab() {
     const remainingForSummary = tawfiqOpeningBalance - paidForSummary;
 
     result.push({
-      __summaryCard: { index: 0, label: "مبلغ العهدة الافتتاحي للعام 2026", value: tawfiqOpeningBalance },
-      description: "مبلغ العهدة الافتتاحي للعام 2026",
+      __summaryCard: { index: 0, label: `مبلغ العهدة الافتتاحي للعام ${year}`, value: tawfiqOpeningBalance },
+      description: `مبلغ العهدة الافتتاحي للعام ${year}`,
       credit: tawfiqOpeningBalance,
       summaryLevel: "summary-card",
     });
@@ -1062,7 +1063,7 @@ export default function ReportsTab() {
                 {sourceConfig.columns.map((column) => {
                   const isSortActive = activeSortColumn === column.key;
                   return (
-  <th className="border border-[#1f5f7a] px-3 py-2.5 font-bold text-white"
+  <th
                       key={column.key}
                       onClick={() => {
                         if (source === "trainee") {
@@ -1179,7 +1180,7 @@ export default function ReportsTab() {
                     if (!summaryRows.length) return null;
 
                     const cardStyles = [
-                      { label: "مبلغ العهدة الافتتاحي للعام 2026",   bg: "bg-amber-200",   text: "text-amber-950",   border: "border-amber-500",   cls: "summary-card-0" },
+                      { label: `مبلغ العهدة الافتتاحي للعام ${year}`,   bg: "bg-amber-200",   text: "text-amber-950",   border: "border-amber-500",   cls: "summary-card-0" },
                       { label: "المنصرف من العهدة خلال العام",        bg: "bg-rose-200",    text: "text-rose-950",    border: "border-rose-500",    cls: "summary-card-1" },
                       { label: "المتبقي من العهدة حتى تاريخ التقرير", bg: "bg-emerald-200", text: "text-emerald-950", border: "border-emerald-500", cls: "summary-card-2" },
                     ];

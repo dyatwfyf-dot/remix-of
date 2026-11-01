@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useState } from "react";
+import { useFiscalYear, getAvailableYears } from "@/lib/fiscalYear";
 import { useStore } from "@/lib/store";
 import { useReportDate } from "@/lib/reportDate";
 import { buildMonthlyStatementRows, exportMonthlyStatement, normName } from "@/lib/exportImport";
@@ -230,7 +231,9 @@ export default function MonthlyStatementTab() {
   const { reportDate, reportDateLabel } = useReportDate();
   const tableRef = useRef<HTMLTableElement>(null);
 
-  const [year, setYear] = useState(new Date().getFullYear());
+  const fiscalYear = useFiscalYear((s) => s.year);
+  const [year, setYear] = useState(fiscalYear);
+  React.useEffect(() => setYear(fiscalYear), [fiscalYear]);
   const [mode, setMode] = useState<ReportPeriodMode>("month");
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [quarter, setQuarter] = useState(Math.floor(new Date().getMonth() / 3) + 1);
@@ -486,7 +489,7 @@ export default function MonthlyStatementTab() {
               onChange={(e) => setYear(Number(e.target.value))}
               className="bg-transparent font-bold text-slate-800 outline-none cursor-pointer text-xs"
             >
-              {[2024, 2025, 2026, 2027].map((y) => (
+              {getAvailableYears([year]).map((y) => (
                 <option key={y} value={y} className="bg-white text-slate-800">
                   عام {y}م
                 </option>
