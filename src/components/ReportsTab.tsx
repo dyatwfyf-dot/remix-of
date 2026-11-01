@@ -1,24 +1,25 @@
-import { useMemo, useState, useEffect } from "react";
-import { useStore } from "@/lib/store";
-import TabActions, { type TabCol } from "@/components/TabActions";
-import { BarChart3, CalendarDays, Coins, Trash2, UserRound, Wallet } from "lucide-react";
-import { useFiscalYear } from "@/lib/fiscalYear";
+import { useFiscalYear, getAvailableYears, readYearNumber, writeYearNumber } from "@/lib/fiscalYear";
+import { useEffect, useMemo, useState } from "react";
+import { BarChart3, CalendarDays, FileText, UserRound, Wallet, Coins, Trash2 } from "lucide-react";
+import { useStore, type Account } from "@/lib/store";
+import TabActions, { type TabCol } from "./TabActions";
+import revenueSchema from "@/data/revenueTemplate.json";
 
-type ReportSource = |
-  "youssefLoan" |
-  "tawfiqCustody" |
-  "hafiza" |
-  "account" |
-  "expenses" |
-  "revenue" |
-  "combined" |
-  "trainee" |
-  "feeTotals";
+type ReportSource =
+  | "youssefLoan"
+  | "tawfiqCustody"
+  | "hafiza"
+  | "account"
+  | "expenses"
+  | "revenue"
+  | "combined"
+  | "trainee"
+  | "feeTotals";
 
 type PeriodType = "all" | "month" | "quarter" | "half" | "year";
 type TraineeGrouping = "month" | "year";
 type TraineeDisplayMode = "detail" | "summary" | "both";
-type ReportRow = Record < string, string | number | any > ;
+type ReportRow = Record<string, string | number | any>;
 
 const MONTHS: string[] = [
   "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
@@ -27,243 +28,265 @@ const MONTHS: string[] = [
 
 const TRAINEE_REPORT_START_YEAR = 2021;
 
-const PERIODS: Array < { value: PeriodType;label: string } > = [
+const PERIODS: Array<{ value: PeriodType; label: string }> = [
   { value: "all", label: "كامل المدة (من 2026)" },
-  { value: "year", label: "سنة كاملة" },
-  { value: "month", label: "شهري" },
-  { value: "quarter", label: "ربع سنوي" },
+  { value: "year", label: "سنوي" },
   { value: "half", label: "نصف سنوي" },
+  { value: "quarter", label: "ربع سنوي" },
+  { value: "month", label: "شهري" },
 ];
 
-const SOURCES: Array < { value: ReportSource;label: string } > = [
-  { value: "youssefLoan", label: "مسير اخلاء عهدة د/ يوسف المداني" },
+const SOURCES: Array<{ value: ReportSource; label: string }> = [
+  { value: "youssefLoan", label: "سلفة د/يوسف" },
   { value: "tawfiqCustody", label: "عهدة توفيق الداعي" },
-  { value: "trainee", label: "كشف مدفوعات المتدربين (من حوافظ التوريد)" },
-  { value: "feeTotals", label: "إجماليات الرسوم حسب النوع (من حوافظ التوريد)" },
-  { value: "hafiza", label: "حوافظ التوريد" },
   { value: "account", label: "الحساب الجاري" },
+  { value: "hafiza", label: "حوافظ التوريد" },
   { value: "expenses", label: "المصروفات" },
   { value: "revenue", label: "الإيرادات" },
-  { value: "combined", label: "تقرير مالي مجمّع" },
+  { value: "combined", label: "تقرير مجمّع لكل التبويبات" },
+  { value: "trainee", label: "كشف مدفوعات المتدربين" },
+  { value: "feeTotals", label: "إجماليات الرسوم حسب النوع" },
 ];
 
 const normalizeDate = (value: unknown): Date | null => {
   if (!value) return null;
-  const raw = String(value).trim();
-  if (!raw) return null;
-  const isoMatch = raw.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
-  if (isoMatch) {
-    const [, y, m, d] = isoMatch;
-    const date = new Date(Number(y), Number(m) - 1, Number(d));
-    return isNaN(date.getTime()) ? null : date;
-  }
-  const dmyMatch = raw.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})/);
-  if (dmyMatch) {
-    const [, d, m, y] = dmyMatch;
-    const date = new Date(Number(y), Number(m) - 1, Number(d));
-    return isNaN(date.getTime()) ? null : date;
-  }
-  const fallback = new Date(raw);
-  return isNaN(fallback.getTime()) ? null : fallback;
+  const date = new Date(String(value));
+  return Number.isNaN(date.getTime()) ? null : date;
 };
 
-const amountValue = (value: unknown): number => {
-  if (typeof value === "number") return isNaN(value) ? 0 : value;
-  if (!value) return 0;
-  const cleaned = String(value).replace(/,/g, "").trim();
-  const num = Number(cleaned);
-  return isNaN(num) ? 0 : num;
-};
-
-const periodMonths = (period: PeriodType, monthIndex: number): number[] => {
+const periodMonths = (period: PeriodType, month: number) => {
   if (period === "all" || period === "year") return Array.from({ length: 12 }, (_, i) => i);
-  if (period === "month") return [monthIndex];
-  if (period === "quarter") {
-    const start = Math.floor(monthIndex / 3) * 3;
-    return [start, start + 1, start + 2];
-  }
-  return monthIndex < 6 ? [0, 1, 2, 3, 4, 5] : [6, 7, 8, 9, 10, 11];
+  if (period === "quarter") return [Math.floor(month / 3) * 3, Math.floor(month / 3) * 3 + 1, Math.floor(month / 3) * 3 + 2];
+  if (period === "half") return month < 6 ? [0, 1, 2, 3, 4, 5] : [6, 7, 8, 9, 10, 11];
+  return [month];
 };
 
-const periodLabel = (period: PeriodType, monthIndex: number, year: number): string => {
-  if (period === "all") return `كامل المدة (من 2026 حتى ${year})`;
-  if (period === "year") return `سنة ${year}`;
-  if (period === "month") return `${MONTHS[monthIndex]} ${year}`;
-  if (period === "quarter") return `الربع ${Math.floor(monthIndex / 3) + 1} لعام ${year}`;
-  return monthIndex < 6 ? `النصف الأول لعام ${year}` : `النصف الثاني لعام ${year}`;
+const periodLabel = (period: PeriodType, month: number, year: number) => {
+  if (period === "all") return `من عام 2026 حتى تاريخه`;
+  if (period === "year") return `السنة المالية ${year}`;
+  if (period === "half") return `${month < 6 ? "النصف الأول" : "النصف الثاني"} لعام ${year}`;
+  if (period === "quarter") return `الربع ${Math.floor(month / 3) + 1} لعام ${year}`;
+  return `شهر ${MONTHS[month]} ${year}`;
 };
 
-const canonicalFeeCategory = (description ? : string): string => {
-  const desc = String(description || "").trim();
-  if (/انعاش/i.test(desc)) return "انعاش";
-  if (/تسجيل/i.test(desc)) return "تسجيل";
-  if (/دبلوم/i.test(desc)) return "دبلوم";
-  if (/مساق/i.test(desc)) return "مساق";
-  if (/تدريب/i.test(desc)) return "تدريب";
-  if (/شهادة/i.test(desc)) return "شهادة";
-  if (/امتحان/i.test(desc)) return "امتحان";
-  return desc || "أخرى";
+const getYearOptions = (values: unknown[]) => {
+  const years = new Set<number>(getAvailableYears());
+  values.forEach((value) => {
+    const date = normalizeDate(value);
+    if (date) years.add(date.getFullYear());
+  });
+  return Array.from(years).sort((a, b) => b - a);
 };
 
-const classifyCustodyRecord = (description ? : string): "tawfiq" | "youssef" => {
+const revenueItemNames = (() => {
+  const names = new Map<string, string>();
+  const schema = revenueSchema as any;
+  (schema.chapters || []).forEach((chapter: any) =>
+    (chapter.sections || []).forEach((section: any) =>
+      (section.items || []).forEach((item: any) =>
+        (item.types || []).forEach((type: any) => {
+          names.set(`${chapter.no}-${section.no}-${item.no}-${type.no}`, type.title);
+          names.set(String(type.no), type.title);
+        })
+      )
+    )
+  );
+  return names;
+})();
+
+const revenueName = (key: string) => {
+  const itemKey = key.split("-").slice(2).join("-");
+  return revenueItemNames.get(itemKey) || revenueItemNames.get(itemKey.split("-").at(-1) || "") || itemKey || "—";
+};
+
+const amountValue = (value: unknown) => Number(value) || 0;
+
+const canonicalFeeCategory = (value: unknown) => {
+  const text = String(value || "")
+    .trim()
+    .replace(/[ًٌٍَُِّْـ]/g, "")
+    .replace(/[إأآ]/g, "ا")
+    .replace(/\s+/g, " ");
+  if (!text) return "رسوم أخرى";
+  if (/(امتحان|اختبار)/.test(text)) return "رسوم الامتحانات";
+  if (/(تسجيل|قيد|دراس|دراسه|قسط)/.test(text)) return "أقساط الدراسة والتسجيل";
+  return String(value).trim() || "رسوم أخرى";
+};
+
+const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "other" => {
   const text = String(description || "").trim();
+  if (!text) return "other";
   if (/(عهدة\s*الداعي|توفيق\s*الداعي)/.test(text)) return "tawfiq";
-  return "youssef";
+  if (/(عهدة\s*د\s*\/?\s*يوسف|العهدة|عهدة)/.test(text)) return "youssef";
+  return "other";
 };
 
-export const reportsTabPrintCss = `
-  #tableContainer table thead th,
-  #tableContainer table thead th.desc-cell,
-  #tableContainer table thead th[data-col-key="description"] {
-    background: #027d11 !important;
+/* ====== تصنيف الصفوف (بنية الجدول) ====== */
+// صفوف «رأس» تظهر أول الجدول
+const isHeadRow = (row: ReportRow) => row.summaryLevel === "opening";
+// صفوف «تذييل» تظهر آخر الجدول (ثابتة لا تتأثر بالفرز)
+const isFootRow = (row: ReportRow) =>
+  row.summaryLevel === "total" ||
+  row.summaryLevel === "fee" ||
+  row.summaryLevel === "summary-card" ||
+  row.summaryLevel === "trainee-name-total";
+// الصفوف التي لا تُصفّى بالتصفية العمودية (تحافظ على ظهورها)
+const isPreservedFromColumnFilter = (row: ReportRow) =>
+  row.summaryLevel === "opening" ||
+  row.summaryLevel === "total" ||
+  row.summaryLevel === "fee" ||
+  row.summaryLevel === "summary-card";
+
+// أنماط الطباعة
+const reportsTabPrintCss = `
+  thead th {
+    background: #0f283a !important;
     color: #ffffff !important;
     font-weight: 900 !important;
-    font-size: 13px !important;
-    padding: 5px 3px !important;
+    font-size: 15.5px !important;
+    padding: 6px 4px !important;
+    white-space: normal !important;
+    word-break: keep-all !important;
+    border: 1px solid #1f5f7a !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-  #tableContainer table thead th .pdf-cell-text {
-    color: #ffffff !important;
+  thead th .pdf-cell-text,
+  th .pdf-cell-text {
     background: transparent !important;
+    color: #ffffff !important;
+    font-weight: 900 !important;
   }
-  #tableContainer table tbody td {
+  tbody td {
     color: #000000 !important;
     font-weight: 800 !important;
-    background: #ffffff !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+    border: 1px solid #e2e8f0 !important;
+    font-size: 15.5px !important;
+    padding: 4px 5px !important;
+    text-align: center !important;
   }
-  #tableContainer table tbody tr.total-row td,
-  #tableContainer table tbody tr.report-grand-total-row td,
-  #tableContainer table tbody tr[data-summary="total"] td {
+  tbody td .pdf-cell-text {
+    color: inherit !important;
+    background: transparent !important;
+  }
+  tbody tr:nth-child(even) td {
+    background: #f8fafc !important;
+  }
+  tbody tr.report-row-plain td { background: #ffffff !important; color: #0f172a !important; }
+  tbody tr.report-row-striped td { background: #f8fafc !important; color: #0f172a !important; }
+  tbody tr.report-opening-row td,
+  tbody tr.report-period-row td { background: #fef3c7 !important; color: #451a03 !important; font-weight: 900 !important; }
+  tbody tr.report-fee-row td { background: #e0f2fe !important; color: #082f49 !important; font-weight: 900 !important; }
+
+  tbody tr.total-row td {
     background: #0437bb !important;
     color: #ffffff !important;
     font-weight: 900 !important;
-    font-size: 13px !important;
-    border-top: 2px solid #000000 !important;
-    border-bottom: 2px solid #000000 !important;
+    border-color: #1e3a8a !important;
+    border-top: 2px solid #1e3a8a !important;
+    border-bottom: 2px solid #1e3a8a !important;
+    white-space: nowrap !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-  #tableContainer table tbody tr.total-row td .pdf-cell-text,
-  #tableContainer table tbody tr.report-grand-total-row td .pdf-cell-text,
-  #tableContainer table tbody tr[data-summary="total"] td .pdf-cell-text {
+  tbody tr.total-row td .pdf-cell-text {
     color: #ffffff !important;
-  }
-  .summary-card-0 td {
-    background: #fde68a !important;
-    color: #78350f !important;
-    border: 1.5px solid #d97706 !important;
     font-weight: 900 !important;
+    background: transparent !important;
   }
-  .summary-card-1 td {
-    background: #fecaca !important;
-    color: #7f1d1d !important;
-    border: 1.5px solid #dc2626 !important;
-    font-weight: 900 !important;
-  }
-  .summary-card-2 td {
-    background: #a7f3d0 !important;
-    color: #064e3b !important;
-    border: 1.5px solid #059669 !important;
-    font-weight: 900 !important;
+
+  .summary-spacer-row td {
+    height: 12px !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
   }
   .summary-card-row td {
     text-align: center !important;
     vertical-align: middle !important;
     font-weight: 900 !important;
-    font-size: 13px !important;
-    padding: 6px 5px !important;
+    padding: 7px 6px !important;
+    font-size: 18px !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     white-space: nowrap !important;
   }
-  .signature-block-row td {
-    background: #ffffff !important;
-    border: 1.5px solid #000000 !important;
-    padding: 14px 18px !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
+  .summary-card-0 td { background: #fde68a !important; color: #451a03 !important; border: 1.5px solid #f59e0b !important; }
+  .summary-card-0 .pdf-cell-text { color: #451a03 !important; background: transparent !important; }
+  .summary-card-1 td { background: #fecdd3 !important; color: #4c0519 !important; border: 1.5px solid #f43f5e !important; }
+  .summary-card-1 .pdf-cell-text { color: #4c0519 !important; background: transparent !important; }
+  .summary-card-2 td { background: #a7f3d0 !important; color: #022c22 !important; border: 1.5px solid #10b981 !important; }
+  .summary-card-2 .pdf-cell-text { color: #022c22 !important; background: transparent !important; }
+  .report-page-content table thead th {
+    background: #0f283a !important;
+    color: #ffffff !important;
+    border-color: #1f5f7a !important;
   }
-  .signature-block-grid {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: flex-start !important;
-    width: 100% !important;
-    direction: rtl !important;
+  .report-page-content table tbody td { border-color: #e2e8f0 !important; }
+  .report-page-content table tbody td .pdf-cell-text { color: inherit !important; background: transparent !important; }
+  .report-page-content table tbody tr.report-row-plain td { background: #ffffff !important; color: #0f172a !important; }
+  .report-page-content table tbody tr.report-row-striped td { background: #f8fafc !important; color: #0f172a !important; }
+  .report-page-content table tbody tr.report-opening-row td,
+  .report-page-content table tbody tr.report-period-row td { background: #fef3c7 !important; color: #451a03 !important; font-weight: 900 !important; }
+  .report-page-content table tbody tr.report-fee-row td { background: #e0f2fe !important; color: #082f49 !important; font-weight: 900 !important; }
+  .report-page-content table tbody tr.report-grand-total-row td {
+    background: #0437bb !important;
+    color: #ffffff !important;
+    border-color: #1e3a8a !important;
+    border-top: 2px solid #1e3a8a !important;
+    border-bottom: 2px solid #1e3a8a !important;
   }
-  .signature-item {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
-    flex: 1 !important;
-    padding: 4px 8px !important;
+  .report-page-content table tbody tr.report-grand-total-row td .pdf-cell-text { color: #ffffff !important; }
+  .report-page-content table tbody tr.summary-card-0 td { background: #fde68a !important; color: #451a03 !important; border-color: #f59e0b !important; }
+  .report-page-content table tbody tr.summary-card-0 .pdf-cell-text { color: #451a03 !important; }
+  .report-page-content table tbody tr.summary-card-1 td { background: #fecdd3 !important; color: #4c0519 !important; border-color: #f43f5e !important; }
+  .report-page-content table tbody tr.summary-card-1 .pdf-cell-text { color: #4c0519 !important; }
+  .report-page-content table tbody tr.summary-card-2 td { background: #a7f3d0 !important; color: #022c22 !important; border-color: #10b981 !important; }
+  .report-page-content table tbody tr.summary-card-2 .pdf-cell-text { color: #022c22 !important; }
+  #tableContainer table th,
+  #tableContainer table td,
+  #report-source table th,
+  #report-source table td {
+    border: 1px solid #ffffff !important;
   }
-  .sig-title {
-    font-family: Cairo, sans-serif !important;
-    font-weight: 900 !important;
-    font-size: 13px !important;
-    color: #000000 !important;
-    margin-bottom: 12px !important;
-  }
-  .sig-name {
-    font-family: Cairo, sans-serif !important;
-    font-weight: 800 !important;
-    font-size: 13px !important;
-    color: #000000 !important;
-    min-height: 24px !important;
+  @media print {
+    #tableContainer table th,
+    #tableContainer table td {
+      border: 1px solid #000 !important;
+    }
   }
 `;
 
-const isHeadRow = (row: ReportRow) => row.summaryLevel === "opening";
-const isFootRow = (row: ReportRow) =>
-  row.summaryLevel === "total" ||
-  row.summaryLevel === "summary-card" ||
-  row.summaryLevel === "signature" ||
-  row.description === "الإجمالي الكلي" ||
-  row.category === "الإجمالي الكلي لجميع الرسوم";
-const isPreservedFromColumnFilter = (row: ReportRow) => isHeadRow(row) || isFootRow(row);
-
-const getYearOptions = (dates: unknown[]): number[] => {
-  const years = new Set < number > ();
-  dates.forEach((d) => {
-    const parsed = normalizeDate(d);
-    if (parsed) years.add(parsed.getFullYear());
-  });
-  years.add(2026);
-  return Array.from(years).sort((a, b) => b - a);
-};
-
 export default function ReportsTab() {
-  const { hafiza, accounts } = useStore();
-  const year = useFiscalYear((s) => s.year);
-  
-  const [source, setSource] = useState < ReportSource > ("youssefLoan");
-  const [period, setPeriod] = useState < PeriodType > ("all");
-  const [month, setMonth] = useState < number > (0);
-  
-  const [selectedTrainee, setSelectedTrainee] = useState < string > ("all");
-  const [selectedFee, setSelectedFee] = useState < string > ("all");
-  const [traineeGrouping, setTraineeGrouping] = useState < TraineeGrouping > ("month");
-  const [traineeDisplayMode, setTraineeDisplayMode] = useState < TraineeDisplayMode > ("both");
-  
-  const [traineeSortColumn, setTraineeSortColumn] = useState < string > ("notifyDate");
-  const [traineeSortDirection, setTraineeSortDirection] = useState < "asc" | "desc" > ("asc");
-  
+  const hafiza = useStore((state) => state.hafiza);
+  const accounts = useStore((state) => state.accounts);
+  const revenue = useStore((state) => state.revenue);
+
+  const [source, setSource] = useState<ReportSource>("youssefLoan");
+  const [period, setPeriod] = useState<PeriodType>("all");
+  const fiscalYear = useFiscalYear((s) => s.year);
+  const [year, setYear] = useState<number>(fiscalYear);
+  useEffect(() => setYear(fiscalYear), [fiscalYear]);
+  const [month, setMonth] = useState<number>(0);
+  const [selectedTrainee, setSelectedTrainee] = useState<string>("all");
+  const [traineeGrouping, setTraineeGrouping] = useState<TraineeGrouping>("month");
+  const [selectedFee, setSelectedFee] = useState<string>("all");
+  const [traineeDisplayMode, setTraineeDisplayMode] = useState<TraineeDisplayMode>("both");
+
+  const [traineeSortColumn, setTraineeSortColumn] = useState<string>("notifyDate");
+  const [traineeSortDirection, setTraineeSortDirection] = useState<"asc" | "desc">("asc");
+
   // ====== توقيعات أسماء المدراء (تُحفظ لكل سنة) ======
-  const [financeManager, setFinanceManager] = useState < string > (() => {
+  const [financeManager, setFinanceManager] = useState<string>(() => {
     try { return localStorage.getItem(`signature_finance_${year}`) || ""; } catch { return ""; }
   });
-  const [viceManager, setViceManager] = useState < string > (() => {
+  const [viceManager, setViceManager] = useState<string>(() => {
     try { return localStorage.getItem(`signature_vice_${year}`) || ""; } catch { return ""; }
   });
-  const [presidentManager, setPresidentManager] = useState < string > (() => {
+  const [presidentManager, setPresidentManager] = useState<string>(() => {
     try { return localStorage.getItem(`signature_president_${year}`) || ""; } catch { return ""; }
   });
-  
+
   useEffect(() => {
     try {
       setFinanceManager(localStorage.getItem(`signature_finance_${year}`) || "");
@@ -271,7 +294,7 @@ export default function ReportsTab() {
       setPresidentManager(localStorage.getItem(`signature_president_${year}`) || "");
     } catch {}
   }, [year]);
-  
+
   useEffect(() => {
     try { localStorage.setItem(`signature_finance_${year}`, financeManager); } catch {}
   }, [financeManager, year]);
@@ -281,86 +304,67 @@ export default function ReportsTab() {
   useEffect(() => {
     try { localStorage.setItem(`signature_president_${year}`, presidentManager); } catch {}
   }, [presidentManager, year]);
-  
-  // ====== حفظ الحقول اليدوية لتقارير العهد (رقم كشف التسوية والملاحظات) ======
-  const [custodySettlementMap, setCustodySettlementMap] = useState < Record < string, string >> (() => {
-    try { return JSON.parse(localStorage.getItem(`custody_settlement_${year}`) || "{}"); } catch { return {}; }
-  });
-  const [custodyNotesMap, setCustodyNotesMap] = useState < Record < string, string >> (() => {
-    try { return JSON.parse(localStorage.getItem(`custody_notes_${year}`) || "{}"); } catch { return {}; }
-  });
-  
-  useEffect(() => {
-    try {
-      setCustodySettlementMap(JSON.parse(localStorage.getItem(`custody_settlement_${year}`) || "{}"));
-      setCustodyNotesMap(JSON.parse(localStorage.getItem(`custody_notes_${year}`) || "{}"));
-    } catch {}
-  }, [year]);
-  
-  const updateSettlement = (id: string, val: string) => {
-    setCustodySettlementMap((prev) => {
-      const next = { ...prev, [id]: val };
-      try { localStorage.setItem(`custody_settlement_${year}`, JSON.stringify(next)); } catch {}
-      return next;
-    });
-  };
-  
-  const updateNotes = (id: string, val: string) => {
-    setCustodyNotesMap((prev) => {
-      const next = { ...prev, [id]: val };
-      try { localStorage.setItem(`custody_notes_${year}`, JSON.stringify(next)); } catch {}
-      return next;
-    });
-  };
-  
+
   // ====== الحالة العامة للفرز والتصفية والحذف المؤقت ======
-  const [sortColumn, setSortColumn] = useState < string > ("");
-  const [sortDirection, setSortDirection] = useState < "asc" | "desc" > ("asc");
-  const [columnFilters, setColumnFilters] = useState < Record < string, string >> ({});
-  const [deletedRows, setDeletedRows] = useState < Set < ReportRow >> (() => new Set());
-  
-  const handleFilterChange = (key: string, value: string) => {
-    setColumnFilters((prev) => ({ ...prev, [key]: value }));
+  const [sortColumn, setSortColumn] = useState<string>("");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
+  const [deletedRows, setDeletedRows] = useState<Set<ReportRow>>(() => new Set());
+
+  // إعادة ضبط التصفية والفرز العام والحذف المؤقت عند تغيير المصدر
+  useEffect(() => {
+    setColumnFilters({});
+    setSortColumn("");
+    setSortDirection("asc");
+    setDeletedRows(new Set());
+  }, [source]);
+
+  const [youssefOpeningBalance, setYoussefOpeningBalance] = useState<number>(() => readYearNumber("youssef_loan_opening_balance", year));
+  const [tawfiqOpeningBalance, setTawfiqOpeningBalance] = useState<number>(() => readYearNumber("tawfiq_custody_opening_balance", year));
+
+  useEffect(() => {
+    setYoussefOpeningBalance(readYearNumber("youssef_loan_opening_balance", year));
+    setTawfiqOpeningBalance(readYearNumber("tawfiq_custody_opening_balance", year));
+  }, [year]);
+
+  const handleYoussefOpeningChange = (val: number) => {
+    setYoussefOpeningBalance(val);
+    writeYearNumber("youssef_loan_opening_balance", year, val);
   };
-  
-  const clearColumnFilter = (key: string) => {
-    setColumnFilters((prev) => {
-      const next = { ...prev };
-      delete next[key];
-      return next;
-    });
+
+  const handleTawfiqOpeningChange = (val: number) => {
+    setTawfiqOpeningBalance(val);
+    writeYearNumber("tawfiq_custody_opening_balance", year, val);
   };
-  
-  const toggleSort = (colKey: string) => {
-    if (source === "trainee") {
-      if (traineeSortColumn === colKey) {
-        setTraineeSortDirection((d) => (d === "asc" ? "desc" : "asc"));
-      } else {
-        setTraineeSortColumn(colKey);
-        setTraineeSortDirection("asc");
-      }
-    } else {
-      if (sortColumn === colKey) {
-        setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
-      } else {
-        setSortColumn(colKey);
-        setSortDirection("asc");
-      }
-    }
-  };
-  
+
   const deleteRow = (row: ReportRow) =>
     setDeletedRows((prev) => {
       const next = new Set(prev);
       next.add(row);
       return next;
     });
-  
+
   const restoreDeleted = () => setDeletedRows(new Set());
-  
+
   const selectedMonths = useMemo(() => periodMonths(period, month), [period, month]);
   const selectedMonthSet = useMemo(() => new Set(selectedMonths), [selectedMonths]);
-  
+  const years = useMemo(() => getYearOptions([...hafiza.map((r) => r.date), ...accounts.map((r) => r.date)]), [hafiza, accounts]);
+  const traineeOptions = useMemo(() => Array.from(new Set(hafiza
+    .filter((row) => {
+      const date = normalizeDate(row.notifyDate);
+      return Boolean(date && date.getFullYear() >= TRAINEE_REPORT_START_YEAR && amountValue(row.notifyAmount) > 0);
+    })
+    .map((row) => String(row.name || "").trim())
+    .filter(Boolean))).sort((a, b) => a.localeCompare(b, "ar")), [hafiza]);
+  const feeOptions = useMemo(() => Array.from(new Set(hafiza
+    .filter((row) => {
+      const date = normalizeDate(row.notifyDate);
+      return Boolean(date && date.getFullYear() >= TRAINEE_REPORT_START_YEAR && amountValue(row.notifyAmount) > 0);
+    })
+    .filter((row) => selectedTrainee === "all" || String(row.name || "").trim() === selectedTrainee)
+    .map((row) => canonicalFeeCategory(row.description))
+    .filter(Boolean))).sort((a, b) => a.localeCompare(b, "ar")), [hafiza, selectedTrainee]);
+
   const inPeriod = (dateValue: unknown) => {
     const date = normalizeDate(dateValue);
     if (!date) return false;
@@ -368,9 +372,9 @@ export default function ReportsTab() {
     if (period === "year") return date.getFullYear() === year;
     return date.getFullYear() === year && selectedMonthSet.has(date.getMonth());
   };
-  
+
   // 1. تقرير سلفة د/يوسف
-  const youssefRows = useMemo < ReportRow[] > (() => {
+  const youssefRows = useMemo<ReportRow[]>(() => {
     const matched = accounts
       .filter((row) => {
         const d = normalizeDate(row.date);
@@ -379,51 +383,88 @@ export default function ReportsTab() {
         return classifyCustodyRecord(row.description) === "youssef";
       })
       .sort((a, b) => String(a.date).localeCompare(String(b.date)));
-    
+
+    let running = youssefOpeningBalance;
     const result: ReportRow[] = [];
-    let sumAmount = 0;
-    
-    matched.forEach((row, index) => {
-      const rowId = String(row.id || `${row.date}_${row.description}_${index}`);
-      const amount = amountValue(row.hafizaAmount);
-      sumAmount += amount;
-      
-      const docNo = row.checkNo ?
-        `شيك: ${row.checkNo}` :
-        row.notifyNo ?
-        `إشعار: ${row.notifyNo}` :
-        row.hafizaNo ?
-        `حافظة: ${row.hafizaNo}` :
-        "—";
-      
+
+    result.push({
+      date: `${year}-01-01`,
+      docNo: "افتتاحي",
+      description: "الرصيد الافتتاحي المدور",
+      name: "د/ يوسف",
+      debit: youssefOpeningBalance > 0 ? youssefOpeningBalance : 0,
+      credit: youssefOpeningBalance < 0 ? Math.abs(youssefOpeningBalance) : 0,
+      balance: running,
+      summaryLevel: "opening",
+    });
+
+    let sumDebit = youssefOpeningBalance > 0 ? youssefOpeningBalance : 0;
+    let sumCredit = youssefOpeningBalance < 0 ? Math.abs(youssefOpeningBalance) : 0;
+
+    matched.forEach((row) => {
+      const credit = amountValue(row.hafizaAmount);
+      const debit = amountValue(row.income);
+      running += debit - credit;
+      sumDebit += debit;
+      sumCredit += credit;
+
+      const docNo = row.checkNo
+        ? `شيك: ${row.checkNo}`
+        : row.notifyNo
+        ? `إشعار: ${row.notifyNo}`
+        : row.hafizaNo
+        ? `حافظة: ${row.hafizaNo}`
+        : "—";
+
       result.push({
-        rawId: rowId,
         date: row.date || "—",
         docNo,
-        description: row.description || "عهدة د/ يوسف المداني",
-        name: row.name || "د/ يوسف المداني",
-        settlementNo: custodySettlementMap[rowId] || "",
-        notes: custodyNotesMap[rowId] || "",
-        amount,
+        description: row.description || "عهدة د/ يوسف",
+        name: row.name || "د/ يوسف",
+        debit,
+        credit,
+        balance: running,
       });
     });
-    
+
     result.push({
       date: "—",
       docNo: "—",
       description: "الإجمالي الكلي",
       name: "—",
-      settlementNo: "—",
-      notes: "—",
-      amount: sumAmount,
+      debit: sumDebit,
+      credit: sumCredit,
+      balance: running,
       summaryLevel: "total",
     });
-    
+
+    const paidForSummary = sumCredit - (youssefOpeningBalance < 0 ? Math.abs(youssefOpeningBalance) : 0);
+    const remainingForSummary = youssefOpeningBalance - paidForSummary;
+
+    result.push({
+      __summaryCard: { index: 0, label: `مبلغ العهدة الافتتاحي للعام ${year}`, value: youssefOpeningBalance },
+      description: `مبلغ العهدة الافتتاحي للعام ${year}`,
+      credit: youssefOpeningBalance,
+      summaryLevel: "summary-card",
+    });
+    result.push({
+      __summaryCard: { index: 1, label: "المنصرف من العهدة خلال العام", value: paidForSummary },
+      description: "المنصرف من العهدة خلال العام",
+      credit: paidForSummary,
+      summaryLevel: "summary-card",
+    });
+    result.push({
+      __summaryCard: { index: 2, label: "المتبقي من العهدة حتى تاريخ التقرير", value: remainingForSummary },
+      description: "المتبقي من العهدة حتى تاريخ التقرير",
+      credit: remainingForSummary,
+      summaryLevel: "summary-card",
+    });
+
     return result;
-  }, [accounts, period, year, selectedMonthSet, custodySettlementMap, custodyNotesMap]);
-  
+  }, [accounts, youssefOpeningBalance, period, year, selectedMonthSet]);
+
   // 2. تقرير عهدة توفيق الداعي
-  const tawfiqRows = useMemo < ReportRow[] > (() => {
+  const tawfiqRows = useMemo<ReportRow[]>(() => {
     const matched = accounts
       .filter((row) => {
         const d = normalizeDate(row.date);
@@ -432,202 +473,226 @@ export default function ReportsTab() {
         return classifyCustodyRecord(row.description) === "tawfiq";
       })
       .sort((a, b) => String(a.date).localeCompare(String(b.date)));
-    
+
+    let running = tawfiqOpeningBalance;
     const result: ReportRow[] = [];
-    let sumAmount = 0;
-    
-    matched.forEach((row, index) => {
-      const rowId = String(row.id || `${row.date}_${row.description}_${index}`);
-      const amount = amountValue(row.hafizaAmount);
-      sumAmount += amount;
-      
-      const docNo = row.checkNo ?
-        `شيك: ${row.checkNo}` :
-        row.notifyNo ?
-        `إشعار: ${row.notifyNo}` :
-        row.hafizaNo ?
-        `حافظة: ${row.hafizaNo}` :
-        "—";
-      
+
+    result.push({
+      date: `${year}-01-01`,
+      docNo: "افتتاحي",
+      description: "الرصيد الافتتاحي للعهدة",
+      name: "توفيق الداعي",
+      debit: tawfiqOpeningBalance > 0 ? tawfiqOpeningBalance : 0,
+      credit: tawfiqOpeningBalance < 0 ? Math.abs(tawfiqOpeningBalance) : 0,
+      balance: running,
+      summaryLevel: "opening",
+    });
+
+    let sumDebit = tawfiqOpeningBalance > 0 ? tawfiqOpeningBalance : 0;
+    let sumCredit = tawfiqOpeningBalance < 0 ? Math.abs(tawfiqOpeningBalance) : 0;
+
+    matched.forEach((row) => {
+      const credit = amountValue(row.hafizaAmount);
+      const debit = amountValue(row.income);
+      running += debit - credit;
+      sumDebit += debit;
+      sumCredit += credit;
+
+      const docNo = row.checkNo
+        ? `شيك: ${row.checkNo}`
+        : row.notifyNo
+        ? `إشعار: ${row.notifyNo}`
+        : row.hafizaNo
+        ? `حافظة: ${row.hafizaNo}`
+        : "—";
+
       result.push({
-        rawId: rowId,
         date: row.date || "—",
         docNo,
         description: row.description || "عهدة توفيق الداعي",
         name: row.name || "توفيق الداعي",
-        settlementNo: custodySettlementMap[rowId] || "",
-        notes: custodyNotesMap[rowId] || "",
-        amount,
+        debit,
+        credit,
+        balance: running,
       });
     });
-    
+
     result.push({
       date: "—",
       docNo: "—",
       description: "الإجمالي الكلي",
       name: "—",
-      settlementNo: "—",
-      notes: "—",
-      amount: sumAmount,
+      debit: sumDebit,
+      credit: sumCredit,
+      balance: running,
       summaryLevel: "total",
     });
-    
+
+    const paidForSummary = sumCredit - (tawfiqOpeningBalance < 0 ? Math.abs(tawfiqOpeningBalance) : 0);
+    const remainingForSummary = tawfiqOpeningBalance - paidForSummary;
+
+    result.push({
+      __summaryCard: { index: 0, label: `مبلغ العهدة الافتتاحي للعام ${year}`, value: tawfiqOpeningBalance },
+      description: `مبلغ العهدة الافتتاحي للعام ${year}`,
+      credit: tawfiqOpeningBalance,
+      summaryLevel: "summary-card",
+    });
+    result.push({
+      __summaryCard: { index: 1, label: "المنصرف من العهدة خلال العام", value: paidForSummary },
+      description: "المنصرف من العهدة خلال العام",
+      credit: paidForSummary,
+      summaryLevel: "summary-card",
+    });
+    result.push({
+      __summaryCard: { index: 2, label: "المتبقي من العهدة حتى تاريخ التقرير", value: remainingForSummary },
+      description: "المتبقي من العهدة حتى تاريخ التقرير",
+      credit: remainingForSummary,
+      summaryLevel: "summary-card",
+    });
+
     return result;
-  }, [accounts, period, year, selectedMonthSet, custodySettlementMap, custodyNotesMap]);
-  
-  const hafizaRows = useMemo < ReportRow[] > (() => hafiza.filter((row) => inPeriod(row.date)).map((row) => ({
+  }, [accounts, tawfiqOpeningBalance, period, year, selectedMonthSet]);
+
+  const hafizaRows = useMemo<ReportRow[]>(() => hafiza.filter((row) => inPeriod(row.date)).map((row) => ({
     date: row.date,
     description: row.description || "—",
     name: row.name || "—",
     hafizaNo: row.hafizaNo || "—",
     amount: amountValue(row.hafizaAmount),
-    
-    income: amountValue(row.income)
-  })), [hafiza, period, month, year]);
-  
-  const accountRows = useMemo < ReportRow[] > (() => accounts.filter((row) => inPeriod(row.date)).map((row) => ({
+    income: amountValue(row.income ?? row.notifyAmount)
+  })), [hafiza, year, selectedMonthSet, period]);
+
+  const accountRows = useMemo<ReportRow[]>(() => accounts.filter((row) => inPeriod(row.date)).sort((a, b) => String(a.date).localeCompare(String(b.date))).map((row) => ({
     date: row.date,
     description: row.description || "—",
     name: row.name || "—",
     income: amountValue(row.income),
     expense: amountValue(row.expense)
-  })), [accounts, period, month, year]);
-  
-  const expenseRows = useMemo < ReportRow[] > (() => accountRows.filter((row) => Number(row.expense) > 0).map((row) => ({
+  })), [accounts, year, selectedMonthSet, period]);
+
+  const expenseRows = useMemo<ReportRow[]>(() => accountRows.filter((row) => Number(row.expense) > 0).map((row) => ({
     date: row.date,
     item: row.description,
-    name: row.name || "—",
+    name: row.name,
     expense: amountValue(row.expense)
   })), [accountRows]);
-  const revenueRows = useMemo < ReportRow[] > (() => {
-    const months = selectedMonths;
-    return months.map((monthIndex) => {
-      const monthIncome = accounts
-        .filter((row) => {
-          const date = normalizeDate(row.date);
-          return Boolean(date && date.getFullYear() === year && date.getMonth() === monthIndex);
-        })
-        .reduce((sum, row) => sum + amountValue(row.income), 0);
-      return {
-        date: `${MONTHS[monthIndex]} ${year}`,
-        item: `إيرادات ${MONTHS[monthIndex]}`,
-        amount: monthIncome
-      };
-    });
-  }, [accounts, selectedMonths, year]);
-  
-  const traineeRows = useMemo < ReportRow[] > (() => {
-    const matched = hafiza.filter((row) => {
+
+  const revenueRows = useMemo<ReportRow[]>(() => Object.entries(revenue).map(([key, amount]) => {
+    const parts = key.split("-");
+    const rowYear = Number(parts[0]);
+    const rowMonth = Number(parts[1]) - 1;
+    return { date: `${MONTHS[rowMonth] || parts[1]} ${rowYear}`, item: revenueName(key), amount: amountValue(amount), _year: rowYear, _month: rowMonth };
+  }).filter((row) => (period === "all" ? row._year >= 2026 : row._year === year && selectedMonthSet.has(row._month as number))).map(({ _year, _month, ...row }) => row), [revenue, year, selectedMonthSet, period]);
+
+  // ====== كشف المتدربين (مع إضافة إجمالي كل اسم حسب السنة) ======
+  const traineeRows = useMemo<ReportRow[]>(() => {
+    const payments = hafiza.flatMap((row) => {
       const date = normalizeDate(row.notifyDate);
-      if (!date || date.getFullYear() < TRAINEE_REPORT_START_YEAR) return false;
-      if (amountValue(row.notifyAmount) <= 0) return false;
-      const tName = String(row.name || "").trim();
-      if (selectedTrainee !== "all" && tName !== selectedTrainee) return false;
+      const trainee = String(row.name || "").trim();
       const category = canonicalFeeCategory(row.description);
-      if (selectedFee !== "all" && category !== selectedFee) return false;
-      return true;
-    });
-    
-    const detailRows: ReportRow[] = matched.map((row) => {
-      const date = normalizeDate(row.notifyDate);
-      const rowYear = date ? date.getFullYear() : 0;
-      const rowMonth = date ? date.getMonth() : 0;
-      return {
-        year: rowYear || "—",
-        notifyDate: row.notifyDate || "—",
-        period: date ? `${MONTHS[rowMonth]} ${rowYear}` : "—",
-        trainee: String(row.name || "—").trim(),
-        hafizaNo: row.hafizaNo || "—",
-        notifyNo: row.notifyNo || "—",
-        description: row.description || "—",
-        category: canonicalFeeCategory(row.description),
-        displayType: "حركة توريد",
-        source: "حوافظ التوريد",
-        amount: amountValue(row.notifyAmount),
-        summaryLevel: "detail",
-        _sortKey: date ? date.getTime() : 0,
-      };
-    });
-    
-    if (traineeDisplayMode === "detail") {
-      detailRows.sort((a, b) => (Number(a._sortKey) || 0) - (Number(b._sortKey) || 0));
-      return detailRows;
-    }
-    
-    const groups = new Map < string,
-      { year: number;month ? : number;amount: number;count: number } > ();
-    matched.forEach((row) => {
-      const date = normalizeDate(row.notifyDate);
-      if (!date) return;
-      const rowYear = date.getFullYear();
-      const rowMonth = date.getMonth();
-      const key = traineeGrouping === "month" ? `${rowYear}-${String(rowMonth).padStart(2, "0")}` : `${rowYear}`;
-      const prev = groups.get(key) || { year: rowYear, month: rowMonth, amount: 0, count: 0 };
-      prev.amount += amountValue(row.notifyAmount);
-      prev.count += 1;
-      groups.set(key, prev);
-    });
-    
-    const summaryRows: ReportRow[] = Array.from(groups.entries())
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([key, data]) => ({
-        year: data.year,
-        notifyDate: traineeGrouping === "month" ? `${MONTHS[data.month ?? 0]} ${data.year}` : `سنة ${data.year}`,
-        period: traineeGrouping === "month" ? `${MONTHS[data.month ?? 0]} ${data.year}` : `سنة ${data.year}`,
-        trainee: selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee,
-        hafizaNo: "—",
-        notifyNo: "—",
-        description: `إجمالي ${traineeGrouping === "month" ? `${MONTHS[data.month ?? 0]} ${data.year}` : `سنة ${data.year}`} (${data.count} حركة)`,
-        category: selectedFee === "all" ? "كل الرسوم" : selectedFee,
-        displayType: traineeGrouping === "month" ? "إجمالي شهري" : "إجمالي سنوي",
-        source: "حوافظ التوريد",
-        amount: data.amount,
-        summaryLevel: traineeGrouping === "month" ? "month-total" : "year-total",
-        _groupKey: key,
-      }));
-    
-    if (traineeDisplayMode === "summary") return summaryRows;
-    
-    const combined: ReportRow[] = [];
-    const groupsDone = new Set < string > ();
-    detailRows.sort((a, b) => (Number(a._sortKey) || 0) - (Number(b._sortKey) || 0));
-    
-    detailRows.forEach((row) => {
-      const d = normalizeDate(row.notifyDate);
-      const key = d ? (traineeGrouping === "month" ? `${d.getFullYear()}-${String(d.getMonth()).padStart(2, "0")}` : `${d.getFullYear()}`) : "";
-      combined.push(row);
-      if (key && !groupsDone.has(key)) {
-        const sumRow = summaryRows.find((s) => s._groupKey === key);
-        if (sumRow) {
-          combined.push(sumRow);
-          groupsDone.add(key);
-        }
-      }
-    });
-    
-    return combined;
-  }, [hafiza, selectedTrainee, selectedFee, traineeGrouping, traineeDisplayMode]);
-  
-  const feeTotalsRows = useMemo < ReportRow[] > (() => {
-    const feeTotals = new Map < string,
-      number > ();
-    hafiza.forEach((row) => {
-      const date = normalizeDate(row.notifyDate);
-      if (!date || date.getFullYear() < TRAINEE_REPORT_START_YEAR) return;
       const amount = amountValue(row.notifyAmount);
-      if (amount <= 0) return;
-      const tName = String(row.name || "").trim();
-      if (selectedTrainee !== "all" && tName !== selectedTrainee) return;
-      const category = canonicalFeeCategory(row.description);
-      feeTotals.set(category, (feeTotals.get(category) || 0) + amount);
+      if (!date || date.getFullYear() < TRAINEE_REPORT_START_YEAR || !trainee || amount <= 0 || (selectedTrainee !== "all" && trainee !== selectedTrainee) || (selectedFee !== "all" && category !== selectedFee)) return [];
+      const p = traineeGrouping === "year" ? String(date.getFullYear()) : `${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+      return [{ notifyDate: row.notifyDate, hafizaNo: row.hafizaNo || "", notifyNo: row.notifyNo || "", year: date.getFullYear(), period: p, trainee, category, description: String(row.description || "رسوم أخرى").trim(), source: "حوافظ التوريد", amount }];
     });
-    const rows = Array.from(feeTotals.entries())
+
+    const categories = Array.from(new Set(payments.map((row) => String(row.category)))).sort((a, b) => a.localeCompare(b, "ar"));
+    const result: ReportRow[] = [];
+
+    categories.forEach((category) => {
+      const categoryPayments = payments.filter((row) => row.category === category).sort((a, b) => String(a.notifyDate).localeCompare(String(b.notifyDate)));
+      if (traineeDisplayMode === "detail" || traineeDisplayMode === "both") {
+        result.push(...categoryPayments.map((row) => ({ ...row, displayType: "تفصيلي", summaryLevel: "detail" })));
+      }
+      if (traineeDisplayMode === "summary" || traineeDisplayMode === "both") {
+        const grouped = new Map<string, ReportRow>();
+        categoryPayments.forEach((row) => {
+          const key = `${row.year}|${row.period}`;
+          const current = grouped.get(key);
+          if (current) {
+            current.amount = amountValue(current.amount) + amountValue(row.amount);
+          } else {
+            grouped.set(key, {
+              year: row.year,
+              period: row.period,
+              trainee: row.trainee,
+              category,
+              description: "إجمالي الفترة",
+              source: "حوافظ التوريد",
+              amount: row.amount,
+              displayType: "إجمالي الفترة",
+              notes: "إجمالي الفترة",
+              summaryLevel: "period"
+            });
+          }
+        });
+        result.push(...Array.from(grouped.values()));
+      }
+      result.push({
+        period: `إجمالي ${category}`,
+        trainee: selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee,
+        category,
+        description: "إجمالي الرسم",
+        source: "حوافظ التوريد",
+        amount: categoryPayments.reduce((sum, row) => sum + amountValue(row.amount), 0),
+        displayType: "إجمالي الرسم",
+        notes: "إجمالي الرسم",
+        summaryLevel: "fee"
+      });
+    });
+
+    // ====== إجمالي مدفوعات كل متدرب حسب السنة (سواء مكرر أو منفرد) ======
+    if (traineeDisplayMode === "summary" || traineeDisplayMode === "both") {
+      const nameYearMap = new Map<string, { trainee: string; year: number; amount: number }>();
+      payments.forEach((row) => {
+        const key = `${row.trainee}|${row.year}`;
+        const existing = nameYearMap.get(key);
+        if (existing) {
+          existing.amount += amountValue(row.amount);
+        } else {
+          nameYearMap.set(key, { trainee: row.trainee, year: row.year, amount: amountValue(row.amount) });
+        }
+      });
+      const nameYearRows: ReportRow[] = Array.from(nameYearMap.values())
+        .sort((a, b) => {
+          const cmp = a.trainee.localeCompare(b.trainee, "ar");
+          return cmp !== 0 ? cmp : a.year - b.year;
+        })
+        .map(({ trainee, year, amount }) => ({
+          year,
+          trainee,
+          category: "—",
+          description: `إجمالي ${trainee} لعام ${year}`,
+          source: "حوافظ التوريد",
+          amount,
+          displayType: "إجمالي المتدرب / السنة",
+          notes: "إجمالي المتدرب / السنة",
+          summaryLevel: "trainee-name-total",
+        }));
+      result.push(...nameYearRows);
+    }
+
+    return result;
+  }, [hafiza, selectedTrainee, selectedFee, traineeGrouping, traineeDisplayMode]);
+
+  const feeTotalsRows = useMemo<ReportRow[]>(() => {
+    const totals = new Map<string, number>();
+    hafiza.forEach((row) => {
+      const name = String(row.name || "").trim();
+      const amount = amountValue(row.notifyAmount);
+      const date = normalizeDate(row.notifyDate);
+      if (amount <= 0 || !date || date.getFullYear() < TRAINEE_REPORT_START_YEAR) return;
+      if (selectedTrainee !== "all" && name !== selectedTrainee) return;
+      const category = canonicalFeeCategory(row.description);
+      totals.set(category, (totals.get(category) || 0) + amount);
+    });
+    const rows = Array.from(totals.entries())
       .sort((a, b) => b[1] - a[1])
       .map(([category, amount]) => ({ category, source: "حوافظ التوريد", amount }));
     const grandTotal = rows.reduce((sum, row) => sum + amountValue(row.amount), 0);
     return grandTotal > 0 ? [...rows, { category: "الإجمالي الكلي لجميع الرسوم", source: "حوافظ التوريد", amount: grandTotal, total: "نعم" }] : rows;
   }, [hafiza, selectedTrainee]);
-  
+
   const sourceConfig = useMemo(() => {
     if (source === "youssefLoan") {
       return {
@@ -637,23 +702,23 @@ export default function ReportsTab() {
           { key: "docNo", label: "رقم المستند / الشيك" },
           { key: "description", label: "البيان" },
           { key: "name", label: "الاسم" },
-          { key: "settlementNo", label: "رقم كشف التسوية" },
-          { key: "notes", label: "ملاحظات" },
-          { key: "amount", label: "المبلغ" },
+          { key: "debit", label: "مدين (المنصرف)" },
+          { key: "credit", label: "دائن (المسدد)" },
+          { key: "balance", label: "الرصيد المتبقي" },
         ] satisfies TabCol[],
       };
     }
     if (source === "tawfiqCustody") {
-  return {
- title: "مسير اخلاء-عهدة-توفيق الداعي",
+      return {
+ title: "مسير اخلاء عهدة توفيق الداعي",
         columns: [
           { key: "date", label: "التاريخ" },
           { key: "docNo", label: "رقم المستند / الشيك" },
           { key: "description", label: "البيان" },
           { key: "name", label: "الاسم" },
-          { key: "settlementNo", label: "رقم كشف التسوية" },
-          { key: "notes", label: "ملاحظات" },
-          { key: "amount", label: "المبلغ" },
+          { key: "debit", label: "مدين (الوارد)" },
+          { key: "credit", label: "دائن (المنصرف)" },
+          { key: "balance", label: "الرصيد المتبقي" },
         ] satisfies TabCol[],
       };
     }
@@ -663,10 +728,10 @@ export default function ReportsTab() {
     if (source === "account") return { title: "تقرير الحساب الجاري", columns: [{ key: "date", label: "التاريخ" }, { key: "description", label: "البيان" }, { key: "name", label: "الاسم" }, { key: "income", label: "الإيرادات" }, { key: "expense", label: "المصروفات" }] satisfies TabCol[] };
     if (source === "expenses") return { title: "تقرير المصروفات", columns: [{ key: "date", label: "التاريخ" }, { key: "item", label: "بند المصروف" }, { key: "name", label: "الاسم" }, { key: "expense", label: "المبلغ" }] satisfies TabCol[] };
     if (source === "revenue") return { title: "تقرير الإيرادات", columns: [{ key: "date", label: "الشهر" }, { key: "item", label: "اسم بند الإيراد" }, { key: "amount", label: "المبلغ" }] satisfies TabCol[] };
-    return { title: "تقرير مالي مجمّع", columns: [{ key: "source", label: "المصدر" }, { key: "date", label: "التاريخ / الفترة" }, { key: "description", label: "البيان / البند" }, { key: "income", label: "الإيرادات" }, { key: "expense", label: "المصروفات" }, { key: "amount", label: "المبلغ" }] satisfies TabCol[] }
+    return { title: "تقرير مالي مجمّع", columns: [{ key: "source", label: "المصدر" }, { key: "date", label: "التاريخ / الفترة" }, { key: "description", label: "البيان / البند" }, { key: "income", label: "الإيرادات" }, { key: "expense", label: "المصروفات" }, { key: "amount", label: "المبلغ" }] satisfies TabCol[] };
   }, [source]);
-  
-  const reportRows = useMemo < ReportRow[] > (() => {
+
+  const reportRows = useMemo<ReportRow[]>(() => {
     if (source === "youssefLoan") return youssefRows;
     if (source === "tawfiqCustody") return tawfiqRows;
     if (source === "trainee") return traineeRows;
@@ -682,12 +747,13 @@ export default function ReportsTab() {
       ...revenueRows.map((row) => ({ source: "الإيرادات", date: row.date, description: row.item, amount: row.amount }))
     ];
   }, [source, youssefRows, tawfiqRows, traineeRows, hafizaRows, accountRows, expenseRows, revenueRows, feeTotalsRows]);
-  
-  // ====== الصفوف المعالجة (تصفية + فرز + حذف مؤقت) ======
-  const processedRows = useMemo < ReportRow[] > (() => {
+
+  // ====== الصفوف المعالجة (تصفية + فرز + حذف مؤقت) — تُستخدم أيضاً في الطباعة/PDF ======
+  const processedRows = useMemo<ReportRow[]>(() => {
     const activeSortCol = source === "trainee" ? traineeSortColumn : sortColumn;
     const activeSortDir = source === "trainee" ? traineeSortDirection : sortDirection;
-    
+
+    // 1) تصفية: حذف مؤقت + تصفية أعمدة (مع الحفاظ على الصفوف البنيوية)
     const filtered = reportRows.filter((row) => {
       if (deletedRows.has(row)) return false;
       if (isPreservedFromColumnFilter(row)) return true;
@@ -709,7 +775,8 @@ export default function ReportsTab() {
       }
       return true;
     });
-    
+
+    // 2) تصنيف: رأس / جسم / تذييل
     const headRows: ReportRow[] = [];
     const bodyRows: ReportRow[] = [];
     const footRows: ReportRow[] = [];
@@ -718,7 +785,8 @@ export default function ReportsTab() {
       else if (isFootRow(row)) footRows.push(row);
       else bodyRows.push(row);
     });
-    
+
+    // 3) فرز صفوف الجسم فقط
     if (activeSortCol) {
       bodyRows.sort((a, b) => {
         let va = a[activeSortCol];
@@ -740,65 +808,75 @@ export default function ReportsTab() {
         return activeSortDir === "asc" ? cmp : -cmp;
       });
     }
-    
+
+    // 4) إعادة التجميع: الرأس → الجسم المفروز → التذييل الثابت في النهاية
     return [...headRows, ...bodyRows, ...footRows];
   }, [reportRows, columnFilters, sortColumn, sortDirection, source, traineeSortColumn, traineeSortDirection, deletedRows]);
-  
-  const title = source === "trainee" ?
-    `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFee === "all" ? "كل الرسوم" : selectedFee} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}` :
-    source === "feeTotals" ?
-    `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}` :
-    `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
-  
+
+  const title = source === "trainee"
+    ? `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFee === "all" ? "كل الرسوم" : selectedFee} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}`
+    : source === "feeTotals"
+    ? `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}`
+    : `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
+
   const numericKeys =
-    source === "youssefLoan" || source === "tawfiqCustody" ?
-    ["amount"] :
-    source === "hafiza" ?
-    ["amount", "income"] :
-    source === "account" ?
-    ["income", "expense"] :
-    source === "expenses" ?
-    ["expense"] :
-    source === "revenue" ?
-    ["amount"] :
-    source === "feeTotals" ?
-    ["amount"] :
-    ["income", "expense", "amount"];
-  
+    source === "youssefLoan" || source === "tawfiqCustody"
+      ? ["debit", "credit", "balance"]
+      : source === "hafiza"
+      ? ["amount", "income"]
+      : source === "account"
+      ? ["income", "expense"]
+      : source === "expenses"
+      ? ["expense"]
+      : source === "revenue"
+      ? ["amount"]
+      : source === "trainee" || source === "feeTotals"
+      ? ["amount"]
+      : ["income", "expense", "amount"];
+
   const isLoanOrCustody = source === "youssefLoan" || source === "tawfiqCustody";
-  
+
+  // الصفوف المعروضة (بدون بطاقات الملخص وبدون صف التوقيعات لأنها تُعرض كقسم مستقل)
   const displayRows = useMemo(
     () => processedRows.filter((row) => row.summaryLevel !== "summary-card" && row.summaryLevel !== "signature"),
     [processedRows]
   );
-  
-  // صفوف الطباعة وPDF مع إرفاق بيانات التوقيعات الثلاثة لتقارير العهد
-  const pdfRows = useMemo < ReportRow[] > (() => {
+
+  // ====== صفوف PDF: بدون بطاقات الملخص + إضافة صف التوقيعات لملفات العهد ======
+  const pdfRows = useMemo<ReportRow[]>(() => {
     const base = processedRows.filter(
       (row) => row.summaryLevel !== "summary-card" && row.summaryLevel !== "signature"
     );
-    if (!isLoanOrCustody) return base;
-    
-    const sigRow: ReportRow = {
-      summaryLevel: "signature",
-      signature: true,
-      __signatureFinance: financeManager,
-      __signatureVice: viceManager,
-      __signaturePresident: presidentManager,
-      date: "الشؤون المالية",
-      settlementNo: "نائب رئيس المجلس",
-      amount: "رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة",
-    };
-    
+    if (!(source === "youssefLoan" || source === "tawfiqCustody")) return base;
+
+    const sigs = [
+      `الشؤون المالية - ${financeManager || "____________"}`,
+      `نائب رئيس المجلس - ${viceManager || "____________"}`,
+      `رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة - ${presidentManager || "____________"}`,
+    ];
+
+    const sigRow: ReportRow = { summaryLevel: "signature", signature: true };
+    const cols = sourceConfig.columns;
+    const total = cols.length;
+    const step = Math.max(1, Math.ceil(total / sigs.length));
+    cols.forEach((col, i) => {
+      if (i % step === 0) {
+        const sigIdx = Math.floor(i / step);
+        sigRow[col.key] = sigIdx < sigs.length ? sigs[sigIdx] : "";
+      } else {
+        sigRow[col.key] = "";
+      }
+    });
+
     return [...base, sigRow];
-  }, [processedRows, isLoanOrCustody, financeManager, viceManager, presidentManager]);
-  
+  }, [processedRows, source, sourceConfig.columns, financeManager, viceManager, presidentManager]);
+
   const activeSortColumn = source === "trainee" ? traineeSortColumn : sortColumn;
   const activeSortDirection = source === "trainee" ? traineeSortDirection : sortDirection;
   const hasAnyFilter = Object.values(columnFilters).some((v) => String(v || "").trim() !== "");
-  
+
   const colCount = sourceConfig.columns.length + 2; // م + أعمدة + حذف
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-sky-50 to-indigo-50 p-2 sm:p-4" dir="rtl">
       <section className="mx-auto max-w-7xl overflow-hidden rounded-3xl border border-sky-200 bg-white shadow-xl">
@@ -825,30 +903,157 @@ export default function ReportsTab() {
               onChange={(event) => setSource(event.target.value as ReportSource)}
               className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
             >
-              {SOURCES.map((item) => (
-                <option key={item.value} value={item.value}>{item.label}</option>
-              ))}
+              {SOURCES.map((item) => (<option key={item.value} value={item.value}>{item.label}</option>))}
             </select>
           </label>
 
-          {source !== "trainee" && source !== "feeTotals" && (
+          {source === "youssefLoan" && (
+            <label className="flex flex-col gap-1 text-xs font-black text-amber-900 bg-amber-50/80 p-1.5 rounded-xl border border-amber-200">
+              <span className="flex items-center gap-1 font-black">
+                <Coins className="w-3.5 h-3.5 text-amber-600" />
+                الرصيد الافتتاحي لسلفة د/ يوسف (ريال)
+              </span>
+              <input
+                type="number"
+                value={youssefOpeningBalance || ""}
+                onChange={(e) => handleYoussefOpeningChange(Number(e.target.value) || 0)}
+                placeholder="0"
+                className="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-sm font-bold text-slate-900 outline-none focus:border-amber-600 font-mono"
+              />
+            </label>
+          )}
+
+          {source === "tawfiqCustody" && (
+            <label className="flex flex-col gap-1 text-xs font-black text-emerald-900 bg-emerald-50/80 p-1.5 rounded-xl border border-emerald-200">
+              <span className="flex items-center gap-1 font-black">
+                <Coins className="w-3.5 h-3.5 text-emerald-600" />
+                الرصيد الافتتاحي لعهدة توفيق الداعي (ريال)
+              </span>
+              <input
+                type="number"
+                value={tawfiqOpeningBalance || ""}
+                onChange={(e) => handleTawfiqOpeningChange(Number(e.target.value) || 0)}
+                placeholder="0"
+                className="rounded-lg border border-emerald-300 bg-white px-3 py-1.5 text-sm font-bold text-slate-900 outline-none focus:border-emerald-600 font-mono"
+              />
+            </label>
+          )}
+
+          {source === "trainee" || source === "feeTotals" ? (
             <>
               <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
-                الفترة
+                المتدرب
+                <select
+                  value={selectedTrainee}
+                  onChange={(event) => setSelectedTrainee(event.target.value)}
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
+                >
+                  <option value="all">كل المتدربين</option>
+                  {traineeOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                </select>
+              </label>
+
+              <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                طريقة التجميع
+                <select
+                  value={traineeGrouping}
+                  onChange={(event) => setTraineeGrouping(event.target.value as TraineeGrouping)}
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
+                >
+                  <option value="month">إجمالي كل شهر</option>
+                  <option value="year">إجمالي كل سنة</option>
+                </select>
+              </label>
+
+              {source === "trainee" && (
+                <>
+                  <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                    نوع الرسم
+                    <select
+                      value={selectedFee}
+                      onChange={(event) => setSelectedFee(event.target.value)}
+                      className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
+                    >
+                      <option value="all">كل الرسوم</option>
+                      {feeOptions.map((fee) => (<option key={fee} value={fee}>{fee}</option>))}
+                    </select>
+                  </label>
+
+                  <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                    نمط التقرير
+                    <select
+                      value={traineeDisplayMode}
+                      onChange={(event) => setTraineeDisplayMode(event.target.value as TraineeDisplayMode)}
+                      className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
+                    >
+                      <option value="detail">تفصيلي فقط</option>
+                      <option value="summary">إجمالي فقط</option>
+                      <option value="both">تفصيلي وإجمالي</option>
+                    </select>
+                  </label>
+
+                  <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                    فرز حسب العمود
+                    <select
+                      value={traineeSortColumn}
+                      onChange={(event) => setTraineeSortColumn(event.target.value)}
+                      className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
+                    >
+                      <option value="trainee">اسم المتدرب</option>
+                      <option value="notifyDate">تاريخ التوريد</option>
+                      <option value="amount">مبلغ التوريد</option>
+                      <option value="hafizaNo">رقم الحافظة</option>
+                      <option value="notifyNo">رقم الإشعار</option>
+                      <option value="category">التصنيف الموحد</option>
+                      <option value="year">السنة</option>
+                      <option value="period">الشهر / السنة</option>
+                      <option value="description">البيان الأصلي</option>
+                    </select>
+                  </label>
+
+                  <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                    اتجاه الفرز
+                    <select
+                      value={traineeSortDirection}
+                      onChange={(event) => setTraineeSortDirection(event.target.value as "asc" | "desc")}
+                      className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
+                    >
+                      <option value="asc">تصاعدي (من أ إلى ي / الأصغر للأكبر)</option>
+                      <option value="desc">تنازلي (من ي إلى أ / الأكبر للأصغر)</option>
+                    </select>
+                  </label>
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                نوع الفترة
                 <select
                   value={period}
                   onChange={(event) => setPeriod(event.target.value as PeriodType)}
                   className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
                 >
-                  {PERIODS.map((item) => (
-                    <option key={item.value} value={item.value}>{item.label}</option>
-                  ))}
+                  {PERIODS.map((item) => (<option key={item.value} value={item.value}>{item.label}</option>))}
                 </select>
               </label>
 
-              {(period === "month" || period === "quarter" || period === "half") && (
+              {period !== "all" && (
                 <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
-                  الشهر / الفترة
+                  السنة
+                  <select
+                    value={year}
+                    onChange={(event) => setYear(Number(event.target.value))}
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
+                  >
+                    {years.map((item) => (<option key={item} value={item}>{item}</option>))}
+                  </select>
+                </label>
+              )}
+
+              {period !== "all" && period !== "year" && (
+                <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                  الشهر / بداية الفترة
                   <select
                     value={month}
                     onChange={(event) => setMonth(Number(event.target.value))}
@@ -910,85 +1115,93 @@ export default function ReportsTab() {
           />
         </div>
 
-        {/* الجدول المعروض */}
-        <div className="overflow-x-auto" id="tableContainer">
-          <table className="w-full text-center text-xs sm:text-sm">
-            <thead>
-              <tr className="bg-[#174258] text-white">
-                <th className="w-12 border border-slate-700 px-2 py-3 font-black">م</th>
-                {sourceConfig.columns.map((column) => (
-                  <th
-                    key={column.key}
-                    onClick={() => toggleSort(column.key)}
-                    className="cursor-pointer border border-slate-700 px-3 py-3 font-black select-none hover:bg-white/10"
-                    title="اضغط للفرز"
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      <span>{column.label}</span>
-                      {activeSortColumn === column.key && (
-                        <span>{activeSortDirection === "asc" ? "▲" : "▼"}</span>
-                      )}
-                    </div>
-                  </th>
-                ))}
-                <th className="w-12 border border-slate-700 px-2 py-3 font-black print:hidden">حذف</th>
+        {/* الجدول */}
+        <div className="overflow-x-auto p-3 sm:p-4">
+          <table className="w-full min-w-[900px] border-collapse overflow-hidden rounded-2xl text-center text-xs sm:text-sm">
+            <thead className="bg-[#0f283a] text-white">
+              <tr>
+                <th className="border border-[#1f5f7a] px-3 py-2.5 font-bold text-white">م</th>
+                {sourceConfig.columns.map((column) => {
+                  const isSortActive = activeSortColumn === column.key;
+                  return (
+                    <th
+                      key={column.key}
+                      onClick={() => {
+                        if (source === "trainee") {
+                          if (traineeSortColumn === column.key) setTraineeSortDirection((p) => (p === "asc" ? "desc" : "asc"));
+                          else { setTraineeSortColumn(column.key); setTraineeSortDirection("asc"); }
+                        } else {
+                          if (sortColumn === column.key) setSortDirection((p) => (p === "asc" ? "desc" : "asc"));
+                          else { setSortColumn(column.key); setSortDirection("asc"); }
+                        }
+                      }}
+                      className="border border-[#1f5f7a] px-3 py-2.5 font-bold text-white cursor-pointer hover:bg-[#1a4b64] select-none transition-colors"
+                      title="انقر للفرز تصاعدياً أو تنازلياً"
+                    >
+                      <div className="flex items-center justify-center gap-1.5 text-white">
+                        <span className="text-white font-bold">{column.label}</span>
+                        <span className="text-[11px] font-bold text-white">
+                          {isSortActive ? (activeSortDirection === "asc" ? "▲" : "▼") : (
+                            <span className="text-white opacity-70">⇅</span>
+                          )}
+                        </span>
+                      </div>
+                    </th>
+                  );
+                })}
+                <th className="border border-[#1f5f7a] px-1 py-2.5 font-bold text-white print:hidden" style={{ width: "44px" }} title="حذف مؤقت">حذف</th>
               </tr>
-
-              {/* صف خانات التصفية */}
-              <tr className="bg-slate-100 text-slate-700 print:hidden">
-                <th className="border border-slate-300 p-1"></th>
+              {/* صف التصفية — يظهر على الشاشة فقط */}
+              <tr className="bg-slate-200/80 print:hidden">
+                <td className="border border-slate-300 px-2 py-1 text-center">
+                  {hasAnyFilter && (
+                    <button
+                      onClick={() => setColumnFilters({})}
+                      className="rounded bg-rose-600 px-2 py-0.5 text-[10px] font-bold text-white hover:bg-rose-700"
+                      title="مسح جميع التصفية"
+                    >مسح</button>
+                  )}
+                </td>
                 {sourceConfig.columns.map((column) => (
-                  <th key={column.key} className="border border-slate-300 p-1">
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={columnFilters[column.key] || ""}
-                        onChange={(e) => handleFilterChange(column.key, e.target.value)}
-                        placeholder="تصفية..."
-                        className="w-full rounded border border-slate-300 bg-white px-2 py-1 text-center text-xs font-semibold outline-none focus:border-sky-600"
-                      />
-                      {columnFilters[column.key] && (
-                        <button
-                          onClick={() => clearColumnFilter(column.key)}
-                          className="absolute left-1 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
-                        >
-                          ✕
-                        </button>
-                      )}
-                    </div>
-                  </th>
+                  <td key={column.key} className="border border-slate-300 px-1 py-1">
+                    <input
+                      type="text"
+                      value={columnFilters[column.key] || ""}
+                      onChange={(e) => setColumnFilters((prev) => ({ ...prev, [column.key]: e.target.value }))}
+                      placeholder="تصفية..."
+                      className="w-full rounded border border-slate-300 bg-white px-1.5 py-0.5 text-[11px] font-semibold text-slate-900 outline-none focus:border-sky-600"
+                    />
+                  </td>
                 ))}
-                <th className="border border-slate-300 p-1"></th>
+                <td className="border border-slate-300 px-1 py-1 print:hidden"></td>
               </tr>
             </thead>
             <tbody>
               {displayRows.length === 0 ? (
                 <tr>
-                  <td colSpan={colCount} className="p-8 text-center text-slate-400 font-bold">
-                    لا توجد بيانات مطابقة للفترة المحددة
+                  <td colSpan={colCount} className="p-10 text-center text-sm font-bold text-slate-600">
+                    <FileText className="mx-auto mb-2 h-8 w-8 text-slate-400" />
+                    لا توجد حركات مسجلة للخيارات المحددة في الحساب الجاري.
                   </td>
                 </tr>
               ) : (
                 <>
                   {displayRows.map((row, index) => {
-                    const isTotal = row.summaryLevel === "total" || row.description === "الإجمالي الكلي" || row.category === "الإجمالي الكلي لجميع الرسوم";
+                    const isTotal = row.summaryLevel === "total" || row.description === "الإجمالي الكلي";
                     const isOpening = row.summaryLevel === "opening";
-                    const isSubtotal = row.summaryLevel === "month-total" || row.summaryLevel === "year-total";
 
-                    let rowStyle = "bg-white hover:bg-sky-50/50";
-                    if (isTotal) {
-                      rowStyle = "bg-[#0437bb] text-white font-black";
-                    } else if (isOpening) {
-                      rowStyle = "bg-amber-100/90 text-amber-950 font-black";
-                    } else if (isSubtotal) {
-                      rowStyle = "bg-sky-100 text-sky-950 font-black";
-                    } else if (index % 2 === 1) {
-                      rowStyle = "bg-slate-50 hover:bg-sky-50/50";
-                    }
+                    let rowStyle = "hover:bg-sky-50/50";
+                    if (isTotal) rowStyle = "bg-[#0437bb] text-white font-black text-sm sm:text-base";
+                    else if (isOpening) rowStyle = "bg-amber-100/90 text-amber-950 font-bold";
+                    else if (row.summaryLevel === "fee") rowStyle = "bg-sky-100 font-bold text-sky-950";
+                    else if (row.summaryLevel === "trainee-name-total") rowStyle = "bg-emerald-100 font-bold text-emerald-950";
+                    else if (row.summaryLevel === "period") rowStyle = "bg-amber-100 font-bold text-amber-950";
+                    else if (index % 2 === 1) rowStyle = "bg-slate-50/80 text-slate-900";
+                    else rowStyle = "bg-white text-slate-900";
 
                     return (
                       <tr
-                        key={index}
+                        key={`${String(row.date)}-${String(row.trainee || row.name || "")}-${index}`}
                         className={`transition-colors ${rowStyle} ${isTotal ? "total-row" : ""}`}
                         data-summary={isTotal ? "total" : undefined}
                       >
@@ -998,46 +1211,12 @@ export default function ReportsTab() {
                         {sourceConfig.columns.map((column) => {
                           const val = row[column.key];
                           const isNum = numericKeys.includes(column.key);
-                          const rowId = String(row.rawId || `${row.date}_${index}`);
-
-                          // حقل إدخال رقم كشف التسوية يدوياً
-                          if (isLoanOrCustody && !isTotal && column.key === "settlementNo") {
-                            return (
-                              <td key={column.key} className="border border-slate-200 px-1.5 py-1 text-center">
-                                <input
-                                  type="text"
-                                  value={custodySettlementMap[rowId] || ""}
-                                  onChange={(e) => updateSettlement(rowId, e.target.value)}
-                                  placeholder="رقم الكشف..."
-                                  className="w-full min-w-[90px] rounded border border-slate-200 bg-white px-2 py-1 text-center text-xs font-bold text-slate-800 outline-none focus:border-sky-600 print:hidden"
-                                />
-                                <span className="hidden print:inline">{custodySettlementMap[rowId] || "—"}</span>
-                              </td>
-                            );
-                          }
-
-                          // حقل إدخال الملاحظات يدوياً
-                          if (isLoanOrCustody && !isTotal && column.key === "notes") {
-                            return (
-                              <td key={column.key} className="border border-slate-200 px-1.5 py-1 text-right">
-                                <input
-                                  type="text"
-                                  value={custodyNotesMap[rowId] || ""}
-                                  onChange={(e) => updateNotes(rowId, e.target.value)}
-                                  placeholder="ملاحظات..."
-                                  className="w-full min-w-[120px] rounded border border-slate-200 bg-white px-2 py-1 text-right text-xs font-semibold text-slate-800 outline-none focus:border-sky-600 print:hidden"
-                                />
-                                <span className="hidden print:inline">{custodyNotesMap[rowId] || "—"}</span>
-                              </td>
-                            );
-                          }
-
                           return (
                             <td
                               key={column.key}
                               className={`border px-3 py-2 font-semibold ${
                                 isTotal ? "border-blue-900 text-white font-black" : "border-slate-200 text-slate-900"
-                              } ${isNum ? "font-mono text-center" : ""}`}
+                              } ${isNum ? "font-mono" : ""}`}
                             >
                               {typeof val === "number" ? val.toLocaleString() : (val ?? "—")}
                             </td>
@@ -1061,13 +1240,13 @@ export default function ReportsTab() {
           </table>
         </div>
 
-        {/* قسم التوقيعات الثلاثة لتقارير العهد */}
+        {/* ====== قسم التوقيعات الثلاثة (بديل ملخص العهدة) ====== */}
         {isLoanOrCustody && (
           <div
             className="border-t-2 border-slate-300 bg-slate-50 p-4 sm:p-6"
             dir="rtl"
           >
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
               {/* يمين: الشؤون المالية */}
               <div className="flex flex-col items-center gap-2 text-center">
                 <div className="text-xs sm:text-sm font-black text-slate-800">
@@ -1078,7 +1257,7 @@ export default function ReportsTab() {
                   value={financeManager}
                   onChange={(e) => setFinanceManager(e.target.value)}
                   placeholder="اسم المدير المالي"
-                  className="w-full max-w-[340px] rounded-lg border border-slate-300 bg-white px-3 py-2 text-center text-xs sm:text-sm font-bold text-slate-900 outline-none focus:border-sky-600 print:border-0 print:bg-transparent print:p-0 print:shadow-none"
+                  className="w-full max-w-[240px] rounded-lg border border-slate-300 bg-white px-3 py-2 text-center text-xs sm:text-sm font-bold text-slate-900 outline-none focus:border-sky-600 print:border-0 print:bg-transparent print:p-0 print:shadow-none"
                 />
               </div>
 
