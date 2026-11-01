@@ -71,6 +71,63 @@ export const escapeHtml = (s: any) =>
     .replace(/"/g, "&quot;");
 
 /**
+ * استخراج اسم المدير من النص المدمج بصيغة "<العنوان> - <الاسم>"
+ * بحيث يعمل مع جميع العناوين بما فيها العنوان الذي يحتوي على " - " أصلاً
+ * (مثال: "رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة - محمد")
+ * فيُعاد "محمد" فقط.
+ */
+const extractSignatureName = (val: unknown): string => {
+  const text = String(val ?? "").trim();
+  if (!text) return "";
+  const parts = text.split(" - ");
+  return parts.length > 1 ? parts[parts.length - 1].trim() : text;
+};
+
+/**
+ * بناء صف كتلة التوقيعات الثلاثة (يمين: الشؤون المالية / وسط: نائب رئيس المجلس / يسار: رئيس المجلس)
+ * يدعم قراءة الأسماء من الحقول المخصصة (__signatureFinance / financeManager ...)
+ * أو من قيم أعمدة الصف المدمجة بصيغة "<العنوان> - <الاسم>".
+ */
+const buildSignatureBlockRow = (row: Record<string, any>, columns: TableCol[]): string => {
+  let finance = String(row.__signatureFinance || row.financeManager || "").trim();
+  let vice = String(row.__signatureVice || row.viceManager || "").trim();
+  let president = String(row.__signaturePresident || row.presidentManager || "").trim();
+
+  // استخراج القيم من أعمدة الصف إن لم تكن الحقول المخصصة موجودة
+  if (!finance && !vice && !president) {
+    const colValues: string[] = [];
+    columns.forEach((c) => {
+      const v = row[c.key];
+      if (v !== undefined && v !== null && String(v).trim() !== "") {
+        colValues.push(String(v).trim());
+      }
+    });
+    if (colValues[0]) finance = extractSignatureName(colValues[0]);
+    if (colValues[1]) vice = extractSignatureName(colValues[1]);
+    if (colValues[2]) president = extractSignatureName(colValues[2]);
+  }
+
+  return `<tr class="signature-block-row">
+    <td colspan="${columns.length + 1}" class="signature-block-cell">
+      <div class="signature-block-grid">
+        <div class="signature-item">
+          <div class="sig-title">الشؤون المالية</div>
+          <div class="sig-name">${escapeHtml(finance || "....................")}</div>
+        </div>
+        <div class="signature-item">
+          <div class="sig-title">نائب رئيس المجلس</div>
+          <div class="sig-name">${escapeHtml(vice || "....................")}</div>
+        </div>
+        <div class="signature-item">
+          <div class="sig-title">رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة</div>
+          <div class="sig-name">${escapeHtml(president || "....................")}</div>
+        </div>
+      </div>
+    </td>
+  </tr>`;
+};
+
+/**
  * أنماط موحّدة للطباعة ومعاينة PDF وواجهة الجداول
  */
 export const tablePrintStyles = `
@@ -449,30 +506,9 @@ export function buildTableHtml(opts: {
   // بناء صفوف البيانات مع دعم صفوف الملخص وكتلة التوقيعات
   const body = rows
     .map((r, i) => {
-      // كتلة التوقيعات الثلاثة
+      // كتلة التوقيعات الثلاثة — يتم استخراج الأسماء من الحقول المخصصة أو من قيم الأعمدة
       if (r && (r.summaryLevel === "signature" || r.signature)) {
-        const finance = r.__signatureFinance || r.financeManager || "";
-        const vice = r.__signatureVice || r.viceManager || "";
-        const president = r.__signaturePresident || r.presidentManager || "";
-
-        return `<tr class="signature-block-row">
-          <td colspan="${columns.length + 1}" class="signature-block-cell">
-            <div class="signature-block-grid">
-              <div class="signature-item">
-                <div class="sig-title">الشؤون المالية</div>
-                <div class="sig-name">${escapeHtml(finance || "....................")}</div>
-              </div>
-              <div class="signature-item">
-                <div class="sig-title">نائب رئيس المجلس</div>
-                <div class="sig-name">${escapeHtml(vice || "....................")}</div>
-              </div>
-              <div class="signature-item">
-                <div class="sig-title">رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة</div>
-                <div class="sig-name">${escapeHtml(president || "....................")}</div>
-              </div>
-            </div>
-          </td>
-        </tr>`;
+        return buildSignatureBlockRow(r, columns);
       }
 
       if (r && (r.__summaryCard || r.summaryLevel === "summary-card")) {
@@ -527,28 +563,7 @@ export function buildTableHtml(opts: {
         const globalIndex = startIndex + i;
 
         if (r && (r.summaryLevel === "signature" || r.signature)) {
-          const finance = r.__signatureFinance || r.financeManager || "";
-          const vice = r.__signatureVice || r.viceManager || "";
-          const president = r.__signaturePresident || r.presidentManager || "";
-
-          return `<tr class="signature-block-row">
-            <td colspan="${columns.length + 1}" class="signature-block-cell">
-              <div class="signature-block-grid">
-                <div class="signature-item">
-                  <div class="sig-title">الشؤون المالية</div>
-                  <div class="sig-name">${escapeHtml(finance || "....................")}</div>
-                </div>
-                <div class="signature-item">
-                  <div class="sig-title">نائب رئيس المجلس</div>
-                  <div class="sig-name">${escapeHtml(vice || "....................")}</div>
-                </div>
-                <div class="signature-item">
-                  <div class="sig-title">رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة</div>
-                  <div class="sig-name">${escapeHtml(president || "....................")}</div>
-                </div>
-              </div>
-            </td>
-          </tr>`;
+          return buildSignatureBlockRow(r, columns);
         }
 
         if (r && (r.__summaryCard || r.summaryLevel === "summary-card")) {
