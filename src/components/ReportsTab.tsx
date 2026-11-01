@@ -322,11 +322,11 @@ export default function ReportsTab() {
 
   // حالة لتخزين مسميات الإدارات والمدراء لصفوف التوقيعات يدوياً
   const [signaturesMeta, setSignaturesMeta] = useState({
-    sig1Dept: "المسؤول / المحاسب المختص",
+    sig1Dept: "الشؤون المالية",
     sig1Name: "أ. ___________________",
-    sig2Dept: "المراجع المالي",
+    sig2Dept: "نائب رئيس المجلس",
     sig2Name: "أ. ___________________",
-    sig3Dept: "اعتماد الإدارة العليا",
+    sig3Dept: "رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة",
     sig3Name: "د. ___________________",
   });
 
