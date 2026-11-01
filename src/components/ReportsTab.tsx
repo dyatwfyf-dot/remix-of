@@ -1186,9 +1186,9 @@ export default function ReportsTab() {
                       <tr key={`signature-${index}`} className={`transition-colors ${rowStyle}`}>
                         <td className="border border-black px-2 py-2 font-bold">—</td>
                         <td colSpan={sourceConfig.columns.length} className="border border-black px-4 py-3 text-right font-bold text-slate-900">
-                          <div className="flex flex-wrap items-center justify-between gap-4">
-                            <div className="flex items-center gap-2">
-                              <span>المسمى / الإدارة:</span>
+                          <div className="signature-editor mx-auto flex w-full max-w-sm flex-col items-center justify-center gap-1.5 text-center">
+                            <label className="flex w-full flex-col items-center gap-1 text-center">
+                              <span className="text-xs font-bold">المسمى / الإدارة</span>
                               <input
                                 type="text"
                                 value={
@@ -1202,11 +1202,11 @@ export default function ReportsTab() {
                                     [sigKey === "sig-1" ? "sig1Dept" : sigKey === "sig-2" ? "sig2Dept" : "sig3Dept"]: val
                                   }));
                                 }}
-                                className="rounded border border-black bg-white px-2 py-1 text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
+                                className="w-full rounded border border-black bg-white px-2 py-1 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
                               />
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span>التوقيع / الاسم:</span>
+                            </label>
+                            <label className="mt-1 flex w-full flex-col items-center gap-1 text-center">
+                              <span className="text-xs font-bold">اسم المدير / التوقيع</span>
                               <input
                                 type="text"
                                 value={
@@ -1220,9 +1220,9 @@ export default function ReportsTab() {
                                     [sigKey === "sig-1" ? "sig1Name" : sigKey === "sig-2" ? "sig2Name" : "sig3Name"]: val
                                   }));
                                 }}
-                                className="rounded border border-black bg-white px-2 py-1 text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
+                                className="w-full rounded border border-black bg-white px-2 py-1 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
                               />
-                            </div>
+                            </label>
                           </div>
                         </td>
                         <td className="border border-black px-1 py-1 print:hidden">
