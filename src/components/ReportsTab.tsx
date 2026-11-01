@@ -675,7 +675,7 @@ export default function ReportsTab() {
   const sourceConfig = useMemo(() => {
     if (source === "youssefLoan") {
       return {
-        title: "كشف حساب سلفة د/ يوسف",
+        title: "مسير إخلاء عهدة د/ يوسف",
         columns: [
           { key: "date", label: "التاريخ" },
           { key: "docNo", label: "رقم المستند / الشيك" },
@@ -689,7 +689,7 @@ export default function ReportsTab() {
     }
     if (source === "tawfiqCustody") {
       return {
-        title: "كشف حساب عهدة توفيق الداعي",
+        title: "مسير إخلاء عهدة توفيق الداعي",
         columns: [
           { key: "date", label: "التاريخ" },
           { key: "docNo", label: "رقم المستند / الشيك" },
@@ -787,10 +787,18 @@ export default function ReportsTab() {
     return [...headRows, ...bodyRows, ...footRows];
   }, [reportRows, columnFilters, sortColumn, sortDirection, source, traineeSortColumn, traineeSortDirection, deletedRows]);
 
+  const reportIssuedAt = new Date();
+  const reportYearStart = new Date(reportIssuedAt.getFullYear(), 0, 1);
+  const formatReportDate = (date: Date) =>
+    date.toLocaleDateString("ar-EG-u-nu-latn", { day: "2-digit", month: "2-digit", year: "numeric" });
+  const custodyDateRange = `من ${formatReportDate(reportYearStart)} إلى ${formatReportDate(reportIssuedAt)}`;
+
   const title = source === "trainee"
     ? `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFee === "all" ? "كل الرسوم" : selectedFee} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}`
     : source === "feeTotals"
     ? `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}`
+    : source === "youssefLoan" || source === "tawfiqCustody"
+    ? `${sourceConfig.title} — ${custodyDateRange}`
     : `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
 
   const numericKeys =
@@ -1042,9 +1050,9 @@ export default function ReportsTab() {
             columns={sourceConfig.columns}
             fileName={
               source === "youssefLoan"
-                ? `كشف-حساب-سلفة-د-يوسف-${year}`
+                ? `مسير-إخلاء-عهدة-د-يوسف-${year}`
                 : source === "tawfiqCustody"
-                ? `كشف-حساب-عهدة-توفيق-الداعي-${year}`
+                ? `مسير-إخلاء-عهدة-توفيق-الداعي-${year}`
                 : `تقرير-${source}-${year}`
             }
             numericKeys={numericKeys}
