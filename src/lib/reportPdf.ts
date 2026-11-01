@@ -304,9 +304,10 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
     : `width:${widthMm}mm;min-height:${heightMm}mm;padding:${marginMm}mm;box-sizing:border-box;background:var(--report-paper,#fff);display:flex;flex-direction:column;`;
   const content = source.cloneNode(true) as HTMLElement;
   content.classList.add('report-page-content');
+  // Keep the scale selected by the browser preview; do not apply a second fit scale.
   content.style.cssText = fitToContent
-    ? 'width:100%;max-height:none;height:auto;min-height:0;padding:0;margin:0;border: 1px solid #000;box-shadow:none;transform:none;'
-    : 'width:100%;max-height:auto;height:100%;padding:0;margin:0;border:0;box-shadow:none;transform:none;';
+    ? 'width:100%;max-width:100%;max-height:none;height:auto;min-height:0;flex:0 0 auto;padding:0;margin:0;border:1px solid #000;box-shadow:none;transform:none;'
+    : 'width:100%;max-width:100%;max-height:none;height:auto;min-height:0;flex:0 0 auto;padding:0;margin:0;border:0;box-shadow:none;transform:none;';
   const footer = doc.createElement('div');
   footer.style.cssText = 'margin-top:8px;padding-top:6px;text-align:center;font-size:14px;color:#000000;direction:rtl;font-weight:700;';
   if (fitToContent) footer.style.display = 'none';
@@ -320,19 +321,13 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
     
     // استخراج الصفوف الظاهرة فقط
     const allRows = body ? Array.from(body.rows).filter(r => (r as HTMLElement).style.display !== 'none') : [];
-    const totalRow = allRows.find(r => r.classList.contains('total-row'));
-    const rows = allRows.filter(r => !r.classList.contains('total-row')).map(r => r.cloneNode(true) as HTMLTableRowElement);
+    // Keep every visible row in its original preview order, including the total row.
+    const rows = allRows.map(r => r.cloneNode(true) as HTMLTableRowElement);
     
     if (body) body.replaceChildren();
     
     const maxHeight = (heightMm - marginMm * 2) * pxPerMm - 35;
-    const fitWidth = () => {
-      content.style.zoom = '1';
-      const available = (widthMm - marginMm * 2) * pxPerMm;
-      if (content.scrollWidth > available + 1) {
-        content.style.zoom = String(Math.max(0.88, available / content.scrollWidth));
-      }
-    };
+    // The preview already computes the correct scale for the selected paper size.
     
     const overflows = () => {
       const h = content.offsetHeight || content.getBoundingClientRect().height;
@@ -344,7 +339,6 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
     
     if (fitToContent) {
       body?.replaceChildren(...rows);
-      fitWidth();
       await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
       // قَصّ طول الصفحة إلى الارتفاع الفعلي للمحتوى بدل مساحة A4 الفارغة.
       heightMm = Math.max(40, Math.ceil((paper.scrollHeight / pxPerMm) * 10) / 10);
@@ -355,13 +349,11 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
     } else {
       for (const row of rows) {
         body?.append(row);
-        fitWidth();
         if (overflows() && group.length > 0) {
           row.remove();
           groups.push(group);
           group = [];
           body?.replaceChildren(row);
-          fitWidth();
         }
         group.push(row);
       }
@@ -380,17 +372,7 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
     
     for (let index = 0; index < groups.length; index++) {
       const currentRows = [...groups[index]];
-      if (index === groups.length - 1 && totalRow) {
-        const clonedTotal = totalRow.cloneNode(true) as HTMLTableRowElement;
-        const firstSummaryIdx = currentRows.findIndex((r) => r.classList.contains("summary-card-row"));
-        if (firstSummaryIdx === -1) {
-          currentRows.push(clonedTotal);
-        } else {
-          currentRows.splice(firstSummaryIdx, 0, clonedTotal);
-        }
-      }
       if (body) body.replaceChildren(...currentRows);
-      fitWidth();
       footer.textContent = `صفحة ${index + 1} من ${groups.length}`;
       
       const canvas = await html2canvas(paper, {
