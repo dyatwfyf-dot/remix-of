@@ -9,9 +9,6 @@ export const REPORT_LETTERHEAD_SRC = reportLetterheadUrl;
 
 /**
  * توليد ترويسة التقارير الرسمية كإطار نصي موحد بدلاً من الصورة
- * الجانب الأيمن: البيانات بالعربية
- * المنتصف: بسم الله الرحمن الرحيم
- * الجانب الأيسر: البيانات بالإنجليزية
  */
 export const reportLetterheadHtml = () => `
   <div class="report-letterhead-block">
@@ -84,7 +81,7 @@ const extractSignatureName = (val: unknown): string => {
 };
 
 /**
- * بناء صف كتلة التوقيعات الثلاثة (يمين: الشؤون المالية / وسط: نائب رئيس المجلس / يسار: رئيس المجلس)
+ * بناء صف كتلة التوقيعات الثلاثة (سطران: عناوين الإدارات / أسماء المدراء)
  * يدعم قراءة الأسماء من الحقول المخصصة (__signatureFinance / financeManager ...)
  * أو من قيم أعمدة الصف المدمجة بصيغة "<العنوان> - <الاسم>".
  */
@@ -107,21 +104,16 @@ const buildSignatureBlockRow = (row: Record<string, any>, columns: TableCol[]): 
     if (colValues[2]) president = extractSignatureName(colValues[2]);
   }
 
+  // شبكة مسطّحة بـ 6 عناصر: 3 عناوين إدارات (سطر 1) + 3 أسماء مدراء (سطر 2)
   return `<tr class="signature-block-row">
     <td colspan="${columns.length + 1}" class="signature-block-cell">
       <div class="signature-block-grid">
-        <div class="signature-item">
-          <div class="sig-title">الشؤون المالية</div>
-          <div class="sig-name">${escapeHtml(finance || "....................")}</div>
-        </div>
-        <div class="signature-item">
-          <div class="sig-title">نائب رئيس المجلس</div>
-          <div class="sig-name">${escapeHtml(vice || "....................")}</div>
-        </div>
-        <div class="signature-item">
-          <div class="sig-title">رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة</div>
-          <div class="sig-name">${escapeHtml(president || "....................")}</div>
-        </div>
+        <div class="sig-title">الشؤون المالية</div>
+        <div class="sig-title">نائب رئيس المجلس</div>
+        <div class="sig-title">رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة</div>
+        <div class="sig-name">${escapeHtml(finance || "....................")}</div>
+        <div class="sig-name">${escapeHtml(vice || "....................")}</div>
+        <div class="sig-name">${escapeHtml(president || "....................")}</div>
       </div>
     </td>
   </tr>`;
@@ -341,7 +333,7 @@ export const tablePrintStyles = `
     border: 1px solid #059669 !important;
   }
 
-  /* كتلة التوقيعات الثلاثة لتقارير العهد */
+  /* كتلة التوقيعات الثلاثة لتقارير العهد (سطران متحاذيان) */
   .signature-block-row td {
     background: #ffffff !important;
     border: 1.5px solid #000000 !important;
@@ -350,34 +342,33 @@ export const tablePrintStyles = `
     break-inside: avoid !important;
   }
   .signature-block-grid {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: flex-start !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
+    gap: 6px 12px !important;
     width: 100% !important;
     direction: rtl !important;
-  }
-  .signature-item {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
-    flex: 1 !important;
-    padding: 4px 8px !important;
+    align-items: end !important;
   }
   .sig-title {
     font-family: Cairo, sans-serif !important;
     font-weight: 900 !important;
     font-size: 13px !important;
     color: #000000 !important;
-    margin-bottom: 12px !important;
+    text-align: center !important;
+    padding: 4px !important;
+    align-self: end !important;
+    line-height: 1.3 !important;
   }
   .sig-name {
     font-family: Cairo, sans-serif !important;
     font-weight: 800 !important;
     font-size: 13px !important;
     color: #000000 !important;
+    text-align: center !important;
+    padding: 4px !important;
+    align-self: start !important;
     min-height: 24px !important;
+    border-bottom: 1px dotted #000000 !important;
   }
 
   ${noteRowCss}
@@ -506,7 +497,7 @@ export function buildTableHtml(opts: {
   // بناء صفوف البيانات مع دعم صفوف الملخص وكتلة التوقيعات
   const body = rows
     .map((r, i) => {
-      // كتلة التوقيعات الثلاثة — يتم استخراج الأسماء من الحقول المخصصة أو من قيم الأعمدة
+      // كتلة التوقيعات الثلاثة
       if (r && (r.summaryLevel === "signature" || r.signature)) {
         return buildSignatureBlockRow(r, columns);
       }

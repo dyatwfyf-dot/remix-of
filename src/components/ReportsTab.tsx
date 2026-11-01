@@ -282,7 +282,7 @@ export default function ReportsTab() {
   }, [rowMeta]);
 
   const getRowKey = (row: ReportRow) =>
-    `${row.date || ""}|${row.docNo || ""}|${row.description || ""}|${row.name || ""}|${row.debit || ""}|${row.credit || ""}`;
+    `${row.date ?? ""}|${row.docNo ?? ""}|${row.description ?? ""}|${row.name ?? ""}|${row.debit ?? ""}|${row.credit ?? ""}`;
 
   const setRowMetaField = (row: ReportRow, field: "settlementNo" | "notes" | "amount", value: string) => {
     const key = getRowKey(row);
@@ -296,9 +296,8 @@ export default function ReportsTab() {
 
   const getRowAmount = (row: ReportRow): number => {
     const meta = getRowMeta(row);
-    if (meta.amount !== undefined && meta.amount !== "") {
-      const parsed = Number(meta.amount);
-      if (!Number.isNaN(parsed)) return parsed;
+    if (meta.amount !== undefined && String(meta.amount).trim() !== "" && !Number.isNaN(Number(meta.amount))) {
+      return Number(meta.amount);
     }
     return amountValue(row.income);
   };
@@ -863,9 +862,8 @@ export default function ReportsTab() {
       )
       .reduce((sum, r) => {
         const meta = getRowMeta(r);
-        if (meta.amount !== undefined && meta.amount !== "") {
-          const parsed = Number(meta.amount);
-          return sum + (Number.isNaN(parsed) ? 0 : parsed);
+        if (meta.amount !== undefined && String(meta.amount).trim() !== "" && !Number.isNaN(Number(meta.amount))) {
+          return sum + Number(meta.amount);
         }
         return sum + amountValue(r.income);
       }, 0);
@@ -908,7 +906,6 @@ export default function ReportsTab() {
         if (!(source === "youssefLoan" || source === "tawfiqCustody")) return row;
         const meta = getRowMeta(row);
 
-        // صف الإجمالي: قيمته = المجموع المحسوب
         if (row.summaryLevel === "total") {
           return {
             ...row,
@@ -918,7 +915,6 @@ export default function ReportsTab() {
           };
         }
 
-        // صف الافتتاحي: settlement/notes يدوي، المبلغ read-only (من income)
         if (row.summaryLevel === "opening") {
           return {
             ...row,
@@ -928,10 +924,9 @@ export default function ReportsTab() {
           };
         }
 
-        // صف حركة: القيم من rowMeta، والمبلغ من rowMeta.amount أو income
         let displayAmount: number;
-        if (meta.amount !== undefined && meta.amount !== "") {
-          displayAmount = Number(meta.amount) || 0;
+        if (meta.amount !== undefined && String(meta.amount).trim() !== "" && !Number.isNaN(Number(meta.amount))) {
+          displayAmount = Number(meta.amount);
         } else {
           displayAmount = amountValue(row.income);
         }
@@ -1307,9 +1302,7 @@ export default function ReportsTab() {
                           const meta = getRowMeta(row);
                           const isCustody = source === "youssefLoan" || source === "tawfiqCustody";
 
-                          // ===== الحقول اليدوية الثلاثة (settlementNo / notes / income) في تقارير العهدة =====
                           if (isCustody && (column.key === "settlementNo" || column.key === "notes" || column.key === "income")) {
-                            // صف الإجمالي: قيم محسوبة للعرض فقط
                             if (isTotal) {
                               if (column.key === "income") {
                                 return (
@@ -1325,7 +1318,6 @@ export default function ReportsTab() {
                               );
                             }
 
-                            // صف الافتتاحي: المبلغ read-only، والبقية إدخال يدوي
                             if (isOpening && column.key === "income") {
                               return (
                                 <td key={column.key} className="border border-slate-200 px-3 py-2 font-mono font-bold text-slate-900">
@@ -1334,12 +1326,19 @@ export default function ReportsTab() {
                               );
                             }
 
-                            // إدخال يدوي
                             let inputValue: string;
                             let placeholder: string;
                             let inputType: "text" | "number";
                             if (column.key === "income") {
-                              inputValue = meta.amount !== undefined ? String(meta.amount) : String(amountValue(row.income));
+                              // القيمة الافتراضية من الحساب الجاري، ما لم يُدخل المستخدم قيمة يدوية غير فارغة
+                              const manualAmount = meta.amount;
+                              const hasManualAmount =
+                                manualAmount !== undefined &&
+                                String(manualAmount).trim() !== "" &&
+                                !Number.isNaN(Number(manualAmount));
+                              inputValue = hasManualAmount
+                                ? String(manualAmount)
+                                : String(amountValue(row.income));
                               placeholder = "المبلغ";
                               inputType = "number";
                             } else if (column.key === "settlementNo") {
@@ -1367,7 +1366,6 @@ export default function ReportsTab() {
                             );
                           }
 
-                          // ===== باقي الأعمدة (عرض عادي) =====
                           const val = row[column.key];
                           const isNum = numericKeys.includes(column.key);
                           return (
@@ -1399,54 +1397,46 @@ export default function ReportsTab() {
           </table>
         </div>
 
-        {/* ====== قسم التوقيعات الثلاثة ====== */}
+        {/* ====== قسم التوقيعات الثلاثة (سطران متحاذيان) ====== */}
         {isLoanOrCustody && (
           <div
             className="border-t-2 border-slate-300 bg-slate-50 p-4 sm:p-6"
             dir="rtl"
           >
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-              {/* يمين: الشؤون المالية */}
-              <div className="flex flex-col items-center gap-2 text-center">
-                <div className="text-xs sm:text-sm font-black text-slate-800">
-                  الشؤون المالية
-                </div>
-                <input
-                  type="text"
-                  value={financeManager}
-                  onChange={(e) => setFinanceManager(e.target.value)}
-                  placeholder="اسم المدير المالي"
-                  className="w-full max-w-[240px] rounded-lg border border-slate-300 bg-white px-3 py-2 text-center text-xs sm:text-sm font-bold text-slate-900 outline-none focus:border-sky-600 print:border-0 print:bg-transparent print:p-0 print:shadow-none"
-                />
+            <div className="grid grid-cols-3 gap-x-2 gap-y-3 sm:gap-x-6 sm:gap-y-4">
+              {/* === السطر الأول: أسماء الإدارات (ثابتة) === */}
+              <div className="flex min-h-[2.5rem] items-end justify-center px-1 text-center text-xs font-black leading-snug text-slate-800 sm:text-sm">
+                الشؤون المالية
+              </div>
+              <div className="flex min-h-[2.5rem] items-end justify-center px-1 text-center text-xs font-black leading-snug text-slate-800 sm:text-sm">
+                نائب رئيس المجلس
+              </div>
+              <div className="flex min-h-[2.5rem] items-end justify-center px-1 text-center text-xs font-black leading-snug text-slate-800 sm:text-sm">
+                رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة
               </div>
 
-              {/* وسط: نائب رئيس المجلس */}
-              <div className="flex flex-col items-center gap-2 text-center">
-                <div className="text-xs sm:text-sm font-black text-slate-800">
-                  نائب رئيس المجلس
-                </div>
-                <input
-                  type="text"
-                  value={viceManager}
-                  onChange={(e) => setViceManager(e.target.value)}
-                  placeholder="اسم نائب رئيس المجلس"
-                  className="w-full max-w-[240px] rounded-lg border border-slate-300 bg-white px-3 py-2 text-center text-xs sm:text-sm font-bold text-slate-900 outline-none focus:border-sky-600 print:border-0 print:bg-transparent print:p-0 print:shadow-none"
-                />
-              </div>
-
-              {/* يسار: رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة */}
-              <div className="flex flex-col items-center gap-2 text-center">
-                <div className="text-xs sm:text-sm font-black text-slate-800 leading-relaxed">
-                  رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة
-                </div>
-                <input
-                  type="text"
-                  value={presidentManager}
-                  onChange={(e) => setPresidentManager(e.target.value)}
-                  placeholder="اسم رئيس المجلس"
-                  className="w-full max-w-[240px] rounded-lg border border-slate-300 bg-white px-3 py-2 text-center text-xs sm:text-sm font-bold text-slate-900 outline-none focus:border-sky-600 print:border-0 print:bg-transparent print:p-0 print:shadow-none"
-                />
-              </div>
+              {/* === السطر الثاني: أسماء المدراء (إدخال يدوي) === */}
+              <input
+                type="text"
+                value={financeManager}
+                onChange={(e) => setFinanceManager(e.target.value)}
+                placeholder="اسم المدير المالي"
+                className="w-full rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600 sm:text-sm print:border-0 print:bg-transparent print:p-0 print:shadow-none"
+              />
+              <input
+                type="text"
+                value={viceManager}
+                onChange={(e) => setViceManager(e.target.value)}
+                placeholder="اسم نائب رئيس المجلس"
+                className="w-full rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600 sm:text-sm print:border-0 print:bg-transparent print:p-0 print:shadow-none"
+              />
+              <input
+                type="text"
+                value={presidentManager}
+                onChange={(e) => setPresidentManager(e.target.value)}
+                placeholder="اسم رئيس المجلس"
+                className="w-full rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600 sm:text-sm print:border-0 print:bg-transparent print:p-0 print:shadow-none"
+              />
             </div>
           </div>
         )}
