@@ -38,6 +38,8 @@ type Props = {
   rows: Record < string,
   any > [];
   columns: TabCol[];
+  /** أعمدة مخصصة للطباعة وPDF فقط مع إبقاء أعمدة Excel كما هي */
+  printColumns?: TabCol[];
   fileName: string;
   onClear ? : () => void;
   numericKeys ? : string[];
@@ -56,6 +58,7 @@ export default function TabActions({
   title,
   rows,
   columns,
+  printColumns = columns,
   fileName,
   onClear,
   numericKeys = [],
@@ -72,7 +75,7 @@ export default function TabActions({
   const { reportDate, reportDateLabel } = useReportDate();
   
   // توليد كود الـ HTML الخاص بالجدول
-  const tableHtml = () => buildTableHtml({ title, columns, rows, numericKeys, reportDate, includeTotalRow });
+  const tableHtml = () => buildTableHtml({ title, columns: printColumns, rows, numericKeys, reportDate, includeTotalRow });
   
   const handlePrint = () => {
     if (!rows.length) {
@@ -82,7 +85,7 @@ export default function TabActions({
     
     // تحديد الاتجاه الافتراضي بناءً على عدد الأعمدة أو خيار التبويب
     const defaultOrientation: "portrait" | "landscape" =
-      pdfOrientation === "portrait" ? "portrait" : pdfOrientation === "landscape" || columns.length > 7 ? "landscape" : "portrait";
+      pdfOrientation === "portrait" ? "portrait" : pdfOrientation === "landscape" || printColumns.length > 7 ? "landscape" : "portrait";
     
     const opened = openBrowserPrintPreview({
       title,
@@ -108,7 +111,7 @@ export default function TabActions({
     setPdfBusy(true);
     try {
       const orientation: "portrait" | "landscape" =
-        pdfOrientation === "portrait" ? "portrait" : pdfOrientation === "landscape" || columns.length > 7 ? "landscape" : "portrait";
+        pdfOrientation === "portrait" ? "portrait" : pdfOrientation === "landscape" || printColumns.length > 7 ? "landscape" : "portrait";
       const opened = openBrowserPrintPreview({
         title,
         reportDateLabel,
