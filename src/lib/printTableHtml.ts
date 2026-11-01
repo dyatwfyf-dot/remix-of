@@ -85,6 +85,26 @@ const extractSignatureName = (val: unknown): string => {
  * يدعم قراءة الأسماء من الحقول المخصصة (__signatureFinance / financeManager ...)
  * أو من قيم أعمدة الصف المدمجة بصيغة "<العنوان> - <الاسم>".
  */
+const buildReportSignatureGroup = (rows: Record<string, any>[], columns: TableCol[]): string => {
+  const signatureRows = rows
+    .filter((row) => row && row.summaryLevel === "signature")
+    .slice(0, 3);
+  if (!signatureRows.length) return "";
+
+  const titles = signatureRows.map((row) =>
+    `<div class="sig-title">${escapeHtml(String(row.description || "المسمى / الإدارة"))}</div>`
+  ).join("");
+  const names = signatureRows.map((row) =>
+    `<div class="sig-name">${escapeHtml(String(row.name || "...................."))}</div>`
+  ).join("");
+
+  return `<tr class="signature-block-row report-signature-group">
+    <td colspan="${columns.length + 1}" class="signature-block-cell">
+      <div class="signature-block-grid">${titles}${names}</div>
+    </td>
+  </tr>`;
+};
+
 const buildSignatureBlockRow = (row: Record<string, any>, columns: TableCol[]): string => {
   let finance = String(row.__signatureFinance || row.financeManager || "").trim();
   let vice = String(row.__signatureVice || row.viceManager || "").trim();
@@ -343,9 +363,10 @@ export const tablePrintStyles = `
   }
   .signature-block-grid {
     display: grid !important;
-    grid-template-columns: 1fr 1fr 1fr !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
     gap: 6px 12px !important;
     width: 100% !important;
+    min-width: 0 !important;
     direction: rtl !important;
     align-items: end !important;
   }
@@ -358,6 +379,9 @@ export const tablePrintStyles = `
     padding: 4px !important;
     align-self: end !important;
     line-height: 1.3 !important;
+    min-width: 0 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
   }
   .sig-name {
     font-family: Cairo, sans-serif !important;
@@ -369,6 +393,9 @@ export const tablePrintStyles = `
     align-self: start !important;
     min-height: 24px !important;
     border-bottom: 1px dotted #000000 !important;
+    min-width: 0 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
   }
 
   ${noteRowCss}
@@ -494,11 +521,14 @@ export function buildTableHtml(opts: {
     )
     .join("")}</tr>` : "";
 
-  // بناء صفوف البيانات مع دعم صفوف الملخص وكتلة التوقيعات
+  // بناء صفوف البيانات مع تجميع توقيعات تقريري العهد في كتلة واحدة
+  const firstSignatureIndex = rows.findIndex((row) => row && row.summaryLevel === "signature");
   const body = rows
     .map((r, i) => {
-      // كتلة التوقيعات الثلاثة
-      if (r && (r.summaryLevel === "signature" || r.signature)) {
+      if (r && r.summaryLevel === "signature") {
+        return i === firstSignatureIndex ? buildReportSignatureGroup(rows, columns) : "";
+      }
+      if (r && r.signature) {
         return buildSignatureBlockRow(r, columns);
       }
 
@@ -553,7 +583,10 @@ export function buildTableHtml(opts: {
       arr.map((r, i) => {
         const globalIndex = startIndex + i;
 
-        if (r && (r.summaryLevel === "signature" || r.signature)) {
+        if (r && r.summaryLevel === "signature") {
+          return globalIndex === firstSignatureIndex ? buildReportSignatureGroup(rows, columns) : "";
+        }
+        if (r && r.signature) {
           return buildSignatureBlockRow(r, columns);
         }
 
