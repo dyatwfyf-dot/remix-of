@@ -4,21 +4,21 @@ import TabActions, { type TabCol } from "@/components/TabActions";
 import { BarChart3, CalendarDays, Coins, Trash2, UserRound, Wallet } from "lucide-react";
 import { useFiscalYear } from "@/lib/fiscalYear";
 
-type ReportSource =
-  | "youssefLoan"
-  | "tawfiqCustody"
-  | "hafiza"
-  | "account"
-  | "expenses"
-  | "revenue"
-  | "combined"
-  | "trainee"
-  | "feeTotals";
+type ReportSource = |
+  "youssefLoan" |
+  "tawfiqCustody" |
+  "hafiza" |
+  "account" |
+  "expenses" |
+  "revenue" |
+  "combined" |
+  "trainee" |
+  "feeTotals";
 
 type PeriodType = "all" | "month" | "quarter" | "half" | "year";
 type TraineeGrouping = "month" | "year";
 type TraineeDisplayMode = "detail" | "summary" | "both";
-type ReportRow = Record<string, string | number | any>;
+type ReportRow = Record < string, string | number | any > ;
 
 const MONTHS: string[] = [
   "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
@@ -27,7 +27,7 @@ const MONTHS: string[] = [
 
 const TRAINEE_REPORT_START_YEAR = 2021;
 
-const PERIODS: Array<{ value: PeriodType; label: string }> = [
+const PERIODS: Array < { value: PeriodType;label: string } > = [
   { value: "all", label: "كامل المدة (من 2026)" },
   { value: "year", label: "سنة كاملة" },
   { value: "month", label: "شهري" },
@@ -35,7 +35,7 @@ const PERIODS: Array<{ value: PeriodType; label: string }> = [
   { value: "half", label: "نصف سنوي" },
 ];
 
-const SOURCES: Array<{ value: ReportSource; label: string }> = [
+const SOURCES: Array < { value: ReportSource;label: string } > = [
   { value: "youssefLoan", label: "مسير اخلاء عهدة د/ يوسف المداني" },
   { value: "tawfiqCustody", label: "عهدة توفيق الداعي" },
   { value: "trainee", label: "كشف مدفوعات المتدربين (من حوافظ التوريد)" },
@@ -93,7 +93,7 @@ const periodLabel = (period: PeriodType, monthIndex: number, year: number): stri
   return monthIndex < 6 ? `النصف الأول لعام ${year}` : `النصف الثاني لعام ${year}`;
 };
 
-const canonicalFeeCategory = (description?: string): string => {
+const canonicalFeeCategory = (description ? : string): string => {
   const desc = String(description || "").trim();
   if (/انعاش/i.test(desc)) return "انعاش";
   if (/تسجيل/i.test(desc)) return "تسجيل";
@@ -105,7 +105,7 @@ const canonicalFeeCategory = (description?: string): string => {
   return desc || "أخرى";
 };
 
-const classifyCustodyRecord = (description?: string): "tawfiq" | "youssef" => {
+const classifyCustodyRecord = (description ? : string): "tawfiq" | "youssef" => {
   const text = String(description || "").trim();
   if (/(عهدة\s*الداعي|توفيق\s*الداعي)/.test(text)) return "tawfiq";
   return "youssef";
@@ -228,7 +228,7 @@ const isFootRow = (row: ReportRow) =>
 const isPreservedFromColumnFilter = (row: ReportRow) => isHeadRow(row) || isFootRow(row);
 
 const getYearOptions = (dates: unknown[]): number[] => {
-  const years = new Set<number>();
+  const years = new Set < number > ();
   dates.forEach((d) => {
     const parsed = normalizeDate(d);
     if (parsed) years.add(parsed.getFullYear());
@@ -238,32 +238,32 @@ const getYearOptions = (dates: unknown[]): number[] => {
 };
 
 export default function ReportsTab() {
-const { hafiza, accounts } = useStore();
+  const { hafiza, accounts } = useStore();
   const year = useFiscalYear((s) => s.year);
-
-  const [source, setSource] = useState<ReportSource>("youssefLoan");
-  const [period, setPeriod] = useState<PeriodType>("all");
-  const [month, setMonth] = useState<number>(0);
-
-  const [selectedTrainee, setSelectedTrainee] = useState<string>("all");
-  const [selectedFee, setSelectedFee] = useState<string>("all");
-  const [traineeGrouping, setTraineeGrouping] = useState<TraineeGrouping>("month");
-  const [traineeDisplayMode, setTraineeDisplayMode] = useState<TraineeDisplayMode>("both");
-
-  const [traineeSortColumn, setTraineeSortColumn] = useState<string>("notifyDate");
-  const [traineeSortDirection, setTraineeSortDirection] = useState<"asc" | "desc">("asc");
-
+  
+  const [source, setSource] = useState < ReportSource > ("youssefLoan");
+  const [period, setPeriod] = useState < PeriodType > ("all");
+  const [month, setMonth] = useState < number > (0);
+  
+  const [selectedTrainee, setSelectedTrainee] = useState < string > ("all");
+  const [selectedFee, setSelectedFee] = useState < string > ("all");
+  const [traineeGrouping, setTraineeGrouping] = useState < TraineeGrouping > ("month");
+  const [traineeDisplayMode, setTraineeDisplayMode] = useState < TraineeDisplayMode > ("both");
+  
+  const [traineeSortColumn, setTraineeSortColumn] = useState < string > ("notifyDate");
+  const [traineeSortDirection, setTraineeSortDirection] = useState < "asc" | "desc" > ("asc");
+  
   // ====== توقيعات أسماء المدراء (تُحفظ لكل سنة) ======
-  const [financeManager, setFinanceManager] = useState<string>(() => {
+  const [financeManager, setFinanceManager] = useState < string > (() => {
     try { return localStorage.getItem(`signature_finance_${year}`) || ""; } catch { return ""; }
   });
-  const [viceManager, setViceManager] = useState<string>(() => {
+  const [viceManager, setViceManager] = useState < string > (() => {
     try { return localStorage.getItem(`signature_vice_${year}`) || ""; } catch { return ""; }
   });
-  const [presidentManager, setPresidentManager] = useState<string>(() => {
+  const [presidentManager, setPresidentManager] = useState < string > (() => {
     try { return localStorage.getItem(`signature_president_${year}`) || ""; } catch { return ""; }
   });
-
+  
   useEffect(() => {
     try {
       setFinanceManager(localStorage.getItem(`signature_finance_${year}`) || "");
@@ -271,7 +271,7 @@ const { hafiza, accounts } = useStore();
       setPresidentManager(localStorage.getItem(`signature_president_${year}`) || "");
     } catch {}
   }, [year]);
-
+  
   useEffect(() => {
     try { localStorage.setItem(`signature_finance_${year}`, financeManager); } catch {}
   }, [financeManager, year]);
@@ -281,22 +281,22 @@ const { hafiza, accounts } = useStore();
   useEffect(() => {
     try { localStorage.setItem(`signature_president_${year}`, presidentManager); } catch {}
   }, [presidentManager, year]);
-
+  
   // ====== حفظ الحقول اليدوية لتقارير العهد (رقم كشف التسوية والملاحظات) ======
-  const [custodySettlementMap, setCustodySettlementMap] = useState<Record<string, string>>(() => {
+  const [custodySettlementMap, setCustodySettlementMap] = useState < Record < string, string >> (() => {
     try { return JSON.parse(localStorage.getItem(`custody_settlement_${year}`) || "{}"); } catch { return {}; }
   });
-  const [custodyNotesMap, setCustodyNotesMap] = useState<Record<string, string>>(() => {
+  const [custodyNotesMap, setCustodyNotesMap] = useState < Record < string, string >> (() => {
     try { return JSON.parse(localStorage.getItem(`custody_notes_${year}`) || "{}"); } catch { return {}; }
   });
-
+  
   useEffect(() => {
     try {
       setCustodySettlementMap(JSON.parse(localStorage.getItem(`custody_settlement_${year}`) || "{}"));
       setCustodyNotesMap(JSON.parse(localStorage.getItem(`custody_notes_${year}`) || "{}"));
     } catch {}
   }, [year]);
-
+  
   const updateSettlement = (id: string, val: string) => {
     setCustodySettlementMap((prev) => {
       const next = { ...prev, [id]: val };
@@ -304,7 +304,7 @@ const { hafiza, accounts } = useStore();
       return next;
     });
   };
-
+  
   const updateNotes = (id: string, val: string) => {
     setCustodyNotesMap((prev) => {
       const next = { ...prev, [id]: val };
@@ -312,17 +312,17 @@ const { hafiza, accounts } = useStore();
       return next;
     });
   };
-
+  
   // ====== الحالة العامة للفرز والتصفية والحذف المؤقت ======
-  const [sortColumn, setSortColumn] = useState<string>("");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
-  const [deletedRows, setDeletedRows] = useState<Set<ReportRow>>(() => new Set());
-
+  const [sortColumn, setSortColumn] = useState < string > ("");
+  const [sortDirection, setSortDirection] = useState < "asc" | "desc" > ("asc");
+  const [columnFilters, setColumnFilters] = useState < Record < string, string >> ({});
+  const [deletedRows, setDeletedRows] = useState < Set < ReportRow >> (() => new Set());
+  
   const handleFilterChange = (key: string, value: string) => {
     setColumnFilters((prev) => ({ ...prev, [key]: value }));
   };
-
+  
   const clearColumnFilter = (key: string) => {
     setColumnFilters((prev) => {
       const next = { ...prev };
@@ -330,7 +330,7 @@ const { hafiza, accounts } = useStore();
       return next;
     });
   };
-
+  
   const toggleSort = (colKey: string) => {
     if (source === "trainee") {
       if (traineeSortColumn === colKey) {
@@ -348,19 +348,19 @@ const { hafiza, accounts } = useStore();
       }
     }
   };
-
+  
   const deleteRow = (row: ReportRow) =>
     setDeletedRows((prev) => {
       const next = new Set(prev);
       next.add(row);
       return next;
     });
-
+  
   const restoreDeleted = () => setDeletedRows(new Set());
-
+  
   const selectedMonths = useMemo(() => periodMonths(period, month), [period, month]);
   const selectedMonthSet = useMemo(() => new Set(selectedMonths), [selectedMonths]);
-
+  
   const inPeriod = (dateValue: unknown) => {
     const date = normalizeDate(dateValue);
     if (!date) return false;
@@ -368,9 +368,9 @@ const { hafiza, accounts } = useStore();
     if (period === "year") return date.getFullYear() === year;
     return date.getFullYear() === year && selectedMonthSet.has(date.getMonth());
   };
-
+  
   // 1. تقرير سلفة د/يوسف
-  const youssefRows = useMemo<ReportRow[]>(() => {
+  const youssefRows = useMemo < ReportRow[] > (() => {
     const matched = accounts
       .filter((row) => {
         const d = normalizeDate(row.date);
@@ -379,35 +379,35 @@ const { hafiza, accounts } = useStore();
         return classifyCustodyRecord(row.description) === "youssef";
       })
       .sort((a, b) => String(a.date).localeCompare(String(b.date)));
-
+    
     const result: ReportRow[] = [];
     let sumAmount = 0;
-
+    
     matched.forEach((row, index) => {
       const rowId = String(row.id || `${row.date}_${row.description}_${index}`);
       const amount = amountValue(row.hafizaAmount);
       sumAmount += amount;
-
-      const docNo = row.checkNo
-        ? `شيك: ${row.checkNo}`
-        : row.notifyNo
-        ? `إشعار: ${row.notifyNo}`
-        : row.hafizaNo
-        ? `حافظة: ${row.hafizaNo}`
-        : "—";
-
+      
+      const docNo = row.checkNo ?
+        `شيك: ${row.checkNo}` :
+        row.notifyNo ?
+        `إشعار: ${row.notifyNo}` :
+        row.hafizaNo ?
+        `حافظة: ${row.hafizaNo}` :
+        "—";
+      
       result.push({
         rawId: rowId,
         date: row.date || "—",
         docNo,
-        description: row.description || "عهدة د/ يوسف",
-        name: row.name || "د/ يوسف",
+        description: row.description || "عهدة د/ يوسف المداني",
+        name: row.name || "د/ يوسف المداني",
         settlementNo: custodySettlementMap[rowId] || "",
         notes: custodyNotesMap[rowId] || "",
         amount,
       });
     });
-
+    
     result.push({
       date: "—",
       docNo: "—",
@@ -418,12 +418,12 @@ const { hafiza, accounts } = useStore();
       amount: sumAmount,
       summaryLevel: "total",
     });
-
+    
     return result;
   }, [accounts, period, year, selectedMonthSet, custodySettlementMap, custodyNotesMap]);
-
+  
   // 2. تقرير عهدة توفيق الداعي
-  const tawfiqRows = useMemo<ReportRow[]>(() => {
+  const tawfiqRows = useMemo < ReportRow[] > (() => {
     const matched = accounts
       .filter((row) => {
         const d = normalizeDate(row.date);
@@ -432,23 +432,23 @@ const { hafiza, accounts } = useStore();
         return classifyCustodyRecord(row.description) === "tawfiq";
       })
       .sort((a, b) => String(a.date).localeCompare(String(b.date)));
-
+    
     const result: ReportRow[] = [];
     let sumAmount = 0;
-
+    
     matched.forEach((row, index) => {
       const rowId = String(row.id || `${row.date}_${row.description}_${index}`);
       const amount = amountValue(row.hafizaAmount);
       sumAmount += amount;
-
-      const docNo = row.checkNo
-        ? `شيك: ${row.checkNo}`
-        : row.notifyNo
-        ? `إشعار: ${row.notifyNo}`
-        : row.hafizaNo
-        ? `حافظة: ${row.hafizaNo}`
-        : "—";
-
+      
+      const docNo = row.checkNo ?
+        `شيك: ${row.checkNo}` :
+        row.notifyNo ?
+        `إشعار: ${row.notifyNo}` :
+        row.hafizaNo ?
+        `حافظة: ${row.hafizaNo}` :
+        "—";
+      
       result.push({
         rawId: rowId,
         date: row.date || "—",
@@ -460,7 +460,7 @@ const { hafiza, accounts } = useStore();
         amount,
       });
     });
-
+    
     result.push({
       date: "—",
       docNo: "—",
@@ -471,35 +471,35 @@ const { hafiza, accounts } = useStore();
       amount: sumAmount,
       summaryLevel: "total",
     });
-
+    
     return result;
   }, [accounts, period, year, selectedMonthSet, custodySettlementMap, custodyNotesMap]);
-
-  const hafizaRows = useMemo<ReportRow[]>(() => hafiza.filter((row) => inPeriod(row.date)).map((row) => ({
+  
+  const hafizaRows = useMemo < ReportRow[] > (() => hafiza.filter((row) => inPeriod(row.date)).map((row) => ({
     date: row.date,
     description: row.description || "—",
     name: row.name || "—",
     hafizaNo: row.hafizaNo || "—",
     amount: amountValue(row.hafizaAmount),
-
+    
     income: amountValue(row.income)
   })), [hafiza, period, month, year]);
-
-  const accountRows = useMemo<ReportRow[]>(() => accounts.filter((row) => inPeriod(row.date)).map((row) => ({
+  
+  const accountRows = useMemo < ReportRow[] > (() => accounts.filter((row) => inPeriod(row.date)).map((row) => ({
     date: row.date,
     description: row.description || "—",
     name: row.name || "—",
     income: amountValue(row.income),
     expense: amountValue(row.expense)
   })), [accounts, period, month, year]);
-
-  const expenseRows = useMemo<ReportRow[]>(() => accountRows.filter((row) => Number(row.expense) > 0).map((row) => ({
-  date: row.date,
-  item: row.description,
-  name: row.name || "—",
-  expense: amountValue(row.expense)
-})), [accountRows]);
-  const revenueRows = useMemo<ReportRow[]>(() => {
+  
+  const expenseRows = useMemo < ReportRow[] > (() => accountRows.filter((row) => Number(row.expense) > 0).map((row) => ({
+    date: row.date,
+    item: row.description,
+    name: row.name || "—",
+    expense: amountValue(row.expense)
+  })), [accountRows]);
+  const revenueRows = useMemo < ReportRow[] > (() => {
     const months = selectedMonths;
     return months.map((monthIndex) => {
       const monthIncome = accounts
@@ -515,8 +515,8 @@ const { hafiza, accounts } = useStore();
       };
     });
   }, [accounts, selectedMonths, year]);
-
-  const traineeRows = useMemo<ReportRow[]>(() => {
+  
+  const traineeRows = useMemo < ReportRow[] > (() => {
     const matched = hafiza.filter((row) => {
       const date = normalizeDate(row.notifyDate);
       if (!date || date.getFullYear() < TRAINEE_REPORT_START_YEAR) return false;
@@ -527,7 +527,7 @@ const { hafiza, accounts } = useStore();
       if (selectedFee !== "all" && category !== selectedFee) return false;
       return true;
     });
-
+    
     const detailRows: ReportRow[] = matched.map((row) => {
       const date = normalizeDate(row.notifyDate);
       const rowYear = date ? date.getFullYear() : 0;
@@ -548,13 +548,14 @@ const { hafiza, accounts } = useStore();
         _sortKey: date ? date.getTime() : 0,
       };
     });
-
+    
     if (traineeDisplayMode === "detail") {
       detailRows.sort((a, b) => (Number(a._sortKey) || 0) - (Number(b._sortKey) || 0));
       return detailRows;
     }
-
-    const groups = new Map<string, { year: number; month?: number; amount: number; count: number }>();
+    
+    const groups = new Map < string,
+      { year: number;month ? : number;amount: number;count: number } > ();
     matched.forEach((row) => {
       const date = normalizeDate(row.notifyDate);
       if (!date) return;
@@ -566,7 +567,7 @@ const { hafiza, accounts } = useStore();
       prev.count += 1;
       groups.set(key, prev);
     });
-
+    
     const summaryRows: ReportRow[] = Array.from(groups.entries())
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([key, data]) => ({
@@ -584,13 +585,13 @@ const { hafiza, accounts } = useStore();
         summaryLevel: traineeGrouping === "month" ? "month-total" : "year-total",
         _groupKey: key,
       }));
-
+    
     if (traineeDisplayMode === "summary") return summaryRows;
-
+    
     const combined: ReportRow[] = [];
-    const groupsDone = new Set<string>();
+    const groupsDone = new Set < string > ();
     detailRows.sort((a, b) => (Number(a._sortKey) || 0) - (Number(b._sortKey) || 0));
-
+    
     detailRows.forEach((row) => {
       const d = normalizeDate(row.notifyDate);
       const key = d ? (traineeGrouping === "month" ? `${d.getFullYear()}-${String(d.getMonth()).padStart(2, "0")}` : `${d.getFullYear()}`) : "";
@@ -603,12 +604,13 @@ const { hafiza, accounts } = useStore();
         }
       }
     });
-
+    
     return combined;
   }, [hafiza, selectedTrainee, selectedFee, traineeGrouping, traineeDisplayMode]);
-
-  const feeTotalsRows = useMemo<ReportRow[]>(() => {
-    const feeTotals = new Map<string, number>();
+  
+  const feeTotalsRows = useMemo < ReportRow[] > (() => {
+    const feeTotals = new Map < string,
+      number > ();
     hafiza.forEach((row) => {
       const date = normalizeDate(row.notifyDate);
       if (!date || date.getFullYear() < TRAINEE_REPORT_START_YEAR) return;
@@ -625,7 +627,7 @@ const { hafiza, accounts } = useStore();
     const grandTotal = rows.reduce((sum, row) => sum + amountValue(row.amount), 0);
     return grandTotal > 0 ? [...rows, { category: "الإجمالي الكلي لجميع الرسوم", source: "حوافظ التوريد", amount: grandTotal, total: "نعم" }] : rows;
   }, [hafiza, selectedTrainee]);
-
+  
   const sourceConfig = useMemo(() => {
     if (source === "youssefLoan") {
       return {
@@ -642,8 +644,8 @@ const { hafiza, accounts } = useStore();
       };
     }
     if (source === "tawfiqCustody") {
-      return {
-        title: "كشف حساب عهدة توفيق الداعي",
+  return {
+ title: "مسير اخلاء-عهدة-توفيق الداعي",
         columns: [
           { key: "date", label: "التاريخ" },
           { key: "docNo", label: "رقم المستند / الشيك" },
@@ -661,10 +663,10 @@ const { hafiza, accounts } = useStore();
     if (source === "account") return { title: "تقرير الحساب الجاري", columns: [{ key: "date", label: "التاريخ" }, { key: "description", label: "البيان" }, { key: "name", label: "الاسم" }, { key: "income", label: "الإيرادات" }, { key: "expense", label: "المصروفات" }] satisfies TabCol[] };
     if (source === "expenses") return { title: "تقرير المصروفات", columns: [{ key: "date", label: "التاريخ" }, { key: "item", label: "بند المصروف" }, { key: "name", label: "الاسم" }, { key: "expense", label: "المبلغ" }] satisfies TabCol[] };
     if (source === "revenue") return { title: "تقرير الإيرادات", columns: [{ key: "date", label: "الشهر" }, { key: "item", label: "اسم بند الإيراد" }, { key: "amount", label: "المبلغ" }] satisfies TabCol[] };
-    return { title: "تقرير مالي مجمّع", columns: [{ key: "source", label: "المصدر" }, { key: "date", label: "التاريخ / الفترة" }, { key: "description", label: "البيان / البند" }, { key: "income", label: "الإيرادات" }, { key: "expense", label: "المصروفات" }, { key: "amount", label: "المبلغ" }] satisfies TabCol[] };
+    return { title: "تقرير مالي مجمّع", columns: [{ key: "source", label: "المصدر" }, { key: "date", label: "التاريخ / الفترة" }, { key: "description", label: "البيان / البند" }, { key: "income", label: "الإيرادات" }, { key: "expense", label: "المصروفات" }, { key: "amount", label: "المبلغ" }] satisfies TabCol[] }
   }, [source]);
-
-  const reportRows = useMemo<ReportRow[]>(() => {
+  
+  const reportRows = useMemo < ReportRow[] > (() => {
     if (source === "youssefLoan") return youssefRows;
     if (source === "tawfiqCustody") return tawfiqRows;
     if (source === "trainee") return traineeRows;
@@ -680,12 +682,12 @@ const { hafiza, accounts } = useStore();
       ...revenueRows.map((row) => ({ source: "الإيرادات", date: row.date, description: row.item, amount: row.amount }))
     ];
   }, [source, youssefRows, tawfiqRows, traineeRows, hafizaRows, accountRows, expenseRows, revenueRows, feeTotalsRows]);
-
+  
   // ====== الصفوف المعالجة (تصفية + فرز + حذف مؤقت) ======
-  const processedRows = useMemo<ReportRow[]>(() => {
+  const processedRows = useMemo < ReportRow[] > (() => {
     const activeSortCol = source === "trainee" ? traineeSortColumn : sortColumn;
     const activeSortDir = source === "trainee" ? traineeSortDirection : sortDirection;
-
+    
     const filtered = reportRows.filter((row) => {
       if (deletedRows.has(row)) return false;
       if (isPreservedFromColumnFilter(row)) return true;
@@ -707,7 +709,7 @@ const { hafiza, accounts } = useStore();
       }
       return true;
     });
-
+    
     const headRows: ReportRow[] = [];
     const bodyRows: ReportRow[] = [];
     const footRows: ReportRow[] = [];
@@ -716,7 +718,7 @@ const { hafiza, accounts } = useStore();
       else if (isFootRow(row)) footRows.push(row);
       else bodyRows.push(row);
     });
-
+    
     if (activeSortCol) {
       bodyRows.sort((a, b) => {
         let va = a[activeSortCol];
@@ -738,45 +740,45 @@ const { hafiza, accounts } = useStore();
         return activeSortDir === "asc" ? cmp : -cmp;
       });
     }
-
+    
     return [...headRows, ...bodyRows, ...footRows];
   }, [reportRows, columnFilters, sortColumn, sortDirection, source, traineeSortColumn, traineeSortDirection, deletedRows]);
-
-  const title = source === "trainee"
-    ? `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFee === "all" ? "كل الرسوم" : selectedFee} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}`
-    : source === "feeTotals"
-    ? `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}`
-    : `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
-
+  
+  const title = source === "trainee" ?
+    `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFee === "all" ? "كل الرسوم" : selectedFee} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}` :
+    source === "feeTotals" ?
+    `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}` :
+    `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
+  
   const numericKeys =
-    source === "youssefLoan" || source === "tawfiqCustody"
-      ? ["amount"]
-      : source === "hafiza"
-      ? ["amount", "income"]
-      : source === "account"
-      ? ["income", "expense"]
-      : source === "expenses"
-      ? ["expense"]
-      : source === "revenue"
-      ? ["amount"]
-      : source === "feeTotals"
-      ? ["amount"]
-      : ["income", "expense", "amount"];
-
+    source === "youssefLoan" || source === "tawfiqCustody" ?
+    ["amount"] :
+    source === "hafiza" ?
+    ["amount", "income"] :
+    source === "account" ?
+    ["income", "expense"] :
+    source === "expenses" ?
+    ["expense"] :
+    source === "revenue" ?
+    ["amount"] :
+    source === "feeTotals" ?
+    ["amount"] :
+    ["income", "expense", "amount"];
+  
   const isLoanOrCustody = source === "youssefLoan" || source === "tawfiqCustody";
-
+  
   const displayRows = useMemo(
     () => processedRows.filter((row) => row.summaryLevel !== "summary-card" && row.summaryLevel !== "signature"),
     [processedRows]
   );
-
+  
   // صفوف الطباعة وPDF مع إرفاق بيانات التوقيعات الثلاثة لتقارير العهد
-  const pdfRows = useMemo<ReportRow[]>(() => {
+  const pdfRows = useMemo < ReportRow[] > (() => {
     const base = processedRows.filter(
       (row) => row.summaryLevel !== "summary-card" && row.summaryLevel !== "signature"
     );
     if (!isLoanOrCustody) return base;
-
+    
     const sigRow: ReportRow = {
       summaryLevel: "signature",
       signature: true,
@@ -787,16 +789,16 @@ const { hafiza, accounts } = useStore();
       settlementNo: "نائب رئيس المجلس",
       amount: "رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة",
     };
-
+    
     return [...base, sigRow];
   }, [processedRows, isLoanOrCustody, financeManager, viceManager, presidentManager]);
-
+  
   const activeSortColumn = source === "trainee" ? traineeSortColumn : sortColumn;
   const activeSortDirection = source === "trainee" ? traineeSortDirection : sortDirection;
   const hasAnyFilter = Object.values(columnFilters).some((v) => String(v || "").trim() !== "");
-
+  
   const colCount = sourceConfig.columns.length + 2; // م + أعمدة + حذف
-
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-sky-50 to-indigo-50 p-2 sm:p-4" dir="rtl">
       <section className="mx-auto max-w-7xl overflow-hidden rounded-3xl border border-sky-200 bg-white shadow-xl">
