@@ -208,6 +208,41 @@ const reportsTabPrintCss = `
     font-weight: bold !important;
   }
 
+  .signature-block-row td {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1.5px solid #cbd5e1 !important;
+    padding: 12px 14px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .signature-block-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px 12px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    direction: rtl !important;
+    align-items: end !important;
+  }
+  .signature-block-grid .sig-title,
+  .signature-block-grid .sig-name {
+    min-width: 0 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    text-align: center !important;
+  }
+  .signature-block-grid .sig-title {
+    font-size: 13px !important;
+    line-height: 1.35 !important;
+    font-weight: 900 !important;
+  }
+  .signature-block-grid .sig-name {
+    min-height: 24px !important;
+    border-bottom: 1px dotted #000000 !important;
+    font-weight: 800 !important;
+  }
+
   .report-page-content table thead th {
     background: #0f283a !important;
     color: #ffffff !important;
