@@ -1,3 +1,4 @@
+import { useFiscalYear } from "@/lib/fiscalYear";
 import React, { useMemo, useState } from "react";
 import { useStore } from "@/lib/store";
 import { fmt, today } from "@/lib/format";
@@ -367,10 +368,11 @@ export default function AccountsTab() {
     };
     const cleanDate = (dateStr: string) => String(dateStr ?? "").replace(/[^\d]/g, "");
 
-    const hafiza2026 = source.filter((h: any) => cleanDate(h?.date).substring(0, 4) === "2026");
+    const activeYear = String(useFiscalYear.getState().year);
+    const hafiza2026 = source.filter((h: any) => cleanDate(h?.date).substring(0, 4) === activeYear);
 
     if (hafiza2026.length === 0) {
-      toast.info("لا توجد حوافظ لعام 2026.");
+      toast.info(`لا توجد حوافظ لعام ${activeYear}.`);
       return;
     }
 
