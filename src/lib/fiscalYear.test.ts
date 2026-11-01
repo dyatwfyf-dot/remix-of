@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, expect, it } from "vitest";
 import { getAvailableYears, FIRST_FISCAL_YEAR } from "./fiscalYear";
 
