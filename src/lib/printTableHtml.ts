@@ -273,6 +273,13 @@ export const tablePrintStyles = `
     color: #ffffff !important;
   }
 
+  /* التفاف النصوص الطويلة عند الحاجة فقط */
+  .text-cell, .name-cell, .specialty-cell, .batch-cell, .desc-cell {
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+  }
+
   /* احتواء خلايا الأرقام والتواريخ والأكواد لمنع تمددها */
   .num, .numeric-cell, .date-cell, .compact-cell, .ref-cell, .idx {
     direction: ltr !important;
