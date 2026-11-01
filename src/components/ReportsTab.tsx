@@ -1,4 +1,3 @@
-import { useFiscalYear, getAvailableYears, readYearNumber, writeYearNumber } from "@/lib/fiscalYear";
 import { useEffect, useMemo, useState } from "react";
 import { BarChart3, CalendarDays, FileText, UserRound, Wallet, Coins, Trash2 } from "lucide-react";
 import { useStore, type Account } from "@/lib/store";
@@ -70,7 +69,7 @@ const periodLabel = (period: PeriodType, month: number, year: number) => {
 };
 
 const getYearOptions = (values: unknown[]) => {
-  const years = new Set<number>(getAvailableYears());
+  const years = new Set<number>([2024, 2025, 2026]);
   values.forEach((value) => {
     const date = normalizeDate(value);
     if (date) years.add(date.getFullYear());
@@ -126,13 +125,14 @@ const isHeadRow = (row: ReportRow) => row.summaryLevel === "opening";
 const isFootRow = (row: ReportRow) =>
   row.summaryLevel === "total" ||
   row.summaryLevel === "fee" ||
-  row.summaryLevel === "summary-card" ||
-  row.summaryLevel === "trainee-name-total";
+  row.summaryLevel === "trainee-name-total" ||
+  row.summaryLevel === "signature";
+
 const isPreservedFromColumnFilter = (row: ReportRow) =>
   row.summaryLevel === "opening" ||
   row.summaryLevel === "total" ||
   row.summaryLevel === "fee" ||
-  row.summaryLevel === "summary-card";
+  row.summaryLevel === "signature";
 
 // أنماط الطباعة
 const reportsTabPrintCss = `
@@ -192,28 +192,22 @@ const reportsTabPrintCss = `
     background: transparent !important;
   }
 
-  .summary-spacer-row td {
-    height: 12px !important;
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-  }
-  .summary-card-row td {
-    text-align: center !important;
-    vertical-align: middle !important;
+  tbody tr.signature-row td,
+  .report-page-content table tbody tr.signature-row td {
+    background: #f8fafc !important;
+    color: #1e293b !important;
     font-weight: 900 !important;
-    padding: 7px 6px !important;
-    font-size: 18px !important;
+    border: 1px solid #cbd5e1 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-    white-space: nowrap !important;
   }
-  .summary-card-0 td { background: #fde68a !important; color: #451a03 !important; border: 1.5px solid #f59e0b !important; }
-  .summary-card-0 .pdf-cell-text { color: #451a03 !important; background: transparent !important; }
-  .summary-card-1 td { background: #fecdd3 !important; color: #4c0519 !important; border: 1.5px solid #f43f5e !important; }
-  .summary-card-1 .pdf-cell-text { color: #4c0519 !important; background: transparent !important; }
-  .summary-card-2 td { background: #a7f3d0 !important; color: #022c22 !important; border: 1.5px solid #10b981 !important; }
-  .summary-card-2 .pdf-cell-text { color: #022c22 !important; background: transparent !important; }
+  tbody tr.signature-row input {
+    border: none !important;
+    background: transparent !important;
+    text-align: center !important;
+    font-weight: bold !important;
+  }
+
   .report-page-content table thead th {
     background: #0f283a !important;
     color: #ffffff !important;
@@ -234,12 +228,6 @@ const reportsTabPrintCss = `
     border-bottom: 2px solid #1e3a8a !important;
   }
   .report-page-content table tbody tr.report-grand-total-row td .pdf-cell-text { color: #ffffff !important; }
-  .report-page-content table tbody tr.summary-card-0 td { background: #fde68a !important; color: #451a03 !important; border-color: #f59e0b !important; }
-  .report-page-content table tbody tr.summary-card-0 .pdf-cell-text { color: #451a03 !important; }
-  .report-page-content table tbody tr.summary-card-1 td { background: #fecdd3 !important; color: #4c0519 !important; border-color: #f43f5e !important; }
-  .report-page-content table tbody tr.summary-card-1 .pdf-cell-text { color: #4c0519 !important; }
-  .report-page-content table tbody tr.summary-card-2 td { background: #a7f3d0 !important; color: #022c22 !important; border-color: #10b981 !important; }
-  .report-page-content table tbody tr.summary-card-2 .pdf-cell-text { color: #022c22 !important; }
   #tableContainer table th,
   #tableContainer table td,
   #report-source table th,
@@ -261,9 +249,7 @@ export default function ReportsTab() {
 
   const [source, setSource] = useState<ReportSource>("youssefLoan");
   const [period, setPeriod] = useState<PeriodType>("all");
-  const fiscalYear = useFiscalYear((s) => s.year);
-  const [year, setYear] = useState<number>(fiscalYear);
-  useEffect(() => setYear(fiscalYear), [fiscalYear]);
+  const [year, setYear] = useState<number>(2026);
   const [month, setMonth] = useState<number>(0);
   const [selectedTrainee, setSelectedTrainee] = useState<string>("all");
   const [traineeGrouping, setTraineeGrouping] = useState<TraineeGrouping>("month");
@@ -273,69 +259,23 @@ export default function ReportsTab() {
   const [traineeSortColumn, setTraineeSortColumn] = useState<string>("notifyDate");
   const [traineeSortDirection, setTraineeSortDirection] = useState<"asc" | "desc">("asc");
 
-  // ====== بيانات يدوية لكل صف (رقم كشف التسوية + الملاحظات + المبلغ) تُحفظ في localStorage ======
-  const [rowMeta, setRowMeta] = useState<Record<string, { settlementNo?: string; notes?: string; amount?: string }>>(() => {
-    try { return JSON.parse(localStorage.getItem("custody_rows_meta") || "{}"); } catch { return {}; }
-  });
-  useEffect(() => {
-    try { localStorage.setItem("custody_rows_meta", JSON.stringify(rowMeta)); } catch {}
-  }, [rowMeta]);
-
-  const getRowKey = (row: ReportRow) =>
-    `${row.date ?? ""}|${row.docNo ?? ""}|${row.description ?? ""}|${row.name ?? ""}|${row.debit ?? ""}|${row.credit ?? ""}`;
-
-  const setRowMetaField = (row: ReportRow, field: "settlementNo" | "notes" | "amount", value: string) => {
-    const key = getRowKey(row);
-    setRowMeta((prev) => ({
-      ...prev,
-      [key]: { ...(prev[key] || {}), [field]: value },
-    }));
-  };
-
-  const getRowMeta = (row: ReportRow) => rowMeta[getRowKey(row)] || {};
-
-  const getRowAmount = (row: ReportRow): number => {
-    const meta = getRowMeta(row);
-    if (meta.amount !== undefined && String(meta.amount).trim() !== "" && !Number.isNaN(Number(meta.amount))) {
-      return Number(meta.amount);
-    }
-    return amountValue(row.income);
-  };
-
-  // ====== توقيعات أسماء المدراء (تُحفظ لكل سنة) ======
-  const [financeManager, setFinanceManager] = useState<string>(() => {
-    try { return localStorage.getItem(`signature_finance_${year}`) || ""; } catch { return ""; }
-  });
-  const [viceManager, setViceManager] = useState<string>(() => {
-    try { return localStorage.getItem(`signature_vice_${year}`) || ""; } catch { return ""; }
-  });
-  const [presidentManager, setPresidentManager] = useState<string>(() => {
-    try { return localStorage.getItem(`signature_president_${year}`) || ""; } catch { return ""; }
-  });
-
-  useEffect(() => {
-    try {
-      setFinanceManager(localStorage.getItem(`signature_finance_${year}`) || "");
-      setViceManager(localStorage.getItem(`signature_vice_${year}`) || "");
-      setPresidentManager(localStorage.getItem(`signature_president_${year}`) || "");
-    } catch {}
-  }, [year]);
-
-  useEffect(() => {
-    try { localStorage.setItem(`signature_finance_${year}`, financeManager); } catch {}
-  }, [financeManager, year]);
-  useEffect(() => {
-    try { localStorage.setItem(`signature_vice_${year}`, viceManager); } catch {}
-  }, [viceManager, year]);
-  useEffect(() => {
-    try { localStorage.setItem(`signature_president_${year}`, presidentManager); } catch {}
-  }, [presidentManager, year]);
-
-  // ====== الحالة العامة للفرز والتصفية والحذف المؤقت ======
   const [sortColumn, setSortColumn] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
   const [deletedRows, setDeletedRows] = useState<Set<ReportRow>>(() => new Set());
+
+  // حالة لتخزين البيانات اليدوية للأعمدة المضافة حديثاً (رقم كشف التسوية، الملاحظات، المبلغ)
+  const [loanManualData, setLoanManualData] = useState<Record<string, { settlementNo: string; notes: string; amount: number }>>({});
+
+  // حالة لتخزين مسميات الإدارات والمدراء لصفوف التوقيعات يدوياً
+  const [signaturesMeta, setSignaturesMeta] = useState({
+    sig1Dept: "المسؤول / المحاسب المختص",
+    sig1Name: "أ. ___________________",
+    sig2Dept: "المراجع المالي",
+    sig2Name: "أ. ___________________",
+    sig3Dept: "اعتماد الإدارة العليا",
+    sig3Name: "د. ___________________",
+  });
 
   useEffect(() => {
     setColumnFilters({});
@@ -344,22 +284,35 @@ export default function ReportsTab() {
     setDeletedRows(new Set());
   }, [source]);
 
-  const [youssefOpeningBalance, setYoussefOpeningBalance] = useState<number>(() => readYearNumber("youssef_loan_opening_balance", year));
-  const [tawfiqOpeningBalance, setTawfiqOpeningBalance] = useState<number>(() => readYearNumber("tawfiq_custody_opening_balance", year));
+  const [youssefOpeningBalance, setYoussefOpeningBalance] = useState<number>(() => {
+    const saved = localStorage.getItem("youssef_loan_opening_balance");
+    return saved ? Number(saved) || 0 : 0;
+  });
 
-  useEffect(() => {
-    setYoussefOpeningBalance(readYearNumber("youssef_loan_opening_balance", year));
-    setTawfiqOpeningBalance(readYearNumber("tawfiq_custody_opening_balance", year));
-  }, [year]);
+  const [tawfiqOpeningBalance, setTawfiqOpeningBalance] = useState<number>(() => {
+    const saved = localStorage.getItem("tawfiq_custody_opening_balance");
+    return saved ? Number(saved) || 0 : 0;
+  });
 
   const handleYoussefOpeningChange = (val: number) => {
     setYoussefOpeningBalance(val);
-    writeYearNumber("youssef_loan_opening_balance", year, val);
+    localStorage.setItem("youssef_loan_opening_balance", String(val));
   };
 
   const handleTawfiqOpeningChange = (val: number) => {
     setTawfiqOpeningBalance(val);
-    writeYearNumber("tawfiq_custody_opening_balance", year, val);
+    localStorage.setItem("tawfiq_custody_opening_balance", String(val));
+  };
+
+  const handleManualChange = (rowKey: string, field: "settlementNo" | "notes" | "amount", val: string | number) => {
+    setLoanManualData((prev) => ({
+      ...prev,
+      [rowKey]: {
+        settlementNo: field === "settlementNo" ? String(val) : prev[rowKey]?.settlementNo || "",
+        notes: field === "notes" ? String(val) : prev[rowKey]?.notes || "",
+        amount: field === "amount" ? Number(val) || 0 : prev[rowKey]?.amount || 0,
+      },
+    }));
   };
 
   const deleteRow = (row: ReportRow) =>
@@ -409,32 +362,28 @@ export default function ReportsTab() {
       })
       .sort((a, b) => String(a.date).localeCompare(String(b.date)));
 
-    let running = youssefOpeningBalance;
     const result: ReportRow[] = [];
 
     result.push({
-      date: `${year}-01-01`,
+      id: "y-opening",
+      date: "2026-01-01",
       docNo: "افتتاحي",
       description: "الرصيد الافتتاحي المدور",
       name: "د/ يوسف",
-      settlementNo: "",
-      notes: "",
-      debit: youssefOpeningBalance > 0 ? youssefOpeningBalance : 0,
-      credit: youssefOpeningBalance < 0 ? Math.abs(youssefOpeningBalance) : 0,
-      balance: running,
-      income: youssefOpeningBalance > 0 ? youssefOpeningBalance : 0,
+      settlementNo: "—",
+      notes: "رصيد افتتاحي مدور",
+      amount: youssefOpeningBalance,
       summaryLevel: "opening",
     });
 
-    let sumDebit = youssefOpeningBalance > 0 ? youssefOpeningBalance : 0;
-    let sumCredit = youssefOpeningBalance < 0 ? Math.abs(youssefOpeningBalance) : 0;
+    let sumAmount = youssefOpeningBalance;
 
-    matched.forEach((row) => {
-      const credit = amountValue(row.hafizaAmount);
-      const debit = amountValue(row.income);
-      running += debit - credit;
-      sumDebit += debit;
-      sumCredit += credit;
+    matched.forEach((row, index) => {
+      const rowKey = `youssef-${index}-${row.date}`;
+      const defaultAmt = amountValue(row.income || row.hafizaAmount || row.expense);
+      const manual = loanManualData[rowKey];
+      const amt = manual ? manual.amount : defaultAmt;
+      sumAmount += amt;
 
       const docNo = row.checkNo
         ? `شيك: ${row.checkNo}`
@@ -445,57 +394,36 @@ export default function ReportsTab() {
         : "—";
 
       result.push({
+        id: rowKey,
         date: row.date || "—",
         docNo,
         description: row.description || "عهدة د/ يوسف",
         name: row.name || "د/ يوسف",
-        settlementNo: "",
-        notes: "",
-        debit,
-        credit,
-        balance: running,
-        income: debit,
+        settlementNo: manual ? manual.settlementNo : (row.hafizaNo || row.notifyNo || ""),
+        notes: manual ? manual.notes : (row.description || ""),
+        amount: amt,
       });
     });
 
     result.push({
+      id: "y-total",
       date: "—",
       docNo: "—",
       description: "الإجمالي الكلي",
       name: "—",
       settlementNo: "—",
       notes: "—",
-      debit: sumDebit,
-      credit: sumCredit,
-      balance: running,
-      income: sumDebit,
+      amount: sumAmount,
       summaryLevel: "total",
     });
 
-    const paidForSummary = sumCredit - (youssefOpeningBalance < 0 ? Math.abs(youssefOpeningBalance) : 0);
-    const remainingForSummary = youssefOpeningBalance - paidForSummary;
-
-    result.push({
-      __summaryCard: { index: 0, label: `مبلغ العهدة الافتتاحي للعام ${year}`, value: youssefOpeningBalance },
-      description: `مبلغ العهدة الافتتاحي للعام ${year}`,
-      credit: youssefOpeningBalance,
-      summaryLevel: "summary-card",
-    });
-    result.push({
-      __summaryCard: { index: 1, label: "المنصرف من العهدة خلال العام", value: paidForSummary },
-      description: "المنصرف من العهدة خلال العام",
-      credit: paidForSummary,
-      summaryLevel: "summary-card",
-    });
-    result.push({
-      __summaryCard: { index: 2, label: "المتبقي من العهدة حتى تاريخ التقرير", value: remainingForSummary },
-      description: "المتبقي من العهدة حتى تاريخ التقرير",
-      credit: remainingForSummary,
-      summaryLevel: "summary-card",
-    });
+    // صفوف التوقيعات المعبرة
+    result.push({ id: "sig-1", description: signaturesMeta.sig1Dept, name: signaturesMeta.sig1Name, summaryLevel: "signature" });
+    result.push({ id: "sig-2", description: signaturesMeta.sig2Dept, name: signaturesMeta.sig2Name, summaryLevel: "signature" });
+    result.push({ id: "sig-3", description: signaturesMeta.sig3Dept, name: signaturesMeta.sig3Name, summaryLevel: "signature" });
 
     return result;
-  }, [accounts, youssefOpeningBalance, period, year, selectedMonthSet]);
+  }, [accounts, youssefOpeningBalance, period, year, selectedMonthSet, loanManualData, signaturesMeta]);
 
   // 2. تقرير عهدة توفيق الداعي
   const tawfiqRows = useMemo<ReportRow[]>(() => {
@@ -508,32 +436,28 @@ export default function ReportsTab() {
       })
       .sort((a, b) => String(a.date).localeCompare(String(b.date)));
 
-    let running = tawfiqOpeningBalance;
     const result: ReportRow[] = [];
 
     result.push({
-      date: `${year}-01-01`,
+      id: "t-opening",
+      date: "2026-01-01",
       docNo: "افتتاحي",
       description: "الرصيد الافتتاحي للعهدة",
       name: "توفيق الداعي",
-      settlementNo: "",
-      notes: "",
-      debit: tawfiqOpeningBalance > 0 ? tawfiqOpeningBalance : 0,
-      credit: tawfiqOpeningBalance < 0 ? Math.abs(tawfiqOpeningBalance) : 0,
-      balance: running,
-      income: tawfiqOpeningBalance > 0 ? tawfiqOpeningBalance : 0,
+      settlementNo: "—",
+      notes: "رصيد افتتاحي للعهدة",
+      amount: tawfiqOpeningBalance,
       summaryLevel: "opening",
     });
 
-    let sumDebit = tawfiqOpeningBalance > 0 ? tawfiqOpeningBalance : 0;
-    let sumCredit = tawfiqOpeningBalance < 0 ? Math.abs(tawfiqOpeningBalance) : 0;
+    let sumAmount = tawfiqOpeningBalance;
 
-    matched.forEach((row) => {
-      const credit = amountValue(row.hafizaAmount);
-      const debit = amountValue(row.income);
-      running += debit - credit;
-      sumDebit += debit;
-      sumCredit += credit;
+    matched.forEach((row, index) => {
+      const rowKey = `tawfiq-${index}-${row.date}`;
+      const defaultAmt = amountValue(row.income || row.hafizaAmount || row.expense);
+      const manual = loanManualData[rowKey];
+      const amt = manual ? manual.amount : defaultAmt;
+      sumAmount += amt;
 
       const docNo = row.checkNo
         ? `شيك: ${row.checkNo}`
@@ -544,57 +468,36 @@ export default function ReportsTab() {
         : "—";
 
       result.push({
+        id: rowKey,
         date: row.date || "—",
         docNo,
         description: row.description || "عهدة توفيق الداعي",
         name: row.name || "توفيق الداعي",
-        settlementNo: "",
-        notes: "",
-        debit,
-        credit,
-        balance: running,
-        income: debit,
+        settlementNo: manual ? manual.settlementNo : (row.hafizaNo || row.notifyNo || ""),
+        notes: manual ? manual.notes : (row.description || ""),
+        amount: amt,
       });
     });
 
     result.push({
+      id: "t-total",
       date: "—",
       docNo: "—",
       description: "الإجمالي الكلي",
       name: "—",
       settlementNo: "—",
       notes: "—",
-      debit: sumDebit,
-      credit: sumCredit,
-      balance: running,
-      income: sumDebit,
+      amount: sumAmount,
       summaryLevel: "total",
     });
 
-    const paidForSummary = sumCredit - (tawfiqOpeningBalance < 0 ? Math.abs(tawfiqOpeningBalance) : 0);
-    const remainingForSummary = tawfiqOpeningBalance - paidForSummary;
-
-    result.push({
-      __summaryCard: { index: 0, label: `مبلغ العهدة الافتتاحي للعام ${year}`, value: tawfiqOpeningBalance },
-      description: `مبلغ العهدة الافتتاحي للعام ${year}`,
-      credit: tawfiqOpeningBalance,
-      summaryLevel: "summary-card",
-    });
-    result.push({
-      __summaryCard: { index: 1, label: "المنصرف من العهدة خلال العام", value: paidForSummary },
-      description: "المنصرف من العهدة خلال العام",
-      credit: paidForSummary,
-      summaryLevel: "summary-card",
-    });
-    result.push({
-      __summaryCard: { index: 2, label: "المتبقي من العهدة حتى تاريخ التقرير", value: remainingForSummary },
-      description: "المتبقي من العهدة حتى تاريخ التقرير",
-      credit: remainingForSummary,
-      summaryLevel: "summary-card",
-    });
+    // صفوف التوقيعات المعبرة
+    result.push({ id: "sig-1", description: signaturesMeta.sig1Dept, name: signaturesMeta.sig1Name, summaryLevel: "signature" });
+    result.push({ id: "sig-2", description: signaturesMeta.sig2Dept, name: signaturesMeta.sig2Name, summaryLevel: "signature" });
+    result.push({ id: "sig-3", description: signaturesMeta.sig3Dept, name: signaturesMeta.sig3Name, summaryLevel: "signature" });
 
     return result;
-  }, [accounts, tawfiqOpeningBalance, period, year, selectedMonthSet]);
+  }, [accounts, tawfiqOpeningBalance, period, year, selectedMonthSet, loanManualData, signaturesMeta]);
 
   const hafizaRows = useMemo<ReportRow[]>(() => hafiza.filter((row) => inPeriod(row.date)).map((row) => ({
     date: row.date,
@@ -627,7 +530,6 @@ export default function ReportsTab() {
     return { date: `${MONTHS[rowMonth] || parts[1]} ${rowYear}`, item: revenueName(key), amount: amountValue(amount), _year: rowYear, _month: rowMonth };
   }).filter((row) => (period === "all" ? row._year >= 2026 : row._year === year && selectedMonthSet.has(row._month as number))).map(({ _year, _month, ...row }) => row), [revenue, year, selectedMonthSet, period]);
 
-  // ====== كشف المتدربين ======
   const traineeRows = useMemo<ReportRow[]>(() => {
     const payments = hafiza.flatMap((row) => {
       const date = normalizeDate(row.notifyDate);
@@ -738,7 +640,7 @@ export default function ReportsTab() {
   const sourceConfig = useMemo(() => {
     if (source === "youssefLoan") {
       return {
-        title: "مسير اخلاء عهدة د/ يوسف المداني",
+        title: "كشف حساب سلفة د/ يوسف",
         columns: [
           { key: "date", label: "التاريخ" },
           { key: "docNo", label: "رقم المستند / الشيك" },
@@ -746,13 +648,13 @@ export default function ReportsTab() {
           { key: "name", label: "الاسم" },
           { key: "settlementNo", label: "رقم كشف التسوية" },
           { key: "notes", label: "الملاحظات" },
-          { key: "income", label: "المبلغ" },
+          { key: "amount", label: "المبلغ" },
         ] satisfies TabCol[],
       };
     }
     if (source === "tawfiqCustody") {
       return {
-        title: "مسير اخلاء عهدة توفيق الداعي",
+        title: "كشف حساب عهدة توفيق الداعي",
         columns: [
           { key: "date", label: "التاريخ" },
           { key: "docNo", label: "رقم المستند / الشيك" },
@@ -760,7 +662,7 @@ export default function ReportsTab() {
           { key: "name", label: "الاسم" },
           { key: "settlementNo", label: "رقم كشف التسوية" },
           { key: "notes", label: "الملاحظات" },
-          { key: "income", label: "المبلغ" },
+          { key: "amount", label: "المبلغ" },
         ] satisfies TabCol[],
       };
     }
@@ -790,7 +692,6 @@ export default function ReportsTab() {
     ];
   }, [source, youssefRows, tawfiqRows, traineeRows, hafizaRows, accountRows, expenseRows, revenueRows, feeTotalsRows]);
 
-  // ====== الصفوف المعالجة (تصفية + فرز + حذف مؤقت) ======
   const processedRows = useMemo<ReportRow[]>(() => {
     const activeSortCol = source === "trainee" ? traineeSortColumn : sortColumn;
     const activeSortDir = source === "trainee" ? traineeSortDirection : sortDirection;
@@ -851,24 +752,6 @@ export default function ReportsTab() {
     return [...headRows, ...bodyRows, ...footRows];
   }, [reportRows, columnFilters, sortColumn, sortDirection, source, traineeSortColumn, traineeSortDirection, deletedRows]);
 
-  // ====== إجمالي مبلغ العهدة (يشمل التعديلات اليدوية) ======
-  const custodyTotalAmount = useMemo(() => {
-    if (!(source === "youssefLoan" || source === "tawfiqCustody")) return 0;
-    return processedRows
-      .filter((r) =>
-        r.summaryLevel !== "total" &&
-        r.summaryLevel !== "summary-card" &&
-        r.summaryLevel !== "signature"
-      )
-      .reduce((sum, r) => {
-        const meta = getRowMeta(r);
-        if (meta.amount !== undefined && String(meta.amount).trim() !== "" && !Number.isNaN(Number(meta.amount))) {
-          return sum + Number(meta.amount);
-        }
-        return sum + amountValue(r.income);
-      }, 0);
-  }, [processedRows, rowMeta, source]);
-
   const title = source === "trainee"
     ? `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFee === "all" ? "كل الرسوم" : selectedFee} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}`
     : source === "feeTotals"
@@ -877,7 +760,7 @@ export default function ReportsTab() {
 
   const numericKeys =
     source === "youssefLoan" || source === "tawfiqCustody"
-      ? ["income"]
+      ? ["amount"]
       : source === "hafiza"
       ? ["amount", "income"]
       : source === "account"
@@ -892,75 +775,7 @@ export default function ReportsTab() {
 
   const isLoanOrCustody = source === "youssefLoan" || source === "tawfiqCustody";
 
-  // الصفوف المعروضة (بدون بطاقات الملخص وبدون صف التوقيعات)
-  const displayRows = useMemo(
-    () => processedRows.filter((row) => row.summaryLevel !== "summary-card" && row.summaryLevel !== "signature"),
-    [processedRows]
-  );
-
-  // ====== صفوف PDF: بدون بطاقات الملخص + إضافة صف التوقيعات + دمج التعديلات اليدوية ======
-  const pdfRows = useMemo<ReportRow[]>(() => {
-    const base = processedRows
-      .filter((row) => row.summaryLevel !== "summary-card" && row.summaryLevel !== "signature")
-      .map((row) => {
-        if (!(source === "youssefLoan" || source === "tawfiqCustody")) return row;
-        const meta = getRowMeta(row);
-
-        if (row.summaryLevel === "total") {
-          return {
-            ...row,
-            settlementNo: "—",
-            notes: "—",
-            income: custodyTotalAmount,
-          };
-        }
-
-        if (row.summaryLevel === "opening") {
-          return {
-            ...row,
-            settlementNo: meta.settlementNo || "",
-            notes: meta.notes || "",
-            income: amountValue(row.income),
-          };
-        }
-
-        let displayAmount: number;
-        if (meta.amount !== undefined && String(meta.amount).trim() !== "" && !Number.isNaN(Number(meta.amount))) {
-          displayAmount = Number(meta.amount);
-        } else {
-          displayAmount = amountValue(row.income);
-        }
-        return {
-          ...row,
-          settlementNo: meta.settlementNo || "",
-          notes: meta.notes || "",
-          income: displayAmount,
-        };
-      });
-
-    if (!(source === "youssefLoan" || source === "tawfiqCustody")) return base;
-
-    const sigs = [
-      `الشؤون المالية - ${financeManager || "____________"}`,
-      `نائب رئيس المجلس - ${viceManager || "____________"}`,
-      `رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة - ${presidentManager || "____________"}`,
-    ];
-
-    const sigRow: ReportRow = { summaryLevel: "signature", signature: true };
-    const cols = sourceConfig.columns;
-    const total = cols.length;
-    const step = Math.max(1, Math.ceil(total / sigs.length));
-    cols.forEach((col, i) => {
-      if (i % step === 0) {
-        const sigIdx = Math.floor(i / step);
-        sigRow[col.key] = sigIdx < sigs.length ? sigs[sigIdx] : "";
-      } else {
-        sigRow[col.key] = "";
-      }
-    });
-
-    return [...base, sigRow];
-  }, [processedRows, source, sourceConfig.columns, financeManager, viceManager, presidentManager, rowMeta, custodyTotalAmount]);
+  const displayRows = useMemo(() => processedRows, [processedRows]);
 
   const activeSortColumn = source === "trainee" ? traineeSortColumn : sortColumn;
   const activeSortDirection = source === "trainee" ? traineeSortDirection : sortDirection;
@@ -1170,7 +985,7 @@ export default function ReportsTab() {
             )}
             <span>{title}</span>
             <span className="rounded-full bg-sky-100 px-2.5 py-1 text-xs font-bold text-sky-800">
-              {displayRows.length} سجل
+              {displayRows.filter(r => r.summaryLevel !== "signature").length} سجل
             </span>
             {hasAnyFilter && (
               <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">مفلتر</span>
@@ -1188,13 +1003,13 @@ export default function ReportsTab() {
 
           <TabActions
             title={title}
-            rows={pdfRows}
+            rows={processedRows}
             columns={sourceConfig.columns}
             fileName={
               source === "youssefLoan"
-                ? `مسير اخلاء-عهدة-د-يوسف-${year}`
+                ? `كشف-حساب-سلفة-د-يوسف-${year}`
                 : source === "tawfiqCustody"
-                ? `مسير اخلاء-عهدة-توفيق-الداعي-${year}`
+                ? `كشف-حساب-عهدة-توفيق-الداعي-${year}`
                 : `تقرير-${source}-${year}`
             }
             numericKeys={numericKeys}
@@ -1232,9 +1047,7 @@ export default function ReportsTab() {
                       <div className="flex items-center justify-center gap-1.5 text-white">
                         <span className="text-white font-bold">{column.label}</span>
                         <span className="text-[11px] font-bold text-white">
-                          {isSortActive ? (activeSortDirection === "asc" ? "▲" : "▼") : (
-                            <span className="text-white opacity-70">⇅</span>
-                          )}
+                          {isSortActive ? (activeSortDirection === "asc" ? "▲" : "▼") : (<span className="text-white opacity-70">⇅</span>)}
                         </span>
                       </div>
                     </th>
@@ -1242,6 +1055,7 @@ export default function ReportsTab() {
                 })}
                 <th className="border border-[#1f5f7a] px-1 py-2.5 font-bold text-white print:hidden" style={{ width: "44px" }} title="حذف مؤقت">حذف</th>
               </tr>
+              {/* صف التصفية */}
               <tr className="bg-slate-200/80 print:hidden">
                 <td className="border border-slate-300 px-2 py-1 text-center">
                   {hasAnyFilter && (
@@ -1271,118 +1085,75 @@ export default function ReportsTab() {
                 <tr>
                   <td colSpan={colCount} className="p-10 text-center text-sm font-bold text-slate-600">
                     <FileText className="mx-auto mb-2 h-8 w-8 text-slate-400" />
-                    لا توجد حركات مسجلة للخيارات المحددة في الحساب الجاري.
+                    لا توجد حركات مسجلة للخيارات المحددة.
                   </td>
                 </tr>
               ) : (
-                <>
-                  {displayRows.map((row, index) => {
-                    const isTotal = row.summaryLevel === "total" || row.description === "الإجمالي الكلي";
-                    const isOpening = row.summaryLevel === "opening";
+                displayRows.map((row, index) => {
+                  const isTotal = row.summaryLevel === "total" || row.description === "الإجمالي الكلي";
+                  const isOpening = row.summaryLevel === "opening";
+                  const isSignature = row.summaryLevel === "signature";
 
-                    let rowStyle = "hover:bg-sky-50/50";
-                    if (isTotal) rowStyle = "bg-[#0437bb] text-white font-black text-sm sm:text-base";
-                    else if (isOpening) rowStyle = "bg-amber-100/90 text-amber-950 font-bold";
-                    else if (row.summaryLevel === "fee") rowStyle = "bg-sky-100 font-bold text-sky-950";
-                    else if (row.summaryLevel === "trainee-name-total") rowStyle = "bg-emerald-100 font-bold text-emerald-950";
-                    else if (row.summaryLevel === "period") rowStyle = "bg-amber-100 font-bold text-amber-950";
-                    else if (index % 2 === 1) rowStyle = "bg-slate-50/80 text-slate-900";
-                    else rowStyle = "bg-white text-slate-900";
+                  let rowStyle = "hover:bg-sky-50/50";
+                  if (isTotal) rowStyle = "bg-[#0437bb] text-white font-black text-sm sm:text-base";
+                  else if (isOpening) rowStyle = "bg-amber-100/90 text-amber-950 font-bold";
+                  else if (isSignature) rowStyle = "bg-slate-100 text-slate-800 font-bold signature-row";
+                  else if (row.summaryLevel === "fee") rowStyle = "bg-sky-100 font-bold text-sky-950";
+                  else if (row.summaryLevel === "trainee-name-total") rowStyle = "bg-emerald-100 font-bold text-emerald-950";
+                  else if (row.summaryLevel === "period") rowStyle = "bg-amber-100 font-bold text-amber-950";
+                  else if (index % 2 === 1) rowStyle = "bg-slate-50/80 text-slate-900";
+                  else rowStyle = "bg-white text-slate-900";
 
+                  // صفوف التوقيعات مع حقول قابلة للإدخال اليدوي بالكامل
+                  if (isSignature) {
+                    const sigKey = row.id;
                     return (
-                      <tr
-                        key={`${String(row.date)}-${String(row.trainee || row.name || "")}-${index}`}
-                        className={`transition-colors ${rowStyle} ${isTotal ? "total-row" : ""}`}
-                        data-summary={isTotal ? "total" : undefined}
-                      >
-                        <td className={`border px-2 py-2 font-bold ${isTotal ? "border-blue-900 text-white font-black" : "border-slate-200 text-slate-800"}`}>
-                          {isTotal ? "★" : index + 1}
+                      <tr key={`signature-${index}`} className={`transition-colors ${rowStyle}`}>
+                        <td className="border border-slate-300 px-2 py-2 font-bold">—</td>
+                        <td colSpan={sourceConfig.columns.length} className="border border-slate-300 px-4 py-3 text-right font-bold text-slate-900">
+                          <div className="flex flex-wrap items-center justify-between gap-4">
+                            <div className="flex items-center gap-2">
+                              <span>المسمى / الإدارة:</span>
+                              <input
+                                type="text"
+                                value={
+                                  sigKey === "sig-1" ? signaturesMeta.sig1Dept :
+                                  sigKey === "sig-2" ? signaturesMeta.sig2Dept : signaturesMeta.sig3Dept
+                                }
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setSignaturesMeta((prev) => ({
+                                    ...prev,
+                                    [sigKey === "sig-1" ? "sig1Dept" : sigKey === "sig-2" ? "sig2Dept" : "sig3Dept"]: val
+                                  }));
+                                }}
+                                className="rounded border border-slate-300 bg-white px-2 py-1 text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
+                              />
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span>التوقيع / الاسم:</span>
+                              <input
+                                type="text"
+                                value={
+                                  sigKey === "sig-1" ? signaturesMeta.sig1Name :
+                                  sigKey === "sig-2" ? signaturesMeta.sig2Name : signaturesMeta.sig3Name
+                                }
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setSignaturesMeta((prev) => ({
+                                    ...prev,
+                                    [sigKey === "sig-1" ? "sig1Name" : sigKey === "sig-2" ? "sig2Name" : "sig3Name"]: val
+                                  }));
+                                }}
+                                className="rounded border border-slate-300 bg-white px-2 py-1 text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
+                              />
+                            </div>
+                          </div>
                         </td>
-                        {sourceConfig.columns.map((column) => {
-                          const meta = getRowMeta(row);
-                          const isCustody = source === "youssefLoan" || source === "tawfiqCustody";
-
-                          if (isCustody && (column.key === "settlementNo" || column.key === "notes" || column.key === "income")) {
-                            if (isTotal) {
-                              if (column.key === "income") {
-                                return (
-                                  <td key={column.key} className="border border-blue-900 px-3 py-2 text-white font-mono font-black">
-                                    {custodyTotalAmount.toLocaleString()}
-                                  </td>
-                                );
-                              }
-                              return (
-                                <td key={column.key} className="border border-blue-900 px-3 py-2 text-white font-black">
-                                  —
-                                </td>
-                              );
-                            }
-
-                            if (isOpening && column.key === "income") {
-                              return (
-                                <td key={column.key} className="border border-slate-200 px-3 py-2 font-mono font-bold text-slate-900">
-                                  {amountValue(row.income).toLocaleString()}
-                                </td>
-                              );
-                            }
-
-                            let inputValue: string;
-                            let placeholder: string;
-                            let inputType: "text" | "number";
-                            if (column.key === "income") {
-                              // القيمة الافتراضية من الحساب الجاري، ما لم يُدخل المستخدم قيمة يدوية غير فارغة
-                              const manualAmount = meta.amount;
-                              const hasManualAmount =
-                                manualAmount !== undefined &&
-                                String(manualAmount).trim() !== "" &&
-                                !Number.isNaN(Number(manualAmount));
-                              inputValue = hasManualAmount
-                                ? String(manualAmount)
-                                : String(amountValue(row.income));
-                              placeholder = "المبلغ";
-                              inputType = "number";
-                            } else if (column.key === "settlementNo") {
-                              inputValue = meta.settlementNo || "";
-                              placeholder = "رقم كشف التسوية";
-                              inputType = "text";
-                            } else {
-                              inputValue = meta.notes || "";
-                              placeholder = "ملاحظات";
-                              inputType = "text";
-                            }
-
-                            return (
-                              <td key={column.key} className="border border-slate-200 px-1 py-1">
-                                <input
-                                  type={inputType}
-                                  value={inputValue}
-                                  onChange={(e) => setRowMetaField(row, column.key as "settlementNo" | "notes" | "amount", e.target.value)}
-                                  placeholder={placeholder}
-                                  className={`w-full rounded border border-slate-300 bg-white px-1.5 py-0.5 text-[11px] font-semibold text-slate-900 outline-none focus:border-sky-600 print:border-0 print:bg-transparent print:shadow-none ${
-                                    column.key === "income" ? "text-center font-mono" : "text-center"
-                                  }`}
-                                />
-                              </td>
-                            );
-                          }
-
-                          const val = row[column.key];
-                          const isNum = numericKeys.includes(column.key);
-                          return (
-                            <td
-                              key={column.key}
-                              className={`border px-3 py-2 font-semibold ${
-                                isTotal ? "border-blue-900 text-white font-black" : "border-slate-200 text-slate-900"
-                              } ${isNum ? "font-mono" : ""}`}
-                            >
-                              {typeof val === "number" ? val.toLocaleString() : (val ?? "—")}
-                            </td>
-                          );
-                        })}
-                        <td className="border border-slate-200 px-1 py-1 print:hidden">
+                        <td className="border border-slate-300 px-1 py-1 print:hidden">
                           <button
                             onClick={() => deleteRow(row)}
-                            className={`rounded p-1 hover:bg-rose-50 ${isTotal ? "text-white hover:bg-white/20" : "text-rose-600"}`}
+                            className="rounded p-1 text-rose-600 hover:bg-rose-50"
                             title="حذف مؤقت"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -1390,56 +1161,62 @@ export default function ReportsTab() {
                         </td>
                       </tr>
                     );
-                  })}
-                </>
+                  }
+
+                  return (
+                    <tr
+                      key={`${String(row.date)}-${String(row.trainee || row.name || "")}-${index}`}
+                      className={`transition-colors ${rowStyle} ${isTotal ? "total-row" : ""}`}
+                      data-summary={isTotal ? "total" : undefined}
+                    >
+                      <td className={`border px-2 py-2 font-bold ${isTotal ? "border-blue-900 text-white font-black" : "border-slate-200 text-slate-800"}`}>
+                        {isTotal ? "★" : index + 1}
+                      </td>
+                      {sourceConfig.columns.map((column) => {
+                        const val = row[column.key];
+                        const isNum = numericKeys.includes(column.key);
+                        const isEditableField = (source === "youssefLoan" || source === "tawfiqCustody") && !isOpening && !isTotal && (column.key === "settlementNo" || column.key === "notes" || column.key === "amount");
+
+                        if (isEditableField) {
+                          return (
+                            <td key={column.key} className="border border-slate-200 px-2 py-1 font-semibold text-slate-900">
+                              <input
+                                type={column.key === "amount" ? "number" : "text"}
+                                value={val ?? ""}
+                                onChange={(e) => handleManualChange(row.id, column.key as any, column.key === "amount" ? Number(e.target.value) || 0 : e.target.value)}
+                                className="w-full rounded border border-slate-300 bg-white px-2 py-1 text-xs font-bold text-slate-900 outline-none focus:border-sky-600 text-center font-mono"
+                              />
+                            </td>
+                          );
+                        }
+
+                        return (
+                          <td
+                            key={column.key}
+                            className={`border px-3 py-2 font-semibold ${
+                              isTotal ? "border-blue-900 text-white font-black" : "border-slate-200 text-slate-900"
+                            } ${isNum ? "font-mono" : ""}`}
+                          >
+                            {typeof val === "number" ? val.toLocaleString() : (val ?? "—")}
+                          </td>
+                        );
+                      })}
+                      <td className="border border-slate-200 px-1 py-1 print:hidden">
+                        <button
+                          onClick={() => deleteRow(row)}
+                          className={`rounded p-1 hover:bg-rose-50 ${isTotal ? "text-white hover:bg-white/20" : "text-rose-600"}`}
+                          title="حذف مؤقت"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
         </div>
-
-        {/* ====== قسم التوقيعات الثلاثة (سطران متحاذيان) ====== */}
-        {isLoanOrCustody && (
-          <div
-            className="border-t-2 border-slate-300 bg-slate-50 p-4 sm:p-6"
-            dir="rtl"
-          >
-            <div className="grid grid-cols-3 gap-x-2 gap-y-3 sm:gap-x-6 sm:gap-y-4">
-              {/* === السطر الأول: أسماء الإدارات (ثابتة) === */}
-              <div className="flex min-h-[2.5rem] items-end justify-center px-1 text-center text-xs font-black leading-snug text-slate-800 sm:text-sm">
-                الشؤون المالية
-              </div>
-              <div className="flex min-h-[2.5rem] items-end justify-center px-1 text-center text-xs font-black leading-snug text-slate-800 sm:text-sm">
-                نائب رئيس المجلس
-              </div>
-              <div className="flex min-h-[2.5rem] items-end justify-center px-1 text-center text-xs font-black leading-snug text-slate-800 sm:text-sm">
-                رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة
-              </div>
-
-              {/* === السطر الثاني: أسماء المدراء (إدخال يدوي) === */}
-              <input
-                type="text"
-                value={financeManager}
-                onChange={(e) => setFinanceManager(e.target.value)}
-                placeholder="اسم المدير المالي"
-                className="w-full rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600 sm:text-sm print:border-0 print:bg-transparent print:p-0 print:shadow-none"
-              />
-              <input
-                type="text"
-                value={viceManager}
-                onChange={(e) => setViceManager(e.target.value)}
-                placeholder="اسم نائب رئيس المجلس"
-                className="w-full rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600 sm:text-sm print:border-0 print:bg-transparent print:p-0 print:shadow-none"
-              />
-              <input
-                type="text"
-                value={presidentManager}
-                onChange={(e) => setPresidentManager(e.target.value)}
-                placeholder="اسم رئيس المجلس"
-                className="w-full rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600 sm:text-sm print:border-0 print:bg-transparent print:p-0 print:shadow-none"
-              />
-            </div>
-          </div>
-        )}
       </section>
     </div>
   );
