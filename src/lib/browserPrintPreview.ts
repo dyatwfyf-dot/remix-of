@@ -53,8 +53,8 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   </style>
   <style>
     :root {
-      --print-cell-font-size: 15.5px;
-      --print-header-font-size: 18.5px;
+      --print-cell-font-size: 16px;
+      --print-header-font-size: 16px;
       --print-cell-padding: 4px 5px;
     }
 
@@ -330,19 +330,20 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     th, td {
       border: 1px solid #000000 !important; 
       text-align: center;
-      vertical-align: middle;
+      vertical-align: middle !important;
       padding: var(--print-cell-padding);
       box-sizing: border-box;
       color: #000000 !important;
       font-weight: 800;
-      font-size: var(--print-cell-font-size);
+      font-size: 16px !important;
+      line-height: 1.45 !important;
     }
 
     thead th {
       background: #027d11 !important;
       color: #ffffff !important;
       font-weight: 900 !important;
-      font-size: var(--print-header-font-size);
+      font-size: 16px !important;
       padding: 6px 4px;
       white-space: normal !important;
       word-break: keep-all;
@@ -451,7 +452,28 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       tfoot { display: table-footer-group !important; }
     }
   </style>
-  <style>${contentCss}</style>
+  <style>
+    ${contentCss}
+    /* تثبيت محاذاة ومقاس كل خلايا التقارير في المعاينة ونسخة PDF */
+    .sheet-paper table th,
+    .sheet-paper table td {
+      display: table-cell !important;
+      vertical-align: middle !important;
+      text-align: center !important;
+      font-size: 16px !important;
+      line-height: 1.45 !important;
+    }
+    .sheet-paper table th > *,
+    .sheet-paper table td > * {
+      vertical-align: middle !important;
+    }
+    .sheet-paper .pdf-cell-text {
+      display: inline-block !important;
+      vertical-align: middle !important;
+      font-size: 16px !important;
+      line-height: 1.45 !important;
+    }
+  </style>
 </head>
 <body>
   <div class="preview-toolbar">
@@ -764,11 +786,12 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
             ? (orientation === 'portrait' ? 215.9 : 279.4)
             : (orientation === 'portrait' ? 210 : 297);
         const pageFactor = pageWidthMm >= 290 ? 1 : 0;
-        const fontSize = Math.max(12, 14.5 + pageFactor - Math.max(0, columnCount - 8) * 0.28);
+        // توحيد حجم خط جميع التقارير دون تصغيره حسب عدد الأعمدة.
+        const fontSize = 16;
         const horizontalPadding = columnCount > 12 ? 4 : 5;
 
         paperContainer.style.setProperty('--print-cell-font-size', fontSize.toFixed(1) + 'px');
-        paperContainer.style.setProperty('--print-header-font-size', (fontSize + 1).toFixed(1) + 'px');
+        paperContainer.style.setProperty('--print-header-font-size', '16px');
         paperContainer.style.setProperty('--print-cell-padding', '4px ' + horizontalPadding + 'px');
 
         const tableContainer = document.getElementById('tableContainer');
