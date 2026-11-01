@@ -189,7 +189,7 @@ export const tablePrintStyles = `
     width: 100% !important;
     table-layout: auto !important;
     border-collapse: collapse !important;
-    font-size: 12px !important;
+    font-size: 16px !important;
     margin-bottom: 6px !important;
   }
 
@@ -212,6 +212,8 @@ export const tablePrintStyles = `
     padding: 4px 3px !important;
     text-align: center !important;
     vertical-align: middle !important;
+    font-size: 16px !important;
+    line-height: 1.45 !important;
     font-family: Cairo, sans-serif !important;
   }
 
@@ -219,7 +221,7 @@ export const tablePrintStyles = `
     background: #FFD700 !important;
     color: #000000 !important;
     font-weight: 900 !important;
-    font-size: 13px !important;
+    font-size: 16px !important;
     padding: 5px 3px !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -262,7 +264,7 @@ export const tablePrintStyles = `
     background: #174258 !important;
     color: #ffffff !important;
     font-weight: 900 !important;
-    font-size: 13px !important;
+    font-size: 16px !important;
     border-top: 2px solid #000000 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -326,7 +328,7 @@ export const tablePrintStyles = `
     text-align: center !important;
     vertical-align: middle !important;
     font-weight: 900 !important;
-    font-size: 13px !important;
+    font-size: 16px !important;
     padding: 6px 5px !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -380,7 +382,7 @@ export const tablePrintStyles = `
   .sig-title {
     font-family: Cairo, sans-serif !important;
     font-weight: 900 !important;
-    font-size: 13px !important;
+    font-size: 16px !important;
     color: #000000 !important;
     text-align: center !important;
     padding: 4px !important;
@@ -393,7 +395,7 @@ export const tablePrintStyles = `
   .sig-name {
     font-family: Cairo, sans-serif !important;
     font-weight: 800 !important;
-    font-size: 13px !important;
+    font-size: 16px !important;
     color: #000000 !important;
     text-align: center !important;
     padding: 4px !important;
