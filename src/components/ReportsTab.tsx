@@ -1222,11 +1222,11 @@ if (source === "tawfiqCustody") {
                     if (isSignature) {
                       if (row.id !== "sig-1") return null;
                       return (
-                        <>
+                        <React.Fragment key="unified-custody-signatures">
                         <tr aria-hidden="true" className="signature-spacer-row" style={{ height: "28mm" }}>
                           <td colSpan={colCount} style={{ height: "28mm", padding: 0, border: 0, background: "#ffffff" }} />
                         </tr>
-                        <tr key="unified-custody-signatures" className="border-t-2 border-black bg-slate-50/90 signature-block-row">
+                        <tr className="border-t-2 border-black bg-slate-50/90 signature-block-row">
                           <td colSpan={colCount} className="border border-black p-2 sm:p-3">
                             <div className="mx-auto grid w-full max-w-5xl grid-cols-3 gap-x-3 gap-y-1">
                               <input
@@ -1280,7 +1280,7 @@ if (source === "tawfiqCustody") {
                             </div>
                           </td>
                         </tr>
-                        </>
+                        </React.Fragment>
                       );
                     }
 
