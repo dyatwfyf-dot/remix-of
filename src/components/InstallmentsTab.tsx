@@ -220,6 +220,7 @@ const SortIcon = ({
 export default function InstallmentsTab() {
   const {
     installments,
+    hafiza,
     installments2025,
     clearInstallments,
     installmentCustomColumns2026,
@@ -2437,6 +2438,111 @@ td.t-fees { background: ${colorTokens.fees} !important; }
   };
 
 
+  // كشف مستقل لسداد رسوم الامتحانات من حوافظ التوريد، وفق معيار تقرير مدفوعات المتدربين.
+  const printExamFeesStatement = (row: any) => {
+    const traineeName = String(row?.name || "").trim();
+    if (!traineeName) return toast.error("اسم المتدرب غير محدد");
+
+    const payments = (hafiza || []).flatMap((item: any) => {
+      const name = String(item?.name || "").trim();
+      const date = item?.notifyDate ? new Date(String(item.notifyDate)) : null;
+      const amount = cleanNumber(item?.notifyAmount);
+      const description = String(item?.description || "")
+        .trim().replace(/[ًٌٍَُِّْـ]/g, "").replace(/[إأآ]/g, "ا").replace(/\s+/g, " ");
+      if (name !== traineeName || !date || Number.isNaN(date.getTime()) ||
+          date.getFullYear() < 2022 || amount <= 0 || !/(امتحان|اختبار)/.test(description)) return [];
+      return [{
+        date, year: date.getFullYear(), month: date.getMonth(),
+        hafizaNo: String(item.hafizaNo || ""), notifyNo: String(item.notifyNo || ""),
+        description: String(item.description || "رسوم امتحانات").trim(), amount,
+      }];
+    }).sort((a: any, b: any) => a.date.getTime() - b.date.getTime());
+
+    if (!payments.length) {
+      toast.error("لا توجد حوافظ توريد لرسوم امتحانات هذا المتدرب منذ عام 2022");
+      return;
+    }
+
+    const formatDate = (date: Date) =>
+      String(date.getDate()).padStart(2, "0") + "/" +
+      String(date.getMonth() + 1).padStart(2, "0") + "/" + date.getFullYear();
+    const monthlyTotals = new Map<string, { label: string; amount: number }>();
+    const yearlyTotals = new Map<number, number>();
+    payments.forEach((payment: any) => {
+      const key = payment.year + "-" + payment.month;
+      const monthName = payment.date.toLocaleDateString("ar", { month: "long" });
+      const current = monthlyTotals.get(key);
+      if (current) current.amount += payment.amount;
+      else monthlyTotals.set(key, { label: monthName + " " + payment.year, amount: payment.amount });
+      yearlyTotals.set(payment.year, (yearlyTotals.get(payment.year) || 0) + payment.amount);
+    });
+
+    const totalPaid = payments.reduce((sum: number, payment: any) => sum + payment.amount, 0);
+    const safeName = safePdfFileName(traineeName);
+    const detailRows = payments.map((payment: any) =>
+      '<tr class="row-paid"><td>' + payment.year + '</td><td class="num">' + formatDate(payment.date) +
+      '</td><td>' + escapeHtml(payment.hafizaNo || "—") + '</td><td>' +
+      escapeHtml(payment.notifyNo || "—") + '</td><td class="lbl">' +
+      escapeHtml(payment.description) + '</td><td class="num">' +
+      escapeHtml(fmt(payment.amount)) + '</td></tr>'
+    ).join("");
+    const monthlyRows = Array.from(monthlyTotals.values()).map((item) =>
+      '<tr class="row-period"><td colspan="5">إجمالي ' + escapeHtml(item.label) +
+      '</td><td class="num">' + escapeHtml(fmt(item.amount)) + '</td></tr>'
+    ).join("");
+    const yearlyRows = Array.from(yearlyTotals.entries()).sort((a, b) => a[0] - b[0]).map(([year, amount]) =>
+      '<tr class="row-year"><td colspan="5">إجمالي رسوم الامتحانات لعام ' + year +
+      '</td><td class="num">' + escapeHtml(fmt(amount)) + '</td></tr>'
+    ).join("");
+
+    const statementCss = [
+      '* { box-sizing: border-box; font-family: Cairo, Tahoma, Arial, sans-serif !important; }',
+      'html, body { margin: 0; padding: 0; width: 100%; background: #fff; color: #000; direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact; }',
+      '.container { width: 100%; margin: 0; padding: 0; }',
+      '.page-frame { width: 100%; border: 2px solid #0f766e; background: #fff; padding: 4mm; }',
+      '.statement-title { text-align: center; font-size: 20px; font-weight: 900; color: #0f766e; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid #0f766e; }',
+      '.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }',
+      '.info-box { border: 1px solid #000; background: #CDD5AE; padding: 2mm 1.5mm; min-height: 12mm; text-align: center; }',
+      '.info-lbl { font-size: 16px; font-weight: 700; color: #0f766e; margin-bottom: 2px; }',
+      '.info-val { font-size: 18px; font-weight: 900; color: #000; }',
+      'table { width: 100%; table-layout: auto; border-collapse: collapse; margin-top: 4px; }',
+      'th, td { border: 1.5px solid #0f766e; text-align: center; vertical-align: middle; padding: 7px 6px; font-size: 14px; }',
+      'th { background: #0f766e !important; color: #fff !important; font-weight: 900; }',
+      'td { color: #000 !important; font-weight: 800; }',
+      '.lbl { font-weight: 900; } .num { direction: ltr; white-space: nowrap; font-variant-numeric: tabular-nums; }',
+      '.row-paid td { background: #f0fdf4 !important; } .row-period td { background: #e0f2fe !important; font-weight: 900; }',
+      '.row-year td { background: #dbeafe !important; font-weight: 900; }',
+      '.row-final td { background: #0437bb !important; color: #fff !important; font-size: 17px; font-weight: 900; }',
+      '.foot { margin-top: 10px; padding-top: 10px; display: flex; justify-content: space-between; font-size: 14px; font-weight: 800; border-top: 1.5px dashed #0f766e; }',
+    ].join("\n");
+    const infoCard = (label: string, value: string) =>
+      '<div class="info-box"><div class="info-lbl">' + escapeHtml(label) +
+      '</div><div class="info-val">' + escapeHtml(value || "—") + '</div></div>';
+    const body = [
+      '<div class="container"><div class="page-frame">',
+      '<h2 class="statement-title">كشف سداد رسوم الامتحانات</h2><div class="info-grid">',
+      infoCard("اسم المتدرب", traineeName),
+      infoCard("الدفعة", String(row.batch || "—")),
+      infoCard("المساق", String(row.specialty || "—")),
+      infoCard("الفترة", "من عام 2022 وحتى آخر توريد مسجل"),
+      '</div><table><thead><tr><th>السنة</th><th>تاريخ التوريد</th><th>رقم الحافظة</th><th>رقم الإشعار</th><th>البيان الأصلي</th><th>مبلغ التوريد</th></tr></thead><tbody>',
+      detailRows, monthlyRows, yearlyRows,
+      '<tr class="row-final"><td colspan="5">إجمالي المسدد لرسوم الامتحانات</td><td class="num">' +
+      escapeHtml(fmt(totalPaid)) + '</td></tr></tbody></table>',
+      '<div class="foot"><span>تاريخ التقرير: ' + escapeHtml(reportDateLabel) +
+      '</span><span>التوقيع: ________________</span></div></div></div>',
+    ].join("");
+    const title = "كشف_سداد_رسوم_الامتحانات_" + safeName + "_من_2022_" + reportDate;
+    const opened = openBrowserPrintPreview({
+      title, reportDateLabel, tableHtml: body, contentCss: statementCss,
+      defaultOrientation: "landscape", defaultPageSize: "A4",
+      defaultMarginMm: 5, fitToContent: false,
+    });
+    if (!opened) toast.error("تم منع فتح نافذة المعاينة، يرجى السماح بالنوافذ المنبثقة في كروم");
+  };
+
+
+
   const stats2025 = [
   {
     label: "إجمالي الرسوم التقديرية",
@@ -3288,6 +3394,13 @@ className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transit
                               title="تنزيل PDF (متوافق مع شاومي)"
                             >
                               <FileText className={ICON_MOBILE} />
+                            </button>
+                            <button
+                              onClick={() => printExamFeesStatement(r)}
+                              className="p-1 bg-violet-50 text-violet-700 rounded border border-violet-200 hover:bg-violet-600 hover:text-white transition-colors"
+                              title="معاينة كشف سداد رسوم الامتحانات"
+                            >
+                              <FileSpreadsheet className={ICON_MOBILE} />
                             </button>
                             <button
                               onClick={() => deleteRow2026(originalIndex, r.name)}
