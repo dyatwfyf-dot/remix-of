@@ -505,13 +505,15 @@ export function buildTableHtml(opts: {
   const reportDateLabel =
     formatReportDate(reportDate) || new Date().toLocaleDateString("ar-EG-u-nu-latn");
 
+  // تقارير العهد تعرض نطاق التاريخ ضمن العنوان؛ لا نكرر السطر المؤسسي أسفله.
+  const isCustodyReport = /^مسير إخلاء\s*[-–—]\s*عهدة\s*[-–—]/.test(String(title || "").trim());
   const sub =
     subtitle ??
     `المجلس اليمني للاختصاصات الطبية - صعدة • تاريخ التقرير: ${reportDateLabel} • عدد السجلات: ${rows.length}`;
 
   const titleRow = `<tr class="doc-title-row"><td colspan="${columns.length + 1}" class="doc-title-cell">
     <h1>${escapeHtml(title)}</h1>
-    <div class="sub">${escapeHtml(sub)}</div>
+    ${isCustodyReport ? "" : `<div class="sub">${escapeHtml(sub)}</div>`}
   </td></tr>`;
 
   // بناء صف الرؤوس
