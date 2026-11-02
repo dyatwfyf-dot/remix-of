@@ -2448,8 +2448,8 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       .replace(/[ئ]/g, "ي")
       .replace(/ى/g, "ي")
       .replace(/[ـ.,،؛;:()\[\]{}"'ـ_-]/g, " ")
-      .replace(/[^\\p{L}\\p{N}\\s]/gu, " ")
-      .replace(/\\s+/g, " ")
+      .replace(/[^\p{L}\p{N}\s]/gu, " ")
+      .replace(/\s+/g, " ")
       .trim();
 
   // يكفي تطابق اسم واحد على الأقل بين الاسمين، ولا يشترط تطابق الاسم الرباعي بالكامل.
