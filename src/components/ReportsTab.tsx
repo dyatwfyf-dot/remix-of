@@ -1227,6 +1227,16 @@ if (source === "tawfiqCustody") {
                     const isOpening = row.summaryLevel === "opening";
                     const isTotal = row.summaryLevel === "total" || row.total === "نعم";
                     const isSignature = row.summaryLevel === "signature";
+                    // تطبيق اللون مباشرة على خلايا صف الإجمالي؛ لأن خلفية bg-white على الخلايا
+                    // قد تحجب لون صف الجدول نفسه في العرض والطباعة.
+                    const totalCellStyle = isTotal
+                      ? {
+                          backgroundColor: "#0437bb",
+                          color: "#ffffff",
+                          WebkitPrintColorAdjust: "exact" as const,
+                          printColorAdjust: "exact" as const,
+                        }
+                      : undefined;
 
                     let rowStyle = "";
                     if (isOpening) rowStyle = "bg-white font-bold text-slate-950";
@@ -1307,8 +1317,18 @@ if (source === "tawfiqCustody") {
                       <tr
                         key={`${String(row.date)}-${String(row.trainee || row.name || "")}-${index}`}
                         className={`transition-colors ${rowStyle} ${isTotal ? "total-row" : ""}`}
+                        style={
+                          isTotal
+                            ? {
+                                backgroundColor: "#0437bb",
+                                color: "#ffffff",
+                                WebkitPrintColorAdjust: "exact",
+                                printColorAdjust: "exact",
+                              }
+                            : undefined
+                        }
                       >
-                        <td className="border border-black px-2 py-2 font-bold">
+                        <td className="border border-black px-2 py-2 font-bold" style={totalCellStyle}>
                           {isOpening ? "—" : isTotal ? "★" : index + 1}
                         </td>
 
@@ -1360,13 +1380,14 @@ if (source === "tawfiqCustody") {
                               className={`border border-black px-2 py-2 font-bold ${
                                 isNumeric ? "font-mono font-bold" : ""
                               } bg-white text-slate-900`}
+                              style={totalCellStyle}
                             >
                               {isNumeric ? formatCurrency(val) : val !== undefined && val !== null && String(val) !== "" ? String(val) : "—"}
                             </td>
                           );
                         })}
 
-                        <td className="border border-black px-1 py-1 print:hidden">
+                        <td className="border border-black px-1 py-1 print:hidden" style={totalCellStyle}>
                           {!isOpening && !isTotal && (
                             <button
                               onClick={() => deleteRow(row)}
