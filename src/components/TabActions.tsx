@@ -37,6 +37,8 @@ type Props = {
   title: string;
   rows: Record < string,
   any > [];
+  /** بيانات الطباعة منفصلة عن بيانات Excel عند الحاجة لإظهار الإجمالي والتوقيعات */
+  printRows?: Record<string, any>[];
   columns: TabCol[];
   /** أعمدة مخصصة للطباعة وPDF فقط مع إبقاء أعمدة Excel كما هي */
   printColumns?: TabCol[];
@@ -57,6 +59,7 @@ type Props = {
 export default function TabActions({
   title,
   rows,
+  printRows,
   columns,
   printColumns = columns,
   fileName,
@@ -74,11 +77,12 @@ export default function TabActions({
   const [pdfBusy, setPdfBusy] = useState(false);
   const { reportDate, reportDateLabel } = useReportDate();
   
-  // توليد كود الـ HTML الخاص بالجدول
-  const tableHtml = () => buildTableHtml({ title, columns: printColumns, rows, numericKeys, reportDate, includeTotalRow });
+  // فصل بيانات الطباعة عن بيانات Excel حتى تظهر صفوف الإجمالي والتوقيعات دون تكرارها في Excel.
+  const printData = printRows ?? rows;
+  const tableHtml = () => buildTableHtml({ title, columns: printColumns, rows: printData, numericKeys, reportDate, includeTotalRow });
   
   const handlePrint = () => {
-    if (!rows.length) {
+    if (!printData.length) {
       toast.error("لا توجد بيانات للطباعة");
       return;
     }
@@ -103,7 +107,7 @@ export default function TabActions({
   };
   
   const handleDownloadPdf = async () => {
-    if (!rows.length) {
+    if (!printData.length) {
       toast.error("لا توجد بيانات للتصدير");
       return;
     }
