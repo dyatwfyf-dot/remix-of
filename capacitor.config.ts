@@ -4,10 +4,15 @@ const config: CapacitorConfig = {
   appId: "ye.medicalcouncil.financial",
   appName: "مِيزان",
   webDir: "dist",
-  bundledWebRuntime: false,
   loggingBehavior: "none",
   server: {
     androidScheme: "https",
+  },
+  android: {
+    allowMixedContent: false,
+    captureInput: true,
+    webContentsDebuggingEnabled: false,
+    backgroundColor: "#ffffff",
   },
 };
 
