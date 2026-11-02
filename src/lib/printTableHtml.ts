@@ -172,6 +172,8 @@ export const tablePrintStyles = `
     margin: 0 0 4px;
     font-size: 22px;
     font-weight: 900;
+    white-space: pre-line;
+    line-height: 1.4;
   }
 
   .sub {

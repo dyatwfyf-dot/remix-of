@@ -28,7 +28,7 @@ export const reportDocumentCss = `
     width: 100% !important;
     height: auto !important;
   }
-  h1, h2 { text-align: center; color: #000000; font-size: 22px; margin: 0 0 6px; font-weight: 900; }
+  h1, h2 { text-align: center; color: #000000; font-size: 22px; margin: 0 0 6px; font-weight: 900; white-space: pre-line; line-height: 1.4; }
   .sub, .meta { text-align: center; color: #000000; font-size: 18px; margin-bottom: 8px; font-weight: 700; }
   table {
     width: 100%; 
