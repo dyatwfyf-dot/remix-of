@@ -697,7 +697,7 @@ export default function ReportsTab() {
   const sourceConfig = useMemo(() => {
     if (source === "youssefLoan") {
       return {
-        title: "كشف سلفة د/ يوسف",
+        title: "مسير إخلاء العهدة",
         columns: [
           { key: "date", label: "التاريخ" },
           { key: "docNo", label: "رقم المستند / الشيك" },
@@ -711,7 +711,7 @@ export default function ReportsTab() {
       }};
 if (source === "tawfiqCustody") {
       return {
-        title: "كشف عهدة توفيق الداعي",
+        title: "مسير إخلاء العهدة",
         columns: [
           { key: "date", label: "التاريخ" },
           { key: "docNo", label: "رقم المستند / الشيك" },
@@ -881,7 +881,7 @@ if (source === "tawfiqCustody") {
   const reportYearStart = new Date(reportIssuedAt.getFullYear(), 0, 1);
   const formatReportDate = (date: Date) =>
     date.toLocaleDateString("ar-EG-u-nu-latn", { day: "2-digit", month: "2-digit", year: "numeric" });
-  const custodyDateRange = `من ${formatReportDate(reportYearStart)} إلى ${formatReportDate(reportIssuedAt)}`;
+  const custodyDateRange = `من تاريخ ${formatReportDate(reportYearStart)} وحتى تاريخ ${formatReportDate(reportIssuedAt)}`;
 
   const title =
     source === "trainee"
@@ -889,7 +889,7 @@ if (source === "tawfiqCustody") {
       : source === "feeTotals"
       ? `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}`
       : source === "youssefLoan" || source === "tawfiqCustody"
-      ? `${sourceConfig.title} — ${custodyDateRange}`
+      ? `${sourceConfig.title}\n${custodyDateRange}`
       : `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
 
   const numericKeys =
