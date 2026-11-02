@@ -98,7 +98,8 @@ const buildReportSignatureGroup = (rows: Record<string, any>[], columns: TableCo
     `<div class="sig-name">${escapeHtml(String(row.name || "...................."))}</div>`
   ).join("");
 
-  return `<tr class="signature-block-row report-signature-group">
+  return `<tr aria-hidden="true" class="signature-spacer-row"><td colspan="${columns.length + 1}"></td></tr>
+  <tr class="signature-block-row report-signature-group">
     <td colspan="${columns.length + 1}" class="signature-block-cell">
       <div class="signature-block-grid">${titles}${names}</div>
     </td>
@@ -365,6 +366,13 @@ export const tablePrintStyles = `
   }
 
   /* كتلة التوقيعات الثلاثة لتقارير العهد (سطران متحاذيان) */
+  .signature-spacer-row td {
+    height: 28mm !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: #ffffff !important;
+    line-height: 0 !important;
+  }
   .signature-block-row td {
     background: #ffffff !important;
     border: 1.5px solid #000000 !important;
