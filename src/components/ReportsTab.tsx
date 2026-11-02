@@ -180,14 +180,13 @@ const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "ot
 const reportsTabPrintCss = `
   @media print {
     @page { size: A4 landscape; margin: 8mm; }
-    body { font-family: 'Cairo', Arial, sans-serif !important; color: #000000 !important; }
+    body { font-family: 'Cairo', Arial, sans-serif !important; color: #000000 !important; background: #ffffff !important; }
     .report-page-header { border: 2px solid #000 !important; margin-bottom: 8px !important; }
     table { width: 100% !important; border-collapse: collapse !important; border: 2px solid #000 !important; }
-    th { background: #027d11 !important; color: #ffffff !important; font-weight: 900 !important; border: 1px solid #000 !important; }
-    td { border: 1px solid #000 !important; color: #000000 !important; font-weight: 800 !important; }
-    td:nth-child(4) { background: #174258 !important; color: #ffffff !important; }
+    thead th { background: #FFD700 !important; color: #000000 !important; font-weight: 900 !important; border: 1px solid #000 !important; }
+    tbody td { background: #ffffff !important; border: 1px solid #000 !important; color: #000000 !important; font-weight: 800 !important; }
     .total-row td, tr.total-row td { background: #0437bb !important; color: #ffffff !important; font-weight: 900 !important; }
-    .signature-block-row td { background: #f8fafc !important; }
+    .signature-block-row td { background: #ffffff !important; }
     .print\\:hidden, button, select, input { display: none !important; }
     .print-only-text { display: block !important; }
   }
@@ -1098,13 +1097,15 @@ export default function ReportsTab() {
         {/* أزرار العمليات والتصدير والطباعة */}
         <div className="p-4">
           <TabActions
-            tableId="reports-table"
             title={title}
-            printTitle={title}
-            data={actionRows}
+            fileName="financial-report"
+            rows={actionRows}
+            printRows={displayRows}
             columns={sourceConfig.columns}
             numericKeys={numericKeys}
-            contentCss={reportsTabPrintCss}
+            pdfCss={reportsTabPrintCss}
+            pdfOrientation="landscape"
+            includeTotalRow={false}
           />
         </div>
 
@@ -1192,12 +1193,12 @@ export default function ReportsTab() {
                     const isSignature = row.summaryLevel === "signature";
 
                     let rowStyle = "";
-                    if (isOpening) rowStyle = "bg-amber-100 font-bold text-amber-950";
+                    if (isOpening) rowStyle = "bg-white font-bold text-slate-950";
                     else if (isTotal) rowStyle = "bg-[#0437bb] font-black text-white total-row";
-                    else if (row.summaryLevel === "fee") rowStyle = "bg-sky-100 font-bold text-sky-950";
-                    else if (row.summaryLevel === "trainee-name-total") rowStyle = "bg-emerald-100 font-bold text-emerald-950";
-                    else if (row.summaryLevel === "period") rowStyle = "bg-amber-100 font-bold text-amber-950";
-                    else if (index % 2 === 1) rowStyle = "bg-slate-50/80 text-slate-900";
+                    else if (row.summaryLevel === "fee") rowStyle = "bg-white font-bold text-slate-950";
+                    else if (row.summaryLevel === "trainee-name-total") rowStyle = "bg-white font-bold text-slate-950";
+                    else if (row.summaryLevel === "period") rowStyle = "bg-white font-bold text-slate-950";
+                    else if (index % 2 === 1) rowStyle = "bg-white text-slate-900";
                     else rowStyle = "bg-white text-slate-900";
 
                     // قسم التوقيعات المدمج أسفل تقارير العهد (في سطر أفقي واحد مدمج)
@@ -1206,69 +1207,55 @@ export default function ReportsTab() {
                       return (
                         <tr key="unified-custody-signatures" className="border-t-2 border-black bg-slate-50/90 signature-block-row">
                           <td colSpan={colCount} className="border border-black p-2 sm:p-3">
-                            <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-2 md:grid-cols-3">
-                              {/* 1. الشؤون المالية (اليمين) */}
-                              <div className="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2 py-1.5 shadow-sm">
-                                <input
-                                  type="text"
-                                  value={signaturesMeta.sig1Dept}
-                                  onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig1Dept: e.target.value }))}
-                                  className="w-1/2 rounded border border-slate-200 bg-slate-50 px-2 py-1 text-center text-xs font-black text-slate-800 outline-none focus:border-sky-600 focus:bg-white"
-                                  placeholder="المسمى / الإدارة"
-                                  title="المسمى أو الإدارة"
-                                />
-                                <span className="font-bold text-slate-400">:</span>
-                                <input
-                                  type="text"
-                                  value={signaturesMeta.sig1Name}
-                                  onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig1Name: e.target.value }))}
-                                  className="w-1/2 rounded border border-slate-200 bg-white px-2 py-1 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
-                                  placeholder="اسم الموقّع"
-                                  title="اسم المدير / الموقّع"
-                                />
-                              </div>
-
-                              {/* 2. نائب رئيس المجلس (الوسط) */}
-                              <div className="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2 py-1.5 shadow-sm">
-                                <input
-                                  type="text"
-                                  value={signaturesMeta.sig2Dept}
-                                  onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig2Dept: e.target.value }))}
-                                  className="w-1/2 rounded border border-slate-200 bg-slate-50 px-2 py-1 text-center text-xs font-black text-slate-800 outline-none focus:border-sky-600 focus:bg-white"
-                                  placeholder="المسمى / الإدارة"
-                                  title="المسمى أو الإدارة"
-                                />
-                                <span className="font-bold text-slate-400">:</span>
-                                <input
-                                  type="text"
-                                  value={signaturesMeta.sig2Name}
-                                  onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig2Name: e.target.value }))}
-                                  className="w-1/2 rounded border border-slate-200 bg-white px-2 py-1 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
-                                  placeholder="اسم الموقّع"
-                                  title="اسم المدير / الموقّع"
-                                />
-                              </div>
-
-                              {/* 3. رئيس المجلس (اليسار) */}
-                              <div className="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2 py-1.5 shadow-sm">
-                                <input
-                                  type="text"
-                                  value={signaturesMeta.sig3Dept}
-                                  onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig3Dept: e.target.value }))}
-                                  className="w-1/2 rounded border border-slate-200 bg-slate-50 px-2 py-1 text-center text-xs font-black text-slate-800 outline-none focus:border-sky-600 focus:bg-white"
-                                  placeholder="المسمى / الإدارة"
-                                  title="المسمى أو الإدارة"
-                                />
-                                <span className="font-bold text-slate-400">:</span>
-                                <input
-                                  type="text"
-                                  value={signaturesMeta.sig3Name}
-                                  onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig3Name: e.target.value }))}
-                                  className="w-1/2 rounded border border-slate-200 bg-white px-2 py-1 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
-                                  placeholder="اسم الموقّع"
-                                  title="اسم المدير / الموقّع"
-                                />
-                              </div>
+                            <div className="mx-auto grid w-full max-w-5xl grid-cols-3 gap-x-3 gap-y-1">
+                              <input
+                                type="text"
+                                value={signaturesMeta.sig1Dept}
+                                onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig1Dept: e.target.value }))}
+                                className="w-full min-w-0 rounded border border-slate-200 bg-white px-1.5 py-2 text-center text-[11px] font-black text-slate-900 outline-none focus:border-sky-600 sm:text-xs"
+                                placeholder="الإدارة المالية"
+                                title="الشؤون المالية"
+                              />
+                              <input
+                                type="text"
+                                value={signaturesMeta.sig2Dept}
+                                onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig2Dept: e.target.value }))}
+                                className="w-full min-w-0 rounded border border-slate-200 bg-white px-1.5 py-2 text-center text-[11px] font-black text-slate-900 outline-none focus:border-sky-600 sm:text-xs"
+                                placeholder="نائب رئيس المجلس"
+                                title="نائب رئيس المجلس"
+                              />
+                              <input
+                                type="text"
+                                value={signaturesMeta.sig3Dept}
+                                onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig3Dept: e.target.value }))}
+                                className="w-full min-w-0 rounded border border-slate-200 bg-white px-1.5 py-2 text-center text-[11px] font-black text-slate-900 outline-none focus:border-sky-600 sm:text-xs"
+                                placeholder="رئيس المجلس"
+                                title="رئيس المجلس اليمني للاختصاصات الطبية"
+                              />
+                              <input
+                                type="text"
+                                value={signaturesMeta.sig1Name}
+                                onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig1Name: e.target.value }))}
+                                className="w-full min-w-0 rounded border border-slate-200 bg-white px-1.5 py-2 text-center text-[11px] font-bold text-slate-900 outline-none focus:border-sky-600 sm:text-xs"
+                                placeholder="اسم المدير"
+                                title="اسم مدير الشؤون المالية"
+                              />
+                              <input
+                                type="text"
+                                value={signaturesMeta.sig2Name}
+                                onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig2Name: e.target.value }))}
+                                className="w-full min-w-0 rounded border border-slate-200 bg-white px-1.5 py-2 text-center text-[11px] font-bold text-slate-900 outline-none focus:border-sky-600 sm:text-xs"
+                                placeholder="اسم المدير"
+                                title="اسم نائب رئيس المجلس"
+                              />
+                              <input
+                                type="text"
+                                value={signaturesMeta.sig3Name}
+                                onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig3Name: e.target.value }))}
+                                className="w-full min-w-0 rounded border border-slate-200 bg-white px-1.5 py-2 text-center text-[11px] font-bold text-slate-900 outline-none focus:border-sky-600 sm:text-xs"
+                                placeholder="اسم المدير"
+                                title="اسم رئيس المجلس"
+                              />
                             </div>
                           </td>
                         </tr>
@@ -1331,7 +1318,7 @@ export default function ReportsTab() {
                               key={col.key}
                               className={`border border-black px-2 py-2 font-bold ${
                                 isNumeric ? "font-mono font-bold" : ""
-                              } ${col.key === "description" ? "bg-[#174258] text-white" : ""}`}
+                              } bg-white text-slate-900`}
                             >
                               {isNumeric ? formatCurrency(val) : val !== undefined && val !== null && String(val) !== "" ? String(val) : "—"}
                             </td>
