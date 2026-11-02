@@ -1,20 +1,20 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
+  BarChart3,
+  CalendarDays,
   ChevronDown,
   ChevronUp,
-  CalendarDays,
-  Trash2,
   DollarSign,
+  FileText,
+  Trash2,
   TrendingUp,
-  BarChart3,
   UserRound,
   Wallet,
 } from "lucide-react";
-import TabActions from "./TabActions";
-import { useStore } from "@/lib/store";
+import { useStore, type Account } from "@/lib/store";
 import { useFiscalYear } from "@/lib/fiscalYear";
-
-type ReportPeriod = "all" | "year" | "month" | "range";
+import TabActions, { type TabCol } from "./TabActions";
+import revenueSchema from "@/data/revenueTemplate.json";
 
 type ReportSource =
   | "youssefLoan"
@@ -23,11 +23,63 @@ type ReportSource =
   | "hafiza"
   | "expenses"
   | "revenue"
-  | "combined";
+  | "combined"
+  | "trainee"
+  | "feeTotals";
 
-const PERIODS: Array<{ value: ReportPeriod; label: string }> = [
-  { value: "all", label: "الكل" },
+type PeriodType = "all" | "month" | "quarter" | "half" | "year";
+type TraineeGrouping = "month" | "year";
+type TraineeDisplayMode = "detail" | "summary" | "both";
+
+export interface ReportRow {
+  id?: string;
+  date?: string;
+  description?: string;
+  trainee?: string;
+  name?: string;
+  specialty?: string;
+  year?: string | number;
+  amount?: number;
+  income?: number;
+  expense?: number;
+  hafizaAmount?: number;
+  hafizaNo?: string;
+  notifyNo?: string;
+  notifyDate?: string;
+  checkNo?: string;
+  category?: string;
+  period?: string;
+  source?: string;
+  displayType?: string;
+  notes?: string;
+  settlementNo?: string;
+  item?: string;
+  summaryLevel?: "opening" | "total" | "fee" | "trainee-name-total" | "period" | "signature" | "detail";
+  total?: string;
+  [key: string]: any;
+}
+
+interface SignaturesMeta {
+  sig1Dept: string;
+  sig1Name: string;
+  sig2Dept: string;
+  sig2Name: string;
+  sig3Dept: string;
+  sig3Name: string;
+}
+
+const MONTHS: string[] = [
+  "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+  "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر",
+];
+
+const TRAINEE_REPORT_START_YEAR = 2021;
+
+const PERIODS: Array<{ value: PeriodType; label: string }> = [
+  { value: "all", label: "كامل المدة (من 2026)" },
   { value: "year", label: "سنوي" },
+  { value: "half", label: "نصف سنوي" },
+  { value: "quarter", label: "ربع سنوي" },
   { value: "month", label: "شهري" },
 ];
 
@@ -39,74 +91,82 @@ const SOURCES: Array<{ value: ReportSource; label: string }> = [
   { value: "expenses", label: "المصروفات" },
   { value: "revenue", label: "الإيرادات" },
   { value: "combined", label: "تقرير مجمّع لكل التبويبات" },
+  { value: "trainee", label: "كشف مدفوعات المتدربين" },
+  { value: "feeTotals", label: "إجماليات الرسوم حسب النوع" },
 ];
 
-const MONTHS = [
-  { value: 1, label: "يناير" },
-  { value: 2, label: "فبراير" },
-  { value: 3, label: "مارس" },
-  { value: 4, label: "أبريل" },
-  { value: 5, label: "مايو" },
-  { value: 6, label: "يونيو" },
-  { value: 7, label: "يوليو" },
-  { value: 8, label: "أغسطس" },
-  { value: 9, label: "سبتمبر" },
-  { value: 10, label: "أكتوبر" },
-  { value: 11, label: "نوفمبر" },
-  { value: 12, label: "ديسمبر" },
-];
+const normalizeDate = (value: unknown): Date | null => {
+  if (!value) return null;
+  const date = new Date(String(value));
+  return Number.isNaN(date.getTime()) ? null : date;
+};
 
-export interface ReportRow {
-  id?: string;
-  date?: string;
-  description?: string;
-  trainee?: string;
-  name?: string;
-  specialty?: string;
-  year?: string;
-  amount?: number;
-  income?: number;
-  expense?: number;
-  hafizaAmount?: number;
-  hafizaNo?: string;
-  docNo?: string;
-  bank?: string;
-  source?: string;
-  summaryLevel?: "opening" | "total" | "fee" | "trainee-name-total" | "period" | "signature";
-  item?: string;
-  settlementNo?: string;
-  notes?: string;
-  [key: string]: any;
-}
+const periodMonths = (period: PeriodType, month: number) => {
+  if (period === "all" || period === "year") return Array.from({ length: 12 }, (_, i) => i);
+  if (period === "quarter") return [Math.floor(month / 3) * 3, Math.floor(month / 3) * 3 + 1, Math.floor(month / 3) * 3 + 2];
+  if (period === "half") return month < 6 ? [0, 1, 2, 3, 4, 5] : [6, 7, 8, 9, 10, 11];
+  return [month];
+};
+
+const periodLabel = (period: PeriodType, month: number, year: number) => {
+  if (period === "all") return `من عام 2026 حتى تاريخه`;
+  if (period === "year") return `السنة المالية ${year}`;
+  if (period === "half") return `${month < 6 ? "النصف الأول" : "النصف الثاني"} لعام ${year}`;
+  if (period === "quarter") return `الربع ${Math.floor(month / 3) + 1} لعام ${year}`;
+  return `شهر ${MONTHS[month]} ${year}`;
+};
+
+const getYearOptions = (values: unknown[]) => {
+  const years = new Set<number>([2024, 2025, 2026]);
+  values.forEach((value) => {
+    const date = normalizeDate(value);
+    if (date) years.add(date.getFullYear());
+  });
+  return Array.from(years).sort((a, b) => b - a);
+};
+
+const revenueItemNames = (() => {
+  const names = new Map<string, string>();
+  const schema = revenueSchema as any;
+  (schema.chapters || []).forEach((chapter: any) =>
+    (chapter.sections || []).forEach((section: any) =>
+      (section.items || []).forEach((item: any) =>
+        (item.types || []).forEach((type: any) => {
+          names.set(`${chapter.no}-${section.no}-${item.no}-${type.no}`, type.title);
+          names.set(String(type.no), type.title);
+        })
+      )
+    )
+  );
+  return names;
+})();
+
+const revenueName = (key: string) => {
+  const itemKey = key.split("-").slice(2).join("-");
+  return revenueItemNames.get(itemKey) || revenueItemNames.get(itemKey.split("-").at(-1) || "") || itemKey || "—";
+};
+
+const amountValue = (value: unknown): number => {
+  if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+  if (!value) return 0;
+  const num = Number(value);
+  return Number.isFinite(num) ? num : 0;
+};
 
 const formatCurrency = (val?: number | string | null): string => {
   return (Number(val) || 0).toLocaleString("en-US");
 };
 
-const amountValue = (val: unknown): number => {
-  if (typeof val === "number") return Number.isFinite(val) ? val : 0;
-  if (!val) return 0;
-  const cleaned = String(val).replace(/,/g, "").trim();
-  const n = parseFloat(cleaned);
-  return Number.isFinite(n) ? n : 0;
-};
-
-const normalizeDate = (raw?: string | null): Date | null => {
-  if (!raw) return null;
-  const trimmed = String(raw).trim();
-  if (!trimmed) return null;
-  const parts = trimmed.split(/[-/]/);
-  if (parts.length === 3) {
-    if (parts[0].length === 4) {
-      const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-      if (!isNaN(d.getTime())) return d;
-    } else if (parts[2].length === 4) {
-      const d = new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
-      if (!isNaN(d.getTime())) return d;
-    }
-  }
-  const fallback = new Date(trimmed);
-  return isNaN(fallback.getTime()) ? null : fallback;
+const canonicalFeeCategory = (value: unknown) => {
+  const text = String(value || "")
+    .trim()
+    .replace(/[ًٌٍَُِّْـ]/g, "")
+    .replace(/[إأآ]/g, "ا")
+    .replace(/\s+/g, " ");
+  if (!text) return "رسوم أخرى";
+  if (/(امتحان|اختبار)/.test(text)) return "رسوم الامتحانات";
+  if (/(تسجيل|قيد|دراس|دراسه|قسط)/.test(text)) return "أقساط الدراسة والتسجيل";
+  return String(value).trim() || "رسوم أخرى";
 };
 
 const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "other" => {
@@ -117,134 +177,67 @@ const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "ot
   return "other";
 };
 
-/* ====== تصنيف الصفوف (بنية الجدول) ====== */
-const isHeadRow = (row: ReportRow) => row.summaryLevel === "opening";
-const isFootRow = (row: ReportRow) =>
-  row.summaryLevel === "total" ||
-  row.summaryLevel === "fee" ||
-  row.summaryLevel === "trainee-name-total" ||
-  row.summaryLevel === "signature";
-
-const isPreservedFromColumnFilter = (row: ReportRow) =>
-  row.summaryLevel === "opening" ||
-  row.summaryLevel === "total" ||
-  row.summaryLevel === "fee" ||
-  row.summaryLevel === "signature";
-
-// أنماط الطباعة
 const reportsTabPrintCss = `
-  .reports-data-table thead th,
-  .reports-data-table thead th * {
-    background-color: #027d11 !important;
-    background: #027d11 !important;
-    color: #ffffff !important;
-    font-weight: 900 !important;
-    border-color: #000000 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  .reports-data-table tbody td.desc-cell,
-  .reports-data-table tbody td[data-col-key="description"],
-  .reports-data-table tbody td[data-col-key="item"] {
-    color: #174258 !important;
-    font-weight: 800 !important;
-  }
-
-  .reports-data-table tbody tr.total-row,
-  .reports-data-table tbody tr.total-row td,
-  .reports-data-table tbody tr.total-row td * {
-    background-color: #0437bb !important;
-    background: #0437bb !important;
-    color: #ffffff !important;
-    font-weight: 900 !important;
-    border-color: #000000 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  .custody-card-opening {
-    background: #fde68a !important;
-    color: #78350f !important;
-    border: 1px solid #d97706 !important;
-  }
-  .custody-card-spent {
-    background: #fecaca !important;
-    color: #7f1d1d !important;
-    border: 1px solid #dc2626 !important;
-  }
-  .custody-card-remaining {
-    background: #a7f3d0 !important;
-    color: #064e3b !important;
-    border: 1px solid #059669 !important;
-  }
-
-  .signature-block-row td {
-    background: #ffffff !important;
-    border: 1.5px solid #000000 !important;
-    padding: 14px 18px !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-  .signature-block-grid {
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 6px 12px !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    text-align: center !important;
-  }
-  .sig-title {
-    font-size: 13px !important;
-    font-weight: 900 !important;
-    color: #000000 !important;
-    margin-bottom: 8px !important;
-  }
-  .sig-name {
-    font-size: 13px !important;
-    font-weight: 800 !important;
-    color: #000000 !important;
+  @media print {
+    @page { size: A4 landscape; margin: 8mm; }
+    body { font-family: 'Cairo', Arial, sans-serif !important; color: #000000 !important; }
+    .report-page-header { border: 2px solid #000 !important; margin-bottom: 8px !important; }
+    table { width: 100% !important; border-collapse: collapse !important; border: 2px solid #000 !important; }
+    th { background: #027d11 !important; color: #ffffff !important; font-weight: 900 !important; border: 1px solid #000 !important; }
+    td { border: 1px solid #000 !important; color: #000000 !important; font-weight: 800 !important; }
+    td:nth-child(4) { background: #174258 !important; color: #ffffff !important; }
+    .total-row td, tr.total-row td { background: #0437bb !important; color: #ffffff !important; font-weight: 900 !important; }
+    .signature-block-row td { background: #f8fafc !important; }
+    .print\\:hidden, button, select, input { display: none !important; }
+    .print-only-text { display: block !important; }
   }
 `;
 
 export default function ReportsTab() {
-  const { year } = useFiscalYear();
-  const { hafiza, accounts } = useStore();
+  const { year: fiscalYear } = useFiscalYear();
+  const hafiza = useStore((state) => state.hafiza);
+  const accounts = useStore((state) => state.accounts);
+  const revenue = useStore((state) => state.revenue);
 
-  const [period, setPeriod] = useState<ReportPeriod>("all");
-  const [selectedMonths, setSelectedMonths] = useState<number[]>([]);
   const [source, setSource] = useState<ReportSource>("youssefLoan");
+  const [period, setPeriod] = useState<PeriodType>("all");
+  const [year, setYear] = useState<number>(fiscalYear);
+  const [month, setMonth] = useState<number>(new Date().getMonth());
 
-  const [traineeSortColumn, setTraineeSortColumn] = useState<string>("date");
+  const [selectedTrainee, setSelectedTrainee] = useState<string>("all");
+  const [selectedFee, setSelectedFee] = useState<string>("all");
+  const [traineeGrouping, setTraineeGrouping] = useState<TraineeGrouping>("month");
+  const [traineeDisplayMode, setTraineeDisplayMode] = useState<TraineeDisplayMode>("both");
+
+  const [sortColumn, setSortColumn] = useState<string>("date");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [traineeSortColumn, setTraineeSortColumn] = useState<string>("notifyDate");
   const [traineeSortDirection, setTraineeSortDirection] = useState<"asc" | "desc">("asc");
 
-  // الرصيد الافتتاحي لسلفة د/يوسف
+  const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
+  const [deletedRows, setDeletedRows] = useState<Set<ReportRow>>(new Set());
+
   const [youssefOpeningBalance, setYoussefOpeningBalance] = useState<number>(() => {
     try {
-      const saved = localStorage.getItem(`youssef_loan_opening_balance_${year}`);
-      return saved !== null ? Number(saved) || 0 : 0;
+      const saved = localStorage.getItem("youssef-loan-opening-balance");
+      return saved ? Number(saved) || 0 : 0;
     } catch {
       return 0;
     }
   });
 
-  // الرصيد الافتتاحي لعهدة توفيق الداعي
   const [tawfiqOpeningBalance, setTawfiqOpeningBalance] = useState<number>(() => {
     try {
-      const saved = localStorage.getItem(`tawfiq_custody_opening_balance_${year}`);
-      return saved !== null ? Number(saved) || 0 : 0;
+      const saved = localStorage.getItem("tawfiq-custody-opening-balance");
+      return saved ? Number(saved) || 0 : 0;
     } catch {
       return 0;
     }
   });
 
-  const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
-  const [sortColumn, setSortColumn] = useState<string>("");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  const [deletedRows, setDeletedRows] = useState<Set<ReportRow>>(() => new Set());
-
-  // حفظ القيم اليدوية لأعمدة رقم كشف التسوية والملاحظات والمبلغ محلياً
-  const [loanManualData, setLoanManualData] = useState<Record<string, { settlementNo?: string; notes?: string; amount?: number }>>(() => {
+  const [loanManualData, setLoanManualData] = useState<
+    Record<string, { settlementNo?: string; notes?: string; amount?: number }>
+  >(() => {
     try {
       const saved = localStorage.getItem("reports-loan-manual-data-v1");
       return saved ? JSON.parse(saved) : {};
@@ -253,88 +246,103 @@ export default function ReportsTab() {
     }
   });
 
-  // حالة لتخزين مسميات الإدارات والمدراء لصفوف التوقيعات يدوياً مع الحفظ التلقائي
-  const [signaturesMeta, setSignaturesMeta] = useState(() => {
+  const [signaturesMeta, setSignaturesMeta] = useState<SignaturesMeta>(() => {
     try {
       const saved = localStorage.getItem("reports-custody-signatures-meta-v1");
       if (saved) return JSON.parse(saved);
     } catch {}
     return {
       sig1Dept: "الشؤون المالية",
-      sig1Name: "أ. ___________________",
+      sig1Name: "أ/ محمد الدباغ",
       sig2Dept: "نائب رئيس المجلس",
-      sig2Name: "أ. ___________________",
-      sig3Dept: "رئيس المجلس اليمني للاختصاصات الطبية - فرع / صعدة",
-      sig3Name: "د. ___________________",
+      sig2Name: "أ.د/ فضل علي حزام",
+      sig3Dept: "رئيس المجلس اليمني للاختصاصات الطبية",
+      sig3Name: "أ.د/ أثمار حسين علي",
     };
   });
 
   useEffect(() => {
-    setColumnFilters({});
-    setSortColumn("");
-    setSortDirection("asc");
-    setDeletedRows(new Set());
-  }, [source]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem("reports-loan-manual-data-v1", JSON.stringify(loanManualData));
-    } catch (error) {
-      console.error("تعذر حفظ بيانات أعمدة تقارير العهد محلياً:", error);
-    }
-  }, [loanManualData]);
-
-  // حفظ بيانات التوقيعات تلقائياً عند أي تعديل
-  useEffect(() => {
     try {
       localStorage.setItem("reports-custody-signatures-meta-v1", JSON.stringify(signaturesMeta));
     } catch (error) {
-      console.error("تعذر حفظ مسميات وأسماء التوقيعات محلياً:", error);
+      console.error("تعذر حفظ التوقيعات محلياً:", error);
     }
   }, [signaturesMeta]);
 
-  const selectedMonthSet = useMemo(() => new Set(selectedMonths), [selectedMonths]);
-
-  const inPeriod = (dateStr?: string | null): boolean => {
-    if (!dateStr) return false;
-    const d = normalizeDate(dateStr);
-    if (!d) return false;
-    if (period === "all") return true;
-    if (period === "year") return d.getFullYear() === Number(year);
-    if (period === "month") {
-      if (d.getFullYear() !== Number(year)) return false;
-      if (selectedMonthSet.size === 0) return true;
-      return selectedMonthSet.has(d.getMonth() + 1);
-    }
-    return true;
+  const handleYoussefOpeningChange = (val: number) => {
+    setYoussefOpeningBalance(val);
+    try {
+      localStorage.setItem("youssef-loan-opening-balance", String(val));
+    } catch {}
   };
 
-  // 1. تقرير سلفة د/يوسف
+  const handleTawfiqOpeningChange = (val: number) => {
+    setTawfiqOpeningBalance(val);
+    try {
+      localStorage.setItem("tawfiq-custody-opening-balance", String(val));
+    } catch {}
+  };
+
+  const handleManualFieldChange = (
+    rowKey: string,
+    field: "settlementNo" | "notes" | "amount",
+    value: string | number
+  ) => {
+    setLoanManualData((prev) => {
+      const current = prev[rowKey] || {};
+      const updated = {
+        ...prev,
+        [rowKey]: {
+          ...current,
+          [field]: field === "amount" ? (value === "" ? 0 : Number(value) || 0) : value,
+        },
+      };
+      try {
+        localStorage.setItem("reports-loan-manual-data-v1", JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+  };
+
+  const yearOptions = useMemo(
+    () => getYearOptions([...hafiza.map((row) => row.date), ...accounts.map((row) => row.date)]),
+    [hafiza, accounts]
+  );
+
+  const selectedMonthSet = useMemo(() => new Set(periodMonths(period, month)), [period, month]);
+
+  const inPeriod = (dateVal: unknown) => {
+    const d = normalizeDate(dateVal);
+    if (!d) return false;
+    if (period === "all") return d.getFullYear() >= 2026;
+    return d.getFullYear() === year && selectedMonthSet.has(d.getMonth());
+  };
+
   const youssefRows = useMemo<ReportRow[]>(() => {
     const matched = accounts
       .filter((row) => {
         const d = normalizeDate(row.date);
-        if (!d || d.getFullYear() < 2026) return false;
-        if (!inPeriod(row.date)) return false;
+        if (!d) return false;
+        const inTime = period === "all" ? d.getFullYear() >= 2026 : d.getFullYear() === year && selectedMonthSet.has(d.getMonth());
+        if (!inTime) return false;
         return classifyCustodyRecord(row.description) === "youssef";
       })
       .sort((a, b) => String(a.date).localeCompare(String(b.date)));
 
     const result: ReportRow[] = [];
+    let sumAmount = 0;
 
     result.push({
       id: "y-opening",
-      date: "2026-01-01",
-      docNo: "افتتاحي",
-      description: "الرصيد الافتتاحي للعهدة",
+      date: "—",
+      docNo: "—",
+      description: "الرصيد الافتتاحي (سلفة د/يوسف)",
       name: "د/ يوسف",
       settlementNo: "—",
-      notes: "رصيد افتتاحي للعهدة",
+      notes: "رصيد مرحل",
       amount: youssefOpeningBalance,
       summaryLevel: "opening",
     });
-
-    let sumAmount = 0;
 
     matched.forEach((row, index) => {
       const rowKey = `youssef-${index}-${row.date}`;
@@ -382,32 +390,31 @@ export default function ReportsTab() {
     return result;
   }, [accounts, youssefOpeningBalance, period, year, selectedMonthSet, loanManualData, signaturesMeta]);
 
-  // 2. تقرير عهدة توفيق الداعي
   const tawfiqRows = useMemo<ReportRow[]>(() => {
     const matched = accounts
       .filter((row) => {
         const d = normalizeDate(row.date);
-        if (!d || d.getFullYear() < 2026) return false;
-        if (!inPeriod(row.date)) return false;
+        if (!d) return false;
+        const inTime = period === "all" ? d.getFullYear() >= 2026 : d.getFullYear() === year && selectedMonthSet.has(d.getMonth());
+        if (!inTime) return false;
         return classifyCustodyRecord(row.description) === "tawfiq";
       })
       .sort((a, b) => String(a.date).localeCompare(String(b.date)));
 
     const result: ReportRow[] = [];
+    let sumAmount = 0;
 
     result.push({
       id: "t-opening",
-      date: "2026-01-01",
-      docNo: "افتتاحي",
-      description: "الرصيد الافتتاحي للعهدة",
+      date: "—",
+      docNo: "—",
+      description: "الرصيد الافتتاحي (عهدة توفيق الداعي)",
       name: "توفيق الداعي",
       settlementNo: "—",
-      notes: "رصيد افتتاحي للعهدة",
+      notes: "رصيد مرحل",
       amount: tawfiqOpeningBalance,
       summaryLevel: "opening",
     });
-
-    let sumAmount = 0;
 
     matched.forEach((row, index) => {
       const rowKey = `tawfiq-${index}-${row.date}`;
@@ -455,314 +462,482 @@ export default function ReportsTab() {
     return result;
   }, [accounts, tawfiqOpeningBalance, period, year, selectedMonthSet, loanManualData, signaturesMeta]);
 
-  const hafizaRows = useMemo<ReportRow[]>(() => hafiza.filter((row) => inPeriod(row.date)).map((row) => ({
-    date: row.date,
-    description: row.description || "—",
-    name: row.name || "—",
-    hafizaNo: row.hafizaNo || "—",
-    amount: amountValue(row.hafizaAmount),
-    income: amountValue(row.income ?? row.notifyAmount)
-  })), [hafiza, year, selectedMonthSet, period]);
+  const hafizaRows = useMemo<ReportRow[]>(
+    () =>
+      hafiza
+        .filter((row) => inPeriod(row.date))
+        .map((row) => ({
+          date: row.date,
+          description: row.description || "—",
+          name: row.name || "—",
+          hafizaNo: row.hafizaNo || "—",
+          amount: amountValue(row.hafizaAmount),
+          income: amountValue(row.income ?? row.notifyAmount),
+        })),
+    [hafiza, year, selectedMonthSet, period]
+  );
 
-  const accountRows = useMemo<ReportRow[]>(() => accounts.filter((row) => inPeriod(row.date)).map((row) => ({
-    date: row.date,
-    description: row.description || "—",
-    name: row.name || "—",
-    income: amountValue(row.income || row.hafizaAmount),
-    expense: amountValue(row.expense),
-    bank: row.bank || "—",
-    docNo: row.checkNo ? `شيك: ${row.checkNo}` : row.notifyNo ? `إشعار: ${row.notifyNo}` : row.hafizaNo ? `حافظة: ${row.hafizaNo}` : "—"
-  })), [accounts, year, selectedMonthSet, period]);
+  const accountRows = useMemo<ReportRow[]>(
+    () =>
+      accounts
+        .filter((row) => inPeriod(row.date))
+        .sort((a, b) => String(a.date).localeCompare(String(b.date)))
+        .map((row) => ({
+          date: row.date,
+          description: row.description || "—",
+          name: row.name || "—",
+          income: amountValue(row.income),
+          expense: amountValue(row.expense),
+          docNo: row.checkNo ? `شيك: ${row.checkNo}` : row.notifyNo ? `إشعار: ${row.notifyNo}` : row.hafizaNo ? `حافظة: ${row.hafizaNo}` : "—",
+        })),
+    [accounts, year, selectedMonthSet, period]
+  );
 
-  const expensesRows = useMemo<ReportRow[]>(() => accountRows.filter((row) => Number(row.expense) > 0).map((row) => ({
-    date: row.date,
-    item: row.description,
-    name: row.name || "—",
-    expense: amountValue(row.expense)
-  })), [accountRows]);
+  const expenseRows = useMemo<ReportRow[]>(
+    () =>
+      accountRows
+        .filter((row) => Number(row.expense) > 0)
+        .map((row) => ({
+          date: row.date,
+          item: row.description,
+          name: row.name,
+          expense: amountValue(row.expense),
+        })),
+    [accountRows]
+  );
 
-  const revenueRows = useMemo<ReportRow[]>(() => accountRows.filter((row) => Number(row.income) > 0).map((row) => ({
-    date: row.date,
-    item: row.description,
-    name: row.name || "—",
-    income: amountValue(row.income)
-  })), [accountRows]);
+  const revenueRows = useMemo<ReportRow[]>(
+    () =>
+      Object.entries(revenue)
+        .map(([key, amount]) => {
+          const parts = key.split("-");
+          const rowYear = Number(parts[0]);
+          const rowMonth = Number(parts[1]) - 1;
+          return {
+            date: `${MONTHS[rowMonth] || parts[1]} ${rowYear}`,
+            item: revenueName(key),
+            amount: amountValue(amount),
+            _year: rowYear,
+            _month: rowMonth,
+          };
+        })
+        .filter((row) => (period === "all" ? row._year >= 2026 : row._year === year && selectedMonthSet.has(row._month as number)))
+        .map(({ _year, _month, ...row }) => row),
+    [revenue, year, selectedMonthSet, period]
+  );
 
-  const combinedRows = useMemo<ReportRow[]>(() => [
-    ...hafizaRows.map((r) => ({ ...r, source: "حوافظ التوريد" })),
-    ...accountRows.map((r) => ({ ...r, source: "الحساب الجاري" })),
-  ], [hafizaRows, accountRows]);
+  const traineeOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          hafiza
+            .map((row) => String(row.name || "").trim())
+            .filter(Boolean)
+        )
+      ).sort((a, b) => a.localeCompare(b, "ar")),
+    [hafiza]
+  );
+
+  const feeCategoryOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          hafiza
+            .map((row) => canonicalFeeCategory(row.description))
+            .filter(Boolean)
+        )
+      ).sort((a, b) => a.localeCompare(b, "ar")),
+    [hafiza]
+  );
+
+  const traineeRows = useMemo<ReportRow[]>(() => {
+    const payments = hafiza.flatMap((row) => {
+      const date = normalizeDate(row.notifyDate);
+      const trainee = String(row.name || "").trim();
+      const category = canonicalFeeCategory(row.description);
+      const amount = amountValue(row.notifyAmount);
+      if (
+        !date ||
+        date.getFullYear() < TRAINEE_REPORT_START_YEAR ||
+        !trainee ||
+        amount <= 0 ||
+        (selectedTrainee !== "all" && trainee !== selectedTrainee) ||
+        (selectedFee !== "all" && category !== selectedFee)
+      ) {
+        return [];
+      }
+      const p = traineeGrouping === "year" ? String(date.getFullYear()) : `${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+      return [
+        {
+          notifyDate: row.notifyDate,
+          hafizaNo: row.hafizaNo || "",
+          notifyNo: row.notifyNo || "",
+          year: date.getFullYear(),
+          period: p,
+          trainee,
+          category,
+          description: String(row.description || "رسوم أخرى").trim(),
+          source: "حوافظ التوريد",
+          amount,
+        },
+      ];
+    });
+
+    const categories = Array.from(new Set(payments.map((row) => String(row.category)))).sort((a, b) => a.localeCompare(b, "ar"));
+    const result: ReportRow[] = [];
+
+    categories.forEach((category) => {
+      const categoryPayments = payments.filter((row) => row.category === category).sort((a, b) => String(a.notifyDate).localeCompare(String(b.notifyDate)));
+      if (traineeDisplayMode === "detail" || traineeDisplayMode === "both") {
+        result.push(...categoryPayments.map((row) => ({ ...row, displayType: "تفصيلي", summaryLevel: "detail" })));
+      }
+      if (traineeDisplayMode === "summary" || traineeDisplayMode === "both") {
+        const grouped = new Map<string, ReportRow>();
+        categoryPayments.forEach((row) => {
+          const key = `${row.year}|${row.period}`;
+          const current = grouped.get(key);
+          if (current) {
+            current.amount = amountValue(current.amount) + amountValue(row.amount);
+          } else {
+            grouped.set(key, {
+              year: row.year,
+              period: row.period,
+              trainee: row.trainee,
+              category,
+              description: "إجمالي الفترة",
+              source: "حوافظ التوريد",
+              amount: row.amount,
+              displayType: "إجمالي الفترة",
+              notes: "إجمالي الفترة",
+              summaryLevel: "period",
+            });
+          }
+        });
+        result.push(...Array.from(grouped.values()));
+      }
+      result.push({
+        period: `إجمالي ${category}`,
+        trainee: selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee,
+        category,
+        description: "إجمالي الرسم",
+        source: "حوافظ التوريد",
+        amount: categoryPayments.reduce((sum, row) => sum + amountValue(row.amount), 0),
+        displayType: "إجمالي الرسم",
+        notes: "إجمالي الرسم",
+        summaryLevel: "fee",
+      });
+    });
+
+    if (traineeDisplayMode === "summary" || traineeDisplayMode === "both") {
+      const nameYearMap = new Map<string, { trainee: string; year: number; amount: number }>();
+      payments.forEach((row) => {
+        const key = `${row.trainee}|${row.year}`;
+        const existing = nameYearMap.get(key);
+        if (existing) {
+          existing.amount += amountValue(row.amount);
+        } else {
+          nameYearMap.set(key, { trainee: row.trainee, year: row.year, amount: amountValue(row.amount) });
+        }
+      });
+      const nameYearRows: ReportRow[] = Array.from(nameYearMap.values())
+        .sort((a, b) => {
+          const cmp = a.trainee.localeCompare(b.trainee, "ar");
+          return cmp !== 0 ? cmp : a.year - b.year;
+        })
+        .map(({ trainee, year, amount }) => ({
+          year,
+          trainee,
+          category: "—",
+          description: `إجمالي ${trainee} لعام ${year}`,
+          source: "حوافظ التوريد",
+          amount,
+          displayType: "إجمالي المتدرب / السنة",
+          notes: "إجمالي المتدرب / السنة",
+          summaryLevel: "trainee-name-total",
+        }));
+      result.push(...nameYearRows);
+    }
+
+    return result;
+  }, [hafiza, selectedTrainee, selectedFee, traineeGrouping, traineeDisplayMode]);
+
+  const feeTotalsRows = useMemo<ReportRow[]>(() => {
+    const totals = new Map<string, number>();
+    hafiza.forEach((row) => {
+      const name = String(row.name || "").trim();
+      const amount = amountValue(row.notifyAmount);
+      const date = normalizeDate(row.notifyDate);
+      if (amount <= 0 || !date || date.getFullYear() < TRAINEE_REPORT_START_YEAR) return;
+      if (selectedTrainee !== "all" && name !== selectedTrainee) return;
+      const category = canonicalFeeCategory(row.description);
+      totals.set(category, (totals.get(category) || 0) + amount);
+    });
+    const rows = Array.from(totals.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([category, amount]) => ({ category, source: "حوافظ التوريد", amount }));
+    const grandTotal = rows.reduce((sum, row) => sum + amountValue(row.amount), 0);
+    return grandTotal > 0 ? [...rows, { category: "الإجمالي الكلي لجميع الرسوم", source: "حوافظ التوريد", amount: grandTotal, total: "نعم" }] : rows;
+  }, [hafiza, selectedTrainee]);
 
   const sourceConfig = useMemo(() => {
-    switch (source) {
-      case "youssefLoan":
-      case "tawfiqCustody":
-        return {
-          title: source === "youssefLoan" ? "تقرير سلفة د/يوسف" : "تقرير عهدة توفيق الداعي",
-          rows: source === "youssefLoan" ? youssefRows : tawfiqRows,
-          columns: [
-            { key: "date", label: "التاريخ" },
-            { key: "docNo", label: "رقم المستند / الشيك" },
-            { key: "description", label: "البيان" },
-            { key: "name", label: "الاسم" },
-            { key: "settlementNo", label: "رقم كشف التسوية" },
-            { key: "notes", label: "ملاحظات" },
-            { key: "amount", label: "المبلغ" },
-          ],
-        };
-      case "account":
-        return {
-          title: "تقرير الحساب الجاري",
-          rows: accountRows,
-          columns: [
-            { key: "date", label: "التاريخ" },
-            { key: "description", label: "البيان" },
-            { key: "name", label: "الاسم" },
-            { key: "docNo", label: "رقم المستند" },
-            { key: "bank", label: "البنك" },
-            { key: "income", label: "المقبوضات" },
-            { key: "expense", label: "المدفوعات" },
-          ],
-        };
-      case "hafiza":
-        return {
-          title: "تقرير حوافظ التوريد",
-          rows: hafizaRows,
-          columns: [
-            { key: "date", label: "التاريخ" },
-            { key: "hafizaNo", label: "رقم الحافظة" },
-            { key: "description", label: "البيان" },
-            { key: "name", label: "الاسم" },
-            { key: "amount", label: "مبلغ الحافظة" },
-            { key: "income", label: "المبلغ المورّد" },
-          ],
-        };
-      case "expenses":
-        return {
-          title: "تقرير المصروفات",
-          rows: expensesRows,
-          columns: [
-            { key: "date", label: "التاريخ" },
-            { key: "item", label: "بند الصرف" },
-            { key: "name", label: "المستفيد" },
-            { key: "expense", label: "المبلغ المنصرف" },
-          ],
-        };
-      case "revenue":
-        return {
-          title: "تقرير الإيرادات",
-          rows: revenueRows,
-          columns: [
-            { key: "date", label: "التاريخ" },
-            { key: "item", label: "بند الإيراد" },
-            { key: "name", label: "المودع" },
-            { key: "income", label: "المبلغ المحصل" },
-          ],
-        };
-      case "combined":
-      default:
-        return {
-          title: "التقرير المجمّع",
-          rows: combinedRows,
-          columns: [
-            { key: "source", label: "المصدر" },
-            { key: "date", label: "التاريخ" },
-            { key: "description", label: "البيان" },
-            { key: "name", label: "الاسم" },
-            { key: "income", label: "المقبوضات" },
-            { key: "expense", label: "المدفوعات" },
-          ],
-        };
-    }
-  }, [source, youssefRows, tawfiqRows, accountRows, hafizaRows, expensesRows, revenueRows, combinedRows]);
-
-  const { title, rows: baseRows, columns } = sourceConfig;
-
-  const totalSpent = useMemo(() => {
     if (source === "youssefLoan") {
-      return youssefRows
-        .filter((r) => !isHeadRow(r) && !isFootRow(r))
-        .reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+      return {
+        title: "كشف سلفة د/ يوسف",
+        columns: [
+          { key: "date", label: "التاريخ" },
+          { key: "docNo", label: "رقم المستند / الشيك" },
+          { key: "description", label: "البيان" },
+          { key: "name", label: "الاسم" },
+          { key: "settlementNo", label: "رقم كشف التسوية" },
+          { key: "notes", label: "الملاحظات" },
+          { key: "amount", label: "المبلغ" },
+        ] satisfies TabCol[],
+      };
     }
     if (source === "tawfiqCustody") {
-      return tawfiqRows
-        .filter((r) => !isHeadRow(r) && !isFootRow(r))
-        .reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+      return {
+        title: "كشف عهدة توفيق الداعي",
+        columns: [
+          { key: "date", label: "التاريخ" },
+          { key: "docNo", label: "رقم المستند / الشيك" },
+          { key: "description", label: "البيان" },
+          { key: "name", label: "الاسم" },
+          { key: "settlementNo", label: "رقم كشف التسوية" },
+          { key: "notes", label: "الملاحظات" },
+          { key: "amount", label: "المبلغ" },
+        ] satisfies TabCol[],
+      };
     }
-    return 0;
-  }, [source, youssefRows, tawfiqRows]);
-
-  const currentOpeningBalance = source === "youssefLoan" ? youssefOpeningBalance : tawfiqOpeningBalance;
-  const remainingBalance = currentOpeningBalance - totalSpent;
-
-  const processedRows = useMemo(() => {
-    let list = baseRows.filter((row) => !deletedRows.has(row));
-
-    const activeFilterEntries = Object.entries(columnFilters).filter(
-      ([, val]) => val !== undefined && val.trim() !== ""
-    );
-
-    if (activeFilterEntries.length > 0) {
-      list = list.filter((row) => {
-        if (isPreservedFromColumnFilter(row)) return true;
-        return activeFilterEntries.every(([colKey, filterVal]) => {
-          const rowVal = row[colKey as keyof ReportRow];
-          if (rowVal === undefined || rowVal === null) return false;
-          return String(rowVal).toLowerCase().includes(filterVal.toLowerCase().trim());
-        });
-      });
+    if (source === "trainee") {
+      return {
+        title: "كشف مدفوعات المتدربين من حوافظ التوريد",
+        columns: [
+          { key: "year", label: "السنة" },
+          { key: "notifyDate", label: "تاريخ التوريد" },
+          { key: "period", label: "الشهر / السنة" },
+          { key: "trainee", label: "اسم المتدرب" },
+          { key: "hafizaNo", label: "رقم الحافظة" },
+          { key: "notifyNo", label: "رقم الإشعار" },
+          { key: "description", label: "البيان الأصلي" },
+          { key: "category", label: "التصنيف الموحد" },
+          { key: "displayType", label: "نوع السجل" },
+          { key: "source", label: "المصدر" },
+          { key: "amount", label: "مبلغ التوريد" },
+        ] satisfies TabCol[],
+      };
     }
+    if (source === "feeTotals") {
+      return {
+        title: "إجماليات الرسوم حسب النوع",
+        columns: [
+          { key: "category", label: "نوع الرسم" },
+          { key: "source", label: "المصدر" },
+          { key: "amount", label: "الإجمالي" },
+        ] satisfies TabCol[],
+      };
+    }
+    if (source === "hafiza") {
+      return {
+        title: "تقرير حوافظ التوريد",
+        columns: [
+          { key: "date", label: "التاريخ" },
+          { key: "hafizaNo", label: "رقم الحافظة" },
+          { key: "description", label: "البيان" },
+          { key: "name", label: "الاسم" },
+          { key: "amount", label: "المبلغ" },
+          { key: "income", label: "الإيرادات" },
+        ] satisfies TabCol[],
+      };
+    }
+    if (source === "account") {
+      return {
+        title: "تقرير الحساب الجاري",
+        columns: [
+          { key: "date", label: "التاريخ" },
+          { key: "docNo", label: "رقم المستند" },
+          { key: "description", label: "البيان" },
+          { key: "name", label: "الاسم" },
+          { key: "income", label: "الإيرادات" },
+          { key: "expense", label: "المصروفات" },
+        ] satisfies TabCol[],
+      };
+    }
+    if (source === "expenses") {
+      return {
+        title: "تقرير المصروفات",
+        columns: [
+          { key: "date", label: "التاريخ" },
+          { key: "item", label: "بند المصروف" },
+          { key: "name", label: "الاسم" },
+          { key: "expense", label: "المبلغ" },
+        ] satisfies TabCol[],
+      };
+    }
+    if (source === "revenue") {
+      return {
+        title: "تقرير الإيرادات",
+        columns: [
+          { key: "date", label: "الشهر" },
+          { key: "item", label: "اسم بند الإيراد" },
+          { key: "amount", label: "المبلغ" },
+        ] satisfies TabCol[],
+      };
+    }
+    return {
+      title: "تقرير مالي مجمّع",
+      columns: [
+        { key: "source", label: "المصدر" },
+        { key: "date", label: "التاريخ / الفترة" },
+        { key: "description", label: "البيان / البند" },
+        { key: "income", label: "الإيرادات" },
+        { key: "expense", label: "المصروفات" },
+        { key: "amount", label: "المبلغ" },
+      ] satisfies TabCol[],
+    };
+  }, [source]);
 
-    if (sortColumn) {
-      const headRows = list.filter(isHeadRow);
-      const footRows = list.filter(isFootRow);
-      const dataRows = list.filter((r) => !isHeadRow(r) && !isFootRow(r));
+  const reportRows = useMemo<ReportRow[]>(() => {
+    if (source === "youssefLoan") return youssefRows;
+    if (source === "tawfiqCustody") return tawfiqRows;
+    if (source === "trainee") return traineeRows;
+    if (source === "feeTotals") return feeTotalsRows;
+    if (source === "hafiza") return hafizaRows;
+    if (source === "account") return accountRows;
+    if (source === "expenses") return expenseRows;
+    if (source === "revenue") return revenueRows;
+    return [
+      ...hafizaRows.map((row) => ({ source: "حوافظ التوريد", date: row.date, description: row.description, income: row.income, amount: row.amount })),
+      ...accountRows.map((row) => ({ source: "الحساب الجاري", date: row.date, description: row.description, income: row.income, expense: row.expense })),
+      ...expenseRows.map((row) => ({ source: "المصروفات", date: row.date, description: row.item, expense: row.expense })),
+      ...revenueRows.map((row) => ({ source: "الإيرادات", date: row.date, description: row.item, amount: row.amount })),
+    ];
+  }, [source, youssefRows, tawfiqRows, traineeRows, feeTotalsRows, hafizaRows, accountRows, expenseRows, revenueRows]);
 
-      dataRows.sort((a, b) => {
-        const valA = a[sortColumn as keyof ReportRow];
-        const valB = b[sortColumn as keyof ReportRow];
+  const isPreservedFromColumnFilter = (row: ReportRow): boolean => {
+    return row.summaryLevel === "opening" || row.summaryLevel === "total" || row.summaryLevel === "signature";
+  };
 
-        if (typeof valA === "number" && typeof valB === "number") {
-          return sortDirection === "asc" ? valA - valB : valB - valA;
+  const processedRows = useMemo<ReportRow[]>(() => {
+    const activeSortCol = source === "trainee" ? traineeSortColumn : sortColumn;
+    const activeSortDir = source === "trainee" ? traineeSortDirection : sortDirection;
+
+    const filtered = reportRows.filter((row) => {
+      if (deletedRows.has(row)) return false;
+      if (isPreservedFromColumnFilter(row)) return true;
+      for (const [key, filterVal] of Object.entries(columnFilters)) {
+        const fv = String(filterVal || "").trim();
+        if (!fv) continue;
+        const cellValue = row[key];
+        if (cellValue === undefined || cellValue === null) return false;
+        if (typeof cellValue === "number") {
+          const numFilter = Number(fv);
+          if (!isNaN(numFilter)) {
+            if (cellValue !== numFilter) return false;
+          } else if (!String(cellValue).includes(fv)) {
+            return false;
+          }
+        } else if (!String(cellValue).toLowerCase().includes(fv.toLowerCase())) {
+          return false;
         }
-
-        const strA = String(valA || "");
-        const strB = String(valB || "");
-        const cmp = strA.localeCompare(strB, "ar", { numeric: true });
-        return sortDirection === "asc" ? cmp : -cmp;
-      });
-
-      list = [...headRows, ...dataRows, ...footRows];
-    }
-
-    return list;
-  }, [baseRows, deletedRows, columnFilters, sortColumn, sortDirection]);
-
-  const hasAnyFilter = Object.values(columnFilters).some((v) => v.trim() !== "");
-
-  const handleSort = (colKey: string) => {
-    if (sortColumn === colKey) {
-      if (sortDirection === "asc") setSortDirection("desc");
-      else {
-        setSortColumn("");
-        setSortDirection("asc");
       }
-    } else {
-      setSortColumn(colKey);
-      setSortDirection("asc");
-    }
-  };
+      return true;
+    });
 
-  const handleFilterChange = (colKey: string, value: string) => {
-    setColumnFilters((prev) => ({ ...prev, [colKey]: value }));
-  };
+    const isCustodySource = source === "youssefLoan" || source === "tawfiqCustody";
+    if (isCustodySource) return filtered;
 
-  const clearAllFilters = () => setColumnFilters({});
+    return [...filtered].sort((a, b) => {
+      const aVal = a[activeSortCol];
+      const bVal = b[activeSortCol];
+      if (aVal === undefined || aVal === null) return 1;
+      if (bVal === undefined || bVal === null) return -1;
+      const numA = Number(aVal);
+      const numB = Number(bVal);
+      if (!isNaN(numA) && !isNaN(numB)) {
+        return activeSortDir === "asc" ? numA - numB : numB - numA;
+      }
+      const strA = String(aVal);
+      const strB = String(bVal);
+      return activeSortDir === "asc" ? strA.localeCompare(strB, "ar") : strB.localeCompare(strA, "ar");
+    });
+  }, [reportRows, columnFilters, sortColumn, sortDirection, source, traineeSortColumn, traineeSortDirection, deletedRows]);
 
-  const deleteRow = (row: ReportRow) => {
-    setDeletedRows((prev) => new Set([...prev, row]));
-  };
+  const reportIssuedAt = new Date();
+  const reportYearStart = new Date(reportIssuedAt.getFullYear(), 0, 1);
+  const formatReportDate = (date: Date) =>
+    date.toLocaleDateString("ar-EG-u-nu-latn", { day: "2-digit", month: "2-digit", year: "numeric" });
+  const custodyDateRange = `من ${formatReportDate(reportYearStart)} إلى ${formatReportDate(reportIssuedAt)}`;
 
-  const restoreDeleted = () => setDeletedRows(new Set());
+  const title =
+    source === "trainee"
+      ? `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFee === "all" ? "كل الرسوم" : selectedFee} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}`
+      : source === "feeTotals"
+      ? `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}`
+      : source === "youssefLoan" || source === "tawfiqCustody"
+      ? `${sourceConfig.title} — ${custodyDateRange}`
+      : `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
 
   const numericKeys =
     source === "youssefLoan" || source === "tawfiqCustody"
+      ? ["amount"]
+      : source === "hafiza"
+      ? ["amount", "income"]
+      : source === "account"
+      ? ["income", "expense"]
+      : source === "expenses"
+      ? ["expense"]
+      : source === "revenue"
       ? ["amount"]
       : source === "trainee" || source === "feeTotals"
       ? ["amount"]
       : ["income", "expense", "amount"];
 
   const isLoanOrCustody = source === "youssefLoan" || source === "tawfiqCustody";
-  const actionRows = isLoanOrCustody ? processedRows.filter((row) => row.summaryLevel !== "opening" && row.summaryLevel !== "total") : processedRows;
+  const actionRows = isLoanOrCustody
+    ? processedRows.filter((row) => row.summaryLevel !== "opening" && row.summaryLevel !== "total" && row.summaryLevel !== "signature")
+    : processedRows;
 
   const displayRows = useMemo(() => processedRows, [processedRows]);
 
   const activeSortColumn = source === "trainee" ? traineeSortColumn : sortColumn;
   const activeSortDirection = source === "trainee" ? traineeSortDirection : sortDirection;
+  const hasAnyFilter = Object.values(columnFilters).some((v) => String(v || "").trim() !== "");
+  const colCount = sourceConfig.columns.length + 2;
+
+  const deleteRow = (row: ReportRow) => {
+    setDeletedRows((prev) => new Set([...prev, row]));
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-sky-50 to-indigo-50 p-2 sm:p-4" dir="rtl">
       <section className="mx-auto max-w-7xl overflow-hidden rounded-3xl border border-sky-200 bg-white shadow-xl">
         <header className="bg-gradient-to-l from-[#2e6b8a] via-[#3d7fa0] to-[#2e6b8a] p-4 text-white sm:p-6">
           <div className="flex items-center gap-3">
-            <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/15">
-              {isLoanOrCustody ? <Wallet className="h-6 w-6" /> : <BarChart3 className="h-6 w-6" />}
-            </span>
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
+              <BarChart3 className="h-6 w-6 text-white" />
+            </div>
             <div>
-              <h1 className="text-xl font-black sm:text-2xl">التقارير</h1>
-              <p className="text-xs font-semibold text-sky-100 sm:text-sm">
-                تقارير السلف والعهد وكشوف الحسابات والإيرادات والمصروفات قابلة للطباعة والتنزيل
+              <h1 className="text-xl font-black sm:text-2xl">التقارير المالية المتقدمة</h1>
+              <p className="mt-0.5 text-xs text-sky-100 sm:text-sm">
+                استعراض وتحليل كافة البيانات المالية، العهد، الإيرادات والمصروفات بدقة عالية
               </p>
             </div>
           </div>
         </header>
 
-        {/* بطاقات المؤشرات والملخص للعهد */}
-        {isLoanOrCustody && (
-          <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-3">
-            <div className="flex items-center justify-between rounded-2xl border border-amber-300 bg-amber-50/70 p-4 shadow-sm">
-              <div>
-                <span className="text-xs font-bold text-amber-800">الرصيد الافتتاحي</span>
-                <div className="mt-1 flex items-center gap-1">
-                  <input
-                    type="number"
-                    value={currentOpeningBalance || ""}
-                    onChange={(e) => {
-                      const val = Number(e.target.value) || 0;
-                      if (source === "youssefLoan") {
-                        setYoussefOpeningBalance(val);
-                        localStorage.setItem(`youssef_loan_opening_balance_${year}`, String(val));
-                      } else {
-                        setTawfiqOpeningBalance(val);
-                        localStorage.setItem(`tawfiq_custody_opening_balance_${year}`, String(val));
-                      }
-                    }}
-                    placeholder="0"
-                    className="w-32 rounded-lg border border-amber-300 bg-white px-2 py-1 text-base font-black text-amber-950 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  />
-                  <span className="text-xs font-bold text-amber-700">ريال</span>
-                </div>
-              </div>
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-amber-200/60 text-amber-800">
-                <DollarSign className="h-5 w-5" />
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between rounded-2xl border border-rose-300 bg-rose-50/70 p-4 shadow-sm">
-              <div>
-                <span className="text-xs font-bold text-rose-800">إجمالي المنصرف (المسير)</span>
-                <p className="mt-1 text-lg font-black text-rose-950">
-                  {formatCurrency(totalSpent)} <span className="text-xs">ريال</span>
-                </p>
-              </div>
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-rose-200/60 text-rose-800">
-                <TrendingUp className="h-5 w-5" />
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between rounded-2xl border border-emerald-300 bg-emerald-50/70 p-4 shadow-sm">
-              <div>
-                <span className="text-xs font-bold text-emerald-800">الرصيد المتبقي</span>
-                <p className={`mt-1 text-lg font-black ${remainingBalance < 0 ? "text-rose-600" : "text-emerald-950"}`}>
-                  {formatCurrency(remainingBalance)} <span className="text-xs">ريال</span>
-                </p>
-              </div>
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-200/60 text-emerald-800">
-                <Wallet className="h-5 w-5" />
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* عناصر التحكم والتصفية */}
-        <div className="border-b border-slate-200 p-4 sm:p-6">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <div>
-              <label className="mb-1 block text-xs font-bold text-slate-700">مصدر التقرير</label>
+        {/* فلاتر واختيارات التقرير */}
+        <div className="border-b border-sky-100 bg-slate-50/70 p-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+              نوع التقرير
               <select
                 value={source}
-                onChange={(e) => setSource(e.target.value as ReportSource)}
-                className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs font-bold text-slate-800 shadow-sm focus:border-sky-500 focus:outline-none"
+                onChange={(e) => {
+                  setSource(e.target.value as ReportSource);
+                  setDeletedRows(new Set());
+                  setColumnFilters({});
+                }}
+                className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
               >
                 {SOURCES.map((s) => (
                   <option key={s.value} value={s.value}>
@@ -770,378 +945,417 @@ export default function ReportsTab() {
                   </option>
                 ))}
               </select>
-            </div>
+            </label>
 
-            <div>
-              <label className="mb-1 block text-xs font-bold text-slate-700">الفترة الزمنية</label>
-              <select
-                value={period}
-                onChange={(e) => setPeriod(e.target.value as ReportPeriod)}
-                className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs font-bold text-slate-800 shadow-sm focus:border-sky-500 focus:outline-none"
-              >
-                {PERIODS.map((p) => (
-                  <option key={p.value} value={p.value}>
-                    {p.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {source !== "youssefLoan" && source !== "tawfiqCustody" && source !== "trainee" && source !== "feeTotals" && (
+              <>
+                <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                  الفترة الزمنية
+                  <select
+                    value={period}
+                    onChange={(e) => setPeriod(e.target.value as PeriodType)}
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
+                  >
+                    {PERIODS.map((p) => (
+                      <option key={p.value} value={p.value}>
+                        {p.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
 
-            {period === "month" && (
-              <div>
-                <label className="mb-1 block text-xs font-bold text-slate-700">الشهر</label>
-                <select
-                  value={selectedMonths[0] || ""}
-                  onChange={(e) => {
-                    const val = e.target.value ? [Number(e.target.value)] : [];
-                    setSelectedMonths(val);
-                  }}
-                  className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs font-bold text-slate-800 shadow-sm focus:border-sky-500 focus:outline-none"
-                >
-                  <option value="">كل الشهور</option>
-                  {MONTHS.map((m) => (
-                    <option key={m.value} value={m.value}>
-                      {m.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                {period !== "all" && (
+                  <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                    السنة
+                    <select
+                      value={year}
+                      onChange={(e) => setYear(Number(e.target.value))}
+                      className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
+                    >
+                      {yearOptions.map((y) => (
+                        <option key={y} value={y}>
+                          {y}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+
+                {period === "month" && (
+                  <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                    الشهر
+                    <select
+                      value={month}
+                      onChange={(e) => setMonth(Number(e.target.value))}
+                      className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
+                    >
+                      {MONTHS.map((m, idx) => (
+                        <option key={idx} value={idx}>
+                          {m}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+              </>
+            )}
+
+            {/* فلاتر خاصة بكشف المتدربين وإجماليات الرسوم */}
+            {(source === "trainee" || source === "feeTotals") && (
+              <>
+                <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                  المتدرب
+                  <select
+                    value={selectedTrainee}
+                    onChange={(e) => setSelectedTrainee(e.target.value)}
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
+                  >
+                    <option value="all">كل المتدربين</option>
+                    {traineeOptions.map((name) => (
+                      <option key={name} value={name}>
+                        {name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                {source === "trainee" && (
+                  <>
+                    <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                      نوع الرسم
+                      <select
+                        value={selectedFee}
+                        onChange={(e) => setSelectedFee(e.target.value)}
+                        className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
+                      >
+                        <option value="all">كل الرسوم</option>
+                        {feeCategoryOptions.map((fee) => (
+                          <option key={fee} value={fee}>
+                            {fee}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                      طريقة التجميع
+                      <select
+                        value={traineeGrouping}
+                        onChange={(e) => setTraineeGrouping(e.target.value as TraineeGrouping)}
+                        className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
+                      >
+                        <option value="month">تجميع شهري</option>
+                        <option value="year">تجميع سنوي</option>
+                      </select>
+                    </label>
+
+                    <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                      طريقة العرض
+                      <select
+                        value={traineeDisplayMode}
+                        onChange={(e) => setTraineeDisplayMode(e.target.value as TraineeDisplayMode)}
+                        className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
+                      >
+                        <option value="both">تفصيلي وإجمالي</option>
+                        <option value="detail">تفصيلي فقط</option>
+                        <option value="summary">إجمالي فقط</option>
+                      </select>
+                    </label>
+                  </>
+                )}
+              </>
+            )}
+
+            {/* إدخال الرصيد الافتتاحي للعهد */}
+            {source === "youssefLoan" && (
+              <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                الرصيد الافتتاحي (سلفة د/يوسف)
+                <input
+                  type="number"
+                  value={youssefOpeningBalance || ""}
+                  onChange={(e) => handleYoussefOpeningChange(Number(e.target.value) || 0)}
+                  placeholder="0"
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600 font-mono"
+                />
+              </label>
+            )}
+
+            {source === "tawfiqCustody" && (
+              <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                الرصيد الافتتاحي (عهدة توفيق الداعي)
+                <input
+                  type="number"
+                  value={tawfiqOpeningBalance || ""}
+                  onChange={(e) => handleTawfiqOpeningChange(Number(e.target.value) || 0)}
+                  placeholder="0"
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600 font-mono"
+                />
+              </label>
             )}
           </div>
         </div>
 
-        {/* شريط الإجراءات والطباعة والتصدير */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 p-3 sm:p-4">
-          <div className="flex items-center gap-2 text-sm font-black text-slate-800">
-            {source === "trainee" ? (
-              <UserRound className="h-5 w-5 text-sky-700" />
-            ) : isLoanOrCustody ? (
-              <Wallet className="h-5 w-5 text-[#1f5f7a]" />
-            ) : (
-              <CalendarDays className="h-5 w-5 text-sky-700" />
-            )}
-            <span>{title}</span>
-            <span className="rounded-full bg-sky-100 px-2.5 py-1 text-xs font-bold text-sky-800">
-              {displayRows.filter((r) => r.summaryLevel !== "signature").length} سجل
-            </span>
-            {hasAnyFilter && (
-              <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">مفلتر</span>
-            )}
-            {deletedRows.size > 0 && (
-              <button
-                onClick={restoreDeleted}
-                className="rounded-full bg-rose-100 px-2.5 py-1 text-xs font-bold text-rose-800 hover:bg-rose-200"
-                title="استعادة كل الصفوف المحذوفة مؤقتاً"
-              >
-                استعادة المحذوف ({deletedRows.size})
-              </button>
-            )}
-          </div>
-
+        {/* أزرار العمليات والتصدير والطباعة */}
+        <div className="p-4">
           <TabActions
+            tableId="reports-table"
             title={title}
-            rows={actionRows.filter((row) => !isLoanOrCustody || row.summaryLevel !== "opening")}
+            printTitle={title}
+            data={actionRows}
             columns={sourceConfig.columns}
-            printColumns={isLoanOrCustody ? sourceConfig.columns.filter((column) => column.key !== "name") : sourceConfig.columns}
-            fileName={
-              source === "youssefLoan"
-                ? `مسير-إخلاء-عهدة-د-يوسف-${year}`
-                : source === "tawfiqCustody"
-                ? `مسير-إخلاء-عهدة-توفيق-الداعي-${year}`
-                : `تقرير-${source}-${year}`
-            }
             numericKeys={numericKeys}
-            pdfLayout="wide-centered"
-            pdfOrientation="landscape"
-            pdfCss={reportsTabPrintCss}
-            includeTotalRow={isLoanOrCustody}
-            className="w-full sm:w-auto"
+            contentCss={reportsTabPrintCss}
           />
         </div>
 
-        {/* الجدول */}
-        <div className="overflow-x-auto p-3 sm:p-4">
-          <table className="reports-data-table w-full min-w-[900px] border-collapse overflow-hidden rounded-2xl text-center text-xs sm:text-sm">
-            <thead className="bg-[#0f283a] text-white">
-              <tr>
-                <th className="border border-black px-3 py-2.5 font-bold text-white">م</th>
-                {sourceConfig.columns.map((column) => {
-                  const isSortActive = activeSortColumn === column.key;
-                  return (
+        {/* جدول عرض التقرير */}
+        <div className="overflow-x-auto p-4">
+          <div className="border border-black bg-white shadow-sm">
+            <table id="reports-table" className="w-full border-collapse text-center text-xs">
+              <thead>
+                <tr className="border-b border-black bg-[#027d11] text-white">
+                  <th className="w-10 border border-black px-2 py-3 font-black">م</th>
+                  {sourceConfig.columns.map((col) => (
                     <th
-                      key={column.key}
-                      onClick={() => handleSort(column.key)}
-                      className="cursor-pointer border border-black px-3 py-2.5 font-bold text-white transition hover:bg-[#1a3a50]"
+                      key={col.key}
+                      onClick={() => {
+                        if (source === "trainee") {
+                          if (traineeSortColumn === col.key) {
+                            setTraineeSortDirection((d) => (d === "asc" ? "desc" : "asc"));
+                          } else {
+                            setTraineeSortColumn(col.key);
+                            setTraineeSortDirection("asc");
+                          }
+                        } else {
+                          if (sortColumn === col.key) {
+                            setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
+                          } else {
+                            setSortColumn(col.key);
+                            setSortDirection("asc");
+                          }
+                        }
+                      }}
+                      className="cursor-pointer border border-black px-3 py-3 font-black hover:bg-[#026c0f]"
                     >
                       <div className="flex items-center justify-center gap-1">
-                        <span>{column.label}</span>
-                        {isSortActive && (
-                          activeSortDirection === "asc" ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />
-                        )}
+                        <span>{col.label}</span>
+                        {activeSortColumn === col.key &&
+                          (activeSortDirection === "asc" ? (
+                            <ChevronUp className="h-3.5 w-3.5" />
+                          ) : (
+                            <ChevronDown className="h-3.5 w-3.5" />
+                          ))}
                       </div>
                     </th>
-                  );
-                })}
-                <th className="border border-black px-3 py-2.5 font-bold text-white print:hidden">إجراء</th>
-              </tr>
-
-              {/* صف التصفية */}
-              <tr className="bg-slate-100 print:hidden">
-                <th className="border border-black p-1 text-center font-normal">
-                  {hasAnyFilter && (
-                    <button
-                      onClick={clearAllFilters}
-                      className="rounded bg-rose-100 px-1 py-0.5 text-[10px] font-bold text-rose-700 hover:bg-rose-200"
-                      title="مسح كل الفلاتر"
-                    >
-                      مسح
-                    </button>
-                  )}
-                </th>
-                {sourceConfig.columns.map((column) => (
-                  <th key={`filter-${column.key}`} className="border border-black p-1 font-normal">
-                    <input
-                      type="text"
-                      placeholder={`بحث في ${column.label}`}
-                      value={columnFilters[column.key] || ""}
-                      onChange={(e) => handleFilterChange(column.key, e.target.value)}
-                      className="w-full rounded border border-slate-300 bg-white px-1.5 py-1 text-center text-[11px] font-normal text-slate-800 outline-none focus:border-sky-500"
-                    />
-                  </th>
-                ))}
-                <th className="border border-black p-1 font-normal" />
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-black border border-black bg-white">
-              {displayRows.length === 0 ? (
-                <tr>
-                  <td colSpan={sourceConfig.columns.length + 2} className="py-8 text-center text-sm font-bold text-slate-500">
-                    لا توجد بيانات مطابقة للفترة المحددة
-                  </td>
+                  ))}
+                  <th className="w-12 border border-black px-2 py-3 font-black print:hidden">حذف</th>
                 </tr>
-              ) : (
-                displayRows.map((row, index) => {
-                  const isTotal = row.summaryLevel === "total";
-                  const isOpening = row.summaryLevel === "opening";
-                  const isSignature = row.summaryLevel === "signature";
 
-                  let rowStyle = "hover:bg-sky-50/50";
-                  if (isTotal) rowStyle = "bg-[#0437bb] text-white font-black text-sm sm:text-base";
-                  else if (isOpening) rowStyle = "bg-amber-100/90 text-amber-950 font-bold";
-                  else if (isSignature) rowStyle = "bg-slate-100 text-slate-800 font-bold signature-row";
-                  else if (row.summaryLevel === "fee") rowStyle = "bg-sky-100 font-bold text-sky-950";
-                  else if (row.summaryLevel === "trainee-name-total") rowStyle = "bg-emerald-100 font-bold text-emerald-950";
-                  else if (row.summaryLevel === "period") rowStyle = "bg-amber-100 font-bold text-amber-950";
-                  else if (index % 2 === 1) rowStyle = "bg-slate-50/80 text-slate-900";
-                  else rowStyle = "bg-white text-slate-900";
+                {/* صف التصفية والبحث في الأعمدة */}
+                <tr className="border-b border-black bg-slate-100 print:hidden">
+                  <th className="border border-black p-1 text-[11px] font-bold text-slate-500">بحث</th>
+                  {sourceConfig.columns.map((col) => (
+                    <th key={`filter-${col.key}`} className="border border-black p-1">
+                      <input
+                        type="text"
+                        value={columnFilters[col.key] || ""}
+                        onChange={(e) => setColumnFilters((prev) => ({ ...prev, [col.key]: e.target.value }))}
+                        placeholder={`بحث...`}
+                        className="w-full rounded border border-slate-300 bg-white px-2 py-1 text-center text-xs font-bold text-slate-800 outline-none focus:border-sky-600"
+                      />
+                    </th>
+                  ))}
+                  <th className="border border-black p-1">
+                    {hasAnyFilter && (
+                      <button
+                        onClick={() => setColumnFilters({})}
+                        className="rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-bold text-rose-700 hover:bg-rose-200"
+                      >
+                        مسح
+                      </button>
+                    )}
+                  </th>
+                </tr>
+              </thead>
 
-                  // صفوف التوقيعات: تجميعها في كتلة ثلاثية واحدة متناسقة أسفل الجدول بكامل العرض
-                  if (isSignature) {
-                    if (row.id !== "sig-1") return null;
-                    return (
-                      <tr key="unified-custody-signatures" className="border-t-2 border-black bg-slate-50/90 signature-block-row">
-                        <td colSpan={sourceConfig.columns.length + 2} className="border border-black p-4">
-                          <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-4 text-center md:grid-cols-3">
-                            {/* 1. الشؤون المالية (اليمين) */}
-                            <div className="flex flex-col items-center gap-2 rounded-xl border border-slate-300 bg-white p-3 shadow-sm">
-                              <label className="w-full text-center">
-                                <span className="mb-1 block text-[11px] font-black text-slate-600">المسمى / الإدارة</span>
+              <tbody>
+                {displayRows.length === 0 ? (
+                  <tr>
+                    <td colSpan={colCount} className="border border-black py-12 text-center text-sm font-bold text-slate-500">
+                      لا توجد بيانات مطابقة للفترة أو المعايير المحددة
+                    </td>
+                  </tr>
+                ) : (
+                  displayRows.map((row, index) => {
+                    const isOpening = row.summaryLevel === "opening";
+                    const isTotal = row.summaryLevel === "total" || row.total === "نعم";
+                    const isSignature = row.summaryLevel === "signature";
+
+                    let rowStyle = "";
+                    if (isOpening) rowStyle = "bg-amber-100 font-bold text-amber-950";
+                    else if (isTotal) rowStyle = "bg-[#0437bb] font-black text-white total-row";
+                    else if (row.summaryLevel === "fee") rowStyle = "bg-sky-100 font-bold text-sky-950";
+                    else if (row.summaryLevel === "trainee-name-total") rowStyle = "bg-emerald-100 font-bold text-emerald-950";
+                    else if (row.summaryLevel === "period") rowStyle = "bg-amber-100 font-bold text-amber-950";
+                    else if (index % 2 === 1) rowStyle = "bg-slate-50/80 text-slate-900";
+                    else rowStyle = "bg-white text-slate-900";
+
+                    // قسم التوقيعات المدمج أسفل تقارير العهد (في سطر أفقي واحد مدمج)
+                    if (isSignature) {
+                      if (row.id !== "sig-1") return null;
+                      return (
+                        <tr key="unified-custody-signatures" className="border-t-2 border-black bg-slate-50/90 signature-block-row">
+                          <td colSpan={colCount} className="border border-black p-2 sm:p-3">
+                            <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-2 md:grid-cols-3">
+                              {/* 1. الشؤون المالية (اليمين) */}
+                              <div className="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2 py-1.5 shadow-sm">
                                 <input
                                   type="text"
                                   value={signaturesMeta.sig1Dept}
-                                  onChange={(e) => setSignaturesMeta((prev) => ({ ...prev, sig1Dept: e.target.value }))}
-                                  className="w-full rounded border border-slate-200 bg-slate-50 px-2 py-1 text-center text-xs font-black text-slate-800 outline-none focus:border-sky-600 focus:bg-white"
+                                  onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig1Dept: e.target.value }))}
+                                  className="w-1/2 rounded border border-slate-200 bg-slate-50 px-2 py-1 text-center text-xs font-black text-slate-800 outline-none focus:border-sky-600 focus:bg-white"
                                   placeholder="المسمى / الإدارة"
+                                  title="المسمى أو الإدارة"
                                 />
-                              </label>
-                              <label className="w-full text-center">
-                                <span className="mb-1 block text-[11px] font-bold text-slate-500">اسم الموقّع / التوقيع</span>
+                                <span className="font-bold text-slate-400">:</span>
                                 <input
                                   type="text"
                                   value={signaturesMeta.sig1Name}
-                                  onChange={(e) => setSignaturesMeta((prev) => ({ ...prev, sig1Name: e.target.value }))}
-                                  className="w-full rounded border border-slate-200 bg-white px-2 py-1 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
-                                  placeholder="اسم المدير / التوقيع"
+                                  onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig1Name: e.target.value }))}
+                                  className="w-1/2 rounded border border-slate-200 bg-white px-2 py-1 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
+                                  placeholder="اسم الموقّع"
+                                  title="اسم المدير / الموقّع"
                                 />
-                              </label>
-                            </div>
+                              </div>
 
-                            {/* 2. نائب رئيس المجلس (الوسط) */}
-                            <div className="flex flex-col items-center gap-2 rounded-xl border border-slate-300 bg-white p-3 shadow-sm">
-                              <label className="w-full text-center">
-                                <span className="mb-1 block text-[11px] font-black text-slate-600">المسمى / الإدارة</span>
+                              {/* 2. نائب رئيس المجلس (الوسط) */}
+                              <div className="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2 py-1.5 shadow-sm">
                                 <input
                                   type="text"
                                   value={signaturesMeta.sig2Dept}
-                                  onChange={(e) => setSignaturesMeta((prev) => ({ ...prev, sig2Dept: e.target.value }))}
-                                  className="w-full rounded border border-slate-200 bg-slate-50 px-2 py-1 text-center text-xs font-black text-slate-800 outline-none focus:border-sky-600 focus:bg-white"
+                                  onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig2Dept: e.target.value }))}
+                                  className="w-1/2 rounded border border-slate-200 bg-slate-50 px-2 py-1 text-center text-xs font-black text-slate-800 outline-none focus:border-sky-600 focus:bg-white"
                                   placeholder="المسمى / الإدارة"
+                                  title="المسمى أو الإدارة"
                                 />
-                              </label>
-                              <label className="w-full text-center">
-                                <span className="mb-1 block text-[11px] font-bold text-slate-500">اسم الموقّع / التوقيع</span>
+                                <span className="font-bold text-slate-400">:</span>
                                 <input
                                   type="text"
                                   value={signaturesMeta.sig2Name}
-                                  onChange={(e) => setSignaturesMeta((prev) => ({ ...prev, sig2Name: e.target.value }))}
-                                  className="w-full rounded border border-slate-200 bg-white px-2 py-1 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
-                                  placeholder="اسم المدير / التوقيع"
+                                  onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig2Name: e.target.value }))}
+                                  className="w-1/2 rounded border border-slate-200 bg-white px-2 py-1 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
+                                  placeholder="اسم الموقّع"
+                                  title="اسم المدير / الموقّع"
                                 />
-                              </label>
-                            </div>
+                              </div>
 
-                            {/* 3. رئيس المجلس (اليسار) */}
-                            <div className="flex flex-col items-center gap-2 rounded-xl border border-slate-300 bg-white p-3 shadow-sm">
-                              <label className="w-full text-center">
-                                <span className="mb-1 block text-[11px] font-black text-slate-600">المسمى / الإدارة</span>
+                              {/* 3. رئيس المجلس (اليسار) */}
+                              <div className="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2 py-1.5 shadow-sm">
                                 <input
                                   type="text"
                                   value={signaturesMeta.sig3Dept}
-                                  onChange={(e) => setSignaturesMeta((prev) => ({ ...prev, sig3Dept: e.target.value }))}
-                                  className="w-full rounded border border-slate-200 bg-slate-50 px-2 py-1 text-center text-xs font-black text-slate-800 outline-none focus:border-sky-600 focus:bg-white"
+                                  onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig3Dept: e.target.value }))}
+                                  className="w-1/2 rounded border border-slate-200 bg-slate-50 px-2 py-1 text-center text-xs font-black text-slate-800 outline-none focus:border-sky-600 focus:bg-white"
                                   placeholder="المسمى / الإدارة"
+                                  title="المسمى أو الإدارة"
                                 />
-                              </label>
-                              <label className="w-full text-center">
-                                <span className="mb-1 block text-[11px] font-bold text-slate-500">اسم الموقّع / التوقيع</span>
+                                <span className="font-bold text-slate-400">:</span>
                                 <input
                                   type="text"
                                   value={signaturesMeta.sig3Name}
-                                  onChange={(e) => setSignaturesMeta((prev) => ({ ...prev, sig3Name: e.target.value }))}
-                                  className="w-full rounded border border-slate-200 bg-white px-2 py-1 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
-                                  placeholder="اسم المدير / التوقيع"
+                                  onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig3Name: e.target.value }))}
+                                  className="w-1/2 rounded border border-slate-200 bg-white px-2 py-1 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
+                                  placeholder="اسم الموقّع"
+                                  title="اسم المدير / الموقّع"
                                 />
-                              </label>
+                              </div>
                             </div>
-                          </div>
+                          </td>
+                        </tr>
+                      );
+                    }
+
+                    return (
+                      <tr
+                        key={`${String(row.date)}-${String(row.trainee || row.name || "")}-${index}`}
+                        className={`transition-colors ${rowStyle} ${isTotal ? "total-row" : ""}`}
+                      >
+                        <td className="border border-black px-2 py-2 font-bold">
+                          {isOpening ? "—" : isTotal ? "★" : index + 1}
+                        </td>
+
+                        {sourceConfig.columns.map((col) => {
+                          const val = row[col.key];
+                          const isNumeric = numericKeys.includes(col.key);
+                          const isEditableCustodyRow = isLoanOrCustody && !isOpening && !isTotal;
+
+                          // حقول إدخال يدوية لرقم كشف التسوية والملاحظات والمبلغ في تقارير العهد
+                          if (isEditableCustodyRow && (col.key === "settlementNo" || col.key === "notes")) {
+                            return (
+                              <td key={col.key} className="border border-black p-1">
+                                <input
+                                  type="text"
+                                  value={val ?? ""}
+                                  onChange={(e) =>
+                                    handleManualFieldChange(
+                                      row.id as string,
+                                      col.key as "settlementNo" | "notes",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder={col.key === "settlementNo" ? "رقم الكشف..." : "ملاحظة..."}
+                                  className="w-full rounded border border-slate-300 bg-white px-2 py-1 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-600"
+                                />
+                              </td>
+                            );
+                          }
+
+                          if (isEditableCustodyRow && col.key === "amount") {
+                            return (
+                              <td key={col.key} className="border border-black p-1 font-mono font-black">
+                                <input
+                                  type="number"
+                                  value={val ?? ""}
+                                  onChange={(e) =>
+                                    handleManualFieldChange(row.id as string, "amount", e.target.value)
+                                  }
+                                  placeholder="0"
+                                  className="w-full rounded border border-slate-300 bg-white px-2 py-1 text-center text-xs font-black text-slate-900 outline-none focus:border-sky-600 font-mono"
+                                />
+                              </td>
+                            );
+                          }
+
+                          return (
+                            <td
+                              key={col.key}
+                              className={`border border-black px-2 py-2 font-bold ${
+                                isNumeric ? "font-mono font-bold" : ""
+                              } ${col.key === "description" ? "bg-[#174258] text-white" : ""}`}
+                            >
+                              {isNumeric ? formatCurrency(val) : val !== undefined && val !== null && String(val) !== "" ? String(val) : "—"}
+                            </td>
+                          );
+                        })}
+
+                        <td className="border border-black px-1 py-1 print:hidden">
+                          {!isOpening && !isTotal && (
+                            <button
+                              onClick={() => deleteRow(row)}
+                              className="rounded p-1 text-rose-600 hover:bg-rose-50"
+                              title="إخفاء مؤقت"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     );
-                  }
-
-                  return (
-                    <tr
-                      key={`${String(row.date)}-${String(row.trainee || row.name || "")}-${index}`}
-                      className={`transition-colors ${rowStyle} ${isTotal ? "total-row" : ""}`}
-                    >
-                      <td className="border border-black px-2 py-2 font-bold">
-                        {isOpening ? "—" : isTotal ? "★" : index + 1}
-                      </td>
-
-                      {sourceConfig.columns.map((column) => {
-                        const cellVal = row[column.key as keyof ReportRow];
-                        const isNum = numericKeys.includes(column.key);
-                        const isSettlement = column.key === "settlementNo";
-                        const isNotes = column.key === "notes";
-                        const isAmountCol = column.key === "amount" && isLoanOrCustody;
-
-                        // حقل إدخال رقم كشف التسوية
-                        if (isSettlement && !isOpening && !isTotal) {
-                          const rowId = row.id || "";
-                          return (
-                            <td key={column.key} className="border border-black px-2 py-1.5 font-bold">
-                              <input
-                                type="text"
-                                value={row.settlementNo || ""}
-                                onChange={(e) => {
-                                  const val = e.target.value;
-                                  setLoanManualData((prev) => ({
-                                    ...prev,
-                                    [rowId]: { ...prev[rowId], settlementNo: val },
-                                  }));
-                                }}
-                                placeholder="أدخل رقم التسوية"
-                                className="w-full rounded border border-slate-200 bg-white px-2 py-1 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-500 print:hidden"
-                              />
-                              <span className="hidden print:inline">{row.settlementNo || "—"}</span>
-                            </td>
-                          );
-                        }
-
-                        // حقل إدخال الملاحظات
-                        if (isNotes && !isOpening && !isTotal) {
-                          const rowId = row.id || "";
-                          return (
-                            <td key={column.key} className="border border-black px-2 py-1.5 font-bold">
-                              <input
-                                type="text"
-                                value={row.notes || ""}
-                                onChange={(e) => {
-                                  const val = e.target.value;
-                                  setLoanManualData((prev) => ({
-                                    ...prev,
-                                    [rowId]: { ...prev[rowId], notes: val },
-                                  }));
-                                }}
-                                placeholder="أدخل ملاحظات"
-                                className="w-full rounded border border-slate-200 bg-white px-2 py-1 text-center text-xs font-bold text-slate-900 outline-none focus:border-sky-500 print:hidden"
-                              />
-                              <span className="hidden print:inline">{row.notes || "—"}</span>
-                            </td>
-                          );
-                        }
-
-                        // حقل إدخال/تعديل المبلغ
-                        if (isAmountCol && !isOpening && !isTotal) {
-                          const rowId = row.id || "";
-                          return (
-                            <td key={column.key} className="border border-black px-2 py-1.5 font-black text-slate-900">
-                              <input
-                                type="number"
-                                value={row.amount || ""}
-                                onChange={(e) => {
-                                  const val = Number(e.target.value) || 0;
-                                  setLoanManualData((prev) => ({
-                                    ...prev,
-                                    [rowId]: { ...prev[rowId], amount: val },
-                                  }));
-                                }}
-                                placeholder="0"
-                                className="w-full rounded border border-slate-200 bg-white px-2 py-1 text-center text-xs font-black text-slate-900 outline-none focus:border-sky-500 print:hidden"
-                              />
-                              <span className="hidden print:inline">{formatCurrency(Number(cellVal) || 0)}</span>
-                            </td>
-                          );
-                        }
-
-                        return (
-                          <td
-                            key={column.key}
-                            className={`border border-black px-2 py-2 font-bold ${
-                              column.key === "description" || column.key === "item" ? "desc-cell text-right" : ""
-                            } ${isNum ? "font-black" : ""}`}
-                          >
-                            {isNum ? (
-                              typeof cellVal === "number" ? (
-                                formatCurrency(cellVal)
-                              ) : (
-                                cellVal || "—"
-                              )
-                            ) : (
-                              String(cellVal ?? "—")
-                            )}
-                          </td>
-                        );
-                      })}
-
-                      <td className="border border-black px-1 py-1 print:hidden">
-                        {!isOpening && !isTotal && (
-                          <button
-                            onClick={() => deleteRow(row)}
-                            className="rounded p-1 text-rose-600 hover:bg-rose-50"
-                            title="حذف مؤقت"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
     </div>
