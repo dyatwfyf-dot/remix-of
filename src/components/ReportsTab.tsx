@@ -1,30 +1,18 @@
 import React, { useMemo, useState, useEffect } from "react";
 import {
-  FileSpreadsheet,
-  Calendar,
-  Layers,
   ChevronDown,
   ChevronUp,
-  Download,
-  Printer,
   CalendarDays,
   Trash2,
-  Undo2,
   DollarSign,
   TrendingUp,
-  CreditCard,
-  Building,
-  GraduationCap,
-  Sparkles,
   BarChart3,
   UserRound,
-  Filter,
   Wallet,
 } from "lucide-react";
 import TabActions from "./TabActions";
 import { useStore } from "@/lib/store";
 import { useFiscalYear } from "@/lib/fiscalYear";
-import { formatCurrency } from "@/lib/reportPdf";
 
 type ReportPeriod = "all" | "year" | "month" | "range";
 
@@ -88,7 +76,12 @@ export interface ReportRow {
   item?: string;
   settlementNo?: string;
   notes?: string;
+  [key: string]: any;
 }
+
+const formatCurrency = (val?: number | string | null): string => {
+  return (Number(val) || 0).toLocaleString("en-US");
+};
 
 const amountValue = (val: unknown): number => {
   if (typeof val === "number") return Number.isFinite(val) ? val : 0;
