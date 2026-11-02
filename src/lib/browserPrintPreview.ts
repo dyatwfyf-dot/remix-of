@@ -476,6 +476,15 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     #tableContainer table .report-grand-total-row td .pdf-cell-text {
       color: #ffffff !important;
     }
+    #tableContainer table .signature-spacer-row,
+    #tableContainer table .signature-spacer-row > td {
+      height: 28mm !important;
+      min-height: 28mm !important;
+      padding: 0 !important;
+      border: 0 !important;
+      background: #ffffff !important;
+      line-height: 0 !important;
+    }
     #tableContainer table .signature-block-row {
       page-break-inside: avoid !important;
       break-inside: avoid !important;

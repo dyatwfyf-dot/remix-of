@@ -229,6 +229,15 @@ border: 1px solid #000000 !important;
   }
 
   /* كتلة التوقيعات الموحدة: ثلاثة مسميات في صف وثلاثة أسماء أسفلها */
+  .report-page-content .signature-spacer-row,
+  .report-page-content .signature-spacer-row > td {
+    height: 28mm !important;
+    min-height: 28mm !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: #ffffff !important;
+    line-height: 0 !important;
+  }
   .report-page-content .signature-block-row {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
