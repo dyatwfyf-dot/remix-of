@@ -1100,12 +1100,13 @@ export default function ReportsTab() {
             title={title}
             fileName="financial-report"
             rows={actionRows}
-            printRows={displayRows}
+            printRows={isLoanOrCustody ? displayRows.filter((row) => row.summaryLevel !== "opening") : displayRows}
             columns={sourceConfig.columns}
+            printColumns={isLoanOrCustody ? sourceConfig.columns.filter((col) => col.key !== "name") : sourceConfig.columns}
             numericKeys={numericKeys}
             pdfCss={reportsTabPrintCss}
             pdfOrientation="landscape"
-            includeTotalRow={false}
+            includeTotalRow={!isLoanOrCustody}
           />
         </div>
 
