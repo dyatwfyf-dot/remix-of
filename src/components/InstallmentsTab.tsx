@@ -2438,7 +2438,28 @@ td.t-fees { background: ${colorTokens.fees} !important; }
   };
 
 
-  // كشف مستقل لسداد رسوم الامتحانات من حوافظ التوريد، وفق معيار تقرير مدفوعات المتدربين.
+  // توحيد الاسم لتجاوز اختلاف الهمزات والتشكيل والمسافات وترتيب الأسماء.
+  const normalizeTraineeName = (value: any): string =>
+    String(value || "")
+      .toLowerCase()
+      .replace(/[ًٌٍَُِّْـ]/g, "")
+      .replace(/[إأآٱ]/g, "ا")
+      .replace(/[ؤ]/g, "و")
+      .replace(/[ئ]/g, "ي")
+      .replace(/ى/g, "ي")
+      .replace(/[ـ.,،؛;:()\[\]{}"'ـ_-]/g, " ")
+      .replace(/[^\p{L}\p{N}\s]/gu, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  // يكفي تطابق اسم واحد على الأقل بين الاسمين، ولا يشترط تطابق الاسم الرباعي بالكامل.
+  const traineeNamesMatch = (installmentName: any, hafizaName: any): boolean => {
+    const installmentTokens = normalizeTraineeName(installmentName).split(" ").filter(Boolean);
+    const hafizaTokens = new Set(normalizeTraineeName(hafizaName).split(" ").filter(Boolean));
+    return installmentTokens.some((token) => hafizaTokens.has(token));
+  };
+
+  // كشف مستقل لسداد رسوم الامتحانات من حوافظ التوريد مع مطابقة مرنة للأسماء.
   const printExamFeesStatement = (row: any) => {
     const traineeName = String(row?.name || "").trim();
     if (!traineeName) return toast.error("اسم المتدرب غير محدد");
@@ -2449,7 +2470,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       const amount = cleanNumber(item?.notifyAmount);
       const description = String(item?.description || "")
         .trim().replace(/[ًٌٍَُِّْـ]/g, "").replace(/[إأآ]/g, "ا").replace(/\s+/g, " ");
-      if (name !== traineeName || !date || Number.isNaN(date.getTime()) ||
+      if (!traineeNamesMatch(traineeName, name) || !date || Number.isNaN(date.getTime()) ||
           date.getFullYear() < 2022 || amount <= 0 || !/(امتحان|اختبار)/.test(description)) return [];
       return [{
         date, year: date.getFullYear(), month: date.getMonth(),
