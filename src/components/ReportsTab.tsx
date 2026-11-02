@@ -200,9 +200,28 @@ whitespace: normal!important
     background: #ffffff !important; border: 1px solid #000 !important; color: #000000 !important; 
 font-size: 18px !important;
 font-weight: 800 !important; }
-    .total-row td, tr.total-row td { 
-background: #0437bb !important; color: #ffffff !important; font-weight: 900 !important; }
-    .signature-block-row td { background: #ffffff !important; }
+    .total-row td, tr.total-row td, tbody tr.total-row > td {
+      background: #0437bb !important;
+      background-color: #0437bb !important;
+      color: #ffffff !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      font-weight: 900 !important;
+    }
+    .signature-spacer-row td {
+      height: 8mm !important;
+      padding: 0 !important;
+      border: 0 !important;
+      background: #ffffff !important;
+    }
+    tr.signature-block-row,
+    tr.signature-block-row td {
+      border: 0 !important;
+      outline: 0 !important;
+      box-shadow: none !important;
+      background: #ffffff !important;
+    }
+    .signature-block-row td { padding: 2px 0 !important; }
     .print\\:hidden, button, select, input { display: none !important; }
     .print-only-text { display: flex !important; }
   }
@@ -1223,11 +1242,11 @@ if (source === "tawfiqCustody") {
                       if (row.id !== "sig-1") return null;
                       return (
                         <React.Fragment key="unified-custody-signatures">
-                        <tr aria-hidden="true" className="signature-spacer-row" style={{ height: "28mm" }}>
-                          <td colSpan={colCount} style={{ height: "28mm", padding: 0, border: 0, background: "#ffffff" }} />
+                        <tr aria-hidden="true" className="signature-spacer-row" style={{ height: "8mm" }}>
+                          <td colSpan={colCount} style={{ height: "8mm", padding: 0, border: 0, background: "#ffffff" }} />
                         </tr>
-                        <tr className="border-t-2 border-black bg-slate-50/90 signature-block-row">
-                          <td colSpan={colCount} className="border border-black p-2 sm:p-3">
+                        <tr className="bg-white signature-block-row" style={{ border: 0, outline: 0, boxShadow: "none" }}>
+                          <td colSpan={colCount} className="border-0 bg-white px-0 py-1" style={{ border: 0, outline: 0, boxShadow: "none" }}>
                             <div className="mx-auto grid w-full max-w-5xl grid-cols-3 gap-x-3 gap-y-1">
                               <input
                                 type="text"
