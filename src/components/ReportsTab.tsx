@@ -889,7 +889,7 @@ if (source === "tawfiqCustody") {
       : source === "feeTotals"
       ? `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}`
       : source === "youssefLoan" || source === "tawfiqCustody"
-      ? `${sourceConfig.title}\n${custodyDateRange}`
+      ? `${sourceConfig.title} — ${source === "youssefLoan" ? "د/ يوسف" : "توفيق الداعي"}\n${custodyDateRange}`
       : `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
 
   const numericKeys =
