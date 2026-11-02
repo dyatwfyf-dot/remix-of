@@ -109,7 +109,7 @@ const periodMonths = (period: PeriodType, month: number) => {
 };
 
 const periodLabel = (period: PeriodType, month: number, year: number) => {
-  if (period === "all") return `من عام 2026 حتى تاريخه`;
+  if (period === "all") return ` من تاريخ 1/1/2026 حتى تاريخه`;
   if (period === "year") return `السنة المالية ${year}`;
   if (period === "half") return `${month < 6 ? "النصف الأول" : "النصف الثاني"} لعام ${year}`;
   if (period === "quarter") return `الربع ${Math.floor(month / 3) + 1} لعام ${year}`;
@@ -182,13 +182,29 @@ const reportsTabPrintCss = `
     @page { size: A4 landscape; margin: 8mm; }
     body { font-family: 'Cairo', Arial, sans-serif !important; color: #000000 !important; background: #ffffff !important; }
     .report-page-header { border: 2px solid #000 !important; margin-bottom: 8px !important; }
-    table { width: 100% !important; border-collapse: collapse !important; border: 2px solid #000 !important; }
-    thead th { background: #FFD700 !important; color: #000000 !important; font-weight: 900 !important; border: 1px solid #000 !important; }
-    tbody td { background: #ffffff !important; border: 1px solid #000 !important; color: #000000 !important; font-weight: 800 !important; }
-    .total-row td, tr.total-row td { background: #0437bb !important; color: #ffffff !important; font-weight: 900 !important; }
+    table {
+    width: auto !important;
+min-width: auto;
+whitespace: normal !important;
+border-collapse: collapse !important; 
+border: 2px solid #000 !important; 
+    }
+    thead th {
+background: gold !important; color: #000 !important;
+font-size: 18px !important;
+font-weight: 900 !important; border: 1px solid #000 !important; }
+    tbody td { 
+width: auto!important;
+min - width: auto;
+whitespace: normal!important 
+    background: #ffffff !important; border: 1px solid #000 !important; color: #000000 !important; 
+font-size: 18px !important;
+font-weight: 800 !important; }
+    .total-row td, tr.total-row td { 
+background: #0b3866 !important; color: #ffffff !important; font-weight: 900 !important; }
     .signature-block-row td { background: #ffffff !important; }
     .print\\:hidden, button, select, input { display: none !important; }
-    .print-only-text { display: block !important; }
+    .print-only-text { display: flex !important; }
   }
 `;
 
@@ -689,11 +705,11 @@ export default function ReportsTab() {
           { key: "name", label: "الاسم" },
           { key: "settlementNo", label: "رقم كشف التسوية" },
           { key: "notes", label: "الملاحظات" },
-          { key: "amount", label: "المبلغ" },
-        ] satisfies TabCol[],
-      };
-    }
-    if (source === "tawfiqCustody") {
+          {
+  key:"amount",label:"المبلغ"},
+  ] satisfies TabCol[],
+      }};
+if (source === "tawfiqCustody") {
       return {
         title: "كشف عهدة توفيق الداعي",
         columns: [
@@ -1113,10 +1129,10 @@ export default function ReportsTab() {
         {/* جدول عرض التقرير */}
         <div className="overflow-x-auto p-4">
           <div className="border border-black bg-white shadow-sm">
-            <table id="reports-table" className="w-full border-collapse text-center text-xs">
+            <table id="reports-table" className="w-auto border-collapse text-center text-xs">
               <thead>
-                <tr className="border-b border-black bg-[#027d11] text-white">
-                  <th className="w-10 border border-black px-2 py-3 font-black">م</th>
+  <tr className="border-b border-black bg-[#027d11] text-white">
+   <th className="w-10 border border-black px-2 py-3 font-white">م</th>
                   {sourceConfig.columns.map((col) => (
                     <th
                       key={col.key}
