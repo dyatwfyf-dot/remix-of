@@ -1,5 +1,7 @@
+import { Capacitor } from "@capacitor/core";
 import { REPORT_LETTERHEAD_SRC, reportLetterheadHtml } from "./printTableHtml";
 import { downloadRenderedReportPdf } from "./reportPdf";
+import { printReportHtmlAsync } from "./nativePrinter";
 
 interface OpenBrowserPrintPreviewOptions {
   title: string;
@@ -29,12 +31,6 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   const defaultMargin = options.defaultMarginMm !== undefined
     ? `${options.defaultMarginMm}mm`
     : options.margin === "normal" ? "8mm" : "3mm";
-  const newWin = window.open("", "_blank");
-  if (!newWin) {
-    alert("يرجى السماح بالنوافذ المنبثقة لمعاينة الطباعة");
-    return false;
-  }
-
   const hasEmbeddedLetterhead = tableHtml.includes("report-letterhead");
 
   const html = `<!DOCTYPE html>
@@ -864,6 +860,42 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   </script>
 </body>
 </html>`;
+
+  if (Capacitor.isNativePlatform() && !options.autoDownloadPdf) {
+    try {
+      const parsed = new DOMParser().parseFromString(html, "text/html");
+      parsed.querySelector(".preview-toolbar")?.remove();
+      parsed.querySelectorAll("script").forEach((script) => script.remove());
+      const printOverrides = parsed.createElement("style");
+      printOverrides.textContent = `
+        @page { size: ${paperSize} ${defaultOrientation}; margin: ${defaultMargin}; }
+        html, body { width: 100% !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; background: #fff !important; }
+        .sheet-viewport { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
+        .sheet-paper { width: 100% !important; min-width: 0 !important; min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 0 !important; transform: none !important; box-shadow: none !important; border-radius: 0 !important; }
+        .preview-report-content { width: 100% !important; zoom: 1 !important; }
+        table { max-width: 100% !important; }
+        @media print { html, body { background: #fff !important; } }
+      `;
+      parsed.head.appendChild(printOverrides);
+      void printReportHtmlAsync(`<!DOCTYPE html>${parsed.documentElement.outerHTML}`, title).then((printed) => {
+        if (!printed) window.alert("تعذر فتح خدمة الطباعة في Android. تحقق من تثبيت خدمة الطباعة ثم أعد المحاولة.");
+      }).catch((error) => {
+        console.error("[Print] Android printing failed", error);
+        window.alert("تعذر فتح خدمة الطباعة في Android. أعد المحاولة بعد التحقق من إعدادات الطباعة.");
+      });
+      return true;
+    } catch (error) {
+      console.error("[Print] Unable to prepare Android report", error);
+      window.alert("تعذر تجهيز التقرير للطباعة على Android.");
+      return false;
+    }
+  }
+
+  const newWin = window.open("", "_blank");
+  if (!newWin) {
+    alert("يرجى السماح بالنوافذ المنبثقة لمعاينة الطباعة");
+    return false;
+  }
 
   (newWin as any).downloadReportFromPreview = async (settings: any) => {
     const paper = newWin.document.getElementById("paperContainer");

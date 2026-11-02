@@ -114,6 +114,12 @@
     direction: rtl;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    width: 100%;
+    max-width: 100%;
+  }
+  html, body {
+    margin: 0;
+    overflow-x: hidden;
   }
   body {
     background:
@@ -125,9 +131,19 @@
     font-family: var(--font-ui);
     font-weight: 700;
     letter-spacing: 0;
+    width: 100%;
+    min-height: 100vh;
     min-height: 100dvh;
     overscroll-behavior-y: none;
     -webkit-tap-highlight-color: transparent;
+  }
+  .apk-tabs-ui {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100vw;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-top: env(safe-area-inset-top, 0px);
   }
   h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 800; letter-spacing: 0 }
 

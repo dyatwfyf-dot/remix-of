@@ -256,7 +256,7 @@ function Index() {
 
   return (
     <div
-      className="apk-tabs-ui w-full min-h-screen bg-[#e8f0ff] selection:bg-[#6ba3c8]/30 text-base"
+      className="apk-tabs-ui w-full min-h-[100dvh] bg-[#e8f0ff] selection:bg-[#6ba3c8]/30 text-base"
       dir="rtl"
     >
       {/* قسم الهيدر العلوي */}
@@ -303,7 +303,7 @@ function Index() {
       )}
 
       {/* محتوى التبويب النشط */}
-      <div className="app-tab-content w-full min-w-0 bg-[#f4f9fd] p-0 pb-28 sm:p-0 sm:pb-24 md:p-0 min-h-[calc(100vh-140px)]">
+      <div className="app-tab-content w-full min-w-0 bg-[#f4f9fd] p-0 pb-28 sm:p-0 sm:pb-24 md:p-0 min-h-[calc(100dvh-140px)]">
         {!isMounted ? (
           <div
             className="flex min-h-[35vh] items-center justify-center p-6 text-xs font-semibold text-[#2e6b8a]"
