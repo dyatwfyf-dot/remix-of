@@ -39,7 +39,7 @@ export const reportDocumentCss = `
     font-weight: 800;
   }
   th, td {
-    padding: 4px 5px;
+    padding: 6px 7px;
     text-align: center !important;
     vertical-align: middle !important;
     font-size: 16px !important;
@@ -170,7 +170,7 @@ export const reportContainmentCss = `
   .report-page-content th
   {
   min-width: auto !important;
-padding: 4px 5px!important;
+padding: 6px 7px!important;
 margin: 0 !important;
 text-align: center !important;
 vertical-align: middle !important;
@@ -183,7 +183,7 @@ border: 1px solid #000000 !important;
   }
   .report-page-content td {
    min-width: auto !important;
-  padding: 4px 5px !important;
+  padding: 6px 7px !important;
     margin: 0 !important;
 text-align: center !important;
 vertical-align: middle !important; 
@@ -196,7 +196,7 @@ border: 1px solid #000000 !important;
   }
   .report-page-content thead th { 
     font-size: 16px !important; 
-    padding: 6px 5px !important; 
+    padding: 7px 7px !important; 
     font-weight: 900 !important; 
     background: #00883f !important;
     color: #ffffff !important;
