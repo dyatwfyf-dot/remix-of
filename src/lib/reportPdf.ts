@@ -46,18 +46,26 @@ export const reportDocumentCss = `
     line-height: 1.45 !important;
     border: 1px solid #000000 !important;
   }
-  thead th { 
-    background: #047958 !important; 
-    color: #fff !important; 
-    font-weight: 900;
+  thead th {
+    background: #FFD700 !important;
+    color: #000000 !important;
+    font-weight: 900 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
+  thead th .pdf-cell-text { color: #000000 !important; }
   tbody tr:nth-child(even) td { background: #f8fafc; }
-  .total-row td { 
-    background: var(--report-total) !important; 
-    font-weight: 900; 
-    border-top: 2px solid #000000;
-    color: #ffffff !important; 
+  .total-row td,
+  .report-grand-total-row td {
+    background: #0437bb !important;
+    font-weight: 900 !important;
+    border-top: 2px solid #000000 !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
+  .total-row td .pdf-cell-text,
+  .report-grand-total-row td .pdf-cell-text { color: #ffffff !important; }
   .doc-title-cell { border: 0 !important; background: var(--report-paper); padding: 0 0 6px; }
 
   /* ===== إطار الترويسة الموحّد للتقارير الرسمية ===== */
@@ -194,15 +202,78 @@ line-height: 1.35 !important;
 border: 1px solid #000000 !important;
 
   }
-  .report-page-content thead th { 
-    font-size: 16px !important; 
-    padding: 7px 7px !important; 
-    font-weight: 900 !important; 
-    background: #00883f !important;
-    color: #ffffff !important;
+  .report-page-content thead th {
+    font-size: 16px !important;
+    padding: 7px 7px !important;
+    font-weight: 900 !important;
+    background: #FFD700 !important;
+    color: #000000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
   .report-page-content thead th .pdf-cell-text {
+    color: #000000 !important;
+    background: transparent !important;
+  }
+  .report-page-content .total-row td,
+  .report-page-content .report-grand-total-row td {
+    background: #0437bb !important;
     color: #ffffff !important;
+    font-weight: 900 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .report-page-content .total-row td .pdf-cell-text,
+  .report-page-content .report-grand-total-row td .pdf-cell-text {
+    color: #ffffff !important;
+  }
+
+  /* كتلة التوقيعات الموحدة: ثلاثة مسميات في صف وثلاثة أسماء أسفلها */
+  .report-page-content .signature-block-row {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .report-page-content .signature-block-row > td {
+    background: #ffffff !important;
+    border: 1.5px solid #000000 !important;
+    padding: 14px 18px !important;
+    color: #000000 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .report-page-content .signature-block-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px 12px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    direction: rtl !important;
+    align-items: end !important;
+  }
+  .report-page-content .sig-title {
+    font-family: Cairo, sans-serif !important;
+    font-weight: 900 !important;
+    font-size: 16px !important;
+    color: #000000 !important;
+    text-align: center !important;
+    padding: 4px !important;
+    line-height: 1.3 !important;
+    min-width: 0 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+  .report-page-content .sig-name {
+    font-family: Cairo, sans-serif !important;
+    font-weight: 800 !important;
+    font-size: 16px !important;
+    color: #000000 !important;
+    text-align: center !important;
+    padding: 4px !important;
+    min-height: 24px !important;
+    border-bottom: 1px dotted #000000 !important;
+    min-width: 0 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
   }
   .report-page-content table {
     width: 100% !important; 

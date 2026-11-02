@@ -201,7 +201,7 @@ whitespace: normal!important
 font-size: 18px !important;
 font-weight: 800 !important; }
     .total-row td, tr.total-row td { 
-background: #0b3866 !important; color: #ffffff !important; font-weight: 900 !important; }
+background: #0437bb !important; color: #ffffff !important; font-weight: 900 !important; }
     .signature-block-row td { background: #ffffff !important; }
     .print\\:hidden, button, select, input { display: none !important; }
     .print-only-text { display: flex !important; }
@@ -1131,7 +1131,7 @@ if (source === "tawfiqCustody") {
           <div className="border border-black bg-white shadow-sm">
             <table id="reports-table" className="w-auto border-collapse text-center text-xs">
               <thead>
-  <tr className="border-b border-black bg-[#027d11] text-white">
+  <tr className="border-b border-black bg-[#FFD700] text-black">
    <th className="w-10 border border-black px-2 py-3 font-white">م</th>
                   {sourceConfig.columns.map((col) => (
                     <th
@@ -1153,7 +1153,7 @@ if (source === "tawfiqCustody") {
                           }
                         }
                       }}
-                      className="cursor-pointer border border-black px-3 py-3 font-black hover:bg-[#026c0f]"
+                      className="cursor-pointer border border-black px-3 py-3 font-black hover:bg-[#e6b800]"
                     >
                       <div className="flex items-center justify-center gap-1">
                         <span>{col.label}</span>

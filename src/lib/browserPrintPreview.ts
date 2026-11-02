@@ -450,6 +450,94 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   </style>
   <style>
     ${contentCss}
+    /* تنسيق موحّد لرؤوس الجداول والإجماليات والتوقيعات في المعاينة والطباعة */
+    #tableContainer table thead th,
+    #tableContainer table thead th.desc-cell,
+    #tableContainer table thead th[data-col-key="description"] {
+      background: #FFD700 !important;
+      color: #000000 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    #tableContainer table thead th .pdf-cell-text,
+    #tableContainer table thead th span {
+      color: #000000 !important;
+      background: transparent !important;
+    }
+    #tableContainer table .total-row td,
+    #tableContainer table .report-grand-total-row td {
+      background: #0437bb !important;
+      color: #ffffff !important;
+      font-weight: 900 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    #tableContainer table .total-row td .pdf-cell-text,
+    #tableContainer table .report-grand-total-row td .pdf-cell-text {
+      color: #ffffff !important;
+    }
+    #tableContainer table .signature-block-row {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    #tableContainer table .signature-block-row > td {
+      background: #ffffff !important;
+      border: 1.5px solid #000000 !important;
+      padding: 14px 18px !important;
+      color: #000000 !important;
+    }
+    #tableContainer .signature-block-grid {
+      display: grid !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 6px 12px !important;
+      width: 100% !important;
+      min-width: 0 !important;
+      direction: rtl !important;
+      align-items: end !important;
+    }
+    #tableContainer .sig-title {
+      font-family: Cairo, sans-serif !important;
+      font-weight: 900 !important;
+      font-size: 16px !important;
+      color: #000000 !important;
+      text-align: center !important;
+      padding: 4px !important;
+      line-height: 1.3 !important;
+      min-width: 0 !important;
+      white-space: normal !important;
+      overflow-wrap: anywhere !important;
+    }
+    #tableContainer .sig-name {
+      font-family: Cairo, sans-serif !important;
+      font-weight: 800 !important;
+      font-size: 16px !important;
+      color: #000000 !important;
+      text-align: center !important;
+      padding: 4px !important;
+      min-height: 24px !important;
+      border-bottom: 1px dotted #000000 !important;
+      min-width: 0 !important;
+      white-space: normal !important;
+      overflow-wrap: anywhere !important;
+    }
+    @media print {
+      #tableContainer table thead th,
+      #tableContainer table thead th.desc-cell,
+      #tableContainer table thead th[data-col-key="description"] {
+        background: #FFD700 !important;
+        color: #000000 !important;
+      }
+      #tableContainer table .total-row td,
+      #tableContainer table .report-grand-total-row td {
+        background: #0437bb !important;
+        color: #ffffff !important;
+      }
+      #tableContainer table .signature-block-row,
+      #tableContainer table .signature-block-row > td {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+    }
     /* تثبيت محاذاة ومقاس كل خلايا التقارير في المعاينة ونسخة PDF */
     .sheet-paper table th,
     .sheet-paper table td {
