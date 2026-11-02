@@ -2452,11 +2452,19 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       .replace(/\s+/g, " ")
       .trim();
 
-  // يكفي تطابق اسم واحد على الأقل بين الاسمين، ولا يشترط تطابق الاسم الرباعي بالكامل.
+  // المطابقة تعتمد على اسم المتدرب فقط: يكفي تطابق جزء واحد من الاسم بعد توحيد كتابته.
+  // لا تدخل الدفعة أو المساق أو أي بيانات أخرى في قرار المطابقة.
   const traineeNamesMatch = (installmentName: any, hafizaName: any): boolean => {
-    const installmentTokens = normalizeTraineeName(installmentName).split(" ").filter(Boolean);
-    const hafizaTokens = new Set(normalizeTraineeName(hafizaName).split(" ").filter(Boolean));
-    return installmentTokens.some((token) => hafizaTokens.has(token));
+    const installmentNameParts = new Set(
+      normalizeTraineeName(installmentName).split(" ").filter(Boolean),
+    );
+    const hafizaNameParts = new Set(
+      normalizeTraineeName(hafizaName).split(" ").filter(Boolean),
+    );
+
+    if (installmentNameParts.size === 0 || hafizaNameParts.size === 0) return false;
+
+    return [...installmentNameParts].some((part) => hafizaNameParts.has(part));
   };
 
   // كشف مستقل لسداد رسوم الامتحانات من حوافظ التوريد مع مطابقة مرنة للأسماء.
