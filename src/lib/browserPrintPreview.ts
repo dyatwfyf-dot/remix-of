@@ -660,6 +660,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   <script>
     (function() {
       const fitToContent = ${fitToContent ? "true" : "false"};
+      if (fitToContent) document.body.classList.add('fit-content-mode');
       const autoDownloadPdf = ${options.autoDownloadPdf ? "true" : "false"};
       const selOrientation = document.getElementById('selOrientation');
       const selPageSize = document.getElementById('selPageSize');
