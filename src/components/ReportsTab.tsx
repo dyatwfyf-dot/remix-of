@@ -1,180 +1,181 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  BarChart3,
-  CalendarDays,
-  ChevronDown,
-  ChevronUp,
-  DollarSign,
-  FileText,
-  Trash2,
-  TrendingUp,
-  UserRound,
-  Wallet,
+ BarChart3,
+ CalendarDays,
+ ChevronDown,
+ ChevronUp,
+ DollarSign,
+ FileText,
+ Trash2,
+ TrendingUp,
+ UserRound,
+ Wallet,
 } from "lucide-react";
 import { useStore, type Account } from "@/lib/store";
 import { useFiscalYear } from "@/lib/fiscalYear";
 import TabActions, { type TabCol } from "./TabActions";
 import revenueSchema from "@/data/revenueTemplate.json";
 
-type ReportSource =
-  | "youssefLoan"
-  | "tawfiqCustody"
-  | "account"
-  | "hafiza"
-  | "expenses"
-  | "revenue"
-  | "combined"
-  | "trainee"
-  | "feeTotals";
+type ReportSource = |
+ "youssefLoan" |
+ "tawfiqCustody" |
+ "account" |
+ "hafiza" |
+ "expenses" |
+ "revenue" |
+ "combined" |
+ "trainee" |
+ "feeTotals";
 
 type PeriodType = "all" | "month" | "quarter" | "half" | "year";
 type TraineeGrouping = "month" | "year";
 type TraineeDisplayMode = "detail" | "summary" | "both";
 
 export interface ReportRow {
-  id?: string;
-  date?: string;
-  description?: string;
-  trainee?: string;
-  name?: string;
-  specialty?: string;
-  year?: string | number;
-  amount?: number;
-  income?: number;
-  expense?: number;
-  hafizaAmount?: number;
-  hafizaNo?: string;
-  notifyNo?: string;
-  notifyDate?: string;
-  checkNo?: string;
-  category?: string;
-  period?: string;
-  source?: string;
-  displayType?: string;
-  notes?: string;
-  settlementNo?: string;
-  item?: string;
-  summaryLevel?: "opening" | "total" | "fee" | "trainee-name-total" | "period" | "signature" | "detail";
-  total?: string;
-  [key: string]: any;
+ id ? : string;
+ date ? : string;
+ description ? : string;
+ trainee ? : string;
+ name ? : string;
+ specialty ? : string;
+ year ? : string | number;
+ amount ? : number;
+ income ? : number;
+ expense ? : number;
+ hafizaAmount ? : number;
+ hafizaNo ? : string;
+ notifyNo ? : string;
+ notifyDate ? : string;
+ checkNo ? : string;
+ category ? : string;
+ period ? : string;
+ source ? : string;
+ displayType ? : string;
+ notes ? : string;
+ settlementNo ? : string;
+ item ? : string;
+ summaryLevel ? : "opening" | "total" | "fee" | "trainee-name-total" | "period" | "signature" | "detail";
+ total ? : string;
+ [key: string]: any;
 }
 
 interface SignaturesMeta {
-  sig1Dept: string;
-  sig1Name: string;
-  sig2Dept: string;
-  sig2Name: string;
-  sig3Dept: string;
-  sig3Name: string;
+ sig1Dept: string;
+ sig1Name: string;
+ sig2Dept: string;
+ sig2Name: string;
+ sig3Dept: string;
+ sig3Name: string;
 }
 
 const MONTHS: string[] = [
-  "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
-  "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر",
+ "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+ "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر",
 ];
 
 const TRAINEE_REPORT_START_YEAR = 2021;
 
-const PERIODS: Array<{ value: PeriodType; label: string }> = [
-  { value: "all", label: "كامل المدة (من 2026)" },
-  { value: "year", label: "سنوي" },
-  { value: "half", label: "نصف سنوي" },
-  { value: "quarter", label: "ربع سنوي" },
-  { value: "month", label: "شهري" },
+const PERIODS: Array < { value: PeriodType;label: string } > = [
+ { value: "all", label: "كامل المدة (من 2026)" },
+ { value: "year", label: "سنوي" },
+ { value: "half", label: "نصف سنوي" },
+ { value: "quarter", label: "ربع سنوي" },
+ { value: "month", label: "شهري" },
 ];
 
-const SOURCES: Array<{ value: ReportSource; label: string }> = [
-  { value: "youssefLoan", label: "سلفة د/يوسف" },
-  { value: "tawfiqCustody", label: "عهدة توفيق الداعي" },
-  { value: "account", label: "الحساب الجاري" },
-  { value: "hafiza", label: "حوافظ التوريد" },
-  { value: "expenses", label: "المصروفات" },
-  { value: "revenue", label: "الإيرادات" },
-  { value: "combined", label: "تقرير مجمّع لكل التبويبات" },
-  { value: "trainee", label: "كشف مدفوعات المتدربين" },
-  { value: "feeTotals", label: "إجماليات الرسوم حسب النوع" },
+const SOURCES: Array < { value: ReportSource;label: string } > = [
+ { value: "youssefLoan", label: "سلفة د/يوسف" },
+ { value: "tawfiqCustody", label: "عهدة توفيق الداعي" },
+ { value: "account", label: "الحساب الجاري" },
+ { value: "hafiza", label: "حوافظ التوريد" },
+ { value: "expenses", label: "المصروفات" },
+ { value: "revenue", label: "الإيرادات" },
+ { value: "combined", label: "تقرير مجمّع لكل التبويبات" },
+ { value: "trainee", label: "كشف مدفوعات المتدربين" },
+ { value: "feeTotals", label: "إجماليات الرسوم حسب النوع" },
 ];
 
 const normalizeDate = (value: unknown): Date | null => {
-  if (!value) return null;
-  const date = new Date(String(value));
-  return Number.isNaN(date.getTime()) ? null : date;
+ if (!value) return null;
+ const date = new Date(String(value));
+ return Number.isNaN(date.getTime()) ? null : date;
 };
 
 const periodMonths = (period: PeriodType, month: number) => {
-  if (period === "all" || period === "year") return Array.from({ length: 12 }, (_, i) => i);
-  if (period === "quarter") return [Math.floor(month / 3) * 3, Math.floor(month / 3) * 3 + 1, Math.floor(month / 3) * 3 + 2];
-  if (period === "half") return month < 6 ? [0, 1, 2, 3, 4, 5] : [6, 7, 8, 9, 10, 11];
-  return [month];
+ if (period === "all" || period === "year") return Array.from({ length: 12 }, (_, i) => i);
+ if (period === "quarter") return [Math.floor(month / 3) * 3, Math.floor(month / 3) * 3 + 1, Math.floor(month / 3) * 3 + 2];
+ if (period === "half") return month < 6 ? [0, 1, 2, 3, 4, 5] : [6, 7, 8, 9, 10, 11];
+ return [month];
 };
 
 const periodLabel = (period: PeriodType, month: number, year: number) => {
-  if (period === "all") return ` من تاريخ 1/1/2026 حتى تاريخه`;
-  if (period === "year") return `السنة المالية ${year}`;
-  if (period === "half") return `${month < 6 ? "النصف الأول" : "النصف الثاني"} لعام ${year}`;
-  if (period === "quarter") return `الربع ${Math.floor(month / 3) + 1} لعام ${year}`;
-  return `شهر ${MONTHS[month]} ${year}`;
+ if (period === "all") return ` من تاريخ 1/1/2026 حتى تاريخه`;
+ if (period === "year") return `السنة المالية ${year}`;
+ if (period === "half") return `${month < 6 ? "النصف الأول" : "النصف الثاني"} لعام ${year}`;
+ if (period === "quarter") return `الربع ${Math.floor(month / 3) + 1} لعام ${year}`;
+ return `شهر ${MONTHS[month]} ${year}`;
 };
 
 const getYearOptions = (values: unknown[]) => {
-  const years = new Set<number>([2024, 2025, 2026]);
-  values.forEach((value) => {
-    const date = normalizeDate(value);
-    if (date) years.add(date.getFullYear());
-  });
-  return Array.from(years).sort((a, b) => b - a);
+ const years = new Set < number > ([2024, 2025, 2026]);
+ values.forEach((value) => {
+  const date = normalizeDate(value);
+  if (date) years.add(date.getFullYear());
+ });
+ return Array.from(years).sort((a, b) => b - a);
 };
 
 const revenueItemNames = (() => {
-  const names = new Map<string, string>();
-  const schema = revenueSchema as any;
-  (schema.chapters || []).forEach((chapter: any) =>
-    (chapter.sections || []).forEach((section: any) =>
-      (section.items || []).forEach((item: any) =>
-        (item.types || []).forEach((type: any) => {
-          names.set(`${chapter.no}-${section.no}-${item.no}-${type.no}`, type.title);
-          names.set(String(type.no), type.title);
-        })
-      )
-    )
-  );
-  return names;
+ const names = new Map < string,
+  string > ();
+ const schema = revenueSchema as any;
+ (schema.chapters || []).forEach((chapter: any) =>
+  (chapter.sections || []).forEach((section: any) =>
+   (section.items || []).forEach((item: any) =>
+    (item.types || []).forEach((type: any) => {
+     names.set(`${chapter.no}-${section.no}-${item.no}-${type.no}`, type.title);
+     names.set(String(type.no), type.title);
+    })
+   )
+  )
+ );
+ return names;
 })();
 
 const revenueName = (key: string) => {
-  const itemKey = key.split("-").slice(2).join("-");
-  return revenueItemNames.get(itemKey) || revenueItemNames.get(itemKey.split("-").at(-1) || "") || itemKey || "—";
+ const itemKey = key.split("-").slice(2).join("-");
+ return revenueItemNames.get(itemKey) || revenueItemNames.get(itemKey.split("-").at(-1) || "") || itemKey || "—";
 };
 
 const amountValue = (value: unknown): number => {
-  if (typeof value === "number") return Number.isFinite(value) ? value : 0;
-  if (!value) return 0;
-  const num = Number(value);
-  return Number.isFinite(num) ? num : 0;
+ if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+ if (!value) return 0;
+ const num = Number(value);
+ return Number.isFinite(num) ? num : 0;
 };
 
-const formatCurrency = (val?: number | string | null): string => {
-  return (Number(val) || 0).toLocaleString("en-US");
+const formatCurrency = (val ? : number | string | null): string => {
+ return (Number(val) || 0).toLocaleString("en-US");
 };
 
 const canonicalFeeCategory = (value: unknown) => {
-  const text = String(value || "")
-    .trim()
-    .replace(/[ًٌٍَُِّْـ]/g, "")
-    .replace(/[إأآ]/g, "ا")
-    .replace(/\s+/g, " ");
-  if (!text) return "رسوم أخرى";
-  if (/(امتحان|اختبار)/.test(text)) return "رسوم الامتحانات";
-  if (/(تسجيل|قيد|دراس|دراسه|قسط)/.test(text)) return "أقساط الدراسة والتسجيل";
-  return String(value).trim() || "رسوم أخرى";
+ const text = String(value || "")
+  .trim()
+  .replace(/[ًٌٍَُِّْـ]/g, "")
+  .replace(/[إأآ]/g, "ا")
+  .replace(/\s+/g, " ");
+ if (!text) return "رسوم أخرى";
+ if (/(امتحان|اختبار)/.test(text)) return "رسوم الامتحانات";
+ if (/(تسجيل|قيد|دراس|دراسه|قسط)/.test(text)) return "أقساط الدراسة والتسجيل";
+ return String(value).trim() || "رسوم أخرى";
 };
 
 const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "other" => {
-  const text = String(description || "").trim();
-  if (!text) return "other";
-  if (/(عهدة\s*الداعي|توفيق\s*الداعي)/.test(text)) return "tawfiq";
-  if (/(عهدة\s*د\s*\/?\s*يوسف|العهدة|عهدة)/.test(text)) return "youssef";
-  return "other";
+ const text = String(description || "").trim();
+ if (!text) return "other";
+ if (/(عهدة\s*الداعي|توفيق\s*الداعي)/.test(text)) return "tawfiq";
+ if (/(عهدة\s*د\s*\/?\s*يوسف|العهدة|عهدة)/.test(text)) return "youssef";
+ return "other";
 };
 
 const reportsTabPrintCss = `
@@ -198,11 +199,12 @@ font-weight: 900 !important; border: 1px solid #000 !important; }
       background: #ffffff !important;
       border: 1px solid #000 !important;
       color: #000000 !important;
-      font-size: 18px !important;
+      font-size: 20px !important;
       font-weight: 800 !important;
     }
     tbody td.financial-amount-cell {
       background: #f2f7fb !important;
+font-size: 20px !important;
       background-color: #f2f7fb !important;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
@@ -214,20 +216,18 @@ font-weight: 900 !important; border: 1px solid #000 !important; }
       print-color-adjust: exact !important;
     }
     .total-row td.financial-amount-cell {
-      background: #0437bb !important;
-      background-color: #0437bb !important;
+background: #0437bb !important;
       color: #ffffff !important;
     }
     .total-row td, tr.total-row td, tbody tr.total-row > td {
       background: #0437bb !important;
-      background-color: #0437bb !important;
-      color: #ffffff !important;
+color: #ffffff !important;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
       font-weight: 900 !important;
     }
     .signature-spacer-row td {
-      height: 8mm !important;
+      height: 5mm !important;
       padding: 0 !important;
       border: 0 !important;
       background: #ffffff !important;
@@ -247,780 +247,788 @@ font-weight: 900 !important; border: 1px solid #000 !important; }
   html body table tr.report-grand-total-row > td, html body table tr.total-row > td,
   html body table tr.report-grand-total-row > td.description-cell, html body table tr.total-row > td.description-cell,
   html body table tr.report-grand-total-row > td.financial-amount-cell, html body table tr.total-row > td.financial-amount-cell {
-    background: #0437bb !important; background-color: #0437bb !important; color: #ffffff !important; font-weight: 900 !important;
+ background: #0437bb !important; 
+ color: #ffffff !important; font-weight: 900 !important;
     -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
   }
   html body table tr.report-grand-total-row > td *, html body table tr.total-row > td * { color: #ffffff !important; }
 `;
 
 export default function ReportsTab() {
-  const { year: fiscalYear } = useFiscalYear();
-  const hafiza = useStore((state) => state.hafiza);
-  const accounts = useStore((state) => state.accounts);
-  const revenue = useStore((state) => state.revenue);
-
-  const [source, setSource] = useState<ReportSource>("youssefLoan");
-  const [period, setPeriod] = useState<PeriodType>("all");
-  const [year, setYear] = useState<number>(fiscalYear);
-  const [month, setMonth] = useState<number>(new Date().getMonth());
-
-  const [selectedTrainee, setSelectedTrainee] = useState<string>("all");
-  const [selectedFee, setSelectedFee] = useState<string>("all");
-  const [traineeGrouping, setTraineeGrouping] = useState<TraineeGrouping>("month");
-  const [traineeDisplayMode, setTraineeDisplayMode] = useState<TraineeDisplayMode>("both");
-
-  const [sortColumn, setSortColumn] = useState<string>("date");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  const [traineeSortColumn, setTraineeSortColumn] = useState<string>("notifyDate");
-  const [traineeSortDirection, setTraineeSortDirection] = useState<"asc" | "desc">("asc");
-
-  const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
-  const [deletedRows, setDeletedRows] = useState<Set<ReportRow>>(new Set());
-
-  const [youssefOpeningBalance, setYoussefOpeningBalance] = useState<number>(() => {
-    try {
-      const saved = localStorage.getItem("youssef-loan-opening-balance");
-      return saved ? Number(saved) || 0 : 0;
-    } catch {
-      return 0;
-    }
+ const { year: fiscalYear } = useFiscalYear();
+ const hafiza = useStore((state) => state.hafiza);
+ const accounts = useStore((state) => state.accounts);
+ const revenue = useStore((state) => state.revenue);
+ 
+ const [source, setSource] = useState < ReportSource > ("youssefLoan");
+ const [period, setPeriod] = useState < PeriodType > ("all");
+ const [year, setYear] = useState < number > (fiscalYear);
+ const [month, setMonth] = useState < number > (new Date().getMonth());
+ 
+ const [selectedTrainee, setSelectedTrainee] = useState < string > ("all");
+ const [selectedFee, setSelectedFee] = useState < string > ("all");
+ const [traineeGrouping, setTraineeGrouping] = useState < TraineeGrouping > ("month");
+ const [traineeDisplayMode, setTraineeDisplayMode] = useState < TraineeDisplayMode > ("both");
+ 
+ const [sortColumn, setSortColumn] = useState < string > ("date");
+ const [sortDirection, setSortDirection] = useState < "asc" | "desc" > ("asc");
+ const [traineeSortColumn, setTraineeSortColumn] = useState < string > ("notifyDate");
+ const [traineeSortDirection, setTraineeSortDirection] = useState < "asc" | "desc" > ("asc");
+ 
+ const [columnFilters, setColumnFilters] = useState < Record < string, string >> ({});
+ const [deletedRows, setDeletedRows] = useState < Set < ReportRow >> (new Set());
+ 
+ const [youssefOpeningBalance, setYoussefOpeningBalance] = useState < number > (() => {
+  try {
+   const saved = localStorage.getItem("youssef-loan-opening-balance");
+   return saved ? Number(saved) || 0 : 0;
+  } catch {
+   return 0;
+  }
+ });
+ 
+ const [tawfiqOpeningBalance, setTawfiqOpeningBalance] = useState < number > (() => {
+  try {
+   const saved = localStorage.getItem("tawfiq-custody-opening-balance");
+   return saved ? Number(saved) || 0 : 0;
+  } catch {
+   return 0;
+  }
+ });
+ 
+ const [loanManualData, setLoanManualData] = useState <
+  Record < string, { settlementNo ? : string;notes ? : string;amount ? : number } >
+  >
+  (() => {
+   try {
+    const saved = localStorage.getItem("reports-loan-manual-data-v1");
+    return saved ? JSON.parse(saved) : {};
+   } catch {
+    return {};
+   }
   });
-
-  const [tawfiqOpeningBalance, setTawfiqOpeningBalance] = useState<number>(() => {
-    try {
-      const saved = localStorage.getItem("tawfiq-custody-opening-balance");
-      return saved ? Number(saved) || 0 : 0;
-    } catch {
-      return 0;
-    }
-  });
-
-  const [loanManualData, setLoanManualData] = useState<
-    Record<string, { settlementNo?: string; notes?: string; amount?: number }>
-  >(() => {
-    try {
-      const saved = localStorage.getItem("reports-loan-manual-data-v1");
-      return saved ? JSON.parse(saved) : {};
-    } catch {
-      return {};
-    }
-  });
-
-  const [signaturesMeta, setSignaturesMeta] = useState<SignaturesMeta>(() => {
-    try {
-      const saved = localStorage.getItem("reports-custody-signatures-meta-v1");
-      if (saved) return JSON.parse(saved);
-    } catch {}
-    return {
-      sig1Dept: "الشؤون المالية",
-      sig1Name: "أ/ محمد الدباغ",
-      sig2Dept: "نائب رئيس المجلس",
-      sig2Name: "أ.د/ فضل علي حزام",
-      sig3Dept: "رئيس المجلس اليمني للاختصاصات الطبية",
-      sig3Name: "أ.د/ أثمار حسين علي",
-    };
-  });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem("reports-custody-signatures-meta-v1", JSON.stringify(signaturesMeta));
-    } catch (error) {
-      console.error("تعذر حفظ التوقيعات محلياً:", error);
-    }
-  }, [signaturesMeta]);
-
-  const handleYoussefOpeningChange = (val: number) => {
-    setYoussefOpeningBalance(val);
-    try {
-      localStorage.setItem("youssef-loan-opening-balance", String(val));
-    } catch {}
+ 
+ const [signaturesMeta, setSignaturesMeta] = useState < SignaturesMeta > (() => {
+  try {
+   const saved = localStorage.getItem("reports-custody-signatures-meta-v1");
+   if (saved) return JSON.parse(saved);
+  } catch {}
+  return {
+   sig1Dept: "الشؤون المالية",
+   sig1Name: "أ/ محمد الدباغ",
+   sig2Dept: "نائب رئيس المجلس",
+   sig2Name: "أ.د/ فضل علي حزام",
+   sig3Dept: "رئيس المجلس اليمني للاختصاصات الطبية",
+   sig3Name: "أ.د/ أثمار حسين علي",
   };
-
-  const handleTawfiqOpeningChange = (val: number) => {
-    setTawfiqOpeningBalance(val);
-    try {
-      localStorage.setItem("tawfiq-custody-opening-balance", String(val));
-    } catch {}
-  };
-
-  const handleManualFieldChange = (
-    rowKey: string,
-    field: "settlementNo" | "notes" | "amount",
-    value: string | number
-  ) => {
-    setLoanManualData((prev) => {
-      const current = prev[rowKey] || {};
-      const updated = {
-        ...prev,
-        [rowKey]: {
-          ...current,
-          [field]: field === "amount" ? (value === "" ? 0 : Number(value) || 0) : value,
-        },
-      };
-      try {
-        localStorage.setItem("reports-loan-manual-data-v1", JSON.stringify(updated));
-      } catch {}
-      return updated;
-    });
-  };
-
-  const yearOptions = useMemo(
-    () => getYearOptions([...hafiza.map((row) => row.date), ...accounts.map((row) => row.date)]),
-    [hafiza, accounts]
-  );
-
-  const selectedMonthSet = useMemo(() => new Set(periodMonths(period, month)), [period, month]);
-
-  const inPeriod = (dateVal: unknown) => {
-    const d = normalizeDate(dateVal);
+ });
+ 
+ useEffect(() => {
+  try {
+   localStorage.setItem("reports-custody-signatures-meta-v1", JSON.stringify(signaturesMeta));
+  } catch (error) {
+   console.error("تعذر حفظ التوقيعات محلياً:", error);
+  }
+ }, [signaturesMeta]);
+ 
+ const handleYoussefOpeningChange = (val: number) => {
+  setYoussefOpeningBalance(val);
+  try {
+   localStorage.setItem("youssef-loan-opening-balance", String(val));
+  } catch {}
+ };
+ 
+ const handleTawfiqOpeningChange = (val: number) => {
+  setTawfiqOpeningBalance(val);
+  try {
+   localStorage.setItem("tawfiq-custody-opening-balance", String(val));
+  } catch {}
+ };
+ 
+ const handleManualFieldChange = (
+  rowKey: string,
+  field: "settlementNo" | "notes" | "amount",
+  value: string | number
+ ) => {
+  setLoanManualData((prev) => {
+   const current = prev[rowKey] || {};
+   const updated = {
+    ...prev,
+    [rowKey]: {
+     ...current,
+     [field]: field === "amount" ? (value === "" ? 0 : Number(value) || 0) : value,
+    },
+   };
+   try {
+    localStorage.setItem("reports-loan-manual-data-v1", JSON.stringify(updated));
+   } catch {}
+   return updated;
+  });
+ };
+ 
+ const yearOptions = useMemo(
+  () => getYearOptions([...hafiza.map((row) => row.date), ...accounts.map((row) => row.date)]),
+  [hafiza, accounts]
+ );
+ 
+ const selectedMonthSet = useMemo(() => new Set(periodMonths(period, month)), [period, month]);
+ 
+ const inPeriod = (dateVal: unknown) => {
+  const d = normalizeDate(dateVal);
+  if (!d) return false;
+  if (period === "all") return d.getFullYear() >= 2026;
+  return d.getFullYear() === year && selectedMonthSet.has(d.getMonth());
+ };
+ 
+ const youssefRows = useMemo < ReportRow[] > (() => {
+  const matched = accounts
+   .filter((row) => {
+    const d = normalizeDate(row.date);
     if (!d) return false;
-    if (period === "all") return d.getFullYear() >= 2026;
-    return d.getFullYear() === year && selectedMonthSet.has(d.getMonth());
+    const inTime = period === "all" ? d.getFullYear() >= 2026 : d.getFullYear() === year && selectedMonthSet.has(d.getMonth());
+    if (!inTime) return false;
+    return classifyCustodyRecord(row.description) === "youssef";
+   })
+   .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  
+  const result: ReportRow[] = [];
+  let sumAmount = 0;
+  
+  result.push({
+   id: "y-opening",
+   date: "—",
+   docNo: "—",
+   description: "الرصيد الافتتاحي (سلفة د/يوسف)",
+   name: "د/ يوسف",
+   settlementNo: "—",
+   notes: "رصيد مرحل",
+   amount: youssefOpeningBalance,
+   summaryLevel: "opening",
+  });
+  
+  matched.forEach((row, index) => {
+   const rowKey = `youssef-${index}-${row.date}`;
+   const defaultAmt = amountValue(row.income || row.hafizaAmount || row.expense);
+   const manual = loanManualData[rowKey];
+   const amt = manual?.amount ?? defaultAmt;
+   sumAmount += amt;
+   
+   const docNo = row.checkNo ?
+    `شيك: ${row.checkNo}` :
+    row.notifyNo ?
+    `إشعار: ${row.notifyNo}` :
+    row.hafizaNo ?
+    `حافظة: ${row.hafizaNo}` :
+    "—";
+   
+   result.push({
+    id: rowKey,
+    date: row.date || "—",
+    docNo,
+    description: row.description || "سلفة د/يوسف",
+    name: row.name || "د/ يوسف",
+    settlementNo: manual?.settlementNo ?? "",
+    notes: manual?.notes ?? "",
+    amount: amt,
+   });
+  });
+  
+  result.push({
+   id: "y-total",
+   date: "—",
+   docNo: "—",
+   description: "الإجمالي الكلي",
+   name: "—",
+   settlementNo: "—",
+   notes: "—",
+   amount: sumAmount,
+   summaryLevel: "total",
+  });
+  
+  result.push({ id: "sig-1", description: signaturesMeta.sig1Dept, name: signaturesMeta.sig1Name, summaryLevel: "signature" });
+  result.push({ id: "sig-2", description: signaturesMeta.sig2Dept, name: signaturesMeta.sig2Name, summaryLevel: "signature" });
+  result.push({ id: "sig-3", description: signaturesMeta.sig3Dept, name: signaturesMeta.sig3Name, summaryLevel: "signature" });
+  
+  return result;
+ }, [accounts, youssefOpeningBalance, period, year, selectedMonthSet, loanManualData, signaturesMeta]);
+ 
+ const tawfiqRows = useMemo < ReportRow[] > (() => {
+  const matched = accounts
+   .filter((row) => {
+    const d = normalizeDate(row.date);
+    if (!d) return false;
+    const inTime = period === "all" ? d.getFullYear() >= 2026 : d.getFullYear() === year && selectedMonthSet.has(d.getMonth());
+    if (!inTime) return false;
+    return classifyCustodyRecord(row.description) === "tawfiq";
+   })
+   .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  
+  const result: ReportRow[] = [];
+  let sumAmount = 0;
+  
+  result.push({
+   id: "t-opening",
+   date: "—",
+   docNo: "—",
+   description: "الرصيد الافتتاحي (عهدة توفيق الداعي)",
+   name: "توفيق الداعي",
+   settlementNo: "—",
+   notes: "رصيد مرحل",
+   amount: tawfiqOpeningBalance,
+   summaryLevel: "opening",
+  });
+  
+  matched.forEach((row, index) => {
+   const rowKey = `tawfiq-${index}-${row.date}`;
+   const defaultAmt = amountValue(row.income || row.hafizaAmount || row.expense);
+   const manual = loanManualData[rowKey];
+   const amt = manual?.amount ?? defaultAmt;
+   sumAmount += amt;
+   
+   const docNo = row.checkNo ?
+    `شيك: ${row.checkNo}` :
+    row.notifyNo ?
+    `إشعار: ${row.notifyNo}` :
+    row.hafizaNo ?
+    `حافظة: ${row.hafizaNo}` :
+    "—";
+   
+   result.push({
+    id: rowKey,
+    date: row.date || "—",
+    docNo,
+    description: row.description || "عهدة توفيق الداعي",
+    name: row.name || "توفيق الداعي",
+    settlementNo: manual?.settlementNo ?? "",
+    notes: manual?.notes ?? "",
+    amount: amt,
+   });
+  });
+  
+  result.push({
+   id: "t-total",
+   date: "—",
+   docNo: "—",
+   description: "الإجمالي الكلي",
+   name: "—",
+   settlementNo: "—",
+   notes: "—",
+   amount: sumAmount,
+   summaryLevel: "total",
+  });
+  
+  result.push({ id: "sig-1", description: signaturesMeta.sig1Dept, name: signaturesMeta.sig1Name, summaryLevel: "signature" });
+  result.push({ id: "sig-2", description: signaturesMeta.sig2Dept, name: signaturesMeta.sig2Name, summaryLevel: "signature" });
+  result.push({ id: "sig-3", description: signaturesMeta.sig3Dept, name: signaturesMeta.sig3Name, summaryLevel: "signature" });
+  
+  return result;
+ }, [accounts, tawfiqOpeningBalance, period, year, selectedMonthSet, loanManualData, signaturesMeta]);
+ 
+ const hafizaRows = useMemo < ReportRow[] > (
+  () =>
+  hafiza
+  .filter((row) => inPeriod(row.date))
+  .map((row) => ({
+   date: row.date,
+   description: row.description || "—",
+   name: row.name || "—",
+   hafizaNo: row.hafizaNo || "—",
+   amount: amountValue(row.hafizaAmount),
+   income: amountValue(row.income ?? row.notifyAmount),
+  })),
+  [hafiza, year, selectedMonthSet, period]
+ );
+ 
+ const accountRows = useMemo < ReportRow[] > (
+  () =>
+  accounts
+  .filter((row) => inPeriod(row.date))
+  .sort((a, b) => String(a.date).localeCompare(String(b.date)))
+  .map((row) => ({
+   date: row.date,
+   description: row.description || "—",
+   name: row.name || "—",
+   income: amountValue(row.income),
+   expense: amountValue(row.expense),
+   docNo: row.checkNo ? `شيك: ${row.checkNo}` : row.notifyNo ? `إشعار: ${row.notifyNo}` : row.hafizaNo ? `حافظة: ${row.hafizaNo}` : "—",
+  })),
+  [accounts, year, selectedMonthSet, period]
+ );
+ 
+ const expenseRows = useMemo < ReportRow[] > (
+  () =>
+  accountRows
+  .filter((row) => Number(row.expense) > 0)
+  .map((row) => ({
+   date: row.date,
+   item: row.description,
+   name: row.name,
+   expense: amountValue(row.expense),
+  })),
+  [accountRows]
+ );
+ 
+ const revenueRows = useMemo < ReportRow[] > (
+  () =>
+  Object.entries(revenue)
+  .map(([key, amount]) => {
+   const parts = key.split("-");
+   const rowYear = Number(parts[0]);
+   const rowMonth = Number(parts[1]) - 1;
+   return {
+    date: `${MONTHS[rowMonth] || parts[1]} ${rowYear}`,
+    item: revenueName(key),
+    amount: amountValue(amount),
+    _year: rowYear,
+    _month: rowMonth,
+   };
+  })
+  .filter((row) => (period === "all" ? row._year >= 2026 : row._year === year && selectedMonthSet.has(row._month as number)))
+  .map(({ _year, _month, ...row }) => row),
+  [revenue, year, selectedMonthSet, period]
+ );
+ 
+ const traineeOptions = useMemo(
+  () =>
+  Array.from(
+   new Set(
+    hafiza
+    .map((row) => String(row.name || "").trim())
+    .filter(Boolean)
+   )
+  ).sort((a, b) => a.localeCompare(b, "ar")),
+  [hafiza]
+ );
+ 
+ const feeCategoryOptions = useMemo(
+  () =>
+  Array.from(
+   new Set(
+    hafiza
+    .map((row) => canonicalFeeCategory(row.description))
+    .filter(Boolean)
+   )
+  ).sort((a, b) => a.localeCompare(b, "ar")),
+  [hafiza]
+ );
+ 
+ const traineeRows = useMemo < ReportRow[] > (() => {
+  const payments = hafiza.flatMap((row) => {
+   const date = normalizeDate(row.notifyDate);
+   const trainee = String(row.name || "").trim();
+   const category = canonicalFeeCategory(row.description);
+   const amount = amountValue(row.notifyAmount);
+   if (
+    !date ||
+    date.getFullYear() < TRAINEE_REPORT_START_YEAR ||
+    !trainee ||
+    amount <= 0 ||
+    (selectedTrainee !== "all" && trainee !== selectedTrainee) ||
+    (selectedFee !== "all" && category !== selectedFee)
+   ) {
+    return [];
+   }
+   const p = traineeGrouping === "year" ? String(date.getFullYear()) : `${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+   return [
+   {
+    notifyDate: row.notifyDate,
+    hafizaNo: row.hafizaNo || "",
+    notifyNo: row.notifyNo || "",
+    year: date.getFullYear(),
+    period: p,
+    trainee,
+    category,
+    description: String(row.description || "رسوم أخرى").trim(),
+    source: "حوافظ التوريد",
+    amount,
+   }, ];
+  });
+  
+  const categories = Array.from(new Set(payments.map((row) => String(row.category)))).sort((a, b) => a.localeCompare(b, "ar"));
+  const result: ReportRow[] = [];
+  
+  categories.forEach((category) => {
+   const categoryPayments = payments.filter((row) => row.category === category).sort((a, b) => String(a.notifyDate).localeCompare(String(b.notifyDate)));
+   if (traineeDisplayMode === "detail" || traineeDisplayMode === "both") {
+    result.push(...categoryPayments.map((row) => ({ ...row, displayType: "تفصيلي", summaryLevel: "detail"
+     as const })));
+   }
+   if (traineeDisplayMode === "summary" || traineeDisplayMode === "both") {
+    const grouped = new Map < string,
+     ReportRow > ();
+    categoryPayments.forEach((row) => {
+     const key = `${row.year}|${row.period}`;
+     const current = grouped.get(key);
+     if (current) {
+      current.amount = amountValue(current.amount) + amountValue(row.amount);
+     } else {
+      grouped.set(key, {
+       year: row.year,
+       period: row.period,
+       trainee: row.trainee,
+       category,
+       description: "إجمالي الفترة",
+       source: "حوافظ التوريد",
+       amount: row.amount,
+       displayType: "إجمالي الفترة",
+       notes: "إجمالي الفترة",
+       summaryLevel: "period",
+      });
+     }
+    });
+    result.push(...Array.from(grouped.values()));
+   }
+   result.push({
+    period: `إجمالي ${category}`,
+    trainee: selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee,
+    category,
+    description: "إجمالي الرسم",
+    source: "حوافظ التوريد",
+    amount: categoryPayments.reduce((sum, row) => sum + amountValue(row.amount), 0),
+    displayType: "إجمالي الرسم",
+    notes: "إجمالي الرسم",
+    summaryLevel: "fee",
+   });
+  });
+  
+  if (traineeDisplayMode === "summary" || traineeDisplayMode === "both") {
+   const nameYearMap = new Map < string,
+    { trainee: string;year: number;amount: number } > ();
+   payments.forEach((row) => {
+    const key = `${row.trainee}|${row.year}`;
+    const existing = nameYearMap.get(key);
+    if (existing) {
+     existing.amount += amountValue(row.amount);
+    } else {
+     nameYearMap.set(key, { trainee: row.trainee, year: row.year, amount: amountValue(row.amount) });
+    }
+   });
+   const nameYearRows: ReportRow[] = Array.from(nameYearMap.values())
+    .sort((a, b) => {
+     const cmp = a.trainee.localeCompare(b.trainee, "ar");
+     return cmp !== 0 ? cmp : a.year - b.year;
+    })
+    .map(({ trainee, year, amount }) => ({
+     year,
+     trainee,
+     category: "—",
+     description: `إجمالي ${trainee} لعام ${year}`,
+     source: "حوافظ التوريد",
+     amount,
+     displayType: "إجمالي المتدرب / السنة",
+     notes: "إجمالي المتدرب / السنة",
+     summaryLevel: "trainee-name-total",
+    }));
+   result.push(...nameYearRows);
+  }
+  
+  return result;
+ }, [hafiza, selectedTrainee, selectedFee, traineeGrouping, traineeDisplayMode]);
+ 
+ const feeTotalsRows = useMemo < ReportRow[] > (() => {
+  const totals = new Map < string,
+   number > ();
+  hafiza.forEach((row) => {
+   const name = String(row.name || "").trim();
+   const amount = amountValue(row.notifyAmount);
+   const date = normalizeDate(row.notifyDate);
+   if (amount <= 0 || !date || date.getFullYear() < TRAINEE_REPORT_START_YEAR) return;
+   if (selectedTrainee !== "all" && name !== selectedTrainee) return;
+   const category = canonicalFeeCategory(row.description);
+   totals.set(category, (totals.get(category) || 0) + amount);
+  });
+  const rows = Array.from(totals.entries())
+   .sort((a, b) => b[1] - a[1])
+   .map(([category, amount]) => ({ category, source: "حوافظ التوريد", amount }));
+  const grandTotal = rows.reduce((sum, row) => sum + amountValue(row.amount), 0);
+  return grandTotal > 0 ? [...rows, { category: "الإجمالي الكلي لجميع الرسوم", source: "حوافظ التوريد", amount: grandTotal, total: "نعم" }] : rows;
+ }, [hafiza, selectedTrainee]);
+ 
+ const sourceConfig = useMemo(() => {
+  if (source === "youssefLoan") {
+   return {
+    title: "مسير إخلاء العهدة",
+    columns: [
+     { key: "date", label: "التاريخ" },
+     { key: "docNo", label: "رقم المستند / الشيك" },
+     { key: "description", label: "البيان" },
+     { key: "name", label: "الاسم" },
+     { key: "settlementNo", label: "رقم كشف التسوية" },
+     { key: "notes", label: "الملاحظات" },
+     {
+      key: "amount",
+      label: "المبلغ"
+     },
+    ] satisfies TabCol[],
+   }
   };
-
-  const youssefRows = useMemo<ReportRow[]>(() => {
-    const matched = accounts
-      .filter((row) => {
-        const d = normalizeDate(row.date);
-        if (!d) return false;
-        const inTime = period === "all" ? d.getFullYear() >= 2026 : d.getFullYear() === year && selectedMonthSet.has(d.getMonth());
-        if (!inTime) return false;
-        return classifyCustodyRecord(row.description) === "youssef";
-      })
-      .sort((a, b) => String(a.date).localeCompare(String(b.date)));
-
-    const result: ReportRow[] = [];
-    let sumAmount = 0;
-
-    result.push({
-      id: "y-opening",
-      date: "—",
-      docNo: "—",
-      description: "الرصيد الافتتاحي (سلفة د/يوسف)",
-      name: "د/ يوسف",
-      settlementNo: "—",
-      notes: "رصيد مرحل",
-      amount: youssefOpeningBalance,
-      summaryLevel: "opening",
-    });
-
-    matched.forEach((row, index) => {
-      const rowKey = `youssef-${index}-${row.date}`;
-      const defaultAmt = amountValue(row.income || row.hafizaAmount || row.expense);
-      const manual = loanManualData[rowKey];
-      const amt = manual?.amount ?? defaultAmt;
-      sumAmount += amt;
-
-      const docNo = row.checkNo
-        ? `شيك: ${row.checkNo}`
-        : row.notifyNo
-        ? `إشعار: ${row.notifyNo}`
-        : row.hafizaNo
-        ? `حافظة: ${row.hafizaNo}`
-        : "—";
-
-      result.push({
-        id: rowKey,
-        date: row.date || "—",
-        docNo,
-        description: row.description || "سلفة د/يوسف",
-        name: row.name || "د/ يوسف",
-        settlementNo: manual?.settlementNo ?? "",
-        notes: manual?.notes ?? "",
-        amount: amt,
-      });
-    });
-
-    result.push({
-      id: "y-total",
-      date: "—",
-      docNo: "—",
-      description: "الإجمالي الكلي",
-      name: "—",
-      settlementNo: "—",
-      notes: "—",
-      amount: sumAmount,
-      summaryLevel: "total",
-    });
-
-    result.push({ id: "sig-1", description: signaturesMeta.sig1Dept, name: signaturesMeta.sig1Name, summaryLevel: "signature" });
-    result.push({ id: "sig-2", description: signaturesMeta.sig2Dept, name: signaturesMeta.sig2Name, summaryLevel: "signature" });
-    result.push({ id: "sig-3", description: signaturesMeta.sig3Dept, name: signaturesMeta.sig3Name, summaryLevel: "signature" });
-
-    return result;
-  }, [accounts, youssefOpeningBalance, period, year, selectedMonthSet, loanManualData, signaturesMeta]);
-
-  const tawfiqRows = useMemo<ReportRow[]>(() => {
-    const matched = accounts
-      .filter((row) => {
-        const d = normalizeDate(row.date);
-        if (!d) return false;
-        const inTime = period === "all" ? d.getFullYear() >= 2026 : d.getFullYear() === year && selectedMonthSet.has(d.getMonth());
-        if (!inTime) return false;
-        return classifyCustodyRecord(row.description) === "tawfiq";
-      })
-      .sort((a, b) => String(a.date).localeCompare(String(b.date)));
-
-    const result: ReportRow[] = [];
-    let sumAmount = 0;
-
-    result.push({
-      id: "t-opening",
-      date: "—",
-      docNo: "—",
-      description: "الرصيد الافتتاحي (عهدة توفيق الداعي)",
-      name: "توفيق الداعي",
-      settlementNo: "—",
-      notes: "رصيد مرحل",
-      amount: tawfiqOpeningBalance,
-      summaryLevel: "opening",
-    });
-
-    matched.forEach((row, index) => {
-      const rowKey = `tawfiq-${index}-${row.date}`;
-      const defaultAmt = amountValue(row.income || row.hafizaAmount || row.expense);
-      const manual = loanManualData[rowKey];
-      const amt = manual?.amount ?? defaultAmt;
-      sumAmount += amt;
-
-      const docNo = row.checkNo
-        ? `شيك: ${row.checkNo}`
-        : row.notifyNo
-        ? `إشعار: ${row.notifyNo}`
-        : row.hafizaNo
-        ? `حافظة: ${row.hafizaNo}`
-        : "—";
-
-      result.push({
-        id: rowKey,
-        date: row.date || "—",
-        docNo,
-        description: row.description || "عهدة توفيق الداعي",
-        name: row.name || "توفيق الداعي",
-        settlementNo: manual?.settlementNo ?? "",
-        notes: manual?.notes ?? "",
-        amount: amt,
-      });
-    });
-
-    result.push({
-      id: "t-total",
-      date: "—",
-      docNo: "—",
-      description: "الإجمالي الكلي",
-      name: "—",
-      settlementNo: "—",
-      notes: "—",
-      amount: sumAmount,
-      summaryLevel: "total",
-    });
-
-    result.push({ id: "sig-1", description: signaturesMeta.sig1Dept, name: signaturesMeta.sig1Name, summaryLevel: "signature" });
-    result.push({ id: "sig-2", description: signaturesMeta.sig2Dept, name: signaturesMeta.sig2Name, summaryLevel: "signature" });
-    result.push({ id: "sig-3", description: signaturesMeta.sig3Dept, name: signaturesMeta.sig3Name, summaryLevel: "signature" });
-
-    return result;
-  }, [accounts, tawfiqOpeningBalance, period, year, selectedMonthSet, loanManualData, signaturesMeta]);
-
-  const hafizaRows = useMemo<ReportRow[]>(
-    () =>
-      hafiza
-        .filter((row) => inPeriod(row.date))
-        .map((row) => ({
-          date: row.date,
-          description: row.description || "—",
-          name: row.name || "—",
-          hafizaNo: row.hafizaNo || "—",
-          amount: amountValue(row.hafizaAmount),
-          income: amountValue(row.income ?? row.notifyAmount),
-        })),
-    [hafiza, year, selectedMonthSet, period]
-  );
-
-  const accountRows = useMemo<ReportRow[]>(
-    () =>
-      accounts
-        .filter((row) => inPeriod(row.date))
-        .sort((a, b) => String(a.date).localeCompare(String(b.date)))
-        .map((row) => ({
-          date: row.date,
-          description: row.description || "—",
-          name: row.name || "—",
-          income: amountValue(row.income),
-          expense: amountValue(row.expense),
-          docNo: row.checkNo ? `شيك: ${row.checkNo}` : row.notifyNo ? `إشعار: ${row.notifyNo}` : row.hafizaNo ? `حافظة: ${row.hafizaNo}` : "—",
-        })),
-    [accounts, year, selectedMonthSet, period]
-  );
-
-  const expenseRows = useMemo<ReportRow[]>(
-    () =>
-      accountRows
-        .filter((row) => Number(row.expense) > 0)
-        .map((row) => ({
-          date: row.date,
-          item: row.description,
-          name: row.name,
-          expense: amountValue(row.expense),
-        })),
-    [accountRows]
-  );
-
-  const revenueRows = useMemo<ReportRow[]>(
-    () =>
-      Object.entries(revenue)
-        .map(([key, amount]) => {
-          const parts = key.split("-");
-          const rowYear = Number(parts[0]);
-          const rowMonth = Number(parts[1]) - 1;
-          return {
-            date: `${MONTHS[rowMonth] || parts[1]} ${rowYear}`,
-            item: revenueName(key),
-            amount: amountValue(amount),
-            _year: rowYear,
-            _month: rowMonth,
-          };
-        })
-        .filter((row) => (period === "all" ? row._year >= 2026 : row._year === year && selectedMonthSet.has(row._month as number)))
-        .map(({ _year, _month, ...row }) => row),
-    [revenue, year, selectedMonthSet, period]
-  );
-
-  const traineeOptions = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          hafiza
-            .map((row) => String(row.name || "").trim())
-            .filter(Boolean)
-        )
-      ).sort((a, b) => a.localeCompare(b, "ar")),
-    [hafiza]
-  );
-
-  const feeCategoryOptions = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          hafiza
-            .map((row) => canonicalFeeCategory(row.description))
-            .filter(Boolean)
-        )
-      ).sort((a, b) => a.localeCompare(b, "ar")),
-    [hafiza]
-  );
-
-  const traineeRows = useMemo<ReportRow[]>(() => {
-    const payments = hafiza.flatMap((row) => {
-      const date = normalizeDate(row.notifyDate);
-      const trainee = String(row.name || "").trim();
-      const category = canonicalFeeCategory(row.description);
-      const amount = amountValue(row.notifyAmount);
-      if (
-        !date ||
-        date.getFullYear() < TRAINEE_REPORT_START_YEAR ||
-        !trainee ||
-        amount <= 0 ||
-        (selectedTrainee !== "all" && trainee !== selectedTrainee) ||
-        (selectedFee !== "all" && category !== selectedFee)
-      ) {
-        return [];
-      }
-      const p = traineeGrouping === "year" ? String(date.getFullYear()) : `${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
-      return [
-        {
-          notifyDate: row.notifyDate,
-          hafizaNo: row.hafizaNo || "",
-          notifyNo: row.notifyNo || "",
-          year: date.getFullYear(),
-          period: p,
-          trainee,
-          category,
-          description: String(row.description || "رسوم أخرى").trim(),
-          source: "حوافظ التوريد",
-          amount,
-        },
-      ];
-    });
-
-    const categories = Array.from(new Set(payments.map((row) => String(row.category)))).sort((a, b) => a.localeCompare(b, "ar"));
-    const result: ReportRow[] = [];
-
-    categories.forEach((category) => {
-      const categoryPayments = payments.filter((row) => row.category === category).sort((a, b) => String(a.notifyDate).localeCompare(String(b.notifyDate)));
-      if (traineeDisplayMode === "detail" || traineeDisplayMode === "both") {
-        result.push(...categoryPayments.map((row) => ({ ...row, displayType: "تفصيلي", summaryLevel: "detail" as const })));
-      }
-      if (traineeDisplayMode === "summary" || traineeDisplayMode === "both") {
-        const grouped = new Map<string, ReportRow>();
-        categoryPayments.forEach((row) => {
-          const key = `${row.year}|${row.period}`;
-          const current = grouped.get(key);
-          if (current) {
-            current.amount = amountValue(current.amount) + amountValue(row.amount);
-          } else {
-            grouped.set(key, {
-              year: row.year,
-              period: row.period,
-              trainee: row.trainee,
-              category,
-              description: "إجمالي الفترة",
-              source: "حوافظ التوريد",
-              amount: row.amount,
-              displayType: "إجمالي الفترة",
-              notes: "إجمالي الفترة",
-              summaryLevel: "period",
-            });
-          }
-        });
-        result.push(...Array.from(grouped.values()));
-      }
-      result.push({
-        period: `إجمالي ${category}`,
-        trainee: selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee,
-        category,
-        description: "إجمالي الرسم",
-        source: "حوافظ التوريد",
-        amount: categoryPayments.reduce((sum, row) => sum + amountValue(row.amount), 0),
-        displayType: "إجمالي الرسم",
-        notes: "إجمالي الرسم",
-        summaryLevel: "fee",
-      });
-    });
-
-    if (traineeDisplayMode === "summary" || traineeDisplayMode === "both") {
-      const nameYearMap = new Map<string, { trainee: string; year: number; amount: number }>();
-      payments.forEach((row) => {
-        const key = `${row.trainee}|${row.year}`;
-        const existing = nameYearMap.get(key);
-        if (existing) {
-          existing.amount += amountValue(row.amount);
-        } else {
-          nameYearMap.set(key, { trainee: row.trainee, year: row.year, amount: amountValue(row.amount) });
-        }
-      });
-      const nameYearRows: ReportRow[] = Array.from(nameYearMap.values())
-        .sort((a, b) => {
-          const cmp = a.trainee.localeCompare(b.trainee, "ar");
-          return cmp !== 0 ? cmp : a.year - b.year;
-        })
-        .map(({ trainee, year, amount }) => ({
-          year,
-          trainee,
-          category: "—",
-          description: `إجمالي ${trainee} لعام ${year}`,
-          source: "حوافظ التوريد",
-          amount,
-          displayType: "إجمالي المتدرب / السنة",
-          notes: "إجمالي المتدرب / السنة",
-          summaryLevel: "trainee-name-total",
-        }));
-      result.push(...nameYearRows);
-    }
-
-    return result;
-  }, [hafiza, selectedTrainee, selectedFee, traineeGrouping, traineeDisplayMode]);
-
-  const feeTotalsRows = useMemo<ReportRow[]>(() => {
-    const totals = new Map<string, number>();
-    hafiza.forEach((row) => {
-      const name = String(row.name || "").trim();
-      const amount = amountValue(row.notifyAmount);
-      const date = normalizeDate(row.notifyDate);
-      if (amount <= 0 || !date || date.getFullYear() < TRAINEE_REPORT_START_YEAR) return;
-      if (selectedTrainee !== "all" && name !== selectedTrainee) return;
-      const category = canonicalFeeCategory(row.description);
-      totals.set(category, (totals.get(category) || 0) + amount);
-    });
-    const rows = Array.from(totals.entries())
-      .sort((a, b) => b[1] - a[1])
-      .map(([category, amount]) => ({ category, source: "حوافظ التوريد", amount }));
-    const grandTotal = rows.reduce((sum, row) => sum + amountValue(row.amount), 0);
-    return grandTotal > 0 ? [...rows, { category: "الإجمالي الكلي لجميع الرسوم", source: "حوافظ التوريد", amount: grandTotal, total: "نعم" }] : rows;
-  }, [hafiza, selectedTrainee]);
-
-  const sourceConfig = useMemo(() => {
-    if (source === "youssefLoan") {
-      return {
-        title: "مسير إخلاء العهدة",
-        columns: [
-          { key: "date", label: "التاريخ" },
-          { key: "docNo", label: "رقم المستند / الشيك" },
-          { key: "description", label: "البيان" },
-          { key: "name", label: "الاسم" },
-          { key: "settlementNo", label: "رقم كشف التسوية" },
-          { key: "notes", label: "الملاحظات" },
-          {
-  key:"amount",label:"المبلغ"},
-  ] satisfies TabCol[],
-      }};
-if (source === "tawfiqCustody") {
-      return {
-        title: "مسير إخلاء العهدة",
-        columns: [
-          { key: "date", label: "التاريخ" },
-          { key: "docNo", label: "رقم المستند / الشيك" },
-          { key: "description", label: "البيان" },
-          { key: "name", label: "الاسم" },
-          { key: "settlementNo", label: "رقم كشف التسوية" },
-          { key: "notes", label: "الملاحظات" },
-          { key: "amount", label: "المبلغ" },
-        ] satisfies TabCol[],
-      };
-    }
-    if (source === "trainee") {
-      return {
-        title: "كشف مدفوعات المتدربين من حوافظ التوريد",
-        columns: [
-          { key: "year", label: "السنة" },
-          { key: "notifyDate", label: "تاريخ التوريد" },
-          { key: "period", label: "الشهر / السنة" },
-          { key: "trainee", label: "اسم المتدرب" },
-          { key: "hafizaNo", label: "رقم الحافظة" },
-          { key: "notifyNo", label: "رقم الإشعار" },
-          { key: "description", label: "البيان الأصلي" },
-          { key: "category", label: "التصنيف الموحد" },
-          { key: "displayType", label: "نوع السجل" },
-          { key: "source", label: "المصدر" },
-          { key: "amount", label: "مبلغ التوريد" },
-        ] satisfies TabCol[],
-      };
-    }
-    if (source === "feeTotals") {
-      return {
-        title: "إجماليات الرسوم حسب النوع",
-        columns: [
-          { key: "category", label: "نوع الرسم" },
-          { key: "source", label: "المصدر" },
-          { key: "amount", label: "الإجمالي" },
-        ] satisfies TabCol[],
-      };
-    }
-    if (source === "hafiza") {
-      return {
-        title: "تقرير حوافظ التوريد",
-        columns: [
-          { key: "date", label: "التاريخ" },
-          { key: "hafizaNo", label: "رقم الحافظة" },
-          { key: "description", label: "البيان" },
-          { key: "name", label: "الاسم" },
-          { key: "amount", label: "المبلغ" },
-          { key: "income", label: "الإيرادات" },
-        ] satisfies TabCol[],
-      };
-    }
-    if (source === "account") {
-      return {
-        title: "تقرير الحساب الجاري",
-        columns: [
-          { key: "date", label: "التاريخ" },
-          { key: "docNo", label: "رقم المستند" },
-          { key: "description", label: "البيان" },
-          { key: "name", label: "الاسم" },
-          { key: "income", label: "الإيرادات" },
-          { key: "expense", label: "المصروفات" },
-        ] satisfies TabCol[],
-      };
-    }
-    if (source === "expenses") {
-      return {
-        title: "تقرير المصروفات",
-        columns: [
-          { key: "date", label: "التاريخ" },
-          { key: "item", label: "بند المصروف" },
-          { key: "name", label: "الاسم" },
-          { key: "expense", label: "المبلغ" },
-        ] satisfies TabCol[],
-      };
-    }
-    if (source === "revenue") {
-      return {
-        title: "تقرير الإيرادات",
-        columns: [
-          { key: "date", label: "الشهر" },
-          { key: "item", label: "اسم بند الإيراد" },
-          { key: "amount", label: "المبلغ" },
-        ] satisfies TabCol[],
-      };
-    }
-    return {
-      title: "تقرير مالي مجمّع",
-      columns: [
-        { key: "source", label: "المصدر" },
-        { key: "date", label: "التاريخ / الفترة" },
-        { key: "description", label: "البيان / البند" },
-        { key: "income", label: "الإيرادات" },
-        { key: "expense", label: "المصروفات" },
-        { key: "amount", label: "المبلغ" },
-      ] satisfies TabCol[],
-    };
-  }, [source]);
-
-  const reportRows = useMemo<ReportRow[]>(() => {
-    if (source === "youssefLoan") return youssefRows;
-    if (source === "tawfiqCustody") return tawfiqRows;
-    if (source === "trainee") return traineeRows;
-    if (source === "feeTotals") return feeTotalsRows;
-    if (source === "hafiza") return hafizaRows;
-    if (source === "account") return accountRows;
-    if (source === "expenses") return expenseRows;
-    if (source === "revenue") return revenueRows;
-    return [
-      ...hafizaRows.map((row) => ({ source: "حوافظ التوريد", date: row.date, description: row.description, income: row.income, amount: row.amount })),
-      ...accountRows.map((row) => ({ source: "الحساب الجاري", date: row.date, description: row.description, income: row.income, expense: row.expense })),
-      ...expenseRows.map((row) => ({ source: "المصروفات", date: row.date, description: row.item, expense: row.expense })),
-      ...revenueRows.map((row) => ({ source: "الإيرادات", date: row.date, description: row.item, amount: row.amount })),
-    ];
-  }, [source, youssefRows, tawfiqRows, traineeRows, feeTotalsRows, hafizaRows, accountRows, expenseRows, revenueRows]);
-
-  const isPreservedFromColumnFilter = (row: ReportRow): boolean => {
-    return row.summaryLevel === "opening" || row.summaryLevel === "total" || row.summaryLevel === "signature";
+  if (source === "tawfiqCustody") {
+   return {
+    title: "مسير إخلاء العهدة",
+    columns: [
+     { key: "date", label: "التاريخ" },
+     { key: "docNo", label: "رقم المستند / الشيك" },
+     { key: "description", label: "البيان" },
+     { key: "name", label: "الاسم" },
+     { key: "settlementNo", label: "رقم كشف التسوية" },
+     { key: "notes", label: "الملاحظات" },
+     { key: "amount", label: "المبلغ" },
+    ] satisfies TabCol[],
+   };
+  }
+  if (source === "trainee") {
+   return {
+    title: "كشف مدفوعات المتدربين من حوافظ التوريد",
+    columns: [
+     { key: "year", label: "السنة" },
+     { key: "notifyDate", label: "تاريخ التوريد" },
+     { key: "period", label: "الشهر / السنة" },
+     { key: "trainee", label: "اسم المتدرب" },
+     { key: "hafizaNo", label: "رقم الحافظة" },
+     { key: "notifyNo", label: "رقم الإشعار" },
+     { key: "description", label: "البيان الأصلي" },
+     { key: "category", label: "التصنيف الموحد" },
+     { key: "displayType", label: "نوع السجل" },
+     { key: "source", label: "المصدر" },
+     { key: "amount", label: "مبلغ التوريد" },
+    ] satisfies TabCol[],
+   };
+  }
+  if (source === "feeTotals") {
+   return {
+    title: "إجماليات الرسوم حسب النوع",
+    columns: [
+     { key: "category", label: "نوع الرسم" },
+     { key: "source", label: "المصدر" },
+     { key: "amount", label: "الإجمالي" },
+    ] satisfies TabCol[],
+   };
+  }
+  if (source === "hafiza") {
+   return {
+    title: "تقرير حوافظ التوريد",
+    columns: [
+     { key: "date", label: "التاريخ" },
+     { key: "hafizaNo", label: "رقم الحافظة" },
+     { key: "description", label: "البيان" },
+     { key: "name", label: "الاسم" },
+     { key: "amount", label: "المبلغ" },
+     { key: "income", label: "الإيرادات" },
+    ] satisfies TabCol[],
+   };
+  }
+  if (source === "account") {
+   return {
+    title: "تقرير الحساب الجاري",
+    columns: [
+     { key: "date", label: "التاريخ" },
+     { key: "docNo", label: "رقم المستند" },
+     { key: "description", label: "البيان" },
+     { key: "name", label: "الاسم" },
+     { key: "income", label: "الإيرادات" },
+     { key: "expense", label: "المصروفات" },
+    ] satisfies TabCol[],
+   };
+  }
+  if (source === "expenses") {
+   return {
+    title: "تقرير المصروفات",
+    columns: [
+     { key: "date", label: "التاريخ" },
+     { key: "item", label: "بند المصروف" },
+     { key: "name", label: "الاسم" },
+     { key: "expense", label: "المبلغ" },
+    ] satisfies TabCol[],
+   };
+  }
+  if (source === "revenue") {
+   return {
+    title: "تقرير الإيرادات",
+    columns: [
+     { key: "date", label: "الشهر" },
+     { key: "item", label: "اسم بند الإيراد" },
+     { key: "amount", label: "المبلغ" },
+    ] satisfies TabCol[],
+   };
+  }
+  return {
+   title: "تقرير مالي مجمّع",
+   columns: [
+    { key: "source", label: "المصدر" },
+    { key: "date", label: "التاريخ / الفترة" },
+    { key: "description", label: "البيان / البند" },
+    { key: "income", label: "الإيرادات" },
+    { key: "expense", label: "المصروفات" },
+    { key: "amount", label: "المبلغ" },
+   ] satisfies TabCol[],
   };
-
-  const processedRows = useMemo<ReportRow[]>(() => {
-    const activeSortCol = source === "trainee" ? traineeSortColumn : sortColumn;
-    const activeSortDir = source === "trainee" ? traineeSortDirection : sortDirection;
-
-    const filtered = reportRows.filter((row) => {
-      if (deletedRows.has(row)) return false;
-      if (isPreservedFromColumnFilter(row)) return true;
-      for (const [key, filterVal] of Object.entries(columnFilters)) {
-        const fv = String(filterVal || "").trim();
-        if (!fv) continue;
-        const cellValue = row[key];
-        if (cellValue === undefined || cellValue === null) return false;
-        if (typeof cellValue === "number") {
-          const numFilter = Number(fv);
-          if (!isNaN(numFilter)) {
-            if (cellValue !== numFilter) return false;
-          } else if (!String(cellValue).includes(fv)) {
-            return false;
-          }
-        } else if (!String(cellValue).toLowerCase().includes(fv.toLowerCase())) {
-          return false;
-        }
-      }
-      return true;
-    });
-
-    const isCustodySource = source === "youssefLoan" || source === "tawfiqCustody";
-    const orderedRows = isCustodySource
-      ? filtered
-      : [...filtered].sort((a, b) => {
-          const aVal = a[activeSortCol];
-          const bVal = b[activeSortCol];
-          if (aVal === undefined || aVal === null) return 1;
-          if (bVal === undefined || bVal === null) return -1;
-          const numA = Number(aVal);
-          const numB = Number(bVal);
-          if (!isNaN(numA) && !isNaN(numB)) {
-            return activeSortDir === "asc" ? numA - numB : numB - numA;
-          }
-          const strA = String(aVal);
-          const strB = String(bVal);
-          return activeSortDir === "asc" ? strA.localeCompare(strB, "ar") : strB.localeCompare(strA, "ar");
-        });
-
-    // احتساب إجمالي المبلغ من السجلات الظاهرة فقط، مع منع جمع صفوف الملخص
-    // مع تفاصيلها مرة أخرى في كشف المتدربين.
-    const detailRows = orderedRows.filter((row) => row.summaryLevel === "detail");
-    const feeRows = orderedRows.filter((row) => row.summaryLevel === "fee");
-    const periodRows = orderedRows.filter((row) => row.summaryLevel === "period");
-    const totalSourceRows = detailRows.length
-      ? detailRows
-      : feeRows.length
-        ? feeRows
-        : periodRows.length
-          ? periodRows
-          : orderedRows.filter((row) =>
-              row.summaryLevel !== "opening" &&
-              row.summaryLevel !== "total" &&
-              row.summaryLevel !== "signature" &&
-              row.total !== "نعم"
-            );
-    const visibleAmountTotal = totalSourceRows.reduce(
-      (sum, row) => sum + amountValue(row.amount),
-      0
-    );
-
-    return orderedRows.map((row) => {
-      if (row.summaryLevel === "total" || row.total === "نعم") {
-        return { ...row, amount: visibleAmountTotal };
-      }
-
-      // عند وجود التفاصيل، حدّث المجاميع الفرعية التابعة لها أيضاً بعد الحذف.
-      if (source === "trainee" && detailRows.length > 0) {
-        let matchingDetails: ReportRow[] | null = null;
-        if (row.summaryLevel === "fee") {
-          matchingDetails = detailRows.filter((item) => item.category === row.category);
-        } else if (row.summaryLevel === "period") {
-          matchingDetails = detailRows.filter(
-            (item) => item.category === row.category && item.period === row.period
-          );
-        } else if (row.summaryLevel === "trainee-name-total") {
-          matchingDetails = detailRows.filter(
-            (item) => item.trainee === row.trainee && Number(item.year) === Number(row.year)
-          );
-        }
-        if (matchingDetails) {
-          return {
-            ...row,
-            amount: matchingDetails.reduce((sum, item) => sum + amountValue(item.amount), 0),
-          };
-        }
-      }
-      return row;
-    });
-  }, [reportRows, columnFilters, sortColumn, sortDirection, source, traineeSortColumn, traineeSortDirection, deletedRows]);
-
-  const reportIssuedAt = new Date();
-  const reportYearStart = new Date(reportIssuedAt.getFullYear(), 0, 1);
-  const formatReportDate = (date: Date) =>
-    date.toLocaleDateString("ar-EG-u-nu-latn", { day: "2-digit", month: "2-digit", year: "numeric" });
-  const custodyDateRange = `من تاريخ ${formatReportDate(reportYearStart)} وحتى تاريخ ${formatReportDate(reportIssuedAt)}`;
-
-  const title =
-    source === "trainee"
-      ? `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFee === "all" ? "كل الرسوم" : selectedFee} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}`
-      : source === "feeTotals"
-      ? `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}`
-      : source === "youssefLoan" || source === "tawfiqCustody"
-      ? `مسير إخلاء - عهدة - ${source === "youssefLoan" ? "د/ يوسف" : "توفيق الداعي"}\n${custodyDateRange}`
-      : `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
-
-  const numericKeys =
-    source === "youssefLoan" || source === "tawfiqCustody"
-      ? ["amount"]
-      : source === "hafiza"
-      ? ["amount", "income"]
-      : source === "account"
-      ? ["income", "expense"]
-      : source === "expenses"
-      ? ["expense"]
-      : source === "revenue"
-      ? ["amount"]
-      : source === "trainee" || source === "feeTotals"
-      ? ["amount"]
-      : ["income", "expense", "amount"];
-
-  const isLoanOrCustody = source === "youssefLoan" || source === "tawfiqCustody";
-  const actionRows = isLoanOrCustody
-    ? processedRows.filter((row) => row.summaryLevel !== "opening" && row.summaryLevel !== "total" && row.summaryLevel !== "signature")
-    : processedRows;
-
-  const displayRows = useMemo(() => processedRows, [processedRows]);
-
-  const activeSortColumn = source === "trainee" ? traineeSortColumn : sortColumn;
-  const activeSortDirection = source === "trainee" ? traineeSortDirection : sortDirection;
-  const hasAnyFilter = Object.values(columnFilters).some((v) => String(v || "").trim() !== "");
-  const colCount = sourceConfig.columns.length + 2;
-
-  const deleteRow = (row: ReportRow) => {
-    setDeletedRows((prev) => new Set([...prev, row]));
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-sky-50 to-indigo-50 p-2 sm:p-4" dir="rtl">
+ }, [source]);
+ 
+ const reportRows = useMemo < ReportRow[] > (() => {
+  if (source === "youssefLoan") return youssefRows;
+  if (source === "tawfiqCustody") return tawfiqRows;
+  if (source === "trainee") return traineeRows;
+  if (source === "feeTotals") return feeTotalsRows;
+  if (source === "hafiza") return hafizaRows;
+  if (source === "account") return accountRows;
+  if (source === "expenses") return expenseRows;
+  if (source === "revenue") return revenueRows;
+  return [
+   ...hafizaRows.map((row) => ({ source: "حوافظ التوريد", date: row.date, description: row.description, income: row.income, amount: row.amount })),
+   ...accountRows.map((row) => ({ source: "الحساب الجاري", date: row.date, description: row.description, income: row.income, expense: row.expense })),
+   ...expenseRows.map((row) => ({ source: "المصروفات", date: row.date, description: row.item, expense: row.expense })),
+   ...revenueRows.map((row) => ({ source: "الإيرادات", date: row.date, description: row.item, amount: row.amount })),
+  ];
+ }, [source, youssefRows, tawfiqRows, traineeRows, feeTotalsRows, hafizaRows, accountRows, expenseRows, revenueRows]);
+ 
+ const isPreservedFromColumnFilter = (row: ReportRow): boolean => {
+  return row.summaryLevel === "opening" || row.summaryLevel === "total" || row.summaryLevel === "signature";
+ };
+ 
+ const processedRows = useMemo < ReportRow[] > (() => {
+  const activeSortCol = source === "trainee" ? traineeSortColumn : sortColumn;
+  const activeSortDir = source === "trainee" ? traineeSortDirection : sortDirection;
+  
+  const filtered = reportRows.filter((row) => {
+   if (deletedRows.has(row)) return false;
+   if (isPreservedFromColumnFilter(row)) return true;
+   for (const [key, filterVal] of Object.entries(columnFilters)) {
+    const fv = String(filterVal || "").trim();
+    if (!fv) continue;
+    const cellValue = row[key];
+    if (cellValue === undefined || cellValue === null) return false;
+    if (typeof cellValue === "number") {
+     const numFilter = Number(fv);
+     if (!isNaN(numFilter)) {
+      if (cellValue !== numFilter) return false;
+     } else if (!String(cellValue).includes(fv)) {
+      return false;
+     }
+    } else if (!String(cellValue).toLowerCase().includes(fv.toLowerCase())) {
+     return false;
+    }
+   }
+   return true;
+  });
+  
+  const isCustodySource = source === "youssefLoan" || source === "tawfiqCustody";
+  const orderedRows = isCustodySource ?
+   filtered :
+   [...filtered].sort((a, b) => {
+    const aVal = a[activeSortCol];
+    const bVal = b[activeSortCol];
+    if (aVal === undefined || aVal === null) return 1;
+    if (bVal === undefined || bVal === null) return -1;
+    const numA = Number(aVal);
+    const numB = Number(bVal);
+    if (!isNaN(numA) && !isNaN(numB)) {
+     return activeSortDir === "asc" ? numA - numB : numB - numA;
+    }
+    const strA = String(aVal);
+    const strB = String(bVal);
+    return activeSortDir === "asc" ? strA.localeCompare(strB, "ar") : strB.localeCompare(strA, "ar");
+   });
+  
+  // احتساب إجمالي المبلغ من السجلات الظاهرة فقط، مع منع جمع صفوف الملخص
+  // مع تفاصيلها مرة أخرى في كشف المتدربين.
+  const detailRows = orderedRows.filter((row) => row.summaryLevel === "detail");
+  const feeRows = orderedRows.filter((row) => row.summaryLevel === "fee");
+  const periodRows = orderedRows.filter((row) => row.summaryLevel === "period");
+  const totalSourceRows = detailRows.length ?
+   detailRows :
+   feeRows.length ?
+   feeRows :
+   periodRows.length ?
+   periodRows :
+   orderedRows.filter((row) =>
+    row.summaryLevel !== "opening" &&
+    row.summaryLevel !== "total" &&
+    row.summaryLevel !== "signature" &&
+    row.total !== "نعم"
+   );
+  const visibleAmountTotal = totalSourceRows.reduce(
+   (sum, row) => sum + amountValue(row.amount),
+   0
+  );
+  
+  return orderedRows.map((row) => {
+   if (row.summaryLevel === "total" || row.total === "نعم") {
+    return { ...row, amount: visibleAmountTotal };
+   }
+   
+   // عند وجود التفاصيل، حدّث المجاميع الفرعية التابعة لها أيضاً بعد الحذف.
+   if (source === "trainee" && detailRows.length > 0) {
+    let matchingDetails: ReportRow[] | null = null;
+    if (row.summaryLevel === "fee") {
+     matchingDetails = detailRows.filter((item) => item.category === row.category);
+    } else if (row.summaryLevel === "period") {
+     matchingDetails = detailRows.filter(
+      (item) => item.category === row.category && item.period === row.period
+     );
+    } else if (row.summaryLevel === "trainee-name-total") {
+     matchingDetails = detailRows.filter(
+      (item) => item.trainee === row.trainee && Number(item.year) === Number(row.year)
+     );
+    }
+    if (matchingDetails) {
+     return {
+      ...row,
+      amount: matchingDetails.reduce((sum, item) => sum + amountValue(item.amount), 0),
+     };
+    }
+   }
+   return row;
+  });
+ }, [reportRows, columnFilters, sortColumn, sortDirection, source, traineeSortColumn, traineeSortDirection, deletedRows]);
+ 
+ const reportIssuedAt = new Date();
+ const reportYearStart = new Date(reportIssuedAt.getFullYear(), 0, 1);
+ const formatReportDate = (date: Date) =>
+  date.toLocaleDateString("ar-EG-u-nu-latn", { day: "2-digit", month: "2-digit", year: "numeric" });
+ const custodyDateRange = `من تاريخ ${formatReportDate(reportYearStart)} وحتى تاريخ ${formatReportDate(reportIssuedAt)}`;
+ 
+ const title =
+  source === "trainee" ?
+  `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFee === "all" ? "كل الرسوم" : selectedFee} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}` :
+  source === "feeTotals" ?
+  `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}` :
+  source === "youssefLoan" || source === "tawfiqCustody" ?
+  `مسير إخلاء - عهدة - ${source === "youssefLoan" ? "د/ يوسف" : "توفيق الداعي"}\n${custodyDateRange}` :
+  `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
+ 
+ const numericKeys =
+  source === "youssefLoan" || source === "tawfiqCustody" ?
+  ["amount"] :
+  source === "hafiza" ?
+  ["amount", "income"] :
+  source === "account" ?
+  ["income", "expense"] :
+  source === "expenses" ?
+  ["expense"] :
+  source === "revenue" ?
+  ["amount"] :
+  source === "trainee" || source === "feeTotals" ?
+  ["amount"] :
+  ["income", "expense", "amount"];
+ 
+ const isLoanOrCustody = source === "youssefLoan" || source === "tawfiqCustody";
+ const actionRows = isLoanOrCustody ?
+  processedRows.filter((row) => row.summaryLevel !== "opening" && row.summaryLevel !== "total" && row.summaryLevel !== "signature") :
+  processedRows;
+ 
+ const displayRows = useMemo(() => processedRows, [processedRows]);
+ 
+ const activeSortColumn = source === "trainee" ? traineeSortColumn : sortColumn;
+ const activeSortDirection = source === "trainee" ? traineeSortDirection : sortDirection;
+ const hasAnyFilter = Object.values(columnFilters).some((v) => String(v || "").trim() !== "");
+ const colCount = sourceConfig.columns.length + 2;
+ 
+ const deleteRow = (row: ReportRow) => {
+  setDeletedRows((prev) => new Set([...prev, row]));
+ };
+ 
+ return (
+  <div className="min-h-screen bg-gradient-to-br from-slate-100 via-sky-50 to-indigo-50 p-2 sm:p-4" dir="rtl">
       <section className="mx-auto max-w-7xl overflow-hidden rounded-3xl border border-sky-200 bg-white shadow-xl">
         <header className="bg-gradient-to-l from-[#2e6b8a] via-[#3d7fa0] to-[#2e6b8a] p-4 text-white sm:p-6">
           <div className="flex items-center gap-3">
@@ -1225,9 +1233,9 @@ if (source === "tawfiqCustody") {
         {/* جدول عرض التقرير */}
         <div className="overflow-x-auto p-4">
           <div className="border border-black bg-white shadow-sm">
-            <table id="reports-table" className="w-auto border-collapse text-center text-xs">
+            <table id="reports-table" className="w-auto min-w-auto border-collapse text-center text-xs">
               <thead>
-  <tr className="border-b border-black bg-[#FFD700] text-black">
+  <tr className="border-b border-black bg-[#FFD700] text-black white-space-normal">
    <th className="w-10 border border-black px-2 py-3 font-white">م</th>
                   {sourceConfig.columns.map((col) => (
                     <th
@@ -1280,7 +1288,7 @@ if (source === "tawfiqCustody") {
                         value={columnFilters[col.key] || ""}
                         onChange={(e) => setColumnFilters((prev) => ({ ...prev, [col.key]: e.target.value }))}
                         placeholder={`بحث...`}
-                        className="w-full rounded border border-slate-300 bg-white px-2 py-1 text-center text-xs font-bold text-slate-800 outline-none focus:border-sky-600"
+                        className="w-auto rounded border border-slate-300 bg-white px-2 py-1 text-center text-xs font-bold text-slate-800 outline-none focus:border-sky-600"
                       />
                     </th>
                   ))}
@@ -1313,7 +1321,7 @@ if (source === "tawfiqCustody") {
                     // قد تحجب لون صف الجدول نفسه في العرض والطباعة.
                     const totalCellStyle = isTotal
                       ? {
-                          backgroundColor: "#0437bb",
+                          backgroundColor: "#5B5750",
                           color: "#ffffff",
                           WebkitPrintColorAdjust: "exact" as const,
                           printColorAdjust: "exact" as const,
@@ -1321,11 +1329,11 @@ if (source === "tawfiqCustody") {
                       : undefined;
 
                     let rowStyle = "";
-                    if (isOpening) rowStyle = "bg-white font-bold text-slate-950";
-                    else if (isTotal) rowStyle = "bg-[#0437bb] font-black text-white total-row";
-                    else if (row.summaryLevel === "fee") rowStyle = "bg-white font-bold text-slate-950";
-                    else if (row.summaryLevel === "trainee-name-total") rowStyle = "bg-white font-bold text-slate-950";
-                    else if (row.summaryLevel === "period") rowStyle = "bg-white font-bold text-slate-950";
+                    if (isOpening) rowStyle = "bg-[#FBFEFF] font-bold text-slate-950";
+                    else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
+                    else if (row.summaryLevel === "fee") rowStyle = "bg-[#F1BF98] font-bold text-black";
+                    else if (row.summaryLevel === "trainee-name-total") rowStyle = "bg-[#2C666E] font-bold text-white";
+                    else if (row.summaryLevel === "period") rowStyle = "bg-[#5B5750] font-bold text-white";
                     else if (index % 2 === 1) rowStyle = "bg-white text-slate-900";
                     else rowStyle = "bg-white text-slate-900";
 
@@ -1402,7 +1410,7 @@ if (source === "tawfiqCustody") {
                         style={
                           isTotal
                             ? {
-                                backgroundColor: "#0437bb",
+                                backgroundColor: "#2C666E",
                                 color: "#ffffff",
                                 WebkitPrintColorAdjust: "exact",
                                 printColorAdjust: "exact",
@@ -1500,5 +1508,5 @@ if (source === "tawfiqCustody") {
         </div>
       </section>
     </div>
-  );
+ );
 }
