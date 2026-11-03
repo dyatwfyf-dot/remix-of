@@ -43,7 +43,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style id="dynamic-page-rule">
     @page {
-      size: ${paperSize} ${defaultOrientation};
+      size: ${paperSize};
       margin: ${defaultMargin};
     }
   </style>
@@ -414,6 +414,8 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
 
     /* أنماط خاصة عند تنفيذ أمر الطباعة المباشر */
     @media print {
+      body:not(.fit-content-mode) .sheet-paper { width: 100% !important; min-width: 0 !important; min-height: 0 !important; height: auto !important; transform: none !important; }
+      body:not(.fit-content-mode) .preview-report-content, body:not(.fit-content-mode) .preview-report-content table { width: 100% !important; max-width: 100% !important; }
       body {
         background: #ffffff !important;
         padding: 0 !important;
@@ -889,7 +891,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         const tableContainer = document.getElementById('tableContainer');
         tableContainer.style.zoom = String(scale);
         if (!fitToContent) {
-          dynamicRule.innerHTML = '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + margin + '; }';
+          dynamicRule.innerHTML = '@page { size: ' + pageSize + '; margin: ' + margin + '; }';
         }
 
         window.requestAnimationFrame(function() {
@@ -965,7 +967,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       parsed.querySelectorAll("script").forEach((script) => script.remove());
       const printOverrides = parsed.createElement("style");
       printOverrides.textContent = `
-        @page { size: ${paperSize} ${defaultOrientation}; margin: ${defaultMargin}; }
+        @page { size: ${paperSize}; margin: ${defaultMargin}; }
         html, body { width: 100% !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; background: #fff !important; }
         .sheet-viewport { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
         .sheet-paper { width: 100% !important; min-width: 0 !important; min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 0 !important; transform: none !important; box-shadow: none !important; border-radius: 0 !important; }
