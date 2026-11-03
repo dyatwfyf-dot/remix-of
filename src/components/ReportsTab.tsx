@@ -25,7 +25,8 @@ type ReportSource = |
  "revenue" |
  "combined" |
  "trainee" |
- "feeTotals";
+ "feeTotals" |
+ "traineeFeeStatus";
 
 type PeriodType = "all" | "month" | "quarter" | "half" | "year";
 type TraineeGrouping = "month" | "year";
@@ -93,6 +94,7 @@ const SOURCES: Array < { value: ReportSource;label: string } > = [
  { value: "combined", label: "تقرير مجمّع لكل التبويبات" },
  { value: "trainee", label: "كشف مدفوعات المتدربين" },
  { value: "feeTotals", label: "إجماليات الرسوم حسب النوع" },
+ { value: "traineeFeeStatus", label: "حالة سداد رسوم المتدربين" },
 ];
 
 const normalizeDate = (value: unknown): Date | null => {
@@ -169,6 +171,15 @@ const canonicalFeeCategory = (value: unknown) => {
  if (/(تسجيل|قيد|دراس|دراسه|قسط)/.test(text)) return "أقساط الدراسة والتسجيل";
  return String(value).trim() || "رسوم أخرى";
 };
+
+const normalizeTraineeReportName = (value: unknown): string =>
+ String(value || "")
+  .trim()
+  .replace(/[ًٌٍَُِّْـ]/g, "")
+  .replace(/[إأآ]/g, "ا")
+  .replace(/ى/g, "ي")
+  .replace(/ة/g, "ه")
+  .replace(/\s+/g, " ");
 
 const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "other" => {
  const text = String(description || "").trim();
@@ -259,6 +270,7 @@ color: #ffffff !important;
 export default function ReportsTab() {
  const { year: fiscalYear } = useFiscalYear();
  const hafiza = useStore((state) => state.hafiza);
+ const trainees = useStore((state) => state.trainees);
  const accounts = useStore((state) => state.accounts);
  const revenue = useStore((state) => state.revenue);
  
@@ -746,6 +758,82 @@ export default function ReportsTab() {
   return grandTotal > 0 ? [...rows, { category: "الإجمالي الكلي لجميع الرسوم", source: "حوافظ التوريد", amount: grandTotal, total: "نعم" }] : rows;
  }, [hafiza, selectedTrainee]);
  
+ const traineeFeeStatusRows = useMemo<ReportRow[]>(() => {
+  const byName = new Map<string, {
+   trainee: string;
+   batch: string;
+   specialty: string;
+   tuitionPaid: number;
+   examPaid: number;
+  }>();
+
+  // ابدأ بجميع المتدربين المسجلين حتى يظهر من لم يسدد أي رسوم أيضاً.
+  trainees.forEach((item) => {
+   const name = String(item.name || "").trim();
+   const key = normalizeTraineeReportName(name);
+   if (!key) return;
+   const current = byName.get(key);
+   if (!current) {
+    byName.set(key, {
+     trainee: name,
+     batch: String(item.batch || ""),
+     specialty: String(item.specialty || ""),
+     tuitionPaid: 0,
+     examPaid: 0,
+    });
+   }
+  });
+
+  // حوافظ التوريد هي المصدر الوحيد للسداد: notifyAmount هو عمود «مبلغ التوريد».
+  hafiza.forEach((record) => {
+   const name = String(record.name || "").trim();
+   const key = normalizeTraineeReportName(name);
+   if (!key) return;
+   let current = byName.get(key);
+   if (!current) {
+    current = {
+     trainee: name,
+     batch: String(record.batch || ""),
+     specialty: String(record.specialty || ""),
+     tuitionPaid: 0,
+     examPaid: 0,
+    };
+    byName.set(key, current);
+   } else {
+    if (!current.batch && record.batch) current.batch = String(record.batch);
+    if (!current.specialty && record.specialty) current.specialty = String(record.specialty);
+   }
+
+   const amount = amountValue(record.notifyAmount);
+   if (amount <= 0) return;
+   const category = canonicalFeeCategory(record.description);
+   if (category === "رسوم الامتحانات") current.examPaid += amount;
+   else if (category === "أقساط الدراسة والتسجيل") current.tuitionPaid += amount;
+  });
+
+  return Array.from(byName.values()).map((item) => {
+   const hasTuition = item.tuitionPaid > 0;
+   const hasExam = item.examPaid > 0;
+   const overallStatus = hasTuition && hasExam
+    ? "مسدد الرسوم الدراسية ورسوم الامتحانات"
+    : hasTuition
+     ? "مسدد رسوم دراسية فقط"
+     : hasExam
+      ? "مسدد رسوم امتحانات فقط"
+      : "لا توجد رسوم دراسية أو امتحانات مسددة";
+   return {
+    trainee: item.trainee,
+    batch: item.batch || "—",
+    specialty: item.specialty || "—",
+    tuitionStatus: hasTuition ? "مسدد" : "غير مسدد",
+    tuitionPaid: item.tuitionPaid,
+    examStatus: hasExam ? "مسدد" : "غير مسدد",
+    examPaid: item.examPaid,
+    overallStatus,
+   };
+  });
+ }, [trainees, hafiza]);
+
  const sourceConfig = useMemo(() => {
   if (source === "youssefLoan") {
    return {
@@ -778,7 +866,22 @@ if (source === "tawfiqCustody") {
     ] 
     satisfies TabCol[],
    };
-  }if (source === "trainee") {
+  }if (source === "traineeFeeStatus") {
+   return {
+    title: "تقرير حالة سداد الرسوم الدراسية ورسوم الامتحانات للمتدربين",
+    columns: [
+     { key: "trainee", label: "اسم المتدرب" },
+     { key: "batch", label: "الدفعة" },
+     { key: "specialty", label: "التخصص" },
+     { key: "tuitionStatus", label: "حالة الرسوم الدراسية" },
+     { key: "tuitionPaid", label: "المسدد دراسياً" },
+     { key: "examStatus", label: "حالة رسوم الامتحانات" },
+     { key: "examPaid", label: "المسدد للامتحانات" },
+     { key: "overallStatus", label: "الحالة العامة" },
+    ] satisfies TabCol[],
+   };
+  }
+  if (source === "trainee") {
    return {
     title: "كشف مدفوعات المتدربين من حوافظ التوريد",
     columns: [
@@ -873,6 +976,7 @@ if (source === "tawfiqCustody") {
   if (source === "youssefLoan") return youssefRows;
   if (source === "tawfiqCustody") return tawfiqRows;
   if (source === "trainee") return traineeRows;
+  if (source === "traineeFeeStatus") return traineeFeeStatusRows;
   if (source === "feeTotals") return feeTotalsRows;
   if (source === "hafiza") return hafizaRows;
   if (source === "account") return accountRows;
@@ -884,7 +988,7 @@ if (source === "tawfiqCustody") {
    ...expenseRows.map((row) => ({ source: "المصروفات", date: row.date, description: row.item, expense: row.expense })),
    ...revenueRows.map((row) => ({ source: "الإيرادات", date: row.date, description: row.item, amount: row.amount })),
   ];
- }, [source, youssefRows, tawfiqRows, traineeRows, feeTotalsRows, hafizaRows, accountRows, expenseRows, revenueRows]);
+ }, [source, youssefRows, tawfiqRows, traineeRows, feeTotalsRows, traineeFeeStatusRows, hafizaRows, accountRows, expenseRows, revenueRows]);
  
  const isPreservedFromColumnFilter = (row: ReportRow): boolean => {
   return row.summaryLevel === "opening" || row.summaryLevel === "total" || row.summaryLevel === "signature";
@@ -997,6 +1101,8 @@ if (source === "tawfiqCustody") {
   `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFee === "all" ? "كل الرسوم" : selectedFee} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}` :
   source === "feeTotals" ?
   `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}` :
+  source === "traineeFeeStatus" ?
+  "تقرير حالة سداد الرسوم الدراسية ورسوم الامتحانات للمتدربين" :
   source === "youssefLoan" || source === "tawfiqCustody" ?
   `مسير إخلاء - عهدة - ${source === "youssefLoan" ? "د/ يوسف" : "توفيق الداعي"}\n${custodyDateRange}` :
   `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
@@ -1012,6 +1118,8 @@ if (source === "tawfiqCustody") {
   ["expense"] :
   source === "revenue" ?
   ["amount"] :
+  source === "traineeFeeStatus" ?
+  ["tuitionPaid", "examPaid"] :
   source === "trainee" || source === "feeTotals" ?
   ["amount"] :
   ["income", "expense", "amount"];
@@ -1058,6 +1166,7 @@ if (source === "tawfiqCustody") {
                 value={source}
                 onChange={(e) => {
                   setSource(e.target.value as ReportSource);
+                  if (e.target.value === "traineeFeeStatus") setSortColumn("trainee");
                   setDeletedRows(new Set());
                   setColumnFilters({});
                 }}
@@ -1071,7 +1180,7 @@ if (source === "tawfiqCustody") {
               </select>
             </label>
 
-            {source !== "youssefLoan" && source !== "tawfiqCustody" && source !== "trainee" && source !== "feeTotals" && (
+            {source !== "youssefLoan" && source !== "tawfiqCustody" && source !== "trainee" && source !== "feeTotals" && source !== "traineeFeeStatus" && (
               <>
                 <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
                   الفترة الزمنية
@@ -1231,7 +1340,7 @@ if (source === "tawfiqCustody") {
             numericKeys={numericKeys}
             pdfCss={reportsTabPrintCss}
             pdfOrientation={(isLoanOrCustody ? sourceConfig.columns.length - 1 : sourceConfig.columns.length) > 7 ? "landscape" : "portrait"}
-            includeTotalRow={!isLoanOrCustody}
+            includeTotalRow={!isLoanOrCustody && source !== "traineeFeeStatus"}
           />
         </div>
 
