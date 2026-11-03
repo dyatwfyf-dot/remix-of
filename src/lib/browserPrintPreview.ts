@@ -449,6 +449,14 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       thead { display: table-header-group !important; }
       tfoot { display: table-footer-group !important; }
     }
+
+  html body table tr.report-grand-total-row > td, html body table tr.total-row > td,
+  html body table tr.report-grand-total-row > td.description-cell, html body table tr.total-row > td.description-cell,
+  html body table tr.report-grand-total-row > td.financial-amount-cell, html body table tr.total-row > td.financial-amount-cell {
+    background: #0437bb !important; background-color: #0437bb !important; color: #ffffff !important; font-weight: 900 !important;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+  }
+  html body table tr.report-grand-total-row > td *, html body table tr.total-row > td * { color: #ffffff !important; }
   </style>
   <style>
     ${contentCss}
