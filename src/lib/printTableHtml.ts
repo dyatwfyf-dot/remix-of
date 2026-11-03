@@ -257,6 +257,15 @@ export const tablePrintStyles = `
     print-color-adjust: exact !important;
   }
 
+  /* تمييز خافت لأعمدة المبالغ مع الحفاظ على لون صف الإجمالي */
+  th.financial-amount-cell,
+  td.financial-amount-cell {
+    background: #f2f7fb !important;
+    background-color: #f2f7fb !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   .report-row-striped td {
     background: #f8fafc !important;
   }
@@ -471,7 +480,7 @@ export function buildTableHtml(opts: {
     const isRef = isRefOrCodeColumn(c);
 
     return [
-      isNumeric ? "num numeric-cell amount-cell" : "",
+      isNumeric ? "num numeric-cell amount-cell financial-amount-cell" : "",
       isDate ? "date-cell" : "",
       isRef ? "ref-cell compact-cell" : "",
       !isNumeric && !isDate && !isRef ? "text-cell" : "",
@@ -527,7 +536,23 @@ export function buildTableHtml(opts: {
     .join("")}</tr>`;
 
   // احتساب الإجماليات
-  const dataRowsForTotals = rows.filter((r) => r && !r.__summaryCard && r.summaryLevel !== "summary-card" && r.summaryLevel !== "total" && r.summaryLevel !== "opening" && r.summaryLevel !== "signature");
+  const hasDetailRows = rows.some((r) => r?.summaryLevel === "detail");
+  const hasFeeSummaryRows = rows.some((r) => r?.summaryLevel === "fee");
+  const hasPeriodSummaryRows = rows.some((r) => r?.summaryLevel === "period");
+  // في كشف المتدربين لا نجمع التفاصيل مع إجماليات الفترات والرسوم معاً.
+  const dataRowsForTotals = rows.filter((r) => {
+    if (!r || r.__summaryCard || r.summaryLevel === "summary-card") return false;
+    if (
+      r.summaryLevel === "total" ||
+      r.summaryLevel === "opening" ||
+      r.summaryLevel === "signature" ||
+      r.total === "نعم"
+    ) return false;
+    if (hasDetailRows) return r.summaryLevel === "detail";
+    if (hasFeeSummaryRows) return r.summaryLevel === "fee";
+    if (hasPeriodSummaryRows) return r.summaryLevel === "period";
+    return true;
+  });
   const totals: Record<string, number> = {};
   columns.forEach((c) => {
     if (numericKeys.includes(c.key)) {
