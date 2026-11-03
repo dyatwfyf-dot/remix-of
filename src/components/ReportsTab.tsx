@@ -641,7 +641,7 @@ export default function ReportsTab() {
     categories.forEach((category) => {
       const categoryPayments = payments.filter((row) => row.category === category).sort((a, b) => String(a.notifyDate).localeCompare(String(b.notifyDate)));
       if (traineeDisplayMode === "detail" || traineeDisplayMode === "both") {
-        result.push(...categoryPayments.map((row) => ({ ...row, displayType: "تفصيلي", summaryLevel: "detail" })));
+        result.push(...categoryPayments.map((row) => ({ ...row, displayType: "تفصيلي", summaryLevel: "detail" as const })));
       }
       if (traineeDisplayMode === "summary" || traineeDisplayMode === "both") {
         const grouped = new Map<string, ReportRow>();
