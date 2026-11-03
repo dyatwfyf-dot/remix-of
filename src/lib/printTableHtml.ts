@@ -331,6 +331,8 @@ export const tablePrintStyles = `
     word-break: keep-all !important;
     overflow-wrap: normal !important;
     text-align: center !important;
+    width: auto !important;
+    max-width: none !important;
   }
 
   /* الأعمدة النصية بما فيها البيان والتفاصيل تلتف عند زيادة طول المحتوى */
@@ -480,11 +482,11 @@ export function buildTableHtml(opts: {
     c.key === "name" || /^(الاسم|اسم المتدرب|اسم العميل)$/i.test(c.label.trim());
 
   const isDateColumn = (c: TableCol) =>
-    /date|تاريخ/i.test(c.key) || /تاريخ/i.test(c.label);
+    /(date|year|period|month|تاريخ|السنة|الشهر)/i.test(`${c.key} ${c.label}`);
 
   const isRefOrCodeColumn = (c: TableCol) =>
-    /(no|num|code|key|id|check|notify|hafiza)/i.test(c.key) ||
-    /^(رقم|رمز|كود|شيك|إشعار|اشعار|حافظة|دفعة|الدفعة)/i.test(c.label.trim());
+    /(ref|reference|number|code|key|id|check|notify|hafiza|doc|settlement|no$)/i.test(c.key) ||
+    /^(رقم|رمز|كود|شيك|إشعار|اشعار|حافظة|دفعة|الدفعة|مرجع|المرجع)/i.test(c.label.trim());
 
   const isSpecialtyColumn = (c: TableCol) =>
     c.key === "specialty" || /^(التخصص|المساق)$/i.test(c.label.trim());

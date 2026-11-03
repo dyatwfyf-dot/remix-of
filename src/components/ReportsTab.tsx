@@ -199,25 +199,77 @@ const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "ot
 };
 
 const reportsTabPrintCss = `
+  .reports-data-table {
+    width: 100% !important;
+    table-layout: auto !important;
+  }
+  .reports-data-table th,
+  .reports-data-table td {
+    width: auto !important;
+    min-width: 0 !important;
+  }
+  .reports-data-table tbody td.text-cell,
+  .reports-data-table tbody td.name-cell,
+  .reports-data-table tbody td.specialty-cell,
+  .reports-data-table tbody td.batch-cell,
+  .reports-data-table tbody td.desc-cell,
+  .reports-data-table tbody td.details-cell,
+  .reports-data-table tbody td.description-cell {
+    max-width: 280px !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+  .reports-data-table tbody td.num,
+  .reports-data-table tbody td.numeric-cell,
+  .reports-data-table tbody td.date-cell,
+  .reports-data-table tbody td.ref-cell,
+  .reports-data-table tbody td.compact-cell,
+  .reports-data-table tbody td.idx,
+  .reports-data-table tbody td.num .pdf-cell-text,
+  .reports-data-table tbody td.numeric-cell .pdf-cell-text,
+  .reports-data-table tbody td.date-cell .pdf-cell-text,
+  .reports-data-table tbody td.ref-cell .pdf-cell-text,
+  .reports-data-table tbody td.compact-cell .pdf-cell-text,
+  .reports-data-table tbody td.idx .pdf-cell-text {
+    max-width: none !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+  .reports-data-table tbody td.text-cell .pdf-cell-text,
+  .reports-data-table tbody td.name-cell .pdf-cell-text,
+  .reports-data-table tbody td.specialty-cell .pdf-cell-text,
+  .reports-data-table tbody td.batch-cell .pdf-cell-text,
+  .reports-data-table tbody td.desc-cell .pdf-cell-text,
+  .reports-data-table tbody td.details-cell .pdf-cell-text,
+  .reports-data-table tbody td.description-cell .pdf-cell-text {
+    display: inline-block !important;
+    width: auto !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
+  }
   @media print {
     @page { size: A4 portrait; margin: 8mm; }
     body { font-family: 'Cairo', Arial, sans-serif !important; color: #000000 !important; background: #ffffff !important; }
     .report-page-header { border: 2px solid #000 !important; margin-bottom: 8px !important; }
     table {
-    width: 100% !important;
-min-width: auto !important;
-max-width: auto !important;
-whitespace: normal !important;
-border-collapse: collapse !important; 
-border: 2px solid #000 !important; 
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      table-layout: auto !important;
+      border-collapse: collapse !important;
+      border: 2px solid #000 !important;
     }
     thead th {
 background: gold !important; color: #000 !important;
 font-size: 18px !important;
 font-weight: 900 !important; border: 1px solid #000 !important; }
     tbody td {
-  width: 100% !important;
-max-width: auto !important;
+      width: auto !important;
+      min-width: 0 !important;
       background: #ffffff !important;
       border: 1px solid #000 !important;
       color: #000000 !important;
@@ -1094,6 +1146,14 @@ if (source === "tawfiqCustody") {
   ["amount"] :
   ["income", "expense", "amount"];
  
+ const noWrapKeys = sourceConfig.columns
+  .filter((col) =>
+   numericKeys.includes(col.key) ||
+   /(date|year|period|month|تاريخ|السنة|الشهر)/i.test(`${col.key} ${col.label}`) ||
+   /(ref|reference|number|code|key|id|check|notify|hafiza|doc|settlement|no$)/i.test(col.key) ||
+   /^(رقم|رمز|كود|شيك|إشعار|اشعار|حافظة)/.test(col.label.trim())
+  )
+  .map((col) => col.key);
  const isLoanOrCustody = source === "youssefLoan" || source === "tawfiqCustody";
  const actionRows = isLoanOrCustody ?
   processedRows.filter((row) => row.summaryLevel !== "opening" && row.summaryLevel !== "total" && row.summaryLevel !== "signature") :
@@ -1320,7 +1380,7 @@ if (source === "tawfiqCustody") {
         {/* جدول عرض التقرير */}
         <div className="overflow-x-auto p-4">
           <div className="border border-black bg-white shadow-sm">
-            <table id="reports-table" className="w-full min-w-[900px] table-auto border-collapse text-center text-xs" style={{ tableLayout: "auto" }}>
+            <table id="reports-table" className="w-full table-auto border-collapse text-center text-xs" style={{ tableLayout: "auto" }}>
               <thead>
   <tr className="border border-black bg-[#FFD700] text-black whitespace-normal">
    <th className="w-10 border border-black px-2 py-3 font-white">م</th>
@@ -1528,6 +1588,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                         {sourceConfig.columns.map((col) => {
                           const val = row[col.key];
                           const isNumeric = numericKeys.includes(col.key);
+                          const isNoWrap = noWrapKeys.includes(col.key);
                           const isEditableCustodyRow = isLoanOrCustody && !isOpening && !isTotal;
 
                           // حقول إدخال يدوية لرقم كشف التسوية والملاحظات والمبلغ في تقارير العهد
@@ -1571,7 +1632,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                             <td
                               key={col.key}
                               className={`border border-black px-2 py-2 font-bold ${
-                                isNumeric ? "whitespace-nowrap font-mono" : "whitespace-normal break-words [overflow-wrap:anywhere] max-w-[280px]"
+                                isNoWrap ? `whitespace-nowrap ${isNumeric ? "font-mono" : ""}` : "whitespace-normal break-words [overflow-wrap:anywhere] max-w-[280px]"
                               } bg-white text-slate-900`}
                               style={
                                 isTotal

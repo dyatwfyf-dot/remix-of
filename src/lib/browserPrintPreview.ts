@@ -584,6 +584,61 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
   }
   html body table tr.report-grand-total-row > td *, html body table tr.total-row > td * { color: #ffffff !important; }
+    /* Final report sizing overrides: only numeric/date/reference cells stay nowrap. */
+    #tableContainer table.reports-data-table {
+      table-layout: auto !important;
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+    }
+    #tableContainer table.reports-data-table th,
+    #tableContainer table.reports-data-table td {
+      width: auto !important;
+      min-width: 0 !important;
+    }
+    #tableContainer table.reports-data-table tbody td.text-cell:not(.num):not(.numeric-cell):not(.date-cell):not(.compact-cell):not(.ref-cell):not(.idx),
+    #tableContainer table.reports-data-table tbody td.name-cell:not(.num):not(.numeric-cell):not(.date-cell):not(.compact-cell):not(.ref-cell):not(.idx),
+    #tableContainer table.reports-data-table tbody td.specialty-cell:not(.num):not(.numeric-cell):not(.date-cell):not(.compact-cell):not(.ref-cell):not(.idx),
+    #tableContainer table.reports-data-table tbody td.batch-cell:not(.num):not(.numeric-cell):not(.date-cell):not(.compact-cell):not(.ref-cell):not(.idx),
+    #tableContainer table.reports-data-table tbody td.desc-cell,
+    #tableContainer table.reports-data-table tbody td.details-cell,
+    #tableContainer table.reports-data-table tbody td.description-cell {
+      max-width: 280px !important;
+      white-space: normal !important;
+      word-break: normal !important;
+      overflow-wrap: anywhere !important;
+    }
+    #tableContainer table.reports-data-table tbody td.text-cell .pdf-cell-text,
+    #tableContainer table.reports-data-table tbody td.name-cell .pdf-cell-text,
+    #tableContainer table.reports-data-table tbody td.specialty-cell .pdf-cell-text,
+    #tableContainer table.reports-data-table tbody td.batch-cell .pdf-cell-text,
+    #tableContainer table.reports-data-table tbody td.desc-cell .pdf-cell-text,
+    #tableContainer table.reports-data-table tbody td.details-cell .pdf-cell-text,
+    #tableContainer table.reports-data-table tbody td.description-cell .pdf-cell-text {
+      display: inline-block !important;
+      width: auto !important;
+      max-width: 100% !important;
+      white-space: normal !important;
+      word-break: normal !important;
+      overflow-wrap: anywhere !important;
+    }
+    #tableContainer table.reports-data-table tbody td.num,
+    #tableContainer table.reports-data-table tbody td.numeric-cell,
+    #tableContainer table.reports-data-table tbody td.date-cell,
+    #tableContainer table.reports-data-table tbody td.compact-cell,
+    #tableContainer table.reports-data-table tbody td.ref-cell,
+    #tableContainer table.reports-data-table tbody td.idx,
+    #tableContainer table.reports-data-table tbody td.num .pdf-cell-text,
+    #tableContainer table.reports-data-table tbody td.numeric-cell .pdf-cell-text,
+    #tableContainer table.reports-data-table tbody td.date-cell .pdf-cell-text,
+    #tableContainer table.reports-data-table tbody td.compact-cell .pdf-cell-text,
+    #tableContainer table.reports-data-table tbody td.ref-cell .pdf-cell-text,
+    #tableContainer table.reports-data-table tbody td.idx .pdf-cell-text {
+      max-width: none !important;
+      white-space: nowrap !important;
+      word-break: keep-all !important;
+      overflow-wrap: normal !important;
+    }
   </style>
 </head>
 <body>

@@ -381,8 +381,54 @@ border: 1px solid #000000 !important;
     -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
   }
   html body table tr.report-grand-total-row > td *, html body table tr.total-row > td * { color: #ffffff !important; }
-`;
 
+  /* Fit report columns to their values; wrap only semantic text cells. */
+  .report-page-content table.reports-data-table tbody td.text-cell:not(.num):not(.numeric-cell):not(.date-cell):not(.compact-cell):not(.ref-cell):not(.idx),
+  .report-page-content table.reports-data-table tbody td.name-cell:not(.num):not(.numeric-cell):not(.date-cell):not(.compact-cell):not(.ref-cell):not(.idx),
+  .report-page-content table.reports-data-table tbody td.specialty-cell:not(.num):not(.numeric-cell):not(.date-cell):not(.compact-cell):not(.ref-cell):not(.idx),
+  .report-page-content table.reports-data-table tbody td.batch-cell:not(.num):not(.numeric-cell):not(.date-cell):not(.compact-cell):not(.ref-cell):not(.idx),
+  .report-page-content table.reports-data-table tbody td.desc-cell,
+  .report-page-content table.reports-data-table tbody td.details-cell,
+  .report-page-content table.reports-data-table tbody td.description-cell {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 280px !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+  .report-page-content table.reports-data-table tbody td.text-cell .pdf-cell-text,
+  .report-page-content table.reports-data-table tbody td.name-cell .pdf-cell-text,
+  .report-page-content table.reports-data-table tbody td.specialty-cell .pdf-cell-text,
+  .report-page-content table.reports-data-table tbody td.batch-cell .pdf-cell-text,
+  .report-page-content table.reports-data-table tbody td.desc-cell .pdf-cell-text,
+  .report-page-content table.reports-data-table tbody td.details-cell .pdf-cell-text,
+  .report-page-content table.reports-data-table tbody td.description-cell .pdf-cell-text {
+    display: inline-block !important;
+    width: auto !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+  .report-page-content table.reports-data-table tbody td.num,
+  .report-page-content table.reports-data-table tbody td.numeric-cell,
+  .report-page-content table.reports-data-table tbody td.date-cell,
+  .report-page-content table.reports-data-table tbody td.compact-cell,
+  .report-page-content table.reports-data-table tbody td.ref-cell,
+  .report-page-content table.reports-data-table tbody td.idx,
+  .report-page-content table.reports-data-table tbody td.num .pdf-cell-text,
+  .report-page-content table.reports-data-table tbody td.numeric-cell .pdf-cell-text,
+  .report-page-content table.reports-data-table tbody td.date-cell .pdf-cell-text,
+  .report-page-content table.reports-data-table tbody td.compact-cell .pdf-cell-text,
+  .report-page-content table.reports-data-table tbody td.ref-cell .pdf-cell-text,
+  .report-page-content table.reports-data-table tbody td.idx .pdf-cell-text {
+    max-width: none !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+`;
 const dimensions = (size: ReportPaperSize, orientation: ReportOrientation) => {
   const [short, long] = size === 'A3' ? [297, 420] : size === 'Letter' ? [215.9, 279.4] : [210, 297];
   return orientation === 'landscape' ? [long, short] : [short, long];
