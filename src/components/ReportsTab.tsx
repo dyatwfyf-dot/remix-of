@@ -164,7 +164,6 @@ const normalizeTraineeStatusName = (value: unknown) => String(value || "")
  .trim()
  .replace(/[ًٌٍَُِّْـ]/g, "")
  .replace(/[إأآ]/g, "ا")
- .replace(/ى/g, "ي")
  .replace(/\s+/g, " ");
 
 const canonicalFeeCategory = (value: unknown) => {
@@ -604,11 +603,12 @@ export default function ReportsTab() {
   () =>
   Array.from(
    new Set(
-    [...trainees.map((row) => String(row.name || "").trim()), ...hafiza.map((row) => String(row.name || "").trim())]
+    hafiza
+    .map((row) => String(row.name || "").trim())
     .filter(Boolean)
    )
   ).sort((a, b) => a.localeCompare(b, "ar")),
-  [trainees, hafiza]
+  [hafiza]
  );
  
  const feeCategoryOptions = useMemo(
