@@ -193,13 +193,20 @@ border: 2px solid #000 !important;
 background: gold !important; color: #000 !important;
 font-size: 18px !important;
 font-weight: 900 !important; border: 1px solid #000 !important; }
-    tbody td { 
-width: auto!important;
-min - width: auto;
-whitespace: normal!important 
-    background: #ffffff !important; border: 1px solid #000 !important; color: #000000 !important; 
-font-size: 18px !important;
-font-weight: 800 !important; }
+    tbody td {
+      width: auto !important;
+      background: #ffffff !important;
+      border: 1px solid #000 !important;
+      color: #000000 !important;
+      font-size: 18px !important;
+      font-weight: 800 !important;
+    }
+    tbody td.financial-amount-cell {
+      background: #f2f7fb !important;
+      background-color: #f2f7fb !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
     .total-row td, tr.total-row td, tbody tr.total-row > td {
       background: #0437bb !important;
       background-color: #0437bb !important;
@@ -878,21 +885,50 @@ if (source === "tawfiqCustody") {
     });
 
     const isCustodySource = source === "youssefLoan" || source === "tawfiqCustody";
-    if (isCustodySource) return filtered;
+    const orderedRows = isCustodySource
+      ? filtered
+      : [...filtered].sort((a, b) => {
+          const aVal = a[activeSortCol];
+          const bVal = b[activeSortCol];
+          if (aVal === undefined || aVal === null) return 1;
+          if (bVal === undefined || bVal === null) return -1;
+          const numA = Number(aVal);
+          const numB = Number(bVal);
+          if (!isNaN(numA) && !isNaN(numB)) {
+            return activeSortDir === "asc" ? numA - numB : numB - numA;
+          }
+          const strA = String(aVal);
+          const strB = String(bVal);
+          return activeSortDir === "asc" ? strA.localeCompare(strB, "ar") : strB.localeCompare(strA, "ar");
+        });
 
-    return [...filtered].sort((a, b) => {
-      const aVal = a[activeSortCol];
-      const bVal = b[activeSortCol];
-      if (aVal === undefined || aVal === null) return 1;
-      if (bVal === undefined || bVal === null) return -1;
-      const numA = Number(aVal);
-      const numB = Number(bVal);
-      if (!isNaN(numA) && !isNaN(numB)) {
-        return activeSortDir === "asc" ? numA - numB : numB - numA;
+    // احتساب إجمالي المبلغ من السجلات الظاهرة فقط، مع منع جمع صفوف الملخص
+    // مع تفاصيلها مرة أخرى في كشف المتدربين.
+    const detailRows = orderedRows.filter((row) => row.summaryLevel === "detail");
+    const feeRows = orderedRows.filter((row) => row.summaryLevel === "fee");
+    const periodRows = orderedRows.filter((row) => row.summaryLevel === "period");
+    const totalSourceRows = detailRows.length
+      ? detailRows
+      : feeRows.length
+        ? feeRows
+        : periodRows.length
+          ? periodRows
+          : orderedRows.filter((row) =>
+              row.summaryLevel !== "opening" &&
+              row.summaryLevel !== "total" &&
+              row.summaryLevel !== "signature" &&
+              row.total !== "نعم"
+            );
+    const visibleAmountTotal = totalSourceRows.reduce(
+      (sum, row) => sum + amountValue(row.amount),
+      0
+    );
+
+    return orderedRows.map((row) => {
+      if (row.summaryLevel === "total" || row.total === "نعم") {
+        return { ...row, amount: visibleAmountTotal };
       }
-      const strA = String(aVal);
-      const strB = String(bVal);
-      return activeSortDir === "asc" ? strA.localeCompare(strB, "ar") : strB.localeCompare(strA, "ar");
+      return row;
     });
   }, [reportRows, columnFilters, sortColumn, sortDirection, source, traineeSortColumn, traineeSortDirection, deletedRows]);
 
@@ -1155,6 +1191,11 @@ if (source === "tawfiqCustody") {
                   {sourceConfig.columns.map((col) => (
                     <th
                       key={col.key}
+                      style={numericKeys.includes(col.key) ? {
+                        backgroundColor: "#f2f7fb",
+                        WebkitPrintColorAdjust: "exact",
+                        printColorAdjust: "exact",
+                      } : undefined}
                       onClick={() => {
                         if (source === "trainee") {
                           if (traineeSortColumn === col.key) {
@@ -1380,7 +1421,17 @@ if (source === "tawfiqCustody") {
                               className={`border border-black px-2 py-2 font-bold ${
                                 isNumeric ? "font-mono font-bold" : ""
                               } bg-white text-slate-900`}
-                              style={totalCellStyle}
+                              style={
+                                isTotal
+                                  ? totalCellStyle
+                                  : isNumeric
+                                    ? {
+                                        backgroundColor: "#f2f7fb",
+                                        WebkitPrintColorAdjust: "exact",
+                                        printColorAdjust: "exact",
+                                      }
+                                    : undefined
+                              }
                             >
                               {isNumeric ? formatCurrency(val) : val !== undefined && val !== null && String(val) !== "" ? String(val) : "—"}
                             </td>
