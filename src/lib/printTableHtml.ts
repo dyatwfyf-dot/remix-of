@@ -287,24 +287,36 @@ export const tablePrintStyles = `
     color: #ffffff !important;
   }
 
-  /* التفاف النصوص الطويلة عند الحاجة فقط */
-  .text-cell, .name-cell, .specialty-cell, .batch-cell, .desc-cell {
+  /* الأعمدة تتكيف مع محتواها، والنصوص الطويلة تلتف داخل حدود الخلية */
+  th, tbody td {
+    max-width: 280px !important;
+    min-width: 0 !important;
     white-space: normal !important;
     word-break: normal !important;
-    overflow-wrap: break-word !important;
+    overflow-wrap: anywhere !important;
   }
 
-  /* احتواء خلايا الأرقام والتواريخ والأكواد لمنع تمددها */
+  .text-cell, .name-cell, .specialty-cell, .batch-cell, .desc-cell,
+  td.details-cell, td.description-cell {
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
+    min-width: 0 !important;
+    max-width: 280px !important;
+  }
+
+  /* الأرقام والتواريخ والأكواد تبقى في سطر واحد لسهولة قراءتها */
   .num, .numeric-cell, .date-cell, .compact-cell, .ref-cell, .idx {
     direction: ltr !important;
     font-family: Cairo !important;
     font-weight: 800 !important;
     white-space: nowrap !important;
     word-break: keep-all !important;
+    overflow-wrap: normal !important;
     text-align: center !important;
   }
 
-  /* التفاف حصري لعمود البيان والتفاصيل فقط */
+  /* الأعمدة النصية بما فيها البيان والتفاصيل تلتف عند زيادة طول المحتوى */
   td.desc-cell,
   td.details-cell,
   td.description-cell,
@@ -315,18 +327,12 @@ export const tablePrintStyles = `
   td[data-col-name*="تفاصيل"],
   td[data-col-name*="الوصف"] {
     white-space: normal !important;
-    word-break: break-word !important;
-    overflow-wrap: normal !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
     text-align: center !important;
     direction: rtl !important;
-    min-width: 180px !important;
-  }
-
-  /* باقي الخلايا لا يُسمح لها بالالتفاف إطلاقاً */
-  tbody td:not(.desc-cell):not(.details-cell):not(.description-cell):not([data-col-key="description"]) {
-    white-space: normal !important;
-    word-break: keep-all !important;
-    overflow-wrap: normal !important;
+    min-width: 0 !important;
+    max-width: 280px !important;
   }
 
   /* بطاقات ملخص العهدة الملونة */
