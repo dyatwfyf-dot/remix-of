@@ -928,6 +928,28 @@ if (source === "tawfiqCustody") {
       if (row.summaryLevel === "total" || row.total === "نعم") {
         return { ...row, amount: visibleAmountTotal };
       }
+
+      // عند وجود التفاصيل، حدّث المجاميع الفرعية التابعة لها أيضاً بعد الحذف.
+      if (source === "trainee" && detailRows.length > 0) {
+        let matchingDetails: ReportRow[] | null = null;
+        if (row.summaryLevel === "fee") {
+          matchingDetails = detailRows.filter((item) => item.category === row.category);
+        } else if (row.summaryLevel === "period") {
+          matchingDetails = detailRows.filter(
+            (item) => item.category === row.category && item.period === row.period
+          );
+        } else if (row.summaryLevel === "trainee-name-total") {
+          matchingDetails = detailRows.filter(
+            (item) => item.trainee === row.trainee && Number(item.year) === Number(row.year)
+          );
+        }
+        if (matchingDetails) {
+          return {
+            ...row,
+            amount: matchingDetails.reduce((sum, item) => sum + amountValue(item.amount), 0),
+          };
+        }
+      }
       return row;
     });
   }, [reportRows, columnFilters, sortColumn, sortDirection, source, traineeSortColumn, traineeSortDirection, deletedRows]);
