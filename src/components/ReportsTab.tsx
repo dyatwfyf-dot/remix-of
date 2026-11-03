@@ -1140,7 +1140,7 @@ if (source === "tawfiqCustody") {
               </select>
             </label>
 
-            {source !== "youssefLoan" && source !== "tawfiqCustody" && source !== "trainee" && source !== "feeTotals" && (
+            {source !== "youssefLoan" && source !== "tawfiqCustody" && source !== "trainee" && source !== "feeTotals" && source !== "traineeFeeStatus" && (
               <>
                 <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
                   الفترة الزمنية
