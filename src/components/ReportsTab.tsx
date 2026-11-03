@@ -1436,30 +1436,37 @@ if (source === "tawfiqCustody") {
                     const isTraineeDetail = source === "trainee" && row.displayType === "تفصيلي";
                     const isTraineeSummary = source === "trainee" && Boolean(row.displayType) && row.displayType !== "تفصيلي";
                     const isTraineeTypedRow = isTraineeDetail || isTraineeSummary;
-                    const traineeRowCellStyle = isTraineeTypedRow
+                    const traineeRowCellStyle = isTraineeDetail
                       ? {
                           backgroundColor: "#ffffff",
                           color: "#17324D",
                           WebkitPrintColorAdjust: "exact" as const,
                           printColorAdjust: "exact" as const,
                         }
-                      : undefined;
+                      : isTraineeSummary
+                        ? {
+                            backgroundColor: "#FFF1D6",
+                            color: "#68420A",
+                            WebkitPrintColorAdjust: "exact" as const,
+                            printColorAdjust: "exact" as const,
+                          }
+                        : undefined;
  const totalCellStyle = isTotal ? {
-backgroundColor: "#ffffff",
-color: "#111827",
+backgroundColor: "#5B5750",
+color: "#ffffff",
                           WebkitPrintColorAdjust: "exact" as const,
                           printColorAdjust: "exact" as const,
                         }
                       : undefined;
 
  let rowStyle = "";
- if (isOpening) rowStyle = "bg-white font-bold text-black";
-else if (isTotal) rowStyle = "bg-white font-bold text-slate-900 total-row";
+ if (isOpening) rowStyle = "bg-[#FBFEFF] font-bold text-black";
+else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                     else if (isTraineeDetail) rowStyle = "bg-white font-bold text-[#17324D]";
-                    else if (isTraineeSummary) rowStyle = "bg-white font-bold text-[#68420A]";
-                    else if (row.summaryLevel === "fee") rowStyle = "bg-white font-bold text-black";
-                    else if (row.summaryLevel === "trainee-name-total") rowStyle = "bg-white font-bold text-[#2C666E]";
-                    else if (row.summaryLevel === "period") rowStyle = "bg-white font-bold text-[#5B5750]";
+                    else if (isTraineeSummary) rowStyle = "bg-[#FFF1D6] font-bold text-[#68420A]";
+                    else if (row.summaryLevel === "fee") rowStyle = "bg-[#F1BF98] font-bold text-black";
+                    else if (row.summaryLevel === "trainee-name-total") rowStyle = "bg-[#2C666E] font-bold text-white";
+                    else if (row.summaryLevel === "period") rowStyle = "bg-[#5B5750] font-bold text-white";
                     else rowStyle = "bg-white text-slate-900";
 
                     // قسم التوقيعات المدمج أسفل تقارير العهد (في سطر أفقي واحد مدمج)
