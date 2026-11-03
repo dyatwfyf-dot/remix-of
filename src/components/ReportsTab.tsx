@@ -207,6 +207,17 @@ font-weight: 900 !important; border: 1px solid #000 !important; }
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
+    thead th.financial-amount-cell {
+      background: #f2f7fb !important;
+      background-color: #f2f7fb !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .total-row td.financial-amount-cell {
+      background: #0437bb !important;
+      background-color: #0437bb !important;
+      color: #ffffff !important;
+    }
     .total-row td, tr.total-row td, tbody tr.total-row > td {
       background: #0437bb !important;
       background-color: #0437bb !important;
