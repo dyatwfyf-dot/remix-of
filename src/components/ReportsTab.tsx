@@ -1322,8 +1322,24 @@ if (source === "tawfiqCustody") {
                     const isOpening = row.summaryLevel === "opening";
                     const isTotal = row.summaryLevel === "total" || row.total === "نعم";
                     const isSignature = row.summaryLevel === "signature";
-                    // تطبيق اللون مباشرة على خلايا صف الإجمالي؛ لأن خلفية bg-white على الخلايا
-                    // قد تحجب لون صف الجدول نفسه في العرض والطباعة.
+                    const isTraineeDetail = source === "trainee" && row.displayType === "تفصيلي";
+                    const isTraineeSummary = source === "trainee" && Boolean(row.displayType) && row.displayType !== "تفصيلي";
+                    const isTraineeTypedRow = isTraineeDetail || isTraineeSummary;
+                    const traineeRowCellStyle = isTraineeDetail
+                      ? {
+                          backgroundColor: "#E7F2FF",
+                          color: "#17324D",
+                          WebkitPrintColorAdjust: "exact" as const,
+                          printColorAdjust: "exact" as const,
+                        }
+                      : isTraineeSummary
+                        ? {
+                            backgroundColor: "#FFF1D6",
+                            color: "#68420A",
+                            WebkitPrintColorAdjust: "exact" as const,
+                            printColorAdjust: "exact" as const,
+                          }
+                        : undefined;
  const totalCellStyle = isTotal ? {
 backgroundColor: "#5B5750",
 color: "#ffffff",
@@ -1335,6 +1351,8 @@ color: "#ffffff",
  let rowStyle = "";
  if (isOpening) rowStyle = "bg-[#FBFEFF] font-bold text-black";
 else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
+                    else if (isTraineeDetail) rowStyle = "bg-[#E7F2FF] font-bold text-[#17324D]";
+                    else if (isTraineeSummary) rowStyle = "bg-[#FFF1D6] font-bold text-[#68420A]";
                     else if (row.summaryLevel === "fee") rowStyle = "bg-[#F1BF98] font-bold text-black";
                     else if (row.summaryLevel === "trainee-name-total") rowStyle = "bg-[#2C666E] font-bold text-white";
                     else if (row.summaryLevel === "period") rowStyle = "bg-[#5B5750] font-bold text-white";
@@ -1422,7 +1440,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                             : undefined
                         }
                       >
-                        <td className="border border-black px-2 py-2 font-bold" style={totalCellStyle}>
+                        <td className="border border-black px-2 py-2 font-bold" style={isTotal ? totalCellStyle : traineeRowCellStyle}>
                           {isOpening ? "—" : isTotal ? "★" : index + 1}
                         </td>
 
@@ -1477,13 +1495,15 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                               style={
                                 isTotal
                                   ? totalCellStyle
-                                  : isNumeric
-                                    ? {
-                                        backgroundColor: "#FBFEFF",
-                                        WebkitPrintColorAdjust: "exact",
-                                        printColorAdjust: "exact",
-                                      }
-                                    : undefined
+                                  : isTraineeTypedRow
+                                    ? traineeRowCellStyle
+                                    : isNumeric
+                                      ? {
+                                          backgroundColor: "#FBFEFF",
+                                          WebkitPrintColorAdjust: "exact",
+                                          printColorAdjust: "exact",
+                                        }
+                                      : undefined
                               }
                             >
                               {isNumeric ? formatCurrency(val) : val !== undefined && val !== null && String(val) !== "" ? String(val) : "—"}
@@ -1491,7 +1511,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                           );
                         })}
 
-                        <td className="border border-black px-1 py-1 print:hidden" style={totalCellStyle}>
+                        <td className="border border-black px-1 py-1 print:hidden" style={isTotal ? totalCellStyle : traineeRowCellStyle}>
                           {!isOpening && !isTotal && (
                             <button
                               onClick={() => deleteRow(row)}
