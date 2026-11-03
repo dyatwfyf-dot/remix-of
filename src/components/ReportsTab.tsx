@@ -178,7 +178,6 @@ const normalizeTraineeReportName = (value: unknown): string =>
   .replace(/[ًٌٍَُِّْـ]/g, "")
   .replace(/[إأآ]/g, "ا")
   .replace(/ى/g, "ي")
-  .replace(/ة/g, "ه")
   .replace(/\s+/g, " ");
 
 const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "other" => {
@@ -1166,7 +1165,10 @@ if (source === "tawfiqCustody") {
                 value={source}
                 onChange={(e) => {
                   setSource(e.target.value as ReportSource);
-                  if (e.target.value === "traineeFeeStatus") setSortColumn("trainee");
+                  if (e.target.value === "traineeFeeStatus") {
+                    setSortColumn("trainee");
+                    setSortDirection("asc");
+                  }
                   setDeletedRows(new Set());
                   setColumnFilters({});
                 }}
