@@ -168,6 +168,8 @@ const normalizeFeeDescription = (value: unknown) =>
   .replace(/\s+/g, " ");
 const isExamFeeDescription = (value: unknown) =>
  /(امتحان|اختبار)/.test(normalizeFeeDescription(value));
+const isNewTraineeRegistrationDescription = (value: unknown) =>
+ /رسوم\s+(?:ال)?قيد\s+و(?:ال)?تسجيل/.test(normalizeFeeDescription(value));
 const isTuitionFeeDescription = (value: unknown) => {
  const text = normalizeFeeDescription(value);
  return /(رسوم\s*(?:ال)?(?:دراس|دراسه|دراسي)|(?:قسط|اقساط)\s*(?:ال)?(?:دراس|دراسه|دراسي)|تسجيل|قيد)/.test(text);
@@ -772,6 +774,7 @@ export default function ReportsTab() {
    specialty: string;
   }>();
   const paidExamKeys = new Set<string>();
+  const newTraineeKeys = new Set<string>();
 
   // مصدر أسماء المتدربين وبياناتهم وتصنيف سدادهم هو حوافظ التوريد فقط.
   // يحتسب السداد من مبلغ وتاريخ التوريد، ويُعد البيان مدفوعاً فقط عند ورود امتحان/اختبار.
@@ -792,6 +795,9 @@ export default function ReportsTab() {
     if (!current.specialty && record.specialty) current.specialty = String(record.specialty);
    }
 
+   if (isNewTraineeRegistrationDescription(record.description)) {
+    newTraineeKeys.add(key);
+   }
    const amount = amountValue(record.notifyAmount);
    const date = normalizeDate(record.notifyDate);
    if (amount > 0 && date && date.getFullYear() >= 2022 && isExamFeeDescription(record.description)) {
@@ -799,9 +805,9 @@ export default function ReportsTab() {
    }
   });
 
-  // التقرير يعرض حصراً من لم يسدد أي رسوم امتحان/اختبار في 2022 أو الأعوام التالية.
+  // يستبعد المستجدون الذين وردت لهم رسوم قيد وتسجيل، ثم يعرض غير المسددين منذ 2022.
   return Array.from(byName.entries())
-   .filter(([key]) => !paidExamKeys.has(key))
+   .filter(([key]) => !paidExamKeys.has(key) && !newTraineeKeys.has(key))
    .map(([, item]) => ({
     trainee: item.trainee,
     batch: item.batch || "—",
