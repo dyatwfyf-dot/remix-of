@@ -663,7 +663,7 @@ export default function ReportsTab() {
   categories.forEach((category) => {
    const categoryPayments = payments.filter((row) => row.category === category).sort((a, b) => String(a.notifyDate).localeCompare(String(b.notifyDate)));
    if (traineeDisplayMode === "detail" || traineeDisplayMode === "both") {
-    result.push(...categoryPayments.map((row) => ({ ...row, displayType: "تفصيلي", summaryLevel: "detail"
+    result.push(...categoryPayments.map((row) => ({ ...row, displayType: "تفصيلي", summaryLevel: "detail" as const
      })));
    }
    if (traineeDisplayMode === "summary" || traineeDisplayMode === "both") {
@@ -833,7 +833,7 @@ export default function ReportsTab() {
   });
  }, [trainees, hafiza]);
 
- const sourceConfig = useMemo(() => {
+ const sourceConfig = useMemo<{ title: string; columns: TabCol[] }>(() => {
   if (source === "youssefLoan") {
    return {
     title: "مسير إخلاء العهدة",
@@ -848,7 +848,7 @@ export default function ReportsTab() {
       key: "amount",
       label: "المبلغ"
      },
-    ] satisfies TabCol[],
+    ],
    }
   }; 
 if (source === "tawfiqCustody") {
@@ -862,8 +862,7 @@ if (source === "tawfiqCustody") {
      { key: "settlementNo", label: "رقم كشف التسوية" },
      { key: "notes", label: "الملاحظات" },
      { key: "amount", label: "المبلغ" },
-    ] 
-    satisfies TabCol[],
+    ],
    };
   }if (source === "traineeFeeStatus") {
    return {
@@ -877,7 +876,7 @@ if (source === "tawfiqCustody") {
      { key: "examStatus", label: "حالة رسوم الامتحانات" },
      { key: "examPaid", label: "المسدد للامتحانات" },
      { key: "overallStatus", label: "الحالة العامة" },
-    ] satisfies TabCol[],
+    ],
    };
   }
   if (source === "trainee") {
@@ -895,8 +894,7 @@ if (source === "tawfiqCustody") {
      { key: "displayType", label: "نوع السجل" },
      { key: "source", label: "المصدر" },
      { key: "amount", label: "مبلغ التوريد" },
-    ] 
-    satisfies TabCol[],
+    ],
    };
   }if (source === "feeTotals") {
    return {
@@ -905,8 +903,7 @@ if (source === "tawfiqCustody") {
      { key: "category", label: "نوع الرسم" },
      { key: "source", label: "المصدر" },
      { key: "amount", label: "الإجمالي" },
-    ] 
-    satisfies TabCol[],
+    ],
    };
   }if (source === "hafiza") {
    return {
@@ -918,8 +915,7 @@ if (source === "tawfiqCustody") {
      { key: "name", label: "الاسم" },
      { key: "amount", label: "المبلغ" },
      { key: "income", label: "الإيرادات" },
-    ] 
-    satisfies TabCol[],
+    ],
    };
 
   }if (source === "account") {
@@ -932,8 +928,7 @@ if (source === "tawfiqCustody") {
      { key: "name", label: "الاسم" },
      { key: "income", label: "الإيرادات" },
      { key: "expense", label: "المصروفات" },
-    ] 
-    satisfies TabCol[],
+    ],
    };
   }if (source === "expenses") {
    return {
@@ -943,8 +938,7 @@ if (source === "tawfiqCustody") {
      { key: "item", label: "بند المصروف" },
      { key: "name", label: "الاسم" },
      { key: "expense", label: "المبلغ" },
-    ] 
-    satisfies TabCol[],
+    ],
    };
   } if (source === "revenue") {
    return {
@@ -953,8 +947,7 @@ if (source === "tawfiqCustody") {
      { key: "date", label: "الشهر" },
      { key: "item", label: "اسم بند الإيراد" },
      { key: "amount", label: "المبلغ" },
-    ] 
-    satisfies TabCol[],
+    ],
    };
   }
   return {
@@ -966,8 +959,7 @@ if (source === "tawfiqCustody") {
     { key: "income", label: "الإيرادات" },
     { key: "expense", label: "المصروفات" },
     { key: "amount", label: "المبلغ" },
-   ] 
-   satisfies TabCol[],
+   ],
   };
  },  [source]);
  
