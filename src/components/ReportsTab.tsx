@@ -1238,7 +1238,7 @@ if (source === "tawfiqCustody") {
         {/* جدول عرض التقرير */}
         <div className="overflow-x-auto p-4">
           <div className="border border-black bg-white shadow-sm">
-            <table id="reports-table" className="w-auto min-w-[900px] border-collapse text-center text-xs">
+            <table id="reports-table" className="w-full min-w-[900px] table-auto border-collapse text-center text-xs" style={{ tableLayout: "auto" }}>
               <thead>
   <tr className="border border-black bg-[#FFD700] text-black whitespace-normal">
    <th className="w-10 border border-black px-2 py-3 font-white">م</th>
@@ -1267,7 +1267,7 @@ if (source === "tawfiqCustody") {
                           }
                         }
                       }}
-                      className="cursor-pointer border border-black px-3 py-3 font-black hover:bg-[#e6b800]"
+                      className="max-w-[280px] cursor-pointer whitespace-normal break-words [overflow-wrap:anywhere] border border-black px-3 py-3 font-black hover:bg-[#e6b800]"
                     >
                       <div className="flex items-center justify-center gap-1">
                         <span>{col.label}</span>
@@ -1293,7 +1293,7 @@ if (source === "tawfiqCustody") {
                         value={columnFilters[col.key] || ""}
                         onChange={(e) => setColumnFilters((prev) => ({ ...prev, [col.key]: e.target.value }))}
                         placeholder={`بحث...`}
-                        className="w-auto rounded border border-slate-300 bg-white px-2 py-1 text-center text-xs font-bold text-slate-800 outline-none focus:border-sky-600"
+                        className="box-border w-full min-w-0 rounded border border-slate-300 bg-white px-1 py-1 text-center text-xs font-bold text-slate-800 outline-none focus:border-sky-600"
                       />
                     </th>
                   ))}
@@ -1434,7 +1434,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                           // حقول إدخال يدوية لرقم كشف التسوية والملاحظات والمبلغ في تقارير العهد
                           if (isEditableCustodyRow && (col.key === "settlementNo" || col.key === "notes")) {
                             return (
-                              <td key={col.key} className="border border-0 p-1">
+                              <td key={col.key} className="max-w-[280px] whitespace-normal break-words [overflow-wrap:anywhere] border border-0 p-1">
                                 <input
                                   type="text"
                                   value={val ?? ""}
@@ -1472,7 +1472,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                             <td
                               key={col.key}
                               className={`border border-black px-2 py-2 font-bold ${
-                                isNumeric ? "font-mono font-bold" : ""
+                                isNumeric ? "whitespace-nowrap font-mono" : "whitespace-normal break-words [overflow-wrap:anywhere] max-w-[280px]"
                               } bg-white text-slate-900`}
                               style={
                                 isTotal
