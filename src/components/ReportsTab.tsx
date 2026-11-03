@@ -25,7 +25,8 @@ type ReportSource = |
  "revenue" |
  "combined" |
  "trainee" |
- "feeTotals";
+ "feeTotals" |
+ "traineeFeeStatus";
 
 type PeriodType = "all" | "month" | "quarter" | "half" | "year";
 type TraineeGrouping = "month" | "year";
@@ -93,6 +94,7 @@ const SOURCES: Array < { value: ReportSource;label: string } > = [
  { value: "combined", label: "تقرير مجمّع لكل التبويبات" },
  { value: "trainee", label: "كشف مدفوعات المتدربين" },
  { value: "feeTotals", label: "إجماليات الرسوم حسب النوع" },
+ { value: "traineeFeeStatus", label: "تقرير حالة الرسوم الدراسية والامتحانية" },
 ];
 
 const normalizeDate = (value: unknown): Date | null => {
@@ -157,6 +159,13 @@ const amountValue = (value: unknown): number => {
 const formatCurrency = (val ? : number | string | null): string => {
  return (Number(val) || 0).toLocaleString("en-US");
 };
+
+const normalizeTraineeStatusName = (value: unknown) => String(value || "")
+ .trim()
+ .replace(/[ًٌٍَُِّْـ]/g, "")
+ .replace(/[إأآ]/g, "ا")
+ .replace(/ى/g, "ي")
+ .replace(/\s+/g, " ");
 
 const canonicalFeeCategory = (value: unknown) => {
  const text = String(value || "")
@@ -259,6 +268,7 @@ color: #ffffff !important;
 export default function ReportsTab() {
  const { year: fiscalYear } = useFiscalYear();
  const hafiza = useStore((state) => state.hafiza);
+ const trainees = useStore((state) => state.trainees);
  const accounts = useStore((state) => state.accounts);
  const revenue = useStore((state) => state.revenue);
  
@@ -594,12 +604,11 @@ export default function ReportsTab() {
   () =>
   Array.from(
    new Set(
-    hafiza
-    .map((row) => String(row.name || "").trim())
+    [...trainees.map((row) => String(row.name || "").trim()), ...hafiza.map((row) => String(row.name || "").trim())]
     .filter(Boolean)
    )
   ).sort((a, b) => a.localeCompare(b, "ar")),
-  [hafiza]
+  [trainees, hafiza]
  );
  
  const feeCategoryOptions = useMemo(
@@ -727,6 +736,48 @@ export default function ReportsTab() {
   return result;
  }, [hafiza, selectedTrainee, selectedFee, traineeGrouping, traineeDisplayMode]);
  
+ const traineeFeeStatusRows = useMemo<ReportRow[]>(() => {
+  const paymentTotals = new Map<string, { tuition: number; exams: number }>();
+  hafiza.forEach((row) => {
+   const name = normalizeTraineeStatusName(row.name);
+   const amount = amountValue(row.notifyAmount);
+   if (!name || amount <= 0) return;
+   const category = canonicalFeeCategory(row.description);
+   if (category !== "أقساط الدراسة والتسجيل" && category !== "رسوم الامتحانات") return;
+   const current = paymentTotals.get(name) || { tuition: 0, exams: 0 };
+   if (category === "أقساط الدراسة والتسجيل") current.tuition += amount;
+   if (category === "رسوم الامتحانات") current.exams += amount;
+   paymentTotals.set(name, current);
+  });
+  const names = new Map<string, string>();
+  trainees.forEach((row) => {
+   const name = String(row.name || "").trim();
+   const key = normalizeTraineeStatusName(name);
+   if (key && !names.has(key)) names.set(key, name);
+  });
+  hafiza.forEach((row) => {
+   const name = String(row.name || "").trim();
+   const key = normalizeTraineeStatusName(name);
+   if (key && !names.has(key)) names.set(key, name);
+  });
+  return Array.from(names.entries())
+   .map(([key, trainee]) => {
+    const totals = paymentTotals.get(key) || { tuition: 0, exams: 0 };
+    const hasTuition = totals.tuition > 0;
+    const hasExams = totals.exams > 0;
+    const status = hasTuition && hasExams
+     ? "مسدد الرسوم الدراسية ورسوم الامتحانات"
+     : hasTuition
+      ? "لديه رسوم دراسية ولا توجد رسوم امتحانات"
+      : hasExams
+       ? "لديه رسوم امتحانات ولا توجد رسوم دراسية"
+       : "لا يوجد أي توريد للرسوم الدراسية أو الامتحانات";
+    return { trainee, tuitionStatus: hasTuition ? "مسدد" : "لا يوجد توريد", tuitionAmount: totals.tuition,
+     examStatus: hasExams ? "مسدد" : "لا يوجد توريد", examAmount: totals.exams, status };
+   })
+   .sort((a, b) => String(a.trainee).localeCompare(String(b.trainee), "ar"));
+ }, [trainees, hafiza]);
+
  const feeTotalsRows = useMemo < ReportRow[] > (() => {
   const totals = new Map < string,
    number > ();
@@ -796,7 +847,20 @@ if (source === "tawfiqCustody") {
     ] 
     satisfies TabCol[],
    };
-  }if (source === "feeTotals") {
+  }if (source === "traineeFeeStatus") {
+   return {
+    title: "تقرير حالة الرسوم الدراسية والامتحانية حسب مبالغ التوريد",
+    columns: [
+     { key: "trainee", label: "اسم المتدرب" },
+     { key: "tuitionStatus", label: "حالة الرسوم الدراسية" },
+     { key: "tuitionAmount", label: "مبلغ الرسوم الدراسية المسدد" },
+     { key: "examStatus", label: "حالة رسوم الامتحانات" },
+     { key: "examAmount", label: "مبلغ رسوم الامتحانات المسدد" },
+     { key: "status", label: "التصنيف النهائي" },
+    ] satisfies TabCol[],
+   };
+  }
+  if (source === "feeTotals") {
    return {
     title: "إجماليات الرسوم حسب النوع",
     columns: [
@@ -874,6 +938,7 @@ if (source === "tawfiqCustody") {
   if (source === "tawfiqCustody") return tawfiqRows;
   if (source === "trainee") return traineeRows;
   if (source === "feeTotals") return feeTotalsRows;
+  if (source === "traineeFeeStatus") return traineeFeeStatusRows;
   if (source === "hafiza") return hafizaRows;
   if (source === "account") return accountRows;
   if (source === "expenses") return expenseRows;
@@ -884,7 +949,7 @@ if (source === "tawfiqCustody") {
    ...expenseRows.map((row) => ({ source: "المصروفات", date: row.date, description: row.item, expense: row.expense })),
    ...revenueRows.map((row) => ({ source: "الإيرادات", date: row.date, description: row.item, amount: row.amount })),
   ];
- }, [source, youssefRows, tawfiqRows, traineeRows, feeTotalsRows, hafizaRows, accountRows, expenseRows, revenueRows]);
+ }, [source, youssefRows, tawfiqRows, traineeRows, feeTotalsRows, traineeFeeStatusRows, hafizaRows, accountRows, expenseRows, revenueRows]);
  
  const isPreservedFromColumnFilter = (row: ReportRow): boolean => {
   return row.summaryLevel === "opening" || row.summaryLevel === "total" || row.summaryLevel === "signature";
@@ -997,6 +1062,8 @@ if (source === "tawfiqCustody") {
   `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFee === "all" ? "كل الرسوم" : selectedFee} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}` :
   source === "feeTotals" ?
   `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}` :
+  source === "traineeFeeStatus" ?
+  "تقرير حالة الرسوم الدراسية والامتحانية للمتدربين — وفق مبالغ التوريد المسددة" :
   source === "youssefLoan" || source === "tawfiqCustody" ?
   `مسير إخلاء - عهدة - ${source === "youssefLoan" ? "د/ يوسف" : "توفيق الداعي"}\n${custodyDateRange}` :
   `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
@@ -1014,6 +1081,8 @@ if (source === "tawfiqCustody") {
   ["amount"] :
   source === "trainee" || source === "feeTotals" ?
   ["amount"] :
+  source === "traineeFeeStatus" ?
+  ["tuitionAmount", "examAmount"] :
   ["income", "expense", "amount"];
  
  const isLoanOrCustody = source === "youssefLoan" || source === "tawfiqCustody";
