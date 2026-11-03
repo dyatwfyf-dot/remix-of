@@ -270,6 +270,23 @@ export const tablePrintStyles = `
     background: #f8fafc !important;
   }
 
+  /* تمييز نوع السجل في كشف مدفوعات المتدربين على كامل الصف */
+  tbody tr.trainee-detail-row > td {
+    background: #E7F2FF !important;
+    background-color: #E7F2FF !important;
+    color: #17324D !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  tbody tr.trainee-summary-row > td {
+    background: #FFF1D6 !important;
+    background-color: #FFF1D6 !important;
+    color: #68420A !important;
+    font-weight: 900 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   /* الإجمالي الكلي الموحد */
   .report-grand-total-row td,
   .total-row td {
@@ -516,6 +533,8 @@ export function buildTableHtml(opts: {
       level === "month-total" ? "report-subtotal-row" : "",
       level === "year-total" ? "report-subtotal-row" : "",
       level === "total" || row?.description === "الإجمالي الكلي" ? "report-grand-total-row" : "",
+      row?.displayType === "تفصيلي" ? "trainee-detail-row" : "",
+      row?.displayType && row?.displayType !== "تفصيلي" ? "trainee-summary-row" : "",
       index % 2 === 1 ? "report-row-striped" : "report-row-plain",
     ].filter(Boolean).join(" ");
   };
