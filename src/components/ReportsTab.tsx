@@ -773,21 +773,7 @@ export default function ReportsTab() {
   }>();
   const paidExamKeys = new Set<string>();
 
-  // أدرج المتدربين المسجلين حتى يظهر من لم يسدد رسوم امتحان أو اختبار منذ 2022.
-  trainees.forEach((item) => {
-   const name = String(item.name || "").trim();
-   const key = normalizeTraineeReportName(name);
-   if (!key) return;
-   const current = byName.get(key);
-   if (!current) {
-    byName.set(key, {
-     trainee: name,
-     batch: String(item.batch || ""),
-     specialty: String(item.specialty || ""),
-    });
-   }
-  });
-
+  // مصدر أسماء المتدربين وبياناتهم وتصنيف سدادهم هو حوافظ التوريد فقط.
   // يحتسب السداد من مبلغ وتاريخ التوريد، ويُعد البيان مدفوعاً فقط عند ورود امتحان/اختبار.
   hafiza.forEach((record) => {
    const name = String(record.name || "").trim();
@@ -822,7 +808,7 @@ export default function ReportsTab() {
     specialty: item.specialty || "—",
     examStatus: "غير مسدد منذ 2022",
    }));
- }, [trainees, hafiza]);
+ }, [hafiza]);
 
  const sourceConfig = useMemo<{ title: string; columns: TabCol[] }>(() => {
   if (source === "youssefLoan") {
