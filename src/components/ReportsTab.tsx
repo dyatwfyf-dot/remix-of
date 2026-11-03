@@ -180,12 +180,13 @@ const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "ot
 
 const reportsTabPrintCss = `
   @media print {
-    @page { size: A4; margin: 8mm; }
+    @page { size: A4 portrait; margin: 8mm; }
     body { font-family: 'Cairo', Arial, sans-serif !important; color: #000000 !important; background: #ffffff !important; }
     .report-page-header { border: 2px solid #000 !important; margin-bottom: 8px !important; }
     table {
-    width: auto !important;
-min-width: auto;
+    width: 100% !important;
+min-width: auto !important;
+max-width: auto !important;
 whitespace: normal !important;
 border-collapse: collapse !important; 
 border: 2px solid #000 !important; 
@@ -195,7 +196,8 @@ background: gold !important; color: #000 !important;
 font-size: 18px !important;
 font-weight: 900 !important; border: 1px solid #000 !important; }
     tbody td {
-      width: auto !important;
+  width: 100% !important;
+max-width: auto !important;
       background: #ffffff !important;
       border: 1px solid #000 !important;
       color: #000000 !important;
@@ -205,13 +207,11 @@ font-weight: 900 !important; border: 1px solid #000 !important; }
     tbody td.financial-amount-cell {
       background: #f2f7fb !important;
 font-size: 20px !important;
-      background-color: #f2f7fb !important;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
     thead th.financial-amount-cell {
       background: #f2f7fb !important;
-      background-color: #f2f7fb !important;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
@@ -251,7 +251,9 @@ color: #ffffff !important;
  color: #ffffff !important; font-weight: 900 !important;
     -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
   }
-  html body table tr.report-grand-total-row > td *, html body table tr.total-row > td * { color: #ffffff !important; }
+  html body table tr.report-grand-total-row > td *, html body table tr.total-row > td * { 
+  background: #0437bb !important; 
+  color: #ffffff !important; }
 `;
 
 export default function ReportsTab() {
@@ -761,8 +763,8 @@ export default function ReportsTab() {
      },
     ] satisfies TabCol[],
    }
-  };
-  if (source === "tawfiqCustody") {
+  }; 
+if (source === "tawfiqCustody") {
    return {
     title: "مسير إخلاء العهدة",
     columns: [
@@ -773,10 +775,10 @@ export default function ReportsTab() {
      { key: "settlementNo", label: "رقم كشف التسوية" },
      { key: "notes", label: "الملاحظات" },
      { key: "amount", label: "المبلغ" },
-    ] satisfies TabCol[],
+    ] 
+    satisfies TabCol[],
    };
-  }
-  if (source === "trainee") {
+  }if (source === "trainee") {
    return {
     title: "كشف مدفوعات المتدربين من حوافظ التوريد",
     columns: [
@@ -791,20 +793,20 @@ export default function ReportsTab() {
      { key: "displayType", label: "نوع السجل" },
      { key: "source", label: "المصدر" },
      { key: "amount", label: "مبلغ التوريد" },
-    ] satisfies TabCol[],
+    ] 
+    satisfies TabCol[],
    };
-  }
-  if (source === "feeTotals") {
+  }if (source === "feeTotals") {
    return {
     title: "إجماليات الرسوم حسب النوع",
     columns: [
      { key: "category", label: "نوع الرسم" },
      { key: "source", label: "المصدر" },
      { key: "amount", label: "الإجمالي" },
-    ] satisfies TabCol[],
+    ] 
+    satisfies TabCol[],
    };
-  }
-  if (source === "hafiza") {
+  }if (source === "hafiza") {
    return {
     title: "تقرير حوافظ التوريد",
     columns: [
@@ -814,10 +816,11 @@ export default function ReportsTab() {
      { key: "name", label: "الاسم" },
      { key: "amount", label: "المبلغ" },
      { key: "income", label: "الإيرادات" },
-    ] satisfies TabCol[],
+    ] 
+    satisfies TabCol[],
    };
-  }
-  if (source === "account") {
+
+  }if (source === "account") {
    return {
     title: "تقرير الحساب الجاري",
     columns: [
@@ -827,10 +830,10 @@ export default function ReportsTab() {
      { key: "name", label: "الاسم" },
      { key: "income", label: "الإيرادات" },
      { key: "expense", label: "المصروفات" },
-    ] satisfies TabCol[],
+    ] 
+    satisfies TabCol[],
    };
-  }
-  if (source === "expenses") {
+  }if (source === "expenses") {
    return {
     title: "تقرير المصروفات",
     columns: [
@@ -838,17 +841,18 @@ export default function ReportsTab() {
      { key: "item", label: "بند المصروف" },
      { key: "name", label: "الاسم" },
      { key: "expense", label: "المبلغ" },
-    ] satisfies TabCol[],
+    ] 
+    satisfies TabCol[],
    };
-  }
-  if (source === "revenue") {
+  } if (source === "revenue") {
    return {
     title: "تقرير الإيرادات",
     columns: [
      { key: "date", label: "الشهر" },
      { key: "item", label: "اسم بند الإيراد" },
      { key: "amount", label: "المبلغ" },
-    ] satisfies TabCol[],
+    ] 
+    satisfies TabCol[],
    };
   }
   return {
@@ -860,9 +864,10 @@ export default function ReportsTab() {
     { key: "income", label: "الإيرادات" },
     { key: "expense", label: "المصروفات" },
     { key: "amount", label: "المبلغ" },
-   ] satisfies TabCol[],
+   ] 
+   satisfies TabCol[],
   };
- }, [source]);
+ },  [source]);
  
  const reportRows = useMemo < ReportRow[] > (() => {
   if (source === "youssefLoan") return youssefRows;
@@ -1046,7 +1051,7 @@ export default function ReportsTab() {
 
         {/* فلاتر واختيارات التقرير */}
         <div className="border-b border-sky-100 bg-slate-50/70 p-4">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
               نوع التقرير
               <select
@@ -1073,7 +1078,7 @@ export default function ReportsTab() {
                   <select
                     value={period}
                     onChange={(e) => setPeriod(e.target.value as PeriodType)}
-                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
+                    className="rounded-xl border border-slate-300 bg-[#F1BF98] px-3 py-2 text-sm font-bold text-black outline-none focus:border-sky-600"
                   >
                     {PERIODS.map((p) => (
                       <option key={p.value} value={p.value}>
@@ -1127,7 +1132,7 @@ export default function ReportsTab() {
                   <select
                     value={selectedTrainee}
                     onChange={(e) => setSelectedTrainee(e.target.value)}
-                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
+                    className="rounded-xl border border-slate-300 bg-[#5B5750] px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
                   >
                     <option value="all">كل المتدربين</option>
                     {traineeOptions.map((name) => (
@@ -1233,9 +1238,9 @@ export default function ReportsTab() {
         {/* جدول عرض التقرير */}
         <div className="overflow-x-auto p-4">
           <div className="border border-black bg-white shadow-sm">
-            <table id="reports-table" className="w-auto min-w-auto border-collapse text-center text-xs">
+            <table id="reports-table" className="w-auto min-w-[900px] border-collapse text-center text-xs">
               <thead>
-  <tr className="border-b border-black bg-[#FFD700] text-black white-space-normal">
+  <tr className="border border-black bg-[#FFD700] text-black whitespace-normal">
    <th className="w-10 border border-black px-2 py-3 font-white">م</th>
                   {sourceConfig.columns.map((col) => (
                     <th
@@ -1319,23 +1324,22 @@ export default function ReportsTab() {
                     const isSignature = row.summaryLevel === "signature";
                     // تطبيق اللون مباشرة على خلايا صف الإجمالي؛ لأن خلفية bg-white على الخلايا
                     // قد تحجب لون صف الجدول نفسه في العرض والطباعة.
-                    const totalCellStyle = isTotal
-                      ? {
-                          backgroundColor: "#5B5750",
-                          color: "#ffffff",
+ const totalCellStyle = isTotal ? {
+backgroundColor: "#5B5750",
+color: "#ffffff",
                           WebkitPrintColorAdjust: "exact" as const,
                           printColorAdjust: "exact" as const,
                         }
                       : undefined;
 
-                    let rowStyle = "";
-                    if (isOpening) rowStyle = "bg-[#FBFEFF] font-bold text-slate-950";
-                    else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
+ let rowStyle = "";
+ if (isOpening) rowStyle = "bg-[#FBFEFF] font-bold text-black";
+else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                     else if (row.summaryLevel === "fee") rowStyle = "bg-[#F1BF98] font-bold text-black";
                     else if (row.summaryLevel === "trainee-name-total") rowStyle = "bg-[#2C666E] font-bold text-white";
                     else if (row.summaryLevel === "period") rowStyle = "bg-[#5B5750] font-bold text-white";
-                    else if (index % 2 === 1) rowStyle = "bg-white text-slate-900";
-                    else rowStyle = "bg-white text-slate-900";
+                    else if (index % 2 === 1) rowStyle = "bg-[#2C666E] text-white";
+                    else rowStyle = "bg-[#5B5750] text-white";
 
                     // قسم التوقيعات المدمج أسفل تقارير العهد (في سطر أفقي واحد مدمج)
                     if (isSignature) {
@@ -1410,7 +1414,7 @@ export default function ReportsTab() {
                         style={
                           isTotal
                             ? {
-                                backgroundColor: "#2C666E",
+                                backgroundColor: "#F1BF98",
                                 color: "#ffffff",
                                 WebkitPrintColorAdjust: "exact",
                                 printColorAdjust: "exact",
@@ -1430,7 +1434,7 @@ export default function ReportsTab() {
                           // حقول إدخال يدوية لرقم كشف التسوية والملاحظات والمبلغ في تقارير العهد
                           if (isEditableCustodyRow && (col.key === "settlementNo" || col.key === "notes")) {
                             return (
-                              <td key={col.key} className="border border-black p-1">
+                              <td key={col.key} className="border border-0 p-1">
                                 <input
                                   type="text"
                                   value={val ?? ""}
@@ -1475,7 +1479,7 @@ export default function ReportsTab() {
                                   ? totalCellStyle
                                   : isNumeric
                                     ? {
-                                        backgroundColor: "#f2f7fb",
+                                        backgroundColor: "#FBFEFF",
                                         WebkitPrintColorAdjust: "exact",
                                         printColorAdjust: "exact",
                                       }
