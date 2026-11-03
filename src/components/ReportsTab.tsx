@@ -94,7 +94,7 @@ const SOURCES: Array < { value: ReportSource;label: string } > = [
  { value: "combined", label: "تقرير مجمّع لكل التبويبات" },
  { value: "trainee", label: "كشف مدفوعات المتدربين" },
  { value: "feeTotals", label: "إجماليات الرسوم حسب النوع" },
- { value: "traineeFeeStatus", label: "حالة سداد رسوم المتدربين" },
+ { value: "traineeFeeStatus", label: "غير المسددين لرسوم الامتحانات منذ 2022" },
 ];
 
 const normalizeDate = (value: unknown): Date | null => {
@@ -770,11 +770,10 @@ export default function ReportsTab() {
    trainee: string;
    batch: string;
    specialty: string;
-   tuitionPaid: number;
-   examPaid: number;
   }>();
+  const paidExamKeys = new Set<string>();
 
-  // ابدأ بجميع المتدربين المسجلين حتى يظهر من لم يسدد أي رسوم أيضاً.
+  // أدرج المتدربين المسجلين حتى يظهر من لم يسدد رسوم امتحان أو اختبار منذ 2022.
   trainees.forEach((item) => {
    const name = String(item.name || "").trim();
    const key = normalizeTraineeReportName(name);
@@ -785,13 +784,11 @@ export default function ReportsTab() {
      trainee: name,
      batch: String(item.batch || ""),
      specialty: String(item.specialty || ""),
-     tuitionPaid: 0,
-     examPaid: 0,
     });
    }
   });
 
-  // حوافظ التوريد هي المصدر الوحيد للسداد: notifyAmount هو عمود «مبلغ التوريد».
+  // يحتسب السداد من مبلغ وتاريخ التوريد، ويُعد البيان مدفوعاً فقط عند ورود امتحان/اختبار.
   hafiza.forEach((record) => {
    const name = String(record.name || "").trim();
    const key = normalizeTraineeReportName(name);
@@ -802,8 +799,6 @@ export default function ReportsTab() {
      trainee: name,
      batch: String(record.batch || ""),
      specialty: String(record.specialty || ""),
-     tuitionPaid: 0,
-     examPaid: 0,
     };
     byName.set(key, current);
    } else {
@@ -812,33 +807,21 @@ export default function ReportsTab() {
    }
 
    const amount = amountValue(record.notifyAmount);
-   if (amount <= 0) return;
-   const category = canonicalFeeCategory(record.description);
-   if (category === "رسوم الامتحانات") current.examPaid += amount;
-   else if (category === "أقساط الدراسة والتسجيل") current.tuitionPaid += amount;
+   const date = normalizeDate(record.notifyDate);
+   if (amount > 0 && date && date.getFullYear() >= 2022 && isExamFeeDescription(record.description)) {
+    paidExamKeys.add(key);
+   }
   });
 
-  return Array.from(byName.values()).map((item) => {
-   const hasTuition = item.tuitionPaid > 0;
-   const hasExam = item.examPaid > 0;
-   const overallStatus = hasTuition && hasExam
-    ? "مسدد الرسوم الدراسية ورسوم الامتحانات"
-    : hasTuition
-     ? "مسدد رسوم دراسية فقط"
-     : hasExam
-      ? "مسدد رسوم امتحانات فقط"
-      : "لا توجد رسوم دراسية أو امتحانات مسددة";
-   return {
+  // التقرير يعرض حصراً من لم يسدد أي رسوم امتحان/اختبار في 2022 أو الأعوام التالية.
+  return Array.from(byName.entries())
+   .filter(([key]) => !paidExamKeys.has(key))
+   .map(([, item]) => ({
     trainee: item.trainee,
     batch: item.batch || "—",
     specialty: item.specialty || "—",
-    tuitionStatus: hasTuition ? "مسدد" : "غير مسدد",
-    tuitionPaid: item.tuitionPaid,
-    examStatus: hasExam ? "مسدد" : "غير مسدد",
-    examPaid: item.examPaid,
-    overallStatus,
-   };
-  });
+    examStatus: "غير مسدد منذ 2022",
+   }));
  }, [trainees, hafiza]);
 
  const sourceConfig = useMemo<{ title: string; columns: TabCol[] }>(() => {
@@ -874,16 +857,12 @@ if (source === "tawfiqCustody") {
    };
   }if (source === "traineeFeeStatus") {
    return {
-    title: "تقرير حالة سداد الرسوم الدراسية ورسوم الامتحانات للمتدربين",
+    title: "المتدربون غير المسددين لرسوم الامتحانات والاختبارات منذ 2022",
     columns: [
      { key: "trainee", label: "اسم المتدرب" },
      { key: "batch", label: "الدفعة" },
      { key: "specialty", label: "التخصص" },
-     { key: "tuitionStatus", label: "حالة الرسوم الدراسية" },
-     { key: "tuitionPaid", label: "المسدد دراسياً" },
-     { key: "examStatus", label: "حالة رسوم الامتحانات" },
-     { key: "examPaid", label: "المسدد للامتحانات" },
-     { key: "overallStatus", label: "الحالة العامة" },
+     { key: "examStatus", label: "حالة السداد منذ 2022" },
     ],
    };
   }
@@ -1101,7 +1080,7 @@ if (source === "tawfiqCustody") {
   source === "feeTotals" ?
   `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}` :
   source === "traineeFeeStatus" ?
-  "تقرير حالة سداد الرسوم الدراسية ورسوم الامتحانات للمتدربين" :
+  "المتدربون غير المسددين لرسوم الامتحانات والاختبارات منذ 2022" :
   source === "youssefLoan" || source === "tawfiqCustody" ?
   `مسير إخلاء - عهدة - ${source === "youssefLoan" ? "د/ يوسف" : "توفيق الداعي"}\n${custodyDateRange}` :
   `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
