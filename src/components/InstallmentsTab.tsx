@@ -1,7 +1,7 @@
 /* ملف: src/components/InstallmentsTab.tsx
    ملاحظة: التغييرات تنسيقية فقط (CSS / classNames / ثوابت أحجام)
 */
-import React, { useMemo,
+import React, { useDeferredValue, useMemo,
   useState } from "react";
 import { useStore,
   type InstallmentCustomColumn } from "@/lib/store";
@@ -81,6 +81,8 @@ const MONTHS_2026 = [
   "نوفمبر",
   "ديسمبر",
 ];
+
+const INSTALLMENT_PAGE_SIZE = 40;
 
 // دالة تنظيف الأرقام واستخراج القيم العددية
 const cleanNumber = (val: any):
@@ -268,6 +270,9 @@ export default function InstallmentsTab() {
     string | null > (null);
   const [importError, setImportError] =
   useState < string | null > (null);
+  const [importingYear, setImportingYear] = useState<2025 | 2026 | null>(null);
+  const [page2025, setPage2025] = useState(1);
+  const [page2026, setPage2026] = useState(1);
   const [printSettingsYear,
     setPrintSettingsYear
   ] = useState < number | null > (null);
@@ -279,6 +284,8 @@ export default function InstallmentsTab() {
   useState("");
   const [search2026, setSearch2026] =
   useState("");
+  const deferredSearch2025 = useDeferredValue(search2025);
+  const deferredSearch2026 = useDeferredValue(search2026);
   
   const [sortConfig2025,
     setSortConfig2025
@@ -479,8 +486,8 @@ export default function InstallmentsTab() {
 () => {
     let result = controls2025
       .rows || [];
-    if (search2025) {
-      const term = search2025
+    if (deferredSearch2025) {
+      const term = deferredSearch2025
         .toLowerCase();
       result = result.filter(
         (r: any) =>
@@ -532,7 +539,7 @@ export default function InstallmentsTab() {
       });
     }
     return result;
-  }, [controls2025.rows, search2025,
+  }, [controls2025.rows, deferredSearch2025,
     sortConfig2025
   ]);
   
@@ -540,8 +547,8 @@ export default function InstallmentsTab() {
 () => {
     let result = controls2026
       .rows || [];
-    if (search2026) {
-      const term = search2026
+    if (deferredSearch2026) {
+      const term = deferredSearch2026
         .toLowerCase();
       result = result.filter(
         (r: any) =>
@@ -599,9 +606,36 @@ export default function InstallmentsTab() {
       });
     }
     return result;
-  }, [controls2026.rows, search2026,
+  }, [controls2026.rows, deferredSearch2026,
     sortConfig2026
   ]);
+
+  const originalIndex2025 = useMemo(() => {
+    const indices = new Map<string, number>();
+    (installments2025 || []).forEach((row: any, index: number) => {
+      if (!indices.has(row.name)) indices.set(row.name, index);
+    });
+    return indices;
+  }, [installments2025]);
+  const originalIndex2026 = useMemo(() => {
+    const indices = new Map<string, number>();
+    (installments || []).forEach((row: any, index: number) => {
+      if (!indices.has(row.name)) indices.set(row.name, index);
+    });
+    return indices;
+  }, [installments]);
+  const totalPages2025 = Math.max(1, Math.ceil(filteredRows2025.length / INSTALLMENT_PAGE_SIZE));
+  const totalPages2026 = Math.max(1, Math.ceil(filteredRows2026.length / INSTALLMENT_PAGE_SIZE));
+  const currentPage2025 = Math.min(page2025, totalPages2025);
+  const currentPage2026 = Math.min(page2026, totalPages2026);
+  const pageRows2025 = useMemo(
+    () => filteredRows2025.slice((currentPage2025 - 1) * INSTALLMENT_PAGE_SIZE, currentPage2025 * INSTALLMENT_PAGE_SIZE),
+    [filteredRows2025, currentPage2025],
+  );
+  const pageRows2026 = useMemo(
+    () => filteredRows2026.slice((currentPage2026 - 1) * INSTALLMENT_PAGE_SIZE, currentPage2026 * INSTALLMENT_PAGE_SIZE),
+    [filteredRows2026, currentPage2026],
+  );
   
   const handleSort2025 = (key:
     string) => {
@@ -2078,6 +2112,22 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     const input = e.target;
     const file = input.files?.[0];
     if (!file) return;
+    if (importingYear !== null) {
+      input.value = "";
+      toast.error("هناك عملية استيراد أخرى قيد التنفيذ.");
+      return;
+    }
+    const currentRows = year === 2025
+      ? useStore.getState().installments2025
+      : useStore.getState().installments;
+    if ((currentRows?.length || 0) > 0 && !window.confirm(
+      `سيتم استبدال بيانات الأقساط الحالية لعام ${year} بعد نجاح قراءة الملف. هل تريد المتابعة؟`,
+    )) {
+      input.value = "";
+      return;
+    }
+    setImportingYear(year);
+    const loadingToast = toast.loading(`جارٍ فحص ملف الأقساط لعام ${year}…`);
     try {
       // ملاحظة: لا نصفّر قيمة الحقل قبل القراءة — بعض متصفحات أندرويد/شاومي
       // تُبطل الملف عند التصفير فتخرج النتيجة فارغة بدون خطأ.
@@ -2094,9 +2144,11 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       if (year === 2025) {
         useStore
       .setState({ installments2025: formattedData });
+        setPage2025(1);
       } else {
         useStore
       .setState({ installments: formattedData });
+        setPage2026(1);
       }
       
       toast.success(
@@ -2114,9 +2166,10 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       setImportError(
         `حدث خطأ في قراءة الملف: ${detail}`
         );
-      toast.error(
-        "فشل استيراد الملف");
+      toast.error(detail || "فشل استيراد الملف");
     } finally {
+      toast.dismiss(loadingToast);
+      setImportingYear(null);
       input.value = "";
     }
   };
@@ -2645,10 +2698,11 @@ async () => {
         onSelect: () => undefined,
         content: (
           <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold text-slate-700 hover:bg-slate-100">
-          <span>استيراد Excel</span>
+          <span>{importingYear === 2025 ? "جارٍ الاستيراد…" : "استيراد Excel"}</span>
           <input
             type="file"
             accept=".xlsx,.xls"
+            disabled={importingYear !== null}
             onChange={(e) => importFile(e, 2025)}
             className="absolute h-0 w-0 opacity-0 overflow-hidden"
           />
@@ -2688,10 +2742,11 @@ async () => {
         onSelect: () => undefined,
         content: (
           <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold text-slate-700 hover:bg-slate-100">
-          <span>استيراد Excel</span>
+          <span>{importingYear === 2026 ? "جارٍ الاستيراد…" : "استيراد Excel"}</span>
           <input
             type="file"
             accept=".xlsx,.xls"
+            disabled={importingYear !== null}
             onChange={(e) => importFile(e, 2026)}
             className="absolute h-0 w-0 opacity-0 overflow-hidden"
           />
@@ -2737,15 +2792,16 @@ async () => {
                 type="text"
                 placeholder="بحث (الاسم، الدفعة، المساق)..."
                 value={search2025}
-                onChange={(e) => setSearch2025(e.target.value)}
+                onChange={(e) => { setSearch2025(e.target.value); setPage2025(1); }}
  className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"
               />
             </div>
-<label className="apk-only-actions relative w-full px-2 sm:px-2 py-2 sm:py-2 bg-white text-sky-700 rounded-lg text-xs sm:text-xs font-bold cursor-pointer hover:bg-sky-50 shadow text-center">
-  📥 استيراد الملف{" "}
+<label className={`apk-only-actions relative w-full px-2 sm:px-2 py-2 sm:py-2 bg-white text-sky-700 rounded-lg text-xs sm:text-xs font-bold cursor-pointer hover:bg-sky-50 shadow text-center ${importingYear !== null ? "opacity-60 pointer-events-none" : ""}`}>
+  {importingYear === 2025 ? "جارٍ الاستيراد…" : "📥 استيراد الملف"}{" "}
   <input
     type="file"
     accept=".xlsx,.xls"
+    disabled={importingYear !== null}
     onChange={(e) => importFile(e, 2025)}
     className="absolute h-0 w-0 opacity-0 overflow-hidden"
   />
@@ -2802,6 +2858,14 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-white rounded-m
 
  <div className="p-1 sm:p-3">
 <StatsGrid stats={stats2025} columns={3} />
+<div className="flex items-center justify-between gap-2 px-2 py-2 text-xs text-slate-700" aria-live="polite">
+  <span>عرض {filteredRows2025.length ? (currentPage2025 - 1) * INSTALLMENT_PAGE_SIZE + 1 : 0}–{Math.min(currentPage2025 * INSTALLMENT_PAGE_SIZE, filteredRows2025.length)} من {filteredRows2025.length} سجل</span>
+  <div className="flex items-center gap-2">
+    <button type="button" disabled={currentPage2025 <= 1} onClick={() => setPage2025((page) => Math.max(1, page - 1))} className="rounded border px-2 py-1 disabled:opacity-40">السابق</button>
+    <span>{currentPage2025} / {totalPages2025}</span>
+    <button type="button" disabled={currentPage2025 >= totalPages2025} onClick={() => setPage2025((page) => Math.min(totalPages2025, page + 1))} className="rounded border px-2 py-1 disabled:opacity-40">التالي</button>
+  </div>
+</div>
 <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
             <table className="installments-table min-w-max table-auto text-sm sm:text-base font-semibold">
               <thead className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900  [&>tr>th]:!text-white sticky top-0 z-20 shadow-md">
@@ -2875,17 +2939,15 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-white rounded-m
                   </tr>
                 ) : (
                   <>
-                    {filteredRows2025.map((r: any, i: number) => {
-                      const originalIndex = (installments2025 || []).findIndex(
-                        (orig: any) => orig.name === r.name,
-                      );
+                    {pageRows2025.map((r: any, i: number) => {
+                      const originalIndex = originalIndex2025.get(r.name) ?? -1;
                       return (
                         <tr
                           key={i}
                           className="border-t border-slate-200 hover:bg-slate-50/80 transition-colors"
                         >
                           <td className="text-center text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
-                            {i + 1}
+                            {(currentPage2025 - 1) * INSTALLMENT_PAGE_SIZE + i + 1}
                           </td>
                           <td className="text-center font-semibold text-black whitespace-nowrap bg-sky-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
                             {r.name}
@@ -3005,7 +3067,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-white rounded-m
           type="text"
           placeholder="بحث (الاسم، الدفعة، المساق)..."
           value={search2026}
-          onChange={(e) => setSearch2026(e.target.value)}
+          onChange={(e) => { setSearch2026(e.target.value); setPage2026(1); }}
           className="pl-3 pr-8 py-1.5 rounded-lg text-sm border border-black outline-none focus:ring-2 focus:ring-sky-300 w-full text-white shadow-sm placeholder:text-white/70"
         />
       </div>
@@ -3052,11 +3114,12 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-white rounded-m
         <span>➕ إضافة قسط</span>
       </button>
 
-      <label className="apk-only-actions relative w-full px-2 py-1.5 bg-white text-sky-700 rounded-md text-sm font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1 text-center">
-        📥 استيراد
+      <label className={`apk-only-actions relative w-full px-2 py-1.5 bg-white text-sky-700 rounded-md text-sm font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1 text-center ${importingYear !== null ? "opacity-60 pointer-events-none" : ""}`}>
+        {importingYear === 2026 ? "جارٍ الاستيراد…" : "📥 استيراد"}
         <input
           type="file"
           accept=".xlsx,.xls"
+          disabled={importingYear !== null}
           onChange={(e) => importFile(e, 2026)}
           className="absolute h-0 w-0 opacity-0 overflow-hidden"
         />
@@ -3138,7 +3201,14 @@ className="grid grid-cols-3 border border-1-black gap-2 w-full flex
 
 <div className="p-1 sm:p-3">
           <StatsGrid stats={stats2026} columns={3} />
-  
+          <div className="flex items-center justify-between gap-2 px-2 py-2 text-xs text-slate-700" aria-live="polite">
+            <span>عرض {filteredRows2026.length ? (currentPage2026 - 1) * INSTALLMENT_PAGE_SIZE + 1 : 0}–{Math.min(currentPage2026 * INSTALLMENT_PAGE_SIZE, filteredRows2026.length)} من {filteredRows2026.length} سجل</span>
+            <div className="flex items-center gap-2">
+              <button type="button" disabled={currentPage2026 <= 1} onClick={() => setPage2026((page) => Math.max(1, page - 1))} className="rounded border px-2 py-1 disabled:opacity-40">السابق</button>
+              <span>{currentPage2026} / {totalPages2026}</span>
+              <button type="button" disabled={currentPage2026 >= totalPages2026} onClick={() => setPage2026((page) => Math.min(totalPages2026, page + 1))} className="rounded border px-2 py-1 disabled:opacity-40">التالي</button>
+            </div>
+          </div>
           <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
 <table className="installments-table w-auto min-w-auto table-auto text-xs sm:text-base font-semibold">
 <thead className="bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500 font-extrabold border-b-2 border-sky-700 text-black sticky top-0 z-20 shadow-md">
@@ -3250,11 +3320,9 @@ className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transit
                   </tr>
                 ) : (
                   <>
-                    {filteredRows2026.map((r: any, i: number) => {
+                    {pageRows2026.map((r: any, i: number) => {
                       const status = getStatusText(r.remaining);
-                      const originalIndex = (installments || []).findIndex(
-                        (orig: any) => orig.name === r.name,
-                      );
+                      const originalIndex = originalIndex2026.get(r.name) ?? -1;
                       const rowBgClass = getConditionalRowClass(r);
 
                       return (
@@ -3263,7 +3331,7 @@ className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transit
                           className={`border-t border-slate-200 transition-colors ${rowBgClass}`}
                         >
 <td className="text-center text-black font-mono whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
-                            {i + 1}
+                            {(currentPage2026 - 1) * INSTALLMENT_PAGE_SIZE + i + 1}
                           </td>
 <td className="text-center font-bold text-black whitespace-nowrap bg-fuchsia-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             <input

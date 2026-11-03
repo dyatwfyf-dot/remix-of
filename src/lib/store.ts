@@ -242,6 +242,12 @@ const flushStorageWrite = () => {
     window.localStorage.setItem(pending.name, pending.value);
   } catch (error) {
     console.error("[Storage] Failed to persist application data", error);
+    window.dispatchEvent(new CustomEvent("mizan:storage-error", {
+      detail: {
+        message: error instanceof Error ? error.message : String(error),
+        recoverable: true,
+      },
+    }));
   }
 };
 

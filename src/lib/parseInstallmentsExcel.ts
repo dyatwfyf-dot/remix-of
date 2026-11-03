@@ -1,5 +1,10 @@
 import * as XLSX from "xlsx";
 import type { Installment } from "./store";
+import {
+  MAX_INSTALLMENT_IMPORT_BYTES,
+  MAX_INSTALLMENT_IMPORT_COLUMNS,
+  MAX_INSTALLMENT_IMPORT_ROWS,
+} from "./installmentImportLimits";
 
 const MONTHS_2025 = [
   "يونيو 2024",
@@ -62,11 +67,7 @@ const findKeyExact = (keys: string[], target: string, fallback: string): string 
 };
 
 // مطابقة جزئية (بعد التطبيع) — تُستخدم للحقول الوصفية مثل "اسم المتدرب"
-const findKeyContains = (
-  keys: string[],
-  part: string,
-  fallback: string,
-): string => {
+const findKeyContains = (keys: string[], part: string, fallback: string): string => {
   const normPart = normalizeArabic(part);
   return keys.find((key) => normalizeArabic(key).includes(normPart)) ?? fallback;
 };
@@ -81,19 +82,57 @@ const findKeyAny = (keys: string[], parts: string[], fallback: string): string =
 };
 
 export function parseInstallmentsExcel(buffer: ArrayBuffer, year: 2025 | 2026): Installment[] {
-  const workbook = XLSX.read(new Uint8Array(buffer), { type: "array" });
+  if (buffer.byteLength === 0) {
+    throw new Error("الملف فارغ.");
+  }
+  if (buffer.byteLength > MAX_INSTALLMENT_IMPORT_BYTES) {
+    throw new Error(
+      "حجم ملف الأقساط أكبر من الحد المسموح (20 ميجابايت). قسّم الملف ثم أعد الاستيراد.",
+    );
+  }
+
+  // اقرأ هامش صف واحد فقط فوق الحد حتى نرفض الملف الكبير برسالة واضحة، بدلاً
+  // من إنشاء مصفوفات غير محدودة قد تُغلق WebView على أجهزة Android منخفضة الذاكرة.
+  const workbook = XLSX.read(new Uint8Array(buffer), {
+    type: "array",
+    dense: true,
+    sheetRows: MAX_INSTALLMENT_IMPORT_ROWS + 2,
+  });
   const worksheet = workbook.Sheets[workbook.SheetNames[0]];
   if (!worksheet) return [];
 
+  const usedRange = worksheet["!fullref"] || worksheet["!ref"];
+  if (usedRange) {
+    const range = XLSX.utils.decode_range(usedRange);
+    const rowCount = range.e.r - range.s.r + 1;
+    const columnCount = range.e.c - range.s.c + 1;
+    if (rowCount > MAX_INSTALLMENT_IMPORT_ROWS + 1) {
+      throw new Error(
+        `ورقة Excel تحتوي على أكثر من ${MAX_INSTALLMENT_IMPORT_ROWS.toLocaleString("en-US")} صف بيانات. احذف الصفوف الزائدة أو قسّم الملف ثم أعد المحاولة.`,
+      );
+    }
+    if (columnCount > MAX_INSTALLMENT_IMPORT_COLUMNS) {
+      throw new Error(
+        "نطاق ورقة Excel عريض بشكل غير طبيعي. احذف الأعمدة الفارغة/التنسيقات الزائدة ثم أعد الاستيراد.",
+      );
+    }
+  }
+
   const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet, {
     defval: "",
+    blankrows: false,
   });
   const months = year === 2025 ? MONTHS_2025 : MONTHS_2026;
   const keys = rows.length ? Object.keys(rows[0]) : [];
 
   const monthKeys = months.map((month) => findKeyExact(keys, month, month));
 
-  const nameKey = findKeyAny(keys, ["اسم المتدرب", "اسم الطالب", "الاسم", "اسم"], "name");
+  const nameKey = findKeyAny(keys, ["اسم المتدرب", "اسم الطالب", "الاسم", "اسم"], "");
+  if (!nameKey) {
+    throw new Error(
+      "لم يتم العثور على عمود اسم المتدرب. تأكد من وجود عنوان مثل «اسم المتدرب» في صف العناوين.",
+    );
+  }
   const batchKey = findKeyAny(keys, ["رقم الدفعة", "الدفعة"], "batch");
   const specialtyKey = findKeyAny(keys, ["المساق", "التخصص"], "specialty");
   const feesKey = findKeyAny(keys, ["مبلغ الرسوم", "الرسوم"], "fees");
@@ -105,7 +144,6 @@ export function parseInstallmentsExcel(buffer: ArrayBuffer, year: 2025 | 2026): 
   const remainingKey = findKeyExact(keys, "المتبقي", "remaining");
   const notesKey = findKeyContains(keys, "ملاحظات", "notes");
   const phoneKey = findKeyAny(keys, ["رقم الهاتف", "الهاتف", "الجوال"], "phone");
-
 
   return rows.flatMap((row) => {
     const name = String(row[nameKey] ?? "").trim();
