@@ -160,15 +160,23 @@ const formatCurrency = (val ? : number | string | null): string => {
  return (Number(val) || 0).toLocaleString("en-US");
 };
 
-const canonicalFeeCategory = (value: unknown) => {
- const text = String(value || "")
+const normalizeFeeDescription = (value: unknown) =>
+ String(value || "")
   .trim()
   .replace(/[ًٌٍَُِّْـ]/g, "")
   .replace(/[إأآ]/g, "ا")
   .replace(/\s+/g, " ");
+const isExamFeeDescription = (value: unknown) =>
+ /(امتحان|اختبار)/.test(normalizeFeeDescription(value));
+const isTuitionFeeDescription = (value: unknown) => {
+ const text = normalizeFeeDescription(value);
+ return /(رسوم\s*(?:ال)?(?:دراس|دراسه|دراسي)|(?:قسط|اقساط)\s*(?:ال)?(?:دراس|دراسه|دراسي)|تسجيل|قيد)/.test(text);
+};
+const canonicalFeeCategory = (value: unknown) => {
+ const text = normalizeFeeDescription(value);
  if (!text) return "رسوم أخرى";
- if (/(امتحان|اختبار)/.test(text)) return "رسوم الامتحانات";
- if (/(تسجيل|قيد|دراس|دراسه|قسط)/.test(text)) return "أقساط الدراسة والتسجيل";
+ if (isExamFeeDescription(text)) return "رسوم الامتحانات";
+ if (isTuitionFeeDescription(text)) return "أقساط الدراسة والتسجيل";
  return String(value).trim() || "رسوم أخرى";
 };
 
