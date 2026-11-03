@@ -145,7 +145,7 @@ const buildSignatureBlockRow = (row: Record<string, any>, columns: TableCol[]): 
  */
 export const tablePrintStyles = `
   @page {
-    size: A4 portrait;
+    size: A4;
     margin: 3mm;
   }
   

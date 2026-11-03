@@ -179,7 +179,7 @@ const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "ot
 
 const reportsTabPrintCss = `
   @media print {
-    @page { size: A4 landscape; margin: 8mm; }
+    @page { size: A4; margin: 8mm; }
     body { font-family: 'Cairo', Arial, sans-serif !important; color: #000000 !important; background: #ffffff !important; }
     .report-page-header { border: 2px solid #000 !important; margin-bottom: 8px !important; }
     table {
@@ -641,7 +641,7 @@ export default function ReportsTab() {
     categories.forEach((category) => {
       const categoryPayments = payments.filter((row) => row.category === category).sort((a, b) => String(a.notifyDate).localeCompare(String(b.notifyDate)));
       if (traineeDisplayMode === "detail" || traineeDisplayMode === "both") {
-        result.push(...categoryPayments.map((row) => ({ ...row, displayType: "تفصيلي", summaryLevel: "detail" })));
+        result.push(...categoryPayments.map((row) => ({ ...row, displayType: "تفصيلي", summaryLevel: "detail" as const })));
       }
       if (traineeDisplayMode === "summary" || traineeDisplayMode === "both") {
         const grouped = new Map<string, ReportRow>();
@@ -1209,7 +1209,7 @@ if (source === "tawfiqCustody") {
             printColumns={isLoanOrCustody ? sourceConfig.columns.filter((col) => col.key !== "name") : sourceConfig.columns}
             numericKeys={numericKeys}
             pdfCss={reportsTabPrintCss}
-            pdfOrientation="landscape"
+            pdfOrientation={(isLoanOrCustody ? sourceConfig.columns.length - 1 : sourceConfig.columns.length) > 7 ? "landscape" : "portrait"}
             includeTotalRow={!isLoanOrCustody}
           />
         </div>
