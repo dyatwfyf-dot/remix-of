@@ -2786,8 +2786,8 @@ async () => {
             </h2>
  <p className="text-lg text-sky-100">يشمل جميع الدفعات لعامي 2024 و 2025</p>
           </div>
-<div className="w-full sm:w-auto grid grid-cols-1 sm:flex gap-1.5 sm:gap-2 items-center">
- <div className="relative w-full sm:w-auto">
+<div className="installments-controls-2025 w-full sm:w-auto grid grid-cols-2 sm:flex gap-1.5 sm:gap-2 items-center">
+ <div className="installments-search-2025 relative col-span-2 sm:col-span-1 w-full sm:w-auto">
 <Search className="w-8 h-4 absolute right-2.5 top-2.5 text-sky-500" />
               <input
                 type="text"
@@ -3059,10 +3059,10 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-white rounded-m
     </div>
 
     {/* شبكة الأزرار والحقول (كل 2 أزرار/عناصر في سطر) */}
-    <div className="grid grid-cols-2 gap-2 w-full">
+    <div className="installments-controls-2026 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 w-full">
 
       {/* السطر 1: البحث + التنسيق الشرطي */}
-      <div className="relative w-full">
+      <div className="installments-search-2026 relative w-full col-span-2 sm:col-span-2">
     <Search className="w-15 h-5 absolute right-2.5 top-2 text-yellow-700 pointer-events-none" />
         <input
           type="text"
@@ -3174,7 +3174,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-white rounded-m
         pdfMarginMm={1}
         pdfCss={INSTALLMENTS_SUMMARY_REPORT_CSS}
         additionalWebActions={installments2026WebActions}
-className="grid grid-cols-3 border border-1-black gap-2 w-full flex 
+className="col-span-full grid grid-cols-2 sm:grid-cols-3 border border-1-black gap-2 w-full 
 [&>button]:w-auto 
 [&>button]:min-w-auto
 [&>button]:justify-center 
