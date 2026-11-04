@@ -1383,15 +1383,22 @@ if (source === "tawfiqCustody") {
             <table id="reports-table" className="reports-data-table w-full table-auto border-collapse text-center text-xs" style={{ tableLayout: "auto" }}>
               <thead>
   <tr className="border border-black bg-[#FFD700] text-black whitespace-normal">
-   <th className="w-px border border-black px-1 py-0.5 font-white whitespace-nowrap">م</th>
+   <th className="w-px border border-black px-1 py-0.5 font-white whitespace-nowrap" style={{ width: "1%", padding: "1px 2px", whiteSpace: "nowrap" }}>م</th>
                   {sourceConfig.columns.map((col) => (
                     <th
                       key={col.key}
-                      style={numericKeys.includes(col.key) ? {
-                        backgroundColor: "#f2f7fb",
-                        WebkitPrintColorAdjust: "exact",
-                        printColorAdjust: "exact",
-                      } : undefined}
+                      style={{
+                        ...(numericKeys.includes(col.key) ? {
+                          backgroundColor: "#f2f7fb",
+                          WebkitPrintColorAdjust: "exact" as const,
+                          printColorAdjust: "exact" as const,
+                        } : {}),
+                        width: col.key === "description" ? "220px" : "1%",
+                        minWidth: 0,
+                        maxWidth: col.key === "description" ? "220px" : "none",
+                        padding: "1px 2px",
+                        whiteSpace: col.key === "description" ? "normal" : "nowrap",
+                      }}
                       onClick={() => {
                         if (source === "trainee") {
                           if (traineeSortColumn === col.key) {
@@ -1423,7 +1430,7 @@ if (source === "tawfiqCustody") {
                       </div>
                     </th>
                   ))}
-                  <th className="w-12 border border-black px-2 py-3 font-black print:hidden">حذف</th>
+                  <th className="w-px border border-black px-1 py-0.5 font-black print:hidden whitespace-nowrap" style={{ width: "1%", padding: "1px 2px", whiteSpace: "nowrap" }}>حذف</th>
                 </tr>
 
                 {/* صف التصفية والبحث في الأعمدة */}
