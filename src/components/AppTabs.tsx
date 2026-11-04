@@ -718,7 +718,7 @@ background:#0b3d6d; color:white !important; font-weight:700 !important; -webkit-
   };
 
   return (
-    <div className="usage-emerald sheet-tabs-ui apk-tabs-ui space-y-3 font-tajawal p-2" dir="rtl">
+    <div className="mizan-usage-tab usage-emerald sheet-tabs-ui apk-tabs-ui space-y-3 font-tajawal p-2" dir="rtl">
       
 
       <div className="u-card p-3 space-y-3">
