@@ -200,3 +200,33 @@
     overflow-wrap: normal !important;
   }
 }
+
+
+/* توحيد خلايا جداول التقارير باللون الأبيض مع شبكة حدود سوداء واضحة */
+.reports-table-scroll table.reports-data-table {
+  border-collapse: collapse !important;
+  border: 1px solid #000000 !important;
+}
+.reports-table-scroll .reports-data-table thead th,
+.reports-table-scroll .reports-data-table tbody td {
+  border: 1px solid #000000 !important;
+}
+.reports-table-scroll .reports-data-table tbody tr:not(.total-row):not(.report-grand-total-row) > td {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+}
+/* تبقى ترويسات الأعمدة بلونها الذهبي، وصفوف الإجمالي الكلي بالأزرق */
+.reports-table-scroll .reports-data-table thead tr.reports-column-header-row > th {
+  background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important;
+  background-color: #ffd700 !important;
+  color: #3b2600 !important;
+  border: 1px solid #000000 !important;
+}
+.reports-table-scroll .reports-data-table tbody tr.total-row > td,
+.reports-table-scroll .reports-data-table tbody tr.report-grand-total-row > td {
+  background: linear-gradient(180deg, #39a2ff 0%, #087bff 52%, #0052cc 100%) !important;
+  background-color: #087bff !important;
+  color: #ffffff !important;
+  border: 1px solid #000000 !important;
+}
