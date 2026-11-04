@@ -35,13 +35,16 @@ export const reportsCompactColumnsCss = `
     overflow-wrap: normal !important;
   }
   table.reports-data-table td.rc-num,
-  table.reports-data-table td.rc-num * {
+  table.reports-data-table td.rc-num *,
+  .report-page-content table.reports-data-table tbody td.rc-num,
+  .report-page-content table.reports-data-table tbody td.rc-num * {
     width: auto !important;
     white-space: nowrap !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
   }
   table.reports-data-table td.rc-desc,
+  .report-page-content table.reports-data-table tbody td.rc-desc,
   table.reports-data-table th[data-col-key="description"] {
     width: 220px !important;
     min-width: 0 !important;
@@ -51,7 +54,9 @@ export const reportsCompactColumnsCss = `
     overflow-wrap: anywhere !important;
   }
   table.reports-data-table td.rc-desc > *,
-  table.reports-data-table td.rc-desc .pdf-cell-text {
+  table.reports-data-table td.rc-desc .pdf-cell-text,
+  .report-page-content table.reports-data-table tbody td.rc-desc > *,
+  .report-page-content table.reports-data-table tbody td.rc-desc .pdf-cell-text {
     display: -webkit-box !important;
     -webkit-box-orient: vertical !important;
     -webkit-line-clamp: 2 !important;
