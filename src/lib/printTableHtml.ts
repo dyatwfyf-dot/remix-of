@@ -320,6 +320,17 @@ export const tablePrintStyles = `
     print-color-adjust: exact !important;
   }
 
+  /* إجمالي مدفوعات كل متدرب في السنة: استعادة اللون المميز المستخدم سابقاً */
+  tbody tr.report-trainee-name-total-row > td,
+  tbody tr.report-trainee-name-total-row > td .pdf-cell-text {
+    background: #2C666E !important;
+    background-color: #2C666E !important;
+    color: #ffffff !important;
+    font-weight: 900 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   /* الإجمالي الكلي الموحد */
   .report-grand-total-row td,
   .total-row td {
@@ -557,10 +568,12 @@ export function buildTableHtml(opts: {
   };
 
   const getReportRowClass = (row: any, index: number) => {
+    const level = row?.summaryLevel;
+    // إجمالي المتدرب السنوي له لون مميز خاص، ولا ينبغي أن تطغى عليه ألوان الملاحظات.
+    if (level === "trainee-name-total") return "report-trainee-name-total-row";
     const noteClass = noteRowClass(row?.notes);
     if (noteClass) return noteClass;
 
-    const level = row?.summaryLevel;
     return [
       level === "opening" ? "report-opening-row" : "",
       level === "period" ? "report-period-row" : "",
