@@ -44,7 +44,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style id="dynamic-page-rule">
     @page {
-      size: ${paperSize} ${defaultOrientation};
+      /* اترك مقاس الورق واتجاهه لإعدادات نافذة طباعة المتصفح */
       margin: ${defaultMargin};
     }
   </style>
@@ -966,7 +966,8 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         const tableContainer = document.getElementById('tableContainer');
         tableContainer.style.zoom = String(scale);
         if (!fitToContent) {
-          dynamicRule.innerHTML = '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + margin + '; }';
+          // لا تفرض الاتجاه في طباعة المتصفح؛ يختاره المستخدم من نافذة الطباعة.
+          dynamicRule.innerHTML = '@page { margin: ' + margin + '; }';
         }
 
         window.requestAnimationFrame(function() {
