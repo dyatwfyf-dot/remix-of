@@ -1,0 +1,82 @@
+/* تنسيقات خاصة بهذا التبويب فقط. تم نقلها دون تغيير القواعد أو القيم. */
+@media print {
+  .accounts-print-scope { background:#B4CEB6 !important; }
+  .accounts-print-area, .accounts-print-area * { visibility: visible !important; }
+  .accounts-print-hide { display: none !important; }
+  .accounts-print-area table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    min-width:auto !important;
+  table-layou: auto !important;
+  }
+  .accounts-print-area thead th {
+    color: white !important;
+    font-weight: 1000 !important;
+  }
+  .accounts-print-area tbody td,
+  .accounts-print-area tfoot td {
+    color: #000 !important;
+    font-weight: 800 !important;
+  }
+  label {
+   color:"#f5f5dc"; 
+  }
+  .accounts-print-area th,
+  .accounts-print-area td {
+    border: 1px solid #000 !important;
+  white-space: normal !important;
+    text-overflow: clip !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+    hyphens: auto !important;
+    line-height: 1.1 !important;
+    padding: 0 !important;
+    line-height: 1.1 !important;
+    font-size: 16px !important;
+    height: auto !important;
+    max-width: auto !important;
+    color: #000 !important;
+  }
+  .accounts-print-area td.numeric-cell,
+  .accounts-print-area th.numeric-cell,
+  .accounts-print-area td.date-cell,
+  .accounts-print-area th.date-cell,
+  .accounts-print-area td.font-mono,
+  .accounts-print-area th.font-mono {
+    font-family: 'Times New Roman', Times, serif !important;
+    font-size: 16px !important;
+    line-height: 1.05 !important;
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
+    hyphens: none !important;
+  }
+  .accounts-print-area td.numeric-cell *,
+  .accounts-print-area th.numeric-cell *,
+  .accounts-print-area td.date-cell *,
+  .accounts-print-area th.date-cell *,
+  .accounts-print-area td.font-mono *,
+  .accounts-print-area th.font-mono * {
+    font-size: inherit !important;
+    line-height: inherit !important;
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
+  }
+  .accounts-print-area .overflow-x-auto,
+  .accounts-print-area .overflow-y-auto {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+}
+
+/* تنسيقات الشاشة فقط: حدود وخلفيات فاتحة للجدول (الطباعة تبقى بحدود سوداء) */
+@media screen {
+  .accounts-ui-light table th,
+  .accounts-ui-light table td {
+    border-color: rgba(31, 95, 122, 0.18) !important;
+  }
+  .accounts-ui-light .accounts-print-area {
+    background: linear-gradient(180deg, #f4fafd, #e9f3fa) !important;
+  }
+}
