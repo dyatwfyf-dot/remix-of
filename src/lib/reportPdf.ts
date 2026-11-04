@@ -12,7 +12,7 @@ export const reportDocumentCss = `
     --report-muted: #334155;
     --report-rule: #000000; 
     --report-stripe: #f8fafc;
-    --report-total: #b99800; 
+    --report-total: #0437bb; 
     --report-accent: #174258; 
   }
   * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -54,7 +54,11 @@ export const reportDocumentCss = `
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-  thead th .pdf-cell-text { color: #000000 !important; }
+  thead th .pdf-cell-text {
+  
+  color: #000000 !important; 
+    
+  }
   tbody tr:nth-child(even) td { background: #f8fafc; }
   .total-row td,
   .report-grand-total-row td {
@@ -66,7 +70,9 @@ export const reportDocumentCss = `
     print-color-adjust: exact !important;
   }
   .total-row td .pdf-cell-text,
-  .report-grand-total-row td .pdf-cell-text { color: #ffffff !important; }
+  .report-grand-total-row td .pdf-cell-text { 
+background: #0437bb !important;
+  color: #ffffff !important; }
   .doc-title-cell { border: 0 !important; background: var(--report-paper); padding: 0 0 6px; }
 
   /* ===== إطار الترويسة الموحّد للتقارير الرسمية ===== */
@@ -226,14 +232,15 @@ border: 1px solid #000000 !important;
   }
   .report-page-content .total-row td .pdf-cell-text,
   .report-page-content .report-grand-total-row td .pdf-cell-text {
+  background: #0437bb !important;
     color: #ffffff !important;
   }
 
   /* كتلة التوقيعات الموحدة: ثلاثة مسميات في صف وثلاثة أسماء أسفلها */
   .report-page-content .signature-spacer-row,
   .report-page-content .signature-spacer-row > td {
-    height: 28mm !important;
-    min-height: 28mm !important;
+    height: 20mm !important;
+    min-height: 20mm !important;
     padding: 0 !important;
     border: 0 !important;
     background: #ffffff !important;
@@ -310,7 +317,7 @@ border: 1px solid #000000 !important;
     white-space: normal !important;
     word-break: break-word !important;
     overflow-wrap: normal !important;
-    min-width: 180px !important; 
+    min-width: auto !important; 
     text-align: center !important;
   }
   .report-page-content .num, .report-page-content .numeric-cell, .report-page-content .date-cell,
@@ -342,10 +349,9 @@ border: 1px solid #000000 !important;
     width: 100% !important;
     margin: 0 auto 3mm !important;
   }
-  /* Override inherited styles that place cell content at the bottom. */
   .report-page-content table th,
   .report-page-content table td {
-    display: table-cell !important;
+    display: flex !important;
     vertical-align: middle !important;
     text-align: center !important;
     font-size: 16px !important;
@@ -359,7 +365,7 @@ border: 1px solid #000000 !important;
     display: inline-block !important;
     vertical-align: middle !important;
     font-size: 16px !important;
-    line-height: 1.45 !important;
+    line-height: 2.5 !important;
   }
 
   .report-page-content .report-letterhead-frame {
@@ -378,10 +384,14 @@ border: 1px solid #000000 !important;
   html body table tr.report-grand-total-row > td, html body table tr.total-row > td,
   html body table tr.report-grand-total-row > td.description-cell, html body table tr.total-row > td.description-cell,
   html body table tr.report-grand-total-row > td.financial-amount-cell, html body table tr.total-row > td.financial-amount-cell {
-    background: #0437bb !important; background-color: #0437bb !important; color: #ffffff !important; font-weight: 900 !important;
+    background: #0437bb !important;
+  color: #ffffff !important; font-weight: 900 !important;
     -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
   }
-  html body table tr.report-grand-total-row > td *, html body table tr.total-row > td * { color: #ffffff !important; }
+  html body table tr.report-grand-total-row > td *, html body table tr.total-row > td * { 
+background: #0437bb !important;
+
+  color: #ffffff !important; }
 
   /* Fit report columns to their values; wrap only semantic text cells. */
   .report-page-content table.reports-data-table tbody td.text-cell:not(.num):not(.numeric-cell):not(.date-cell):not(.compact-cell):not(.ref-cell):not(.idx),
@@ -405,9 +415,9 @@ border: 1px solid #000000 !important;
   .report-page-content table.reports-data-table tbody td.desc-cell .pdf-cell-text,
   .report-page-content table.reports-data-table tbody td.details-cell .pdf-cell-text,
   .report-page-content table.reports-data-table tbody td.description-cell .pdf-cell-text {
-    display: inline-block !important;
+    display: flex !important;
     width: auto !important;
-    max-width: 100% !important;
+    max-width: auto !important;
     white-space: normal !important;
     word-break: normal !important;
     overflow-wrap: anywhere !important;
@@ -424,7 +434,7 @@ border: 1px solid #000000 !important;
   .report-page-content table.reports-data-table tbody td.compact-cell .pdf-cell-text,
   .report-page-content table.reports-data-table tbody td.ref-cell .pdf-cell-text,
   .report-page-content table.reports-data-table tbody td.idx .pdf-cell-text {
-    max-width: none !important;
+    max-width: auto !important;
     white-space: nowrap !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;

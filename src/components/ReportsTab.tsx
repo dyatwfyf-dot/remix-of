@@ -200,7 +200,7 @@ const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "ot
 
 const reportsTabPrintCss = `
   .reports-data-table {
-    width: 100% !important;
+    width: auto !important;
     table-layout: auto !important;
   }
   .reports-data-table th,

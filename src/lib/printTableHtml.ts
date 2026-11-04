@@ -189,7 +189,7 @@ export const tablePrintStyles = `
   
   /* جدول باحتواء تلقائي متكيف مع أبعاد A4 */
   table {
-    width: 100% !important;
+    width: auto !important;
     table-layout: auto !important;
     border-collapse: collapse !important;
     font-size: 16px !important;
@@ -293,7 +293,7 @@ export const tablePrintStyles = `
     background: #0437bb !important;
     color: #ffffff !important;
     font-weight: 900 !important;
-    font-size: 16px !important;
+    font-size: 18px !important;
     border-top: 2px solid #000000 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -301,12 +301,13 @@ export const tablePrintStyles = `
 
   .report-grand-total-row td .pdf-cell-text,
   .total-row td .pdf-cell-text {
+background: #0437bb !important;
     color: #ffffff !important;
   }
 
   /* الأعمدة تتكيف مع محتواها، والنصوص الطويلة تلتف داخل حدود الخلية */
   th, tbody td {
-    max-width: 280px !important;
+    max-width: auto !important;
     min-width: 0 !important;
     white-space: normal !important;
     word-break: normal !important;
@@ -319,7 +320,7 @@ export const tablePrintStyles = `
     word-break: normal !important;
     overflow-wrap: anywhere !important;
     min-width: 0 !important;
-    max-width: 280px !important;
+    max-width: auto !important;
   }
 
   /* الأرقام والتواريخ والأكواد تبقى في سطر واحد لسهولة قراءتها */
@@ -351,7 +352,7 @@ export const tablePrintStyles = `
     text-align: center !important;
     direction: rtl !important;
     min-width: 0 !important;
-    max-width: 280px !important;
+    max-width: auto !important;
   }
 
   /* بطاقات ملخص العهدة الملونة */
@@ -401,7 +402,7 @@ export const tablePrintStyles = `
 
   /* كتلة التوقيعات الثلاثة لتقارير العهد (سطران متحاذيان) */
   .signature-spacer-row td {
-    height: 28mm !important;
+    height: 20mm !important;
     padding: 0 !important;
     border: 0 !important;
     background: #ffffff !important;
@@ -409,7 +410,6 @@ export const tablePrintStyles = `
   }
   .signature-block-row td {
     background: #ffffff !important;
-    border: 1.5px solid #000000 !important;
     padding: 14px 18px !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
@@ -431,7 +431,7 @@ export const tablePrintStyles = `
     text-align: center !important;
     padding: 4px !important;
     align-self: end !important;
-    line-height: 1.3 !important;
+    line-height: 1.8 !important;
     min-width: 0 !important;
     white-space: normal !important;
     overflow-wrap: anywhere !important;
@@ -444,7 +444,7 @@ export const tablePrintStyles = `
     text-align: center !important;
     padding: 4px !important;
     align-self: start !important;
-    min-height: 24px !important;
+    min-height: 30px !important;
     border-bottom: 1px dotted #000000 !important;
     min-width: 0 !important;
     white-space: normal !important;
