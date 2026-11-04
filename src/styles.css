@@ -786,8 +786,8 @@ html,
 body {
   width: 100%;
   min-height: 100%;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
+  /* لا تنشئ حاوية تمرير على html/body؛ ذلك يعطل sticky في بعض متصفحات Android */
+  overflow-x: clip !important;
   overscroll-behavior-y: auto !important;
   touch-action: pan-x pan-y pinch-zoom;
   -webkit-overflow-scrolling: touch;
@@ -861,7 +861,9 @@ body {
   position: sticky !important;
   top: 0 !important;
   z-index: 1000 !important;
+  align-self: start;
   isolation: isolate;
+  transform: none;
 }
 
 /* خلفية مستقلة وهادئة لكل تبويب دون التأثير على محتوى التبويبات الأخرى */
