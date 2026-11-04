@@ -838,17 +838,17 @@ body {
 }
 
 
-/* صف الإجمالي الكلي: أزرق غامق بخط أبيض في الشاشة والطباعة */
-table tr.total-row > td,
-table tr.report-grand-total-row > td,
-table tr.total-row > td.font-mono,
-table tr.report-grand-total-row > td.font-mono,
-table tr.total-row > td *,
-table tr.report-grand-total-row > td * {
+/* صفوف الإجمالي في تبويب التقارير فقط؛ لا تفرض ألوانها على جداول التبويبات الأخرى */
+.mizan-reports-tab table tr.total-row > td,
+.mizan-reports-tab table tr.report-grand-total-row > td,
+.mizan-reports-tab table tr.total-row > td.font-mono,
+.mizan-reports-tab table tr.report-grand-total-row > td.font-mono,
+.mizan-reports-tab table tr.total-row > td *,
+.mizan-reports-tab table tr.report-grand-total-row > td * {
   color: #fff !important;
 }
-table tr.total-row > td,
-table tr.report-grand-total-row > td {
+.mizan-reports-tab table tr.total-row > td,
+.mizan-reports-tab table tr.report-grand-total-row > td {
   background-color: #0437bb !important;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
