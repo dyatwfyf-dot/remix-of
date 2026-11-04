@@ -18,32 +18,57 @@ export function tagReportCells(root: ParentNode) {
 export const tagReportCellsScript = `(${tagReportCells.toString()})(document);`;
 
 export const reportsCompactColumnsCss = `
-  table.reports-data-table { table-layout: auto !important; width: 100% !important; }
-  table.reports-data-table th, table.reports-data-table td {
-    padding: 1px 3px !important;
+  table.reports-data-table {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    table-layout: auto !important;
+    border-collapse: collapse !important;
+  }
+  table.reports-data-table th,
+  table.reports-data-table td {
+    padding: 4px 4px !important;
+    vertical-align: middle !important;
+    line-height: 1.4 !important;
     white-space: nowrap !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
   }
-  table.reports-data-table td.rc-num, table.reports-data-table td.rc-num * {
-    white-space: nowrap !important;
+  table.reports-data-table th.rc-num,
+  table.reports-data-table td.rc-num {
     width: 1% !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
   }
   table.reports-data-table td.rc-text {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 58mm !important;
     white-space: normal !important;
-    word-break: break-word !important;
+    word-break: normal !important;
     overflow-wrap: anywhere !important;
-    max-width: 70mm !important;
-    min-width: 25mm !important;
   }
-  table.reports-data-table td.rc-text > *, table.reports-data-table td.rc-text .pdf-cell-text {
-    display: -webkit-box !important;
-    -webkit-box-orient: vertical !important;
-    -webkit-line-clamp: 2 !important;
-    line-clamp: 2 !important;
-    overflow: hidden !important;
+  table.reports-data-table td.rc-text > *,
+  table.reports-data-table td.rc-text .pdf-cell-text {
+    display: inline-block !important;
+    width: auto !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
     white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
+    -webkit-line-clamp: unset !important;
+    line-clamp: unset !important;
   }
   table.reports-data-table tr.signature-block-row td,
-  table.reports-data-table tr.signature-block-row td * { white-space: normal !important; width: auto !important; }
+  table.reports-data-table tr.signature-block-row td * {
+    white-space: normal !important;
+    width: auto !important;
+  }
+  @media print {
+    table.reports-data-table { width: 100% !important; min-width: 0 !important; }
+    table.reports-data-table th,
+    table.reports-data-table td { padding: 4px 3px !important; }
+  }
 `;
