@@ -419,21 +419,20 @@ const reportsTabScreenCss = `
     vertical-align: middle;
     white-space: nowrap;
   }
-  .reports-table-scroll .reports-data-table tbody tr:nth-child(even):not(.total-row):not(.signature-block-row) td {
+  .reports-table-scroll .reports-data-table tbody tr.bg-white:nth-child(even) td {
     background: #f8fafc;
   }
-  .reports-table-scroll .reports-data-table tbody tr:hover:not(.total-row) td { background: #eff6ff; }
+  .reports-table-scroll .reports-data-table tbody tr.bg-white:hover td { background: #eff6ff; }
   .reports-table-scroll .reports-data-table tbody td[data-col-key="idx"] {
     position: sticky;
     right: 0;
     z-index: 1;
     min-width: 46px;
-    background: #f1f5f9;
+    background: inherit !important;
     color: #475569;
     font-weight: 900;
     box-shadow: -3px 0 6px rgba(15, 23, 42, .06);
   }
-  .reports-table-scroll .reports-data-table tbody tr:nth-child(even) td[data-col-key="idx"] { background: #eaf0f6; }
   .reports-table-scroll .reports-data-table tbody td.reports-description-cell,
   .reports-table-scroll .reports-data-table tbody td.reports-text-cell {
     min-width: 140px;
