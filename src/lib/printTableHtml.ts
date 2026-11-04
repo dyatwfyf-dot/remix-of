@@ -177,6 +177,22 @@ export const tablePrintStyles = `
     line-height: 1.4;
   }
 
+  .custody-date-row td {
+    padding: 5px 8px !important;
+    border: 1px solid #b77900 !important;
+    background: linear-gradient(180deg, #fff8c9 0%, #ffe36a 55%, #f5b900 100%) !important;
+    color: #513900 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .custody-date-line {
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.4;
+    font-weight: 900;
+    color: #513900 !important;
+  }
+
   .sub {
     text-align: center;
     color: #000000 !important;
@@ -221,8 +237,9 @@ export const tablePrintStyles = `
   }
 
   thead th {
-    background: #FFD700 !important;
-    color: #000000 !important;
+    background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important;
+    background-color: #ffd700 !important;
+    color: #3b2600 !important;
     font-weight: 900 !important;
     font-size: 16px !important;
     padding: 5px 3px !important;
@@ -234,8 +251,9 @@ export const tablePrintStyles = `
   #tableContainer table thead th,
   #tableContainer table thead th.desc-cell,
   #tableContainer table thead th[data-col-key="description"] {
-    background: #FFD700 !important;
-    color: #000000 !important;
+    background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important;
+    background-color: #ffd700 !important;
+    color: #3b2600 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -290,7 +308,8 @@ export const tablePrintStyles = `
   /* الإجمالي الكلي الموحد */
   .report-grand-total-row td,
   .total-row td {
-    background: #0437bb !important;
+    background: linear-gradient(180deg, #39a2ff 0%, #087bff 52%, #0052cc 100%) !important;
+    background-color: #087bff !important;
     color: #ffffff !important;
     font-weight: 900 !important;
     font-size: 18px !important;
@@ -301,7 +320,7 @@ export const tablePrintStyles = `
 
   .report-grand-total-row td .pdf-cell-text,
   .total-row td .pdf-cell-text {
-background: #0437bb !important;
+background: transparent !important;
     color: #ffffff !important;
   }
 
@@ -457,7 +476,7 @@ background: #0437bb !important;
   html body table tr.report-grand-total-row > td, html body table tr.total-row > td,
   html body table tr.report-grand-total-row > td.description-cell, html body table tr.total-row > td.description-cell,
   html body table tr.report-grand-total-row > td.financial-amount-cell, html body table tr.total-row > td.financial-amount-cell {
-    background: #0437bb !important; background-color: #0437bb !important; color: #ffffff !important; font-weight: 900 !important;
+    background: linear-gradient(180deg, #39a2ff 0%, #087bff 52%, #0052cc 100%) !important; background-color: #087bff !important; color: #ffffff !important; font-weight: 900 !important;
     -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
   }
   html body table tr.report-grand-total-row > td *, html body table tr.total-row > td * { color: #ffffff !important; }
@@ -589,10 +608,13 @@ export function buildTableHtml(opts: {
     subtitle ??
     `المجلس اليمني للاختصاصات الطبية - صعدة • تاريخ التقرير: ${reportDateLabel} • عدد السجلات: ${rows.length}`;
 
+  const titleLines = String(title || "").split(/\\r?\\n/);
+  const reportHeading = titleLines.shift() || "";
+  const custodyDateLine = titleLines.join(" ").trim();
   const titleRow = `<tr class="doc-title-row"><td colspan="${columns.length + 1}" class="doc-title-cell">
-    <h1>${escapeHtml(title)}</h1>
+    <h1>${escapeHtml(reportHeading)}</h1>
     ${isCustodyReport ? "" : `<div class="sub">${escapeHtml(sub)}</div>`}
-  </td></tr>`;
+  </td></tr>${isCustodyReport && custodyDateLine ? `<tr class="custody-date-row"><td colspan="${columns.length + 1}"><div class="custody-date-line">${escapeHtml(custodyDateLine)}</div></td></tr>` : ""}`;
 
   // بناء صف الرؤوس
   const head = `${titleRow}<tr><th class="idx numeric-cell" data-col-key="idx" data-col-name="م">م</th>${columns
