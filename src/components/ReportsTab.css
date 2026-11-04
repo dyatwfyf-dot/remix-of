@@ -157,3 +157,46 @@
   font-weight: 800;
   text-align: center;
 }
+
+
+/* احتواء تلقائي لمحتوى خلايا التقارير: ارتفاع الصف يتبع النص، والنص يلتف داخل الخلية */
+.reports-table-scroll .reports-data-table {
+  table-layout: auto !important;
+}
+.reports-table-scroll .reports-data-table th,
+.reports-table-scroll .reports-data-table td {
+  height: auto !important;
+  white-space: normal !important;
+  word-break: normal !important;
+  overflow-wrap: anywhere !important;
+  vertical-align: middle !important;
+}
+.reports-table-scroll .reports-data-table tbody td:not(.reports-numeric-cell):not(.reports-no-wrap-cell):not([data-col-key="idx"]):not([data-col-key="actions"]) {
+  max-width: 300px;
+}
+.reports-table-scroll .reports-data-table tbody td.reports-numeric-cell,
+.reports-table-scroll .reports-data-table tbody td.reports-no-wrap-cell,
+.reports-table-scroll .reports-data-table tbody td[data-col-key="idx"] {
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+}
+.reports-table-scroll .reports-data-table thead th {
+  overflow-wrap: anywhere !important;
+}
+@media print {
+  .reports-table-scroll .reports-data-table th,
+  .reports-table-scroll .reports-data-table td {
+    height: auto !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+  .reports-table-scroll .reports-data-table tbody td.reports-numeric-cell,
+  .reports-table-scroll .reports-data-table tbody td.reports-no-wrap-cell,
+  .reports-table-scroll .reports-data-table tbody td[data-col-key="idx"] {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+}
