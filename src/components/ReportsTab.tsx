@@ -1648,7 +1648,9 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                                       : undefined
                               }
                             >
-                              {isNumeric ? formatCurrency(val) : val !== undefined && val !== null && String(val) !== "" ? String(val) : "—"}
+                              {col.key === "description" ? (
+                                <div className="line-clamp-2 leading-snug">{val !== undefined && val !== null && String(val) !== "" ? String(val) : "—"}</div>
+                              ) : isNumeric ? formatCurrency(val) : val !== undefined && val !== null && String(val) !== "" ? String(val) : "—"}
                             </td>
                           );
                         })}
