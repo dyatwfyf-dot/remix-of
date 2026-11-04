@@ -614,7 +614,7 @@ export function buildTableHtml(opts: {
     }
 
     return `<tr class="${getReportRowClass(row, index)}"><td class="idx numeric-cell" data-col-key="idx"><span class="pdf-cell-text">${
-      row.summaryLevel === "total" || row.description === "الإجمالي الكلي" ? "★" : index + 1
+      row.summaryLevel === "opening" ? "—" : row.summaryLevel === "total" || row.total === "نعم" ? "★" : index + 1
     }</span></td>${columns
       .map((column) => {
         const value = row[column.key];

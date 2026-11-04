@@ -200,193 +200,79 @@ const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "ot
 };
 
 const reportsTabPrintCss = `
-  .reports-data-table {
-    width: auto !important;
+  /* Report layout only; the shared report theme owns colors and grid styling. */
+  table.reports-data-table {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
     table-layout: auto !important;
+    border-collapse: collapse !important;
   }
-  .reports-data-table th,
-  .reports-data-table td {
+
+  table.reports-data-table th,
+  table.reports-data-table td {
     width: auto !important;
     min-width: 0 !important;
     height: auto !important;
-    white-space: normal !important;
-    word-break: normal !important;
-    overflow-wrap: anywhere !important;
+    padding: 4px 4px !important;
     vertical-align: middle !important;
+    text-align: center !important;
   }
-  .reports-data-table tbody td.reports-numeric-cell,
-  .reports-data-table tbody td.reports-no-wrap-cell,
-  .reports-data-table tbody td[data-col-key="idx"] {
+
+  table.reports-data-table th.rc-num,
+  table.reports-data-table td.rc-num,
+  table.reports-data-table tbody td.num,
+  table.reports-data-table tbody td.numeric-cell,
+  table.reports-data-table tbody td.date-cell,
+  table.reports-data-table tbody td.year-cell,
+  table.reports-data-table tbody td.ref-cell,
+  table.reports-data-table tbody td.compact-cell,
+  table.reports-data-table tbody td.idx,
+  table.reports-data-table tbody td.reports-numeric-cell,
+  table.reports-data-table tbody td.reports-no-wrap-cell {
     white-space: nowrap !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
   }
-  .reports-data-table tbody td.text-cell,
-  .reports-data-table tbody td.name-cell,
-  .reports-data-table tbody td.specialty-cell,
-  .reports-data-table tbody td.batch-cell,
-  .reports-data-table tbody td.desc-cell,
-  {
-    min-width: 50px !important;
-    white-space: nowrap !important;
-    word-break: normal !important;
-    overflow-wrap: anywhere !important;
-  }
-  .reports-data-table tbody td.details-cell,
-  .reports-data-table tbody td.description-cell {
-  min-width: 330px !important;
-white-space: normal !important;
-word-break: normal !important;
-overflow-wrap:  anywhere!important;
-  }
-  .reports-data-table tbody td.num,
-  .reports-data-table tbody td.numeric-cell,
-  .reports-data-table tbody td.date-cell,
-  .reports-data-table tbody td.year-cell,
-  .reports-data-table tbody td.ref-cell,
-  .reports-data-table tbody td.compact-cell,
-  .reports-data-table tbody td.idx,
-  .reports-data-table tbody td.num .pdf-cell-text,
-  
-  .reports-data-table tbody td.numeric-cell .pdf-cell-text,
-  .reports-data-table tbody td.date-cell .pdf-cell-text,
-  .reports-data-table tbody td.year-cell .pdf-cell-text,
-  .reports-data-table tbody td.ref-cell .pdf-cell-text,
-  .reports-data-table tbody td.compact-cell .pdf-cell-text,
-  .reports-data-table tbody td.idx .pdf-cell-text {
-    min-width: auto !important;
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-    overflow-wrap: normal !important;
-  }
-  .reports-data-table tbody td.text-cell .pdf-cell-text,
-  .reports-data-table tbody td.name-cell .pdf-cell-text,
-  .reports-data-table tbody td.specialty-cell .pdf-cell-text,
-  .reports-data-table tbody td.batch-cell .pdf-cell-text,
-  .reports-data-table tbody td.desc-cell .pdf-cell-text,
-  {
-    display: inline-block !important;
-    width: auto !important;
-    min-width: auto !important;
-    white-space: nowrap !important;
-    word-break: nowrap !important;
-    overflow-wrap: anywhere !important;
-  }
-   .reports-data-table tbody td.details- cell.pdf-cell-text,
-  .reports-data-table tbody td.description-cell.pdf-cell-text{
-   display: inline-block !important;
-    width: auto !important;
-    min-width: auto !important;
+
+  table.reports-data-table th.rc-text,
+  table.reports-data-table td.rc-text,
+  table.reports-data-table td.rc-text > *,
+  table.reports-data-table td.rc-text .pdf-cell-text {
     white-space: normal !important;
     word-break: normal !important;
     overflow-wrap: anywhere !important;
   }
- 
-  
+
+  table.reports-data-table tbody td.date-cell.rc-text,
+  table.reports-data-table tbody td.year-cell.rc-text,
+  table.reports-data-table tbody td.date-cell.rc-text .pdf-cell-text,
+  table.reports-data-table tbody td.year-cell.rc-text .pdf-cell-text {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
   @media print {
-    @page {
-    size: A4 ; 
-    margin: 8mm;
-    }
-    body { font-family: 'Cairo', Arial, sans-serif !important; color: #000000 !important; background: #ffffff !important; }
-    .report-page-header { border: 2px solid #000 !important; margin-bottom: 8px !important; }
-    table {
+    table.reports-data-table {
       width: 100% !important;
-   min-width: auto !important;
-      max-width: auto !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
       table-layout: auto !important;
-      border-collapse: collapse !important;
-      border: 1px solid #000 !important;
     }
-    thead th {
-background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important; color: #3b2600 !important;
-font-size: 18px !important;
-font-weight: 900 !important; border: 1px solid #000 !important; }
-    tbody td {
-      background: #ffffff !important;
-      border: 1px solid #000000 !important;
-      color: #000 !important;
-      font-size: 16px !important;
-      font-weight: 800 !important;
+
+    table.reports-data-table th,
+    table.reports-data-table td {
+      padding: 4px 3px !important;
+      line-height: 1.35 !important;
     }
-    /* جميع خلايا جسم الجدول بيضاء؛ لا يُستثنى إلا صفوف الإجمالي */
-    tbody tr:not(.total-row):not(.report-grand-total-row):not(.reports-trainee-total-row):not(.reports-trainee-summary-row):not(.reports-fee-row):not(.reports-period-row) > td {
-      background: #ffffff !important;
-      background-color: #ffffff !important;
-      color: #000 !important;
-    }
-    /* تنسيقات صفوف كشف المتدربين في الطباعة */
-    tbody tr.reports-trainee-total-row > td,
-    tbody tr.reports-trainee-total-row > td * {
-      background: #2C666E !important;
-      background-color: #2C666E !important;
-      color: #ffffff !important;
-      font-weight: 900 !important;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-    tbody tr.reports-trainee-summary-row > td,
-    tbody tr.reports-trainee-summary-row > td * {
-      background: #FFF1D6 !important;
-      background-color: #FFF1D6 !important;
-      color: #68420A !important;
-      font-weight: 900 !important;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-    tbody tr.reports-fee-row > td,
-    tbody tr.reports-fee-row > td * {
-      background: #F1BF98 !important;
-      background-color: #F1BF98 !important;
-      color: #000000 !important;
-      font-weight: 900 !important;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-    tbody tr.reports-period-row > td,
-    tbody tr.reports-period-row > td * {
-      background: #5B5750 !important;
-      background-color: #5B5750 !important;
-      color: #ffffff !important;
-      font-weight: 900 !important;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-    tbody tr.total-row > td,
-    tbody tr.report-grand-total-row > td {
-      background: linear-gradient(180deg, #39a2ff 0%, #087bff 52%, #0052cc 100%) !important;
-      background-color: #087bff !important;
-      color: #ffffff !important;
-      border: 1px solid #000000 !important;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-    thead th,
-    thead th.financial-amount-cell {
-      background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important;
-      background-color: #ffd700 !important;
-      color: #3b2600 !important;
-      border: 1px solid #000000 !important;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-    .total-row td.financial-amount-cell {
-background: linear-gradient(180deg, #39a2ff 0%, #087bff 52%, #0052cc 100%) !important; background-color: #087bff !important;
-      color: #ffffff !important;
-    }
-    .total-row td, tr.total-row td, tbody tr.total-row > td {
-      background: linear-gradient(180deg, #39a2ff 0%, #087bff 52%, #0052cc 100%) !important; background-color: #087bff !important;
-color: #ffffff !important;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-      font-weight: 900 !important;
-    }
-    .signature-spacer-row td {
-      height: 5mm !important;
-      padding: 0 !important;
+
+    .reports-table-scroll {
+      overflow: visible !important;
       border: 0 !important;
-      background: #ffffff !important;
+      box-shadow: none !important;
     }
+
     tr.signature-block-row,
     tr.signature-block-row td {
       border: 0 !important;
@@ -394,52 +280,13 @@ color: #ffffff !important;
       box-shadow: none !important;
       background: #ffffff !important;
     }
-    .signature-block-row td { padding: 2px 0 !important; }
-    .print\\:hidden, button, select, input { display: none !important; }
-    .print-only-text { display: flex !important; }
-  }
 
-  html body table tr.report-grand-total-row > td, html body table tr.total-row > td,
-  html body table tr.report-grand-total-row > td.description-cell, html body table tr.total-row > td.description-cell,
-  html body table tr.report-grand-total-row > td.financial-amount-cell, html body table tr.total-row > td.financial-amount-cell {
- background: linear-gradient(180deg, #39a2ff 0%, #087bff 52%, #0052cc 100%) !important; background-color: #087bff !important; 
- color: #ffffff !important; font-weight: 900 !important;
-    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
-  }
-  html body table tr.report-grand-total-row > td *, html body table tr.total-row > td * { 
-  background: linear-gradient(180deg, #39a2ff 0%, #087bff 52%, #0052cc 100%) !important; background-color: #087bff !important; 
-  color: #ffffff !important; }
-
-  @media print {
-    table.reports-data-table {
-      width: 100% !important;
-      min-width: auto !important;
-      max-width: auto !important;
-      table-layout: auto !important;
-      border-collapse: collapse !important;
+    .signature-spacer-row td {
+      height: 5mm !important;
+      padding: 0 !important;
+      border: 0 !important;
+      background: #ffffff !important;
     }
-    table.reports-data-table th,
-    table.reports-data-table td {
-      border: 1px solid #000000 !important;
-      padding: 4px 3px !important;
-      font-size: 16px !important;
-      line-height: 1.35 !important;
-      vertical-align: middle !important;
-    }
-    table.reports-data-table th[data-col-key="idx"],
-    table.reports-data-table td[data-col-key="idx"] {
-      width: 1% !important;
-      white-space: nowrap !important;
-    }
-    table.reports-data-table td.reports-description-cell,
-    table.reports-data-table td.reports-text-cell {
-      max-width: auto !important;
-      min-width: auto !important;
-      white-space: nowrap !important;
-      overflow-wrap: anywhere !important;
-      word-break: normal !important;
-    }
-    .reports-table-scroll { overflow: visible !important; border: 0 !important; box-shadow: none !important; }
   }
 `;
 
@@ -845,7 +692,7 @@ export default function ReportsTab() {
     result.push(...categoryPayments.map((row) => ({
      ...row,
      displayType: "تفصيلي",
-     summaryLevel: "detail"
+     summaryLevel: "detail" as const
     })));
    }
    if (traineeDisplayMode === "summary" || traineeDisplayMode === "both") {
@@ -1458,12 +1305,12 @@ export default function ReportsTab() {
             title={title}
             fileName="financial-report"
             rows={actionRows}
-            printRows={isLoanOrCustody ? displayRows.filter((row) => row.summaryLevel !== "opening") : displayRows}
+            printRows={displayRows}
             columns={sourceConfig.columns}
-            printColumns={isLoanOrCustody ? sourceConfig.columns.filter((col) => col.key !== "name") : sourceConfig.columns}
+            printColumns={sourceConfig.columns}
             numericKeys={numericKeys}
             pdfCss={reportsTabPrintCss}
-            pdfOrientation={(isLoanOrCustody ? sourceConfig.columns.length - 1 : sourceConfig.columns.length) > 7 ? "landscape" : "portrait"}
+            pdfOrientation={sourceConfig.columns.length + 1 > 7 ? "landscape" : "portrait"}
             includeTotalRow={!isLoanOrCustody && source !== "traineeFeeStatus"}
           />
         </div>
