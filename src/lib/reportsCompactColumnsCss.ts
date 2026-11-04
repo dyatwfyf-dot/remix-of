@@ -1,5 +1,5 @@
 // Shared compact column sizing for report tables (screen, print preview, print, PDF).
-// Cells holding numbers/dates never wrap; cells holding text wrap to max 2 lines.
+// Numeric/date cells stay on one line; long text wraps without truncation.
 
 /** Classifies each cell of report tables under `root` as numeric (no wrap) or text (wrap). */
 export function tagReportCells(root: ParentNode) {
