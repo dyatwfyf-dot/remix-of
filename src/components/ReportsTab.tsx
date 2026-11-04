@@ -282,19 +282,32 @@ font-size: 18px !important;
 font-weight: 900 !important; border: 1px solid #000 !important; }
     tbody td {
       background: #ffffff !important;
-      border: 1px solid #000 !important;
-      color: #000000 !important;
+      border: 1px solid #000000 !important;
+      color: #1e293b !important;
       font-size: 20px !important;
       font-weight: 800 !important;
     }
-    tbody td.financial-amount-cell {
-      background: #f2f7fb !important;
-font-size: 20px !important;
+    /* جميع خلايا جسم الجدول بيضاء؛ لا يُستثنى إلا صف الإجمالي الكلي */
+    tbody tr:not(.total-row):not(.report-grand-total-row) > td {
+      background: #ffffff !important;
+      background-color: #ffffff !important;
+      color: #1e293b !important;
+    }
+    tbody tr.total-row > td,
+    tbody tr.report-grand-total-row > td {
+      background: linear-gradient(180deg, #39a2ff 0%, #087bff 52%, #0052cc 100%) !important;
+      background-color: #087bff !important;
+      color: #ffffff !important;
+      border: 1px solid #000000 !important;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
+    thead th,
     thead th.financial-amount-cell {
-      background: #f2f7fb !important;
+      background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important;
+      background-color: #ffd700 !important;
+      color: #3b2600 !important;
+      border: 1px solid #000000 !important;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
@@ -348,6 +361,7 @@ color: #ffffff !important;
     }
     table.reports-data-table th,
     table.reports-data-table td {
+      border: 1px solid #000000 !important;
       padding: 4px 3px !important;
       font-size: 10pt !important;
       line-height: 1.35 !important;
