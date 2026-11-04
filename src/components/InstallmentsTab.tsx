@@ -2786,8 +2786,8 @@ async () => {
             </h2>
  <p className="text-lg text-sky-100">يشمل جميع الدفعات لعامي 2024 و 2025</p>
           </div>
-<div className="installments-controls-2025 w-full sm:w-auto grid grid-cols-2 sm:flex gap-1.5 sm:gap-2 items-center">
- <div className="installments-search-2025 relative col-span-2 sm:col-span-1 w-full sm:w-auto">
+<div className="installments-controls-2025 w-full grid grid-cols-2 gap-2 items-center">
+ <div className="installments-search-2025 relative col-span-2 w-full sm:w-auto">
 <Search className="w-8 h-4 absolute right-2.5 top-2.5 text-sky-500" />
               <input
                 type="text"
@@ -2812,7 +2812,7 @@ async () => {
 <div className="apk-only-actions col-span-2 flex gap-1 w-full">
 <button
  onClick={() => exportToExcel(2025)}
-className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-teal-400 text-black-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
+className={`flex-1 ${BTN_COMPACT} bg-teal-400 text-black-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
   >تصدير الي اكسل
 <FileSpreadsheet className={ICON_MOBILE} /> 
 <span className="hidden sm:inline">Excel تصدير الي 
@@ -2820,7 +2820,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-teal-400 text-black-700 rounde
               </button>
               <button
                 onClick={() => setPrintSettingsYear(2025)}
-className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`} >طباعة تفصيلية
+className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`} >طباعة تفصيلية
  <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة تفصيلية</span>
               </button>
             </div>
@@ -2845,7 +2845,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-white rounded-m
               pdfMarginMm={1}
               pdfCss={INSTALLMENTS_SUMMARY_REPORT_CSS}
               additionalWebActions={installments2025WebActions}
- className="col-span-2 w-auto grid !grid-cols-2 sm:!flex !gap-1 sm:!gap-2 [&>button]:min-w-auto [&>button]:justify-center [&>button]:px-1 [&>button]:py-1 sm:[&>button]:px-1 sm:[&>button]:py-1"
+ className="col-span-2 w-full grid !grid-cols-2 !gap-2 [&>button]:w-full [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-2 [&>button]:py-2"
             />
           </div>
         </div>
@@ -3059,7 +3059,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-white rounded-m
     </div>
 
     {/* شبكة الأزرار والحقول (كل 2 أزرار/عناصر في سطر) */}
-    <div className="installments-controls-2026 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 w-full">
+    <div className="installments-controls-2026 grid grid-cols-2 gap-2 w-full">
 
       {/* السطر 1: البحث + التنسيق الشرطي */}
       <div className="installments-search-2026 relative w-full col-span-2 sm:col-span-2">
@@ -3174,7 +3174,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-white rounded-m
         pdfMarginMm={1}
         pdfCss={INSTALLMENTS_SUMMARY_REPORT_CSS}
         additionalWebActions={installments2026WebActions}
-className="col-span-full grid grid-cols-2 sm:grid-cols-3 border border-1-black gap-2 w-full 
+className="col-span-full grid grid-cols-2 gap-2 w-full 
 [&>button]:w-auto 
 [&>button]:min-w-auto
 [&>button]:justify-center 
