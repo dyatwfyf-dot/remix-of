@@ -256,9 +256,9 @@ const reportsTabPrintCss = `
     body { font-family: 'Cairo', Arial, sans-serif !important; color: #000000 !important; background: #ffffff !important; }
     .report-page-header { border: 2px solid #000 !important; margin-bottom: 8px !important; }
     table {
-      width: 100% !important;
+      width: auto !important;
       min-width: 0 !important;
-      max-width: 100% !important;
+      max-width: auto !important;
       table-layout: auto !important;
       border-collapse: collapse !important;
       border: 2px solid #000 !important;
@@ -268,8 +268,6 @@ background: gold !important; color: #000 !important;
 font-size: 18px !important;
 font-weight: 900 !important; border: 1px solid #000 !important; }
     tbody td {
-      width: auto !important;
-      min-width: 0 !important;
       background: #ffffff !important;
       border: 1px solid #000 !important;
       color: #000000 !important;
