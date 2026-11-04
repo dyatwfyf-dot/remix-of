@@ -1198,6 +1198,7 @@ if (source === "tawfiqCustody") {
  const activeSortDirection = source === "trainee" ? traineeSortDirection : sortDirection;
  const hasAnyFilter = Object.values(columnFilters).some((v) => String(v || "").trim() !== "");
  const colCount = sourceConfig.columns.length + 2;
+ const amountColumnIndex = sourceConfig.columns.findIndex((col) => col.key === "amount");
  
  const deleteRow = (row: ReportRow) => {
   setDeletedRows((prev) => new Set([...prev, row]));
@@ -1498,6 +1499,8 @@ if (source === "tawfiqCustody") {
                   displayRows.map((row, index) => {
                     const isOpening = row.summaryLevel === "opening";
                     const isTotal = row.summaryLevel === "total" || row.total === "نعم";
+                     const isGrandTotal = isTotal && String(row.description ?? "").trim() === "الإجمالي الكلي";
+                     const isMergedGrandTotal = isGrandTotal && amountColumnIndex === sourceConfig.columns.length - 1;
                     const isSignature = row.summaryLevel === "signature";
                     const isTraineeDetail = source === "trainee" && row.displayType === "تفصيلي";
                     const isTraineeSummary = source === "trainee" && Boolean(row.displayType) && row.displayType !== "تفصيلي";
@@ -1518,7 +1521,7 @@ if (source === "tawfiqCustody") {
                           }
                         : undefined;
  const totalCellStyle = isTotal ? {
-backgroundColor: "#5B5750",
+backgroundColor: "#0437bb",
 color: "#ffffff",
                           WebkitPrintColorAdjust: "exact" as const,
                           printColorAdjust: "exact" as const,
@@ -1601,6 +1604,38 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                       );
                     }
 
+                    if (isMergedGrandTotal) {
+                      return (
+                        <tr
+                          key={`${String(row.id || row.date)}-grand-total-${index}`}
+                          className="report-grand-total-row total-row bg-[#0437bb] font-black text-white"
+                          style={{
+                            backgroundColor: "#0437bb",
+                            color: "#ffffff",
+                            WebkitPrintColorAdjust: "exact",
+                            printColorAdjust: "exact",
+                          }}
+                        >
+                          <td
+                            data-col-key="description"
+                            colSpan={amountColumnIndex + 1}
+                            className="border border-black px-3 py-2 text-center font-black text-white"
+                            style={totalCellStyle}
+                          >
+                            الإجمالي الكلي
+                          </td>
+                          <td
+                            data-col-key="amount"
+                            className="border border-black px-2 py-2 text-center font-black text-white font-mono"
+                            style={totalCellStyle}
+                          >
+                            {formatCurrency(row.amount)}
+                          </td>
+                          <td data-col-key="actions" className="border border-black px-1 py-1 print:hidden" style={totalCellStyle} />
+                        </tr>
+                      );
+                    }
+
                     return (
                       <tr
                         key={`${String(row.date)}-${String(row.trainee || row.name || "")}-${index}`}
@@ -1608,7 +1643,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                         style={
                           isTotal
                             ? {
-                                backgroundColor: "#F1BF98",
+                                backgroundColor: "#0437bb",
                                 color: "#ffffff",
                                 WebkitPrintColorAdjust: "exact",
                                 printColorAdjust: "exact",
