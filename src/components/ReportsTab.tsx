@@ -1,3 +1,4 @@
+import "./ReportsTab.css";
 import React, { useEffect, useMemo, useState } from "react";
 import {
  BarChart3,
@@ -358,126 +359,7 @@ color: #ffffff !important;
 `;
 
 
-const reportsTabScreenCss = `
-  .reports-table-scroll {
-    width: 100%;
-    max-width: 100%;
-    overflow: auto;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
-    border: 1px solid #cbd5e1;
-    border-radius: 16px;
-    background: #ffffff;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
-    scrollbar-width: thin;
-    scrollbar-color: #94a3b8 #f1f5f9;
-  }
-  .reports-table-scroll table.reports-data-table {
-    width: max-content;
-    min-width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    table-layout: auto;
-    text-align: center;
-    font-size: 12px;
-    direction: rtl;
-  }
-  .reports-table-scroll .reports-data-table thead th {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    min-width: 76px;
-    max-width: 220px;
-    padding: 12px 10px;
-    border: 0;
-    border-bottom: 2px solid #0f2942;
-    background: #17324d;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 900;
-    line-height: 1.5;
-    white-space: normal;
-    vertical-align: middle;
-  }
-  .reports-table-scroll .reports-data-table thead th[data-col-key="idx"] {
-    position: sticky;
-    right: 0;
-    z-index: 4;
-    min-width: 46px;
-    background: #0f2942;
-  }
-  .reports-table-scroll .reports-data-table thead th[data-col-key="actions"] { min-width: 54px; }
-  .reports-table-scroll .reports-data-table tbody td {
-    padding: 10px 9px;
-    border: 0;
-    border-bottom: 1px solid #e2e8f0;
-    color: #1e293b;
-    background: #ffffff;
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 1.6;
-    vertical-align: middle;
-    white-space: nowrap;
-  }
-  .reports-table-scroll .reports-data-table tbody tr.bg-white:nth-child(even) td {
-    background: #f8fafc;
-  }
-  .reports-table-scroll .reports-data-table tbody tr.bg-white:hover td { background: #eff6ff; }
-  .reports-table-scroll .reports-data-table tbody td[data-col-key="idx"] {
-    position: sticky;
-    right: 0;
-    z-index: 1;
-    min-width: 46px;
-    background: inherit !important;
-    color: #475569;
-    font-weight: 900;
-    box-shadow: -3px 0 6px rgba(15, 23, 42, .06);
-  }
-  .reports-table-scroll .reports-data-table tbody td.reports-description-cell,
-  .reports-table-scroll .reports-data-table tbody td.reports-text-cell {
-    min-width: 140px;
-    max-width: 250px;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    word-break: normal;
-  }
-  .reports-table-scroll .reports-data-table tbody td.reports-numeric-cell,
-  .reports-table-scroll .reports-data-table tbody td[data-col-key="idx"] {
-    direction: ltr;
-    unicode-bidi: isolate;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-  .reports-table-scroll .reports-data-table tbody td input {
-    min-width: 92px;
-    max-width: 180px;
-    padding: 7px 8px;
-    border-radius: 8px;
-    border-color: #cbd5e1;
-    font-size: 12px;
-  }
-  .reports-table-scroll .reports-data-table tbody tr.total-row td,
-  .reports-table-scroll .reports-data-table tbody tr.total-row td[data-col-key="idx"] {
-    background: #173f70 !important;
-    color: #ffffff !important;
-    font-weight: 900;
-  }
-  .reports-table-scroll .reports-data-table tbody tr.signature-block-row td { background: #ffffff !important; }
-  @media (max-width: 640px) {
-    .reports-table-scroll { border-radius: 12px; }
-    .reports-table-scroll .reports-data-table thead th { min-width: 68px; padding: 10px 8px; font-size: 11px; }
-    .reports-table-scroll .reports-data-table tbody td { padding: 9px 8px; font-size: 11px; }
-    .reports-table-scroll .reports-data-table tbody td.reports-description-cell,
-    .reports-table-scroll .reports-data-table tbody td.reports-text-cell { min-width: 126px; max-width: 190px; }
-    .reports-table-scroll .reports-data-table tbody td input { min-width: 104px; }
-  }
-  @media print {
-    .reports-table-scroll { overflow: visible !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
-    .reports-table-scroll table.reports-data-table { width: 100% !important; min-width: 0 !important; }
-    .reports-table-scroll .reports-data-table thead th,
-    .reports-table-scroll .reports-data-table tbody td { position: static !important; box-shadow: none !important; }
-  }
-`;
+
 
 export default function ReportsTab() {
  const { year: fiscalYear } = useFiscalYear();
@@ -1529,7 +1411,7 @@ if (source === "tawfiqCustody") {
         </div>
 
         {/* جدول عرض التقرير */}
-        <style>{reportsTabScreenCss}</style>
+        
         <div className="p-3 sm:p-4">
           <div className="reports-table-scroll">
             <table id="reports-table" className="reports-data-table text-center text-xs" style={{ tableLayout: "auto" }}>
