@@ -1,3 +1,4 @@
+import { reportsCompactColumnsCss } from "./reportsCompactColumnsCss";
 import { deliverBlobToUser, isNativeFileStorageAvailable } from './nativeFileStorage';
 import { escapeHtml, reportLetterheadHtml } from './printTableHtml';
 
@@ -621,7 +622,8 @@ export async function downloadReportPdf(options: {
       <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
       <style>${reportDocumentCss}
       ${reportContainmentCss}
-      ${options.css || ''}</style></head><body><div id="report-source" class="report-page-content">
+      ${options.css || ''}
+      ${reportsCompactColumnsCss}</style></head><body><div id="report-source" class="report-page-content">
       ${options.body.includes('report-letterhead') ? '' : reportLetterheadHtml()}${options.body}</div></body></html>`);
     doc.close();
     const source = doc.getElementById('report-source');
