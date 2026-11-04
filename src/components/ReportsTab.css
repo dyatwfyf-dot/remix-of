@@ -31,20 +31,29 @@
     padding: 12px 10px;
     border: 0;
     border-bottom: 2px solid #0f2942;
-    background: #17324d;
-    color: #ffffff;
+    background: #f1f5f9;
+    color: #334155;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
     font-size: 12px;
     font-weight: 900;
     line-height: 1.5;
     white-space: normal;
     vertical-align: middle;
   }
-  .reports-table-scroll .reports-data-table thead th[data-col-key="idx"] {
+  .reports-table-scroll .reports-data-table thead tr.reports-column-header-row th {
+    background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important;
+    background-color: #ffd700 !important;
+    color: #3b2600 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .reports-table-scroll .reports-data-table thead tr.reports-column-header-row th[data-col-key="idx"] {
     position: sticky;
     right: 0;
     z-index: 4;
     min-width: 46px;
-    background: #0f2942;
+    background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important;
   }
   .reports-table-scroll .reports-data-table thead th[data-col-key="actions"] { min-width: 54px; }
   .reports-table-scroll .reports-data-table tbody td {
@@ -98,9 +107,12 @@
   }
   .reports-table-scroll .reports-data-table tbody tr.total-row td,
   .reports-table-scroll .reports-data-table tbody tr.total-row td[data-col-key="idx"] {
-    background: #173f70 !important;
+    background: linear-gradient(180deg, #39a2ff 0%, #087bff 52%, #0052cc 100%) !important;
+    background-color: #087bff !important;
     color: #ffffff !important;
     font-weight: 900;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
   .reports-table-scroll .reports-data-table tbody tr.signature-block-row td { background: #ffffff !important; }
   @media (max-width: 640px) {
@@ -117,3 +129,31 @@
     .reports-table-scroll .reports-data-table thead th,
     .reports-table-scroll .reports-data-table tbody td { position: static !important; box-shadow: none !important; }
   }
+
+
+/* عنوان تقرير العهدة وتاريخه في سطرين منفصلين داخل جدول العرض */
+.reports-table-scroll .reports-data-table thead tr.reports-custody-title-row th {
+  position: static;
+  min-width: 0;
+  max-width: none;
+  padding: 12px 8px 5px;
+  border: 1px solid #b77900;
+  background: linear-gradient(180deg, #fff8c9 0%, #ffe36a 55%, #f5b900 100%) !important;
+  color: #172b4d !important;
+  font-size: 17px;
+  font-weight: 900;
+  text-align: center;
+}
+.reports-table-scroll .reports-data-table thead tr.reports-custody-date-row th {
+  position: static;
+  min-width: 0;
+  max-width: none;
+  padding: 4px 8px 10px;
+  border: 1px solid #b77900;
+  border-top: 0;
+  background: linear-gradient(180deg, #fff8c9 0%, #ffe36a 55%, #f5b900 100%) !important;
+  color: #513900 !important;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+}
