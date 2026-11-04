@@ -9,7 +9,7 @@ export function tagReportCells(root: ParentNode) {
     if (el.closest("tr.signature-block-row")) return;
     const text = (el.textContent || "").trim();
     el.classList.remove("rc-num", "rc-text");
-    if (el.tagName === "TH") { el.classList.add("rc-num"); return; }
+    if (el.tagName === "TH") { el.classList.add(text.length > 12 ? "rc-text" : "rc-num"); return; }
     el.classList.add(!text || numRe.test(text) ? "rc-num" : "rc-text");
   });
 }
