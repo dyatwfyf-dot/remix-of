@@ -302,8 +302,45 @@ function Index() {
         </div>
       )}
 
+      {/* شريط التنقل الرئيسي: ثابت أعلى المحتوى لسهولة الوصول إلى جميع الأقسام */}
+      <nav
+        className="app-main-nav sticky top-0 z-[60] border-b border-[#c7dbe9] bg-white/95 shadow-[0_4px_14px_rgba(46,107,138,0.10)] backdrop-blur-xl"
+        dir="rtl"
+        aria-label="التنقل الرئيسي"
+      >
+        <div className="mx-auto flex w-full max-w-[1600px] items-center px-2 py-2 sm:px-4">
+          <div className="app-tab-nav-items flex w-full flex-nowrap gap-2 overflow-x-auto px-0.5 py-0.5 sm:gap-2.5 lg:flex-wrap lg:justify-center lg:overflow-visible">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.value;
+              return (
+                <button
+                  key={tab.value}
+                  type="button"
+                  onClick={() => handleTabChange(tab.value)}
+                  aria-current={isActive ? "page" : undefined}
+                  aria-label={tab.label}
+                  className={`app-tab-nav-item relative flex min-h-[56px] min-w-[88px] shrink-0 flex-col items-center justify-center gap-1 rounded-xl border px-3 py-2 text-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#6ba3c8] focus:ring-offset-2 sm:min-w-[112px] sm:flex-row sm:gap-2 sm:px-4 lg:min-w-0 lg:flex-1 ${isActive
+                    ? `${tab.activeClass} border-transparent text-white shadow-md shadow-[#2e6b8a]/20`
+                    : "border-transparent bg-[#f3f7fa] text-[#49677d] hover:border-[#c7dbe9] hover:bg-[#e8f0f8]"
+                  }`}
+                >
+                  <span className={isActive ? "scale-110" : "scale-100"}>{tab.icon}</span>
+                  <span className="whitespace-nowrap text-xs font-extrabold leading-tight sm:text-sm">
+                    <span className="sm:hidden">{tab.shortLabel}</span>
+                    <span className="hidden sm:inline">{tab.label}</span>
+                  </span>
+                  {isActive && (
+                    <span className="absolute inset-x-3 -bottom-[1px] h-[3px] rounded-full bg-white/90 sm:hidden" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </nav>
+
       {/* محتوى التبويب النشط */}
-      <div className="app-tab-content w-full min-w-0 bg-[#f4f9fd] p-0 pb-28 sm:p-0 sm:pb-24 md:p-0 min-h-[calc(100dvh-140px)]">
+      <div className="app-tab-content w-full min-w-0 bg-[#f4f9fd] p-0 sm:p-0 md:p-0 min-h-[calc(100dvh-140px)]">
         {!isMounted ? (
           <div
             className="flex min-h-[35vh] items-center justify-center p-6 text-xs font-semibold text-[#2e6b8a]"
@@ -336,40 +373,6 @@ function Index() {
           </Suspense>
         )}
       </div>
-
-      {/* شريط التبويبات السفلي */}
-      <nav
-        className="app-main-nav fixed inset-x-0 bottom-0 z-[60] border-t border-[#b8d4e8] bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_12px_rgba(46,107,138,0.12)]"
-        dir="rtl"
-        aria-label="التنقل الرئيسي"
-      >
-        <div className="app-tab-nav-items flex w-full gap-1.5 overflow-x-auto px-0 py-2 sm:gap-2 sm:px-0">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab.value;
-            return (
-              <button
-                key={tab.value}
-                type="button"
-                onClick={() => handleTabChange(tab.value)}
-                aria-current={isActive ? "page" : undefined}
-                className={`app-tab-nav-item flex min-h-[48px] min-w-[76px] shrink-0 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-1.5 text-center transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#6ba3c8] sm:min-w-[104px] sm:px-3 ${
-                  isActive
-                    ? `${tab.activeClass} text-white shadow-md`
-                    : "text-[#4e6b80] hover:bg-[#e8f0f8]"
-                }`}
-              >
-                <span className={isActive ? "scale-105" : "scale-100"}>{tab.icon}</span>
-                <span className="text-[14.5px] font-bold leading-tight whitespace-nowrap sm:hidden">
-                  {tab.shortLabel}
-                </span>
-                <span className="hidden text-[13px] font-bold leading-tight whitespace-nowrap sm:inline">
-                  {tab.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </nav>
 
       <Toaster position="top-center" richColors />
     </div>
