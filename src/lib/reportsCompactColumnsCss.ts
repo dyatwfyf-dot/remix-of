@@ -40,6 +40,7 @@ export const reportsCompactColumnsCss = `
     min-width: 0 !important;
     white-space: nowrap !important;
   }
+  table.reports-data-table th.rc-text,
   table.reports-data-table td.rc-text {
     width: auto !important;
     min-width: 0 !important;
