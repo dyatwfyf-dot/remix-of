@@ -2812,7 +2812,7 @@ async () => {
 <div className="apk-only-actions col-span-2 flex gap-1 w-full">
 <button
  onClick={() => exportToExcel(2025)}
-className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-teal-400 text-black-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
+className={`flex-1 ${BTN_COMPACT} bg-teal-400 text-black-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
   >تصدير الي اكسل
 <FileSpreadsheet className={ICON_MOBILE} /> 
 <span className="hidden sm:inline">Excel تصدير الي 
@@ -2820,7 +2820,7 @@ className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-teal-400 text-black-700 rounde
               </button>
               <button
                 onClick={() => setPrintSettingsYear(2025)}
-className={`flex-1 sm:flex-none ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`} >طباعة تفصيلية
+className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`} >طباعة تفصيلية
  <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة تفصيلية</span>
               </button>
             </div>
