@@ -31,9 +31,8 @@
     padding: 12px 10px;
     border: 0;
     border-bottom: 2px solid #0f2942;
-    background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important;
-    background-color: #ffd700 !important;
-    color: #3b2600 !important;
+    background: #f1f5f9;
+    color: #334155;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
     font-size: 12px;
@@ -42,7 +41,14 @@
     white-space: normal;
     vertical-align: middle;
   }
-  .reports-table-scroll .reports-data-table thead th[data-col-key="idx"] {
+  .reports-table-scroll .reports-data-table thead tr.reports-column-header-row th {
+    background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important;
+    background-color: #ffd700 !important;
+    color: #3b2600 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .reports-table-scroll .reports-data-table thead tr.reports-column-header-row th[data-col-key="idx"] {
     position: sticky;
     right: 0;
     z-index: 4;
