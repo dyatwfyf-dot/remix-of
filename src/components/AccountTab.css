@@ -17,9 +17,8 @@
   .accounts-print-area tfoot td {
     color: #000 !important;
     font-weight: 800 !important;
-  }
-  label {
-   color:"#f5f5dc"; 
+  }.accounts-print-scope label {
+    color: #f5f5dc;
   }
   .accounts-print-area th,
   .accounts-print-area td {
