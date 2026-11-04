@@ -191,7 +191,7 @@ export default function HafizaTab() {
 
   return (
     <div
-      className="w-full min-h-auto p-2 sm:p-4 bg-gradient-to-br from-slate-100 via-sky-50 to-indigo-50/40 text-slate-800"
+      className="mizan-hafiza-tab w-full min-h-auto p-2 sm:p-4 bg-gradient-to-br from-slate-100 via-sky-50 to-indigo-50/40 text-slate-800"
       dir="rtl"
     >
       {/* الترويسة الرئيسية */}
