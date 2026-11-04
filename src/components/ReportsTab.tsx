@@ -208,6 +208,18 @@ const reportsTabPrintCss = `
   .reports-data-table td {
     width: auto !important;
     min-width: 0 !important;
+    height: auto !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
+    vertical-align: middle !important;
+  }
+  .reports-data-table tbody td.reports-numeric-cell,
+  .reports-data-table tbody td.reports-no-wrap-cell,
+  .reports-data-table tbody td[data-col-key="idx"] {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
   }
   .reports-data-table tbody td.text-cell,
   .reports-data-table tbody td.name-cell,
@@ -1718,7 +1730,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                               key={col.key}
                               data-col-key={col.key}
                               className={`border border-black px-2 py-2 font-bold ${
-                                col.key === "description" ? "reports-description-cell" : isNumeric ? "reports-numeric-cell font-mono" : ["name", "trainee", "specialty", "notes", "item"].includes(col.key) ? "reports-text-cell" : "whitespace-nowrap"
+                                col.key === "description" ? "reports-description-cell" : isNumeric ? "reports-numeric-cell font-mono" : isNoWrap ? "reports-no-wrap-cell" : "reports-text-cell"
                               } bg-white text-slate-900`}
                               style={
                                 isTotal
