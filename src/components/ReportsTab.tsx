@@ -1500,7 +1500,7 @@ if (source === "tawfiqCustody") {
                     const isOpening = row.summaryLevel === "opening";
                     const isTotal = row.summaryLevel === "total" || row.total === "نعم";
                      const isGrandTotal = isTotal && String(row.description ?? "").trim() === "الإجمالي الكلي";
-                     const isMergedGrandTotal = isGrandTotal && amountColumnIndex === sourceConfig.columns.length - 1;
+                     const isMergedGrandTotal = isGrandTotal && amountColumnIndex >= 0;
                     const isSignature = row.summaryLevel === "signature";
                     const isTraineeDetail = source === "trainee" && row.displayType === "تفصيلي";
                     const isTraineeSummary = source === "trainee" && Boolean(row.displayType) && row.displayType !== "تفصيلي";
@@ -1631,7 +1631,14 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                           >
                             {formatCurrency(row.amount)}
                           </td>
-                          <td data-col-key="actions" className="border border-black px-1 py-1 print:hidden" style={totalCellStyle} />
+                          {sourceConfig.columns.length - amountColumnIndex > 1 && (
+                            <td
+                              data-col-key="grand-total-spacer"
+                              colSpan={sourceConfig.columns.length - amountColumnIndex}
+                              className="border border-black px-1 py-1"
+                              style={totalCellStyle}
+                            />
+                          )}
                         </tr>
                       );
                     }
