@@ -617,7 +617,7 @@ const isOpeningRow = (row: any) => String(row.description ?? "").includes("ال�
 ];
   return (
     <div
-      className="accounts-print-scope accounts-ui-light sheet-tabs-ui apk-tabs-ui w-full space-y-4 p-1.5 sm:p-4 rounded-2xl"
+      className="mizan-account-tab accounts-print-scope accounts-ui-light sheet-tabs-ui apk-tabs-ui w-full space-y-4 p-1.5 sm:p-4 rounded-2xl"
       dir="rtl"
       style={{ background: "linear-gradient(160deg, #eef6fb, #d7e7f0)" }}
     >

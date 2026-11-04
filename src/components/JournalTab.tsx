@@ -493,7 +493,7 @@ export default function JournalTab() {
 
   return (
     <div
-      className="w-full space-y-3.5 overflow-x-hidden p-1.5 sm:p-3 bg-gradient-to-br from-slate-100 via-indigo-50/40 to-purple-50/30 min-h-screen"
+      className="mizan-journal-tab w-full space-y-3.5 overflow-x-hidden p-1.5 sm:p-3 bg-gradient-to-br from-slate-100 via-indigo-50/40 to-purple-50/30 min-h-screen"
       dir="rtl"
     >
       {/* ══ 1. بطاقة إدخال القيد اليومي المركب ══ */}

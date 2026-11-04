@@ -339,7 +339,7 @@ export default function MonthlyStatementTab() {
 
   return (
     <div
-      className="w-full space-y-6 p-2 sm:p-5 min-h-screen bg-gradient-to-br from-slate-50 via-sky-50/50 to-indigo-50/40 text-slate-800"
+      className="mizan-monthly-statement-tab w-full space-y-6 p-2 sm:p-5 min-h-screen bg-gradient-to-br from-slate-50 via-sky-50/50 to-indigo-50/40 text-slate-800"
       dir="rtl"
     >
       {/* ══ الترويسة الرئيسية والبطاقات بتصميم فاتح ناصع ══ */}

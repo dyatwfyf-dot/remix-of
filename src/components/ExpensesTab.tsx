@@ -815,7 +815,7 @@ export default function ExpensesTab() {
   ];
   
   return (
-    <div className="sheet-tabs-ui space-y-3" dir="rtl">
+    <div className="mizan-expenses-tab sheet-tabs-ui space-y-3" dir="rtl">
       {/* شريط التبويبات + أزرار */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="bg-slate-100 p-1.5 rounded-xl border border-slate-200 overflow-x-auto flex-1 min-w-0">
