@@ -1,6 +1,7 @@
 /* ملف: src/components/InstallmentsTab.tsx
    ملاحظة: التغييرات تنسيقية فقط (CSS / classNames / ثوابت أحجام)
 */
+import "./InstallmentsTab.css";
 import React, { useDeferredValue, useMemo,
   useState } from "react";
 import { useStore,
