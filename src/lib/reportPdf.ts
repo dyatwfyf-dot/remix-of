@@ -350,9 +350,11 @@ border: 1px solid #000000 !important;
     width: 100% !important;
     margin: 0 auto 3mm !important;
   }
+  /* Keep table cells in native table layout so column widths and row heights
+     remain consistent between the report view, browser preview, and PDF render. */
   .report-page-content table th,
   .report-page-content table td {
-    display: flex !important;
+    display: table-cell !important;
     vertical-align: middle !important;
     text-align: center !important;
     font-size: 16px !important;
@@ -366,7 +368,7 @@ border: 1px solid #000000 !important;
     display: inline-block !important;
     vertical-align: middle !important;
     font-size: 16px !important;
-    line-height: 2.5 !important;
+    line-height: 1.45 !important;
   }
 
   .report-page-content .report-letterhead-frame {
