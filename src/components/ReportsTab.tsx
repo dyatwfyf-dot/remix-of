@@ -408,8 +408,6 @@ export default function ReportsTab() {
  const [sortDirection, setSortDirection] = useState < "asc" | "desc" > ("asc");
  const [traineeSortColumn, setTraineeSortColumn] = useState < string > ("notifyDate");
  const [traineeSortDirection, setTraineeSortDirection] = useState < "asc" | "desc" > ("asc");
- 
- const [columnFilters, setColumnFilters] = useState < Record < string, string >> ({});
  const [deletedRows, setDeletedRows] = useState < Set < ReportRow >> (new Set());
  
  const [youssefOpeningBalance, setYoussefOpeningBalance] = useState < number > (() => {
@@ -1070,36 +1068,10 @@ if (source === "tawfiqCustody") {
    ...revenueRows.map((row) => ({ source: "الإيرادات", date: row.date, description: row.item, amount: row.amount })),
   ];
  }, [source, youssefRows, tawfiqRows, traineeRows, feeTotalsRows, traineeFeeStatusRows, hafizaRows, accountRows, expenseRows, revenueRows]);
- 
- const isPreservedFromColumnFilter = (row: ReportRow): boolean => {
-  return row.summaryLevel === "opening" || row.summaryLevel === "total" || row.summaryLevel === "signature";
- };
- 
  const processedRows = useMemo < ReportRow[] > (() => {
   const activeSortCol = source === "trainee" ? traineeSortColumn : sortColumn;
   const activeSortDir = source === "trainee" ? traineeSortDirection : sortDirection;
-  
-  const filtered = reportRows.filter((row) => {
-   if (deletedRows.has(row)) return false;
-   if (isPreservedFromColumnFilter(row)) return true;
-   for (const [key, filterVal] of Object.entries(columnFilters)) {
-    const fv = String(filterVal || "").trim();
-    if (!fv) continue;
-    const cellValue = row[key];
-    if (cellValue === undefined || cellValue === null) return false;
-    if (typeof cellValue === "number") {
-     const numFilter = Number(fv);
-     if (!isNaN(numFilter)) {
-      if (cellValue !== numFilter) return false;
-     } else if (!String(cellValue).includes(fv)) {
-      return false;
-     }
-    } else if (!String(cellValue).toLowerCase().includes(fv.toLowerCase())) {
-     return false;
-    }
-   }
-   return true;
-  });
+   const filtered = reportRows.filter((row) => !deletedRows.has(row));
   
   const isCustodySource = source === "youssefLoan" || source === "tawfiqCustody";
   const orderedRows = isCustodySource ?
@@ -1169,7 +1141,7 @@ if (source === "tawfiqCustody") {
    }
    return row;
   });
- }, [reportRows, columnFilters, sortColumn, sortDirection, source, traineeSortColumn, traineeSortDirection, deletedRows]);
+ }, [reportRows, sortColumn, sortDirection, source, traineeSortColumn, traineeSortDirection, deletedRows]);
  
  const reportIssuedAt = new Date();
  const reportYearStart = new Date(reportIssuedAt.getFullYear(), 0, 1);
@@ -1222,7 +1194,6 @@ if (source === "tawfiqCustody") {
  
  const activeSortColumn = source === "trainee" ? traineeSortColumn : sortColumn;
  const activeSortDirection = source === "trainee" ? traineeSortDirection : sortDirection;
- const hasAnyFilter = Object.values(columnFilters).some((v) => String(v || "").trim() !== "");
  const colCount = sourceConfig.columns.length + 2;
  const amountColumnIndex = sourceConfig.columns.findIndex((col) => col.key === "amount");
  
@@ -1261,7 +1232,6 @@ if (source === "tawfiqCustody") {
                     setSortDirection("asc");
                   }
                   setDeletedRows(new Set());
-                  setColumnFilters({});
                 }}
                 className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
               >
@@ -1494,34 +1464,7 @@ if (source === "tawfiqCustody") {
                     </th>
                   ))}
                   <th data-col-key="actions" className="w-12 border border-black px-2 py-3 font-black print:hidden">حذف</th>
-                </tr>
-
-                {/* صف التصفية والبحث في الأعمدة */}
-                <tr className="border-b border-black bg-slate-100 print:hidden">
-                  <th className="border border-black p-1 text-[11px] font-bold text-slate-500">بحث</th>
-                  {sourceConfig.columns.map((col) => (
-                    <th key={`filter-${col.key}`} className="border border-black p-1">
-                      <input
-                        type="text"
-                        value={columnFilters[col.key] || ""}
-                        onChange={(e) => setColumnFilters((prev) => ({ ...prev, [col.key]: e.target.value }))}
-                        placeholder={`بحث...`}
-                        className="box-border w-full min-w-0 rounded border border-slate-300 bg-white px-1 py-1 text-center text-xs font-bold text-slate-800 outline-none focus:border-sky-600"
-                      />
-                    </th>
-                  ))}
-                  <th className="border border-black p-1">
-                    {hasAnyFilter && (
-                      <button
-                        onClick={() => setColumnFilters({})}
-                        className="rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-bold text-rose-700 hover:bg-rose-200"
-                      >
-                        مسح
-                      </button>
-                    )}
-                  </th>
-                </tr>
-              </thead>
+                </tr></thead>
 
               <tbody>
                 {displayRows.length === 0 ? (
