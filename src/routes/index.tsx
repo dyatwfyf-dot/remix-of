@@ -76,12 +76,14 @@ type TabItem = {
   shortLabel: string;
   icon: React.ReactNode;
   activeClass: string;
+  navTintClass: string;
 };
 
 // تعريف قائمة التبويبات مع بياناتها
 const tabs: TabItem[] = [
   {
     value: "installments",
+    navTintClass: "bg-[#eaf1ff] border-[#9db8e8] text-[#244a85]",
     label: "كشف الأقساط",
     shortLabel: "أقساط",
     icon: <WalletCards className="w-5 h-5 sm:w-6 sm:h-6" />,
@@ -89,6 +91,7 @@ const tabs: TabItem[] = [
   },
   {
     value: "hafiza",
+    navTintClass: "bg-[#e8f5ed] border-[#9bc9ad] text-[#216343]",
     label: "حوافظ التوريد",
     shortLabel: "حوافظ",
     icon: <FileBox className="w-5 h-5 sm:w-6 sm:h-6" />,
@@ -96,6 +99,7 @@ const tabs: TabItem[] = [
   },
   {
     value: "account",
+    navTintClass: "bg-[#e5f2f6] border-[#94c4d2] text-[#205d70]",
     label: "الحساب الجاري",
     shortLabel: "حساب",
     icon: <FileSpreadsheet className="w-5 h-5 sm:w-6 sm:h-6" />,
@@ -103,6 +107,7 @@ const tabs: TabItem[] = [
   },
   {
     value: "journal",
+    navTintClass: "bg-[#f0e9f8] border-[#c0a6d8] text-[#67418b]",
     label: "القيود اليومية",
     shortLabel: "قيود",
     icon: <BookOpenText className="w-5 h-5 sm:w-6 sm:h-6" />,
@@ -110,6 +115,7 @@ const tabs: TabItem[] = [
   },
   {
     value: "monthly",
+    navTintClass: "bg-[#fff2df] border-[#e7bd80] text-[#89520c]",
     label: "كشف شهري",
     shortLabel: "شهري",
     icon: <PieChart className="w-5 h-5 sm:w-6 sm:h-6" />,
@@ -117,6 +123,7 @@ const tabs: TabItem[] = [
   },
   {
     value: "revenue",
+    navTintClass: "bg-[#e9f5e8] border-[#a5cda0] text-[#286c35]",
     label: "الإيرادات",
     shortLabel: "إيرادات",
     icon: <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" />,
@@ -124,6 +131,7 @@ const tabs: TabItem[] = [
   },
   {
     value: "expenses-table",
+    navTintClass: "bg-[#fbeceb] border-[#dfaaa6] text-[#873d3d]",
     label: "المصروفات",
     shortLabel: "مصروفات",
     icon: <ReceiptText className="w-5 h-5 sm:w-6 sm:h-6" />,
@@ -131,6 +139,7 @@ const tabs: TabItem[] = [
   },
   {
     value: "reports",
+    navTintClass: "bg-[#e9effa] border-[#a7bde0] text-[#315d99]",
     label: "التقارير",
     shortLabel: "تقارير",
     icon: <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6" />,
@@ -138,6 +147,7 @@ const tabs: TabItem[] = [
   },
   {
     value: "general-expenses-ledger",
+    navTintClass: "bg-[#f0eaf6] border-[#bca8d0] text-[#60417d]",
     label: "سجل النفقات",
     shortLabel: "السجل",
     icon: <FileSpreadsheet className="w-5 h-5 sm:w-6 sm:h-6" />,
@@ -321,10 +331,10 @@ function Index() {
                   aria-label={tab.label}
                   className={`app-tab-nav-item relative flex min-h-[56px] min-w-[88px] shrink-0 flex-col items-center justify-center gap-1 rounded-xl border px-3 py-2 text-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#6ba3c8] focus:ring-offset-2 sm:min-w-[112px] sm:flex-row sm:gap-2 sm:px-4 lg:min-w-0 lg:flex-1 ${isActive
                     ? `${tab.activeClass} border-transparent text-white shadow-md shadow-[#2e6b8a]/20`
-                    : "border-transparent bg-[#f3f7fa] text-[#49677d] hover:border-[#c7dbe9] hover:bg-[#e8f0f8]"
+                    : `${tab.navTintClass} hover:brightness-[0.97]`
                   }`}
                 >
-                  <span className={isActive ? "scale-110" : "scale-100"}>{tab.icon}</span>
+                  <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-all duration-200 ${isActive ? "border-white/30 bg-white/15 text-white shadow-inner" : `${tab.navTintClass} shadow-sm`}`} aria-hidden="true">{tab.icon}</span>
                   <span className="whitespace-nowrap text-xs font-extrabold leading-tight sm:text-sm">
                     <span className="sm:hidden">{tab.shortLabel}</span>
                     <span className="hidden sm:inline">{tab.label}</span>
