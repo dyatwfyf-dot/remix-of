@@ -2773,7 +2773,7 @@ async () => {
     ];
   
   return (
-    <div className="w-full space-y-4 sm:space-y-6 p-0" dir="rtl">
+    <div className="mizan-installments-tab w-full space-y-4 sm:space-y-6 p-0" dir="rtl">
       
 {/* ========== واجهة جدول 2025 ========== */}
       <div className="w-full bg-gradient-to-b from-sky-50/60 to-white shadow-lg border border-sky-100 rounded-2xl overflow-hidden">
