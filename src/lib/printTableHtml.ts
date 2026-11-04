@@ -546,6 +546,39 @@ export function buildTableHtml(opts: {
     return isNumeric ? escapeHtml(fmt(Number(value) || 0)) : escapeHtml(value);
   };
 
+  const buildReportDataRow = (row: Record<string, any>, index: number) => {
+    const isGrandTotal = String(row?.description ?? "").trim() === "الإجمالي الكلي";
+    const amountIndex = columns.findIndex((column) => column.key === "amount");
+
+    if (isGrandTotal && amountIndex >= 0) {
+      const amountColumn = columns[amountIndex];
+      const trailingColSpan = columns.length - amountIndex - 1;
+      const amountCellClass = getCellClass(amountColumn, row.amount);
+      return `<tr class="${getReportRowClass(row, index)}">
+        <td class="idx numeric-cell" data-col-key="description" colspan="${amountIndex + 1}">
+          <span class="pdf-cell-text">الإجمالي الكلي</span>
+        </td>
+        <td class="${amountCellClass}" data-col-key="amount" data-col-name="${escapeHtml(amountColumn.label)}">
+          <span class="pdf-cell-text">${formatCellContent(row.amount, true)}</span>
+        </td>
+        ${trailingColSpan > 0 ? `<td colspan="${trailingColSpan}"><span class="pdf-cell-text"></span></td>` : ""}
+      </tr>`;
+    }
+
+    return `<tr class="${getReportRowClass(row, index)}"><td class="idx numeric-cell" data-col-key="idx"><span class="pdf-cell-text">${
+      row.summaryLevel === "total" || row.description === "الإجمالي الكلي" ? "★" : index + 1
+    }</span></td>${columns
+      .map((column) => {
+        const value = row[column.key];
+        const isNumeric = numericKeys.includes(column.key) || typeof value === "number";
+        const classes = getCellClass(column, value);
+        return `<td class="${classes}" data-col-key="${escapeHtml(column.key)}" data-col-name="${escapeHtml(
+          column.label
+        )}"><span class="pdf-cell-text">${formatCellContent(value, isNumeric)}</span></td>`;
+      })
+      .join("")}</tr>`;
+  };
+
   const reportDateLabel =
     formatReportDate(reportDate) || new Date().toLocaleDateString("ar-EG-u-nu-latn");
 
@@ -635,19 +668,7 @@ export function buildTableHtml(opts: {
         </tr>`;
       }
 
-      return `<tr class="${getReportRowClass(r, i)}"><td class="idx numeric-cell" data-col-key="idx"><span class="pdf-cell-text">${
-        r.summaryLevel === "total" || r.description === "الإجمالي الكلي" ? "★" : i + 1
-      }</span></td>${columns
-        .map((c) => {
-          const v = r[c.key];
-          const isNum = numericKeys.includes(c.key) || typeof v === "number";
-          const classes = getCellClass(c, v);
-
-          return `<td class="${classes}" data-col-key="${escapeHtml(c.key)}" data-col-name="${escapeHtml(
-            c.label
-          )}"><span class="pdf-cell-text">${formatCellContent(v, isNum)}</span></td>`;
-        })
-        .join("")}</tr>`;
+      return buildReportDataRow(r, i);
     })
     .join("");
 
@@ -692,19 +713,7 @@ export function buildTableHtml(opts: {
           </tr>`;
         }
 
-        return `<tr class="${getReportRowClass(r, globalIndex)}"><td class="idx numeric-cell" data-col-key="idx"><span class="pdf-cell-text">${
-          r.summaryLevel === "total" || r.description === "الإجمالي الكلي" ? "★" : globalIndex + 1
-        }</span></td>${columns
-          .map((c) => {
-            const v = r[c.key];
-            const isNum = numericKeys.includes(c.key) || typeof v === "number";
-            const classes = getCellClass(c, v);
-
-            return `<td class="${classes}" data-col-key="${escapeHtml(c.key)}" data-col-name="${escapeHtml(
-              c.label
-            )}"><span class="pdf-cell-text">${formatCellContent(v, isNum)}</span></td>`;
-          })
-          .join("")}</tr>`;
+        return buildReportDataRow(r, globalIndex);
       }).join("");
 
     return buildRows(beforeRows, 0) + spacerHtml + buildRows(afterRows, summaryIndex);
