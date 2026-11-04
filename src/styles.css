@@ -853,3 +853,24 @@ body {
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
+
+
+/* إبقاء شريط التنقل ظاهراً أثناء تمرير الصفحة */
+.app-main-nav {
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1000 !important;
+  isolation: isolate;
+}
+
+/* خلفية مستقلة وهادئة لكل تبويب دون التأثير على محتوى التبويبات الأخرى */
+.mizan-installments-tab { background: linear-gradient(135deg, #edf4ff 0%, #f7faff 55%, #e7efff 100%) !important; }
+.mizan-hafiza-tab { background: linear-gradient(135deg, #eaf7ef 0%, #f6fcf8 55%, #e1f2e8 100%) !important; }
+.mizan-account-tab { background: linear-gradient(135deg, #e8f5f8 0%, #f5fbfc 55%, #dff0f4 100%) !important; }
+.mizan-journal-tab { background: linear-gradient(135deg, #f2ebfb 0%, #fbf8ff 55%, #e9def6 100%) !important; }
+.mizan-monthly-statement-tab { background: linear-gradient(135deg, #fff3df 0%, #fffbf4 55%, #fbe9ca 100%) !important; }
+.mizan-revenue-tab { background: linear-gradient(135deg, #eaf7e9 0%, #f7fcf5 55%, #e0f0dc 100%) !important; }
+.mizan-expenses-tab { background: linear-gradient(135deg, #fff0ef 0%, #fff9f8 55%, #f8e3e2 100%) !important; }
+.mizan-reports-tab { background: linear-gradient(135deg, #eaf0fa 0%, #f7f9fd 55%, #dfe8f6 100%) !important; }
+.mizan-usage-tab { background: linear-gradient(135deg, #e6f5f2 0%, #f5fbfa 55%, #d9eee9 100%) !important; }
