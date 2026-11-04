@@ -2,6 +2,7 @@ import { reportsCompactColumnsCss, tagReportCellsScript } from "./reportsCompact
 import { Capacitor } from "@capacitor/core";
 import { REPORT_LETTERHEAD_SRC, reportLetterheadHtml } from "./printTableHtml";
 import { downloadRenderedReportPdf } from "./reportPdf";
+import { reportTableThemeCss } from "./reportTheme";
 import { printReportHtmlAsync } from "./nativePrinter";
 
 interface OpenBrowserPrintPreviewOptions {
@@ -641,6 +642,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       overflow-wrap: normal !important;
     }
     ${reportsCompactColumnsCss}
+    ${reportTableThemeCss}
   </style>
 </head>
 <body>

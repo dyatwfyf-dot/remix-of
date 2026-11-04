@@ -6,6 +6,7 @@ import {
   tablePrintStyles,
 } from './printTableHtml';
 import { downloadReportPdf } from "@/lib/reportPdf";
+import { reportTableThemeCss } from "@/lib/reportTheme";
 import { printReportHtml } from "@/lib/nativePrinter";
 
 async function htmlToPdf(opts: { html: string; css: string; fileName: string; orientation?: 'portrait' | 'landscape'; pageWidthPx?: number }): Promise<void> {
@@ -14,6 +15,7 @@ async function htmlToPdf(opts: { html: string; css: string; fileName: string; or
 
 const statementCss = `
   ${tablePrintStyles}
+  ${reportTableThemeCss}
   body, .pdf-page { 
 font-size: 24px; 
 font-family: Cairo;
