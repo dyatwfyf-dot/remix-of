@@ -1,3 +1,4 @@
+import "./AppTabs.css";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
   FileSpreadsheet, Plus, Trash2, Upload, Download, FileText, Printer, Eraser,
@@ -299,44 +300,7 @@ const THEAD_HTML = `
 </tr>`;
 
 /* تنسيق الشاشة فقط (لا يؤثر على الطباعة ولا Excel) */
-const USAGE_UI_CSS = `
-.usage-emerald { --em:#0f5132; --em2:#14746f; --gold:#f5d76e; --line:#c9e0d5; }
-.usage-emerald .u-card { background:linear-gradient(135deg,#f4fbf7 0%,#ffffff 60%); border:1px solid #b5d5c7; border-radius:20px; box-shadow:0 6px 18px -8px rgba(15,81,50,.35); }
-.usage-emerald .u-scroll { border:1px solid #b5d5c7; border-radius:20px; background:#fff; box-shadow:0 8px 22px -10px rgba(15,81,50,.4); overflow:auto; -webkit-overflow-scrolling:touch; }
-.usage-emerald table.u-table { border-collapse:separate; border-spacing:0; width:max-content; min-width:100%; table-layout:auto; }
-.usage-emerald .u-table th, .usage-emerald .u-table td { border-bottom:1px solid var(--line); border-left:1px solid var(--line); }
 
-/* الرأس */
-.usage-emerald .u-thead th { position:sticky; top:0; z-index:5; background:#e6f3ec; color:#0b3d2e; font-weight:800; font-size:12px; line-height:1.3; padding:6px 8px; text-align:center; vertical-align:middle; white-space:normal; min-width:auto; overflow-wrap:break-word; }
-.usage-emerald .u-thead th.c-total { background:#fbe7a1; color:#5a3d00; }
-.usage-emerald .u-thead th.c-bab { background:#0f5132; color:#f5d76e; }
-.usage-emerald .u-thead th.c-fasl { background:#a9d8c3; color:#0b3d2e; }
-.usage-emerald .u-thead th.c-band { background:#f3dfa2; color:#5a3d00; }
-
-/* الصفوف */
-.usage-emerald td.u-cell { padding:2px 3px; vertical-align:middle; text-align:center; color:#173d31; }
-.usage-emerald tr.u-row-a td { background:#ffffff; }
-.usage-emerald tr.u-row-b td { background:#f3faf6; }
-.usage-emerald tr.u-row:hover td:not(.u-f) { background:#e2f3ea; }
-.usage-emerald td.u-f { font-weight:800; }
-.usage-emerald td.u-f-total { background:#fdf1c4 !important; color:#5a3d00; }
-.usage-emerald td.u-f-bab { background:#d3ebdf !important; color:#0b3d2e; }
-.usage-emerald td.u-f-fasl { background:#e7f5ee !important; color:#0f5132; }
-
-/* حقول الإدخال */
-.usage-emerald .u-input { background:transparent; color:#173d31; border:1px solid transparent; outline:none; transition:background .15s, border-color .15s, box-shadow .15s; }
-.usage-emerald .u-input:hover { background:#f0f9f4; }
-.usage-emerald .u-input:focus { background:#ffffff; border-color:#14746f; box-shadow:0 0 0 2px rgba(20,116,111,.22); }
-
-/* شريط الشهر وصفوف الإجماليات */
-.usage-emerald tr.u-month td { background:linear-gradient(90deg,#0f5132,#14746f); color:#f5d76e; font-weight:800; font-size:14px; text-align:right; padding:6px 10px; }
-.usage-emerald tr.u-cur td { background:#d3ebdf; color:#0b3d2e; font-weight:800; }
-.usage-emerald tr.u-prev td { background:#efe8d6; color:#5b4a2a; font-weight:800; }
-.usage-emerald tr.u-cum td { background:#0f5132; color:#f5d76e; font-weight:800; }
-.usage-emerald tr.u-cur td.u-label, .usage-emerald tr.u-prev td.u-label, .usage-emerald tr.u-cum td.u-label { text-align:right; padding:6px 10px; white-space:normal; }
-.usage-emerald tr.u-cur td.u-blank, .usage-emerald tr.u-prev td.u-blank, .usage-emerald tr.u-cum td.u-blank { background:#ffffff; }
-.usage-emerald .u-num-total { white-space:nowrap; padding:4px 6px; font-variant-numeric:tabular-nums; direction:ltr; text-align:center; }
-`;
 
 const AppTabs: React.FC = () => {
   const { reportDate, reportDateLabel } = useReportDate();
@@ -755,7 +719,7 @@ background:#0b3d6d; color:white !important; font-weight:700 !important; -webkit-
 
   return (
     <div className="usage-emerald sheet-tabs-ui apk-tabs-ui space-y-3 font-tajawal p-2" dir="rtl">
-      <style>{USAGE_UI_CSS}</style>
+      
 
       <div className="u-card p-3 space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
