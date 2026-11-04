@@ -44,7 +44,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style id="dynamic-page-rule">
     @page {
-      size: ${paperSize};
+      size: ${paperSize} ${defaultOrientation};
       margin: ${defaultMargin};
     }
   </style>
@@ -966,7 +966,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         const tableContainer = document.getElementById('tableContainer');
         tableContainer.style.zoom = String(scale);
         if (!fitToContent) {
-          dynamicRule.innerHTML = '@page { size: ' + pageSize + '; margin: ' + margin + '; }';
+          dynamicRule.innerHTML = '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + margin + '; }';
         }
 
         window.requestAnimationFrame(function() {
@@ -1042,7 +1042,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       parsed.querySelectorAll("script").forEach((script) => script.remove());
       const printOverrides = parsed.createElement("style");
       printOverrides.textContent = `
-        @page { size: ${paperSize}; margin: ${defaultMargin}; }
+        @page { size: ${paperSize} ${defaultOrientation}; margin: ${defaultMargin}; }
         html, body { width: 100% !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; background: #fff !important; }
         .sheet-viewport { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
         .sheet-paper { width: 100% !important; min-width: 0 !important; min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 0 !important; transform: none !important; box-shadow: none !important; border-radius: 0 !important; }
