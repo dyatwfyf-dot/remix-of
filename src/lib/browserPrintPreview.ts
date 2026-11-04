@@ -1,3 +1,4 @@
+import { reportsCompactColumnsCss } from "./reportsCompactColumnsCss";
 import { Capacitor } from "@capacitor/core";
 import { REPORT_LETTERHEAD_SRC, reportLetterheadHtml } from "./printTableHtml";
 import { downloadRenderedReportPdf } from "./reportPdf";
@@ -639,6 +640,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       word-break: keep-all !important;
       overflow-wrap: normal !important;
     }
+    ${reportsCompactColumnsCss}
   </style>
 </head>
 <body>

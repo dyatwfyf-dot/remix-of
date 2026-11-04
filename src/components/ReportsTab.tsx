@@ -1409,7 +1409,7 @@ if (source === "tawfiqCustody") {
                           }
                         }
                       }}
-                      className="max-w-[280px] cursor-pointer whitespace-normal break-words [overflow-wrap:anywhere] border border-black px-3 py-3 font-black hover:bg-[#e6b800]"
+                      className={`cursor-pointer border border-black px-1 py-0.5 font-black hover:bg-[#e6b800] ${col.key === "description" ? "w-[220px] max-w-[220px] whitespace-normal break-words" : "w-px whitespace-nowrap"}`}
                     >
                       <div className="flex items-center justify-center gap-1">
                         <span>{col.label}</span>
@@ -1631,8 +1631,8 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                           return (
                             <td
                               key={col.key}
-                              className={`border border-black px-2 py-2 font-bold ${
-                                isNoWrap ? `whitespace-nowrap ${isNumeric ? "font-mono" : ""}` : "whitespace-normal break-words [overflow-wrap:anywhere] max-w-[280px]"
+                              className={`border border-black px-1 py-0.5 font-bold ${
+                                col.key === "description" ? "w-[220px] max-w-[220px] whitespace-normal break-words [overflow-wrap:anywhere]" : `w-px whitespace-nowrap ${isNumeric ? "font-mono" : ""}`
                               } bg-white text-slate-900`}
                               style={
                                 isTotal
