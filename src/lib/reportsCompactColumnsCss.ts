@@ -1,16 +1,17 @@
-// Shared compact column sizing for report tables (screen, print preview, print, PDF).
-// Cells holding numbers/dates never wrap; cells holding text wrap to max 2 lines.
-
-/** Classifies each cell of report tables under `root` as numeric (no wrap) or text (wrap). */
+// Shared compact column sizing for report tables across the screen, browser preview, printing and PDF.
+// Only the semantic description column may wrap, and it is limited to two lines.
 export function tagReportCells(root: ParentNode) {
-  const numRe = /^[\s\-+()]*[\d\u0660-\u0669\u06F0-\u06F9][\d\u0660-\u0669\u06F0-\u06F9\s.,٫٬،%\-/:+()]*$/;
   root.querySelectorAll("table.reports-data-table td, table.reports-data-table th").forEach((cell) => {
     const el = cell as HTMLElement;
     if (el.closest("tr.signature-block-row")) return;
-    const text = (el.textContent || "").trim();
-    el.classList.remove("rc-num", "rc-text");
-    if (el.tagName === "TH") { el.classList.add("rc-num"); return; }
-    el.classList.add(!text || numRe.test(text) ? "rc-num" : "rc-text");
+    el.classList.remove("rc-num", "rc-desc");
+    if (el.tagName === "TH") {
+      el.classList.add("rc-num");
+      return;
+    }
+    const isDescription = el.getAttribute("data-col-key") === "description" ||
+      el.classList.contains("description-cell") || el.classList.contains("desc-cell");
+    el.classList.add(isDescription ? "rc-desc" : "rc-num");
   });
 }
 
@@ -18,32 +19,57 @@ export function tagReportCells(root: ParentNode) {
 export const tagReportCellsScript = `(${tagReportCells.toString()})(document);`;
 
 export const reportsCompactColumnsCss = `
-  table.reports-data-table { table-layout: auto !important; width: 100% !important; }
-  table.reports-data-table th, table.reports-data-table td {
-    padding: 1px 3px !important;
+  table.reports-data-table {
+    table-layout: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  table.reports-data-table th,
+  table.reports-data-table td {
+    width: 1% !important;
+    min-width: 0 !important;
+    padding: 1px 2px !important;
     white-space: nowrap !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
   }
-  table.reports-data-table td.rc-num, table.reports-data-table td.rc-num * {
+  table.reports-data-table td.rc-num,
+  table.reports-data-table td.rc-num *,
+  .report-page-content table.reports-data-table tbody td.rc-num,
+  .report-page-content table.reports-data-table tbody td.rc-num * {
+    width: auto !important;
     white-space: nowrap !important;
-    width: 1% !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
   }
-  table.reports-data-table td.rc-text {
+  table.reports-data-table td.rc-desc,
+  .report-page-content table.reports-data-table tbody td.rc-desc,
+  table.reports-data-table th[data-col-key="description"] {
+    width: 220px !important;
+    min-width: 0 !important;
+    max-width: 220px !important;
     white-space: normal !important;
     word-break: break-word !important;
     overflow-wrap: anywhere !important;
-    max-width: 70mm !important;
-    min-width: 25mm !important;
   }
-  table.reports-data-table td.rc-text > *, table.reports-data-table td.rc-text .pdf-cell-text {
+  table.reports-data-table td.rc-desc > *,
+  table.reports-data-table td.rc-desc .pdf-cell-text,
+  .report-page-content table.reports-data-table tbody td.rc-desc > *,
+  .report-page-content table.reports-data-table tbody td.rc-desc .pdf-cell-text {
     display: -webkit-box !important;
     -webkit-box-orient: vertical !important;
     -webkit-line-clamp: 2 !important;
     line-clamp: 2 !important;
+    max-height: 2.9em !important;
     overflow: hidden !important;
     white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
   }
   table.reports-data-table tr.signature-block-row td,
-  table.reports-data-table tr.signature-block-row td * { white-space: normal !important; width: auto !important; }
+  table.reports-data-table tr.signature-block-row td * {
+    white-space: normal !important;
+    width: auto !important;
+  }
 `;

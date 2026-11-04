@@ -1380,18 +1380,25 @@ if (source === "tawfiqCustody") {
         {/* جدول عرض التقرير */}
         <div className="overflow-x-auto p-4">
           <div className="border border-black bg-white shadow-sm">
-            <table id="reports-table" className="w-full table-auto border-collapse text-center text-xs" style={{ tableLayout: "auto" }}>
+            <table id="reports-table" className="reports-data-table w-full table-auto border-collapse text-center text-xs" style={{ tableLayout: "auto" }}>
               <thead>
   <tr className="border border-black bg-[#FFD700] text-black whitespace-normal">
-   <th className="w-10 border border-black px-2 py-3 font-white">م</th>
+   <th className="w-px border border-black px-1 py-0.5 font-white whitespace-nowrap" style={{ width: "1%", padding: "1px 2px", whiteSpace: "nowrap" }}>م</th>
                   {sourceConfig.columns.map((col) => (
                     <th
                       key={col.key}
-                      style={numericKeys.includes(col.key) ? {
-                        backgroundColor: "#f2f7fb",
-                        WebkitPrintColorAdjust: "exact",
-                        printColorAdjust: "exact",
-                      } : undefined}
+                      style={{
+                        ...(numericKeys.includes(col.key) ? {
+                          backgroundColor: "#f2f7fb",
+                          WebkitPrintColorAdjust: "exact" as const,
+                          printColorAdjust: "exact" as const,
+                        } : {}),
+                        width: col.key === "description" ? "220px" : "1%",
+                        minWidth: 0,
+                        maxWidth: col.key === "description" ? "220px" : "none",
+                        padding: "1px 2px",
+                        whiteSpace: col.key === "description" ? "normal" : "nowrap",
+                      }}
                       onClick={() => {
                         if (source === "trainee") {
                           if (traineeSortColumn === col.key) {
@@ -1410,6 +1417,7 @@ if (source === "tawfiqCustody") {
                         }
                       }}
                       className={`cursor-pointer border border-black px-1 py-0.5 font-black hover:bg-[#e6b800] ${col.key === "description" ? "w-[220px] max-w-[220px] whitespace-normal break-words" : "w-px whitespace-nowrap"}`}
+                      data-col-key={col.key}
                     >
                       <div className="flex items-center justify-center gap-1">
                         <span>{col.label}</span>
@@ -1422,7 +1430,7 @@ if (source === "tawfiqCustody") {
                       </div>
                     </th>
                   ))}
-                  <th className="w-12 border border-black px-2 py-3 font-black print:hidden">حذف</th>
+                  <th className="w-px border border-black px-1 py-0.5 font-black print:hidden whitespace-nowrap" style={{ width: "1%", padding: "1px 2px", whiteSpace: "nowrap" }}>حذف</th>
                 </tr>
 
                 {/* صف التصفية والبحث في الأعمدة */}
@@ -1581,7 +1589,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                             : undefined
                         }
                       >
-                        <td className="border border-black px-2 py-2 font-bold" style={isTotal ? totalCellStyle : traineeRowCellStyle}>
+                        <td className="border border-black px-1 py-0.5 font-bold whitespace-nowrap" style={{ ...(isTotal ? totalCellStyle : traineeRowCellStyle), width: "1%", padding: "1px 2px", whiteSpace: "nowrap" }}>
                           {isOpening ? "—" : isTotal ? "★" : index + 1}
                         </td>
 
@@ -1594,7 +1602,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                           // حقول إدخال يدوية لرقم كشف التسوية والملاحظات والمبلغ في تقارير العهد
                           if (isEditableCustodyRow && (col.key === "settlementNo" || col.key === "notes")) {
                             return (
-                              <td key={col.key} className="max-w-[280px] whitespace-normal break-words [overflow-wrap:anywhere] border border-0 p-1">
+                              <td key={col.key} data-col-key={col.key} className="w-px whitespace-nowrap border border-black px-1 py-0.5">
                                 <input
                                   type="text"
                                   value={val ?? ""}
@@ -1614,7 +1622,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
 
                           if (isEditableCustodyRow && col.key === "amount") {
                             return (
-                              <td key={col.key} className="border border-black p-1 font-mono font-black">
+                              <td key={col.key} data-col-key={col.key} className="w-px whitespace-nowrap border border-black px-1 py-0.5 font-mono font-black">
                                 <input
                                   type="number"
                                   value={val ?? ""}
@@ -1634,19 +1642,8 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                               className={`border border-black px-1 py-0.5 font-bold ${
                                 col.key === "description" ? "w-[220px] max-w-[220px] whitespace-normal break-words [overflow-wrap:anywhere]" : `w-px whitespace-nowrap ${isNumeric ? "font-mono" : ""}`
                               } bg-white text-slate-900`}
-                              style={
-                                isTotal
-                                  ? totalCellStyle
-                                  : isTraineeTypedRow
-                                    ? traineeRowCellStyle
-                                    : isNumeric
-                                      ? {
-                                          backgroundColor: "#ffffff",
-                                          WebkitPrintColorAdjust: "exact",
-                                          printColorAdjust: "exact",
-                                        }
-                                      : undefined
-                              }
+                              data-col-key={col.key}
+                              style={{ ...(isTotal ? totalCellStyle : isTraineeTypedRow ? traineeRowCellStyle : isNumeric ? { backgroundColor: "#ffffff", WebkitPrintColorAdjust: "exact" as const, printColorAdjust: "exact" as const } : {}), width: col.key === "description" ? "220px" : "1%", maxWidth: col.key === "description" ? "220px" : "none", minWidth: 0, padding: "1px 2px", whiteSpace: col.key === "description" ? "normal" : "nowrap" }}
                             >
                               {col.key === "description" ? (
                                 <div className="line-clamp-2 leading-snug">{val !== undefined && val !== null && String(val) !== "" ? String(val) : "—"}</div>
@@ -1655,7 +1652,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                           );
                         })}
 
-                        <td className="border border-black px-1 py-1 print:hidden" style={isTotal ? totalCellStyle : traineeRowCellStyle}>
+                        <td className="border border-black px-1 py-0.5 print:hidden whitespace-nowrap" style={{ ...(isTotal ? totalCellStyle : traineeRowCellStyle), width: "1%", padding: "1px 2px", whiteSpace: "nowrap" }}>
                           {!isOpening && !isTotal && (
                             <button
                               onClick={() => deleteRow(row)}
