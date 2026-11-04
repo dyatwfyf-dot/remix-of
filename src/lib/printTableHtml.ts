@@ -234,6 +234,21 @@ export const tablePrintStyles = `
     font-size: 16px !important;
     line-height: 1.45 !important;
     font-family: Cairo, sans-serif !important;
+    height: auto !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+  td.num, td.numeric-cell, td.date-cell, td.ref-cell, td.compact-cell, td.idx,
+  th.num, th.numeric-cell, th.date-cell, th.ref-cell, th.compact-cell, th.idx {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+  .pdf-cell-text {
+    max-width: 100% !important;
+    white-space: inherit !important;
+    overflow-wrap: inherit !important;
   }
 
   thead th {
