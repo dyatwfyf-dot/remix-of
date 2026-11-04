@@ -1,4 +1,4 @@
-import { reportsCompactColumnsCss } from "./reportsCompactColumnsCss";
+import { reportsCompactColumnsCss, tagReportCells } from "./reportsCompactColumnsCss";
 import { deliverBlobToUser, isNativeFileStorageAvailable } from './nativeFileStorage';
 import { escapeHtml, reportLetterheadHtml } from './printTableHtml';
 
@@ -453,6 +453,7 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
 }) {
   const { fileName, pageSize = 'A4', orientation = 'portrait', marginMm = 3, fitToContent = false } = options;
   const doc = source.ownerDocument;
+  tagReportCells(source);
   await ready(doc);
   const [{ default: html2canvas }, { default: JsPDF }] = await Promise.all([import('html2canvas'), import('jspdf')]);
   const [widthMm, pageHeightMm] = dimensions(pageSize, orientation);

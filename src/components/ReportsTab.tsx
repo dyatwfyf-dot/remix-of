@@ -252,7 +252,7 @@ const reportsTabPrintCss = `
     overflow-wrap: anywhere !important;
   }
   @media print {
-    @page { size: A4 portrait; margin: 8mm; }
+    @page { size: A4; margin: 8mm; }
     body { font-family: 'Cairo', Arial, sans-serif !important; color: #000000 !important; background: #ffffff !important; }
     .report-page-header { border: 2px solid #000 !important; margin-bottom: 8px !important; }
     table {
