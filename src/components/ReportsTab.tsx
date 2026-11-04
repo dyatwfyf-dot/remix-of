@@ -265,7 +265,7 @@ const reportsTabPrintCss = `
       border: 2px solid #000 !important;
     }
     thead th {
-background: gold !important; color: #000 !important;
+background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important; color: #3b2600 !important;
 font-size: 18px !important;
 font-weight: 900 !important; border: 1px solid #000 !important; }
     tbody td {
@@ -287,11 +287,11 @@ font-size: 20px !important;
       print-color-adjust: exact !important;
     }
     .total-row td.financial-amount-cell {
-background: #0437bb !important;
+background: linear-gradient(180deg, #39a2ff 0%, #087bff 52%, #0052cc 100%) !important; background-color: #087bff !important;
       color: #ffffff !important;
     }
     .total-row td, tr.total-row td, tbody tr.total-row > td {
-      background: #0437bb !important;
+      background: linear-gradient(180deg, #39a2ff 0%, #087bff 52%, #0052cc 100%) !important; background-color: #087bff !important;
 color: #ffffff !important;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
@@ -318,12 +318,12 @@ color: #ffffff !important;
   html body table tr.report-grand-total-row > td, html body table tr.total-row > td,
   html body table tr.report-grand-total-row > td.description-cell, html body table tr.total-row > td.description-cell,
   html body table tr.report-grand-total-row > td.financial-amount-cell, html body table tr.total-row > td.financial-amount-cell {
- background: #0437bb !important; 
+ background: linear-gradient(180deg, #39a2ff 0%, #087bff 52%, #0052cc 100%) !important; background-color: #087bff !important; 
  color: #ffffff !important; font-weight: 900 !important;
     -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
   }
   html body table tr.report-grand-total-row > td *, html body table tr.total-row > td * { 
-  background: #0437bb !important; 
+  background: linear-gradient(180deg, #39a2ff 0%, #087bff 52%, #0052cc 100%) !important; background-color: #087bff !important; 
   color: #ffffff !important; }
 
   @media print {
@@ -1431,7 +1431,7 @@ if (source === "tawfiqCustody") {
                     </tr>
                   </>
                 )}
-  <tr className="border border-black bg-[#FFD700] text-black whitespace-normal">
+  <tr className="reports-column-header-row border border-black bg-[#FFD700] text-black whitespace-normal">
    <th data-col-key="idx" className="w-10 border border-black px-2 py-3 font-black">م</th>
                   {sourceConfig.columns.map((col) => (
                     <th
