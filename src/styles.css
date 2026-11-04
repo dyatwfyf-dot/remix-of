@@ -876,3 +876,106 @@ body {
 .mizan-expenses-tab { background: linear-gradient(135deg, #fff0ef 0%, #fff9f8 55%, #f8e3e2 100%) !important; }
 .mizan-reports-tab { background: linear-gradient(135deg, #eaf0fa 0%, #f7f9fd 55%, #dfe8f6 100%) !important; }
 .mizan-usage-tab { background: linear-gradient(135deg, #e6f5f2 0%, #f5fbfa 55%, #d9eee9 100%) !important; }
+
+ 
+/* هوية بصرية حديثة ومستقلة لتبويب حوافظ التوريد */
+.mizan-hafiza-tab {
+  --hafiza-ink: #17324d;
+  --hafiza-brand: #176b87;
+  --hafiza-brand-deep: #124b68;
+  --hafiza-accent: #20a68a;
+  --hafiza-surface: rgba(255,255,255,.94);
+  --hafiza-line: #c8dce5;
+  background:
+    radial-gradient(ellipse at 8% 0%, rgba(32,166,138,.14), transparent 34%),
+    radial-gradient(ellipse at 100% 20%, rgba(23,107,135,.13), transparent 38%),
+    linear-gradient(145deg,#edf6f8 0%,#f7fafc 52%,#e7f1f5 100%) !important;
+  color: var(--hafiza-ink);
+}
+.mizan-hafiza-tab > div:first-child {
+  background: linear-gradient(115deg,#123d59 0%,#176b87 58%,#20a68a 100%) !important;
+  border: 1px solid rgba(255,255,255,.38) !important;
+  border-radius: 1.15rem !important;
+  box-shadow: 0 10px 26px rgba(18,75,104,.18) !important;
+}
+.mizan-hafiza-tab > div:first-child :where(h1,p) { color:#fff !important; }
+.mizan-hafiza-tab > div:first-child > div > div:first-child {
+  background:rgba(255,255,255,.16) !important;
+  border:1px solid rgba(255,255,255,.28);
+}
+.mizan-hafiza-tab > div:nth-child(2) {
+  background:rgba(255,255,255,.78) !important;
+  border:1px solid var(--hafiza-line) !important;
+  box-shadow:0 6px 18px rgba(23,64,85,.08) !important;
+  backdrop-filter:blur(12px);
+}
+.mizan-hafiza-tab button,
+.mizan-hafiza-tab label.cursor-pointer {
+  border-radius:.8rem !important;
+  font-weight:800 !important;
+  transition:filter .18s ease,transform .18s ease,box-shadow .18s ease;
+}
+.mizan-hafiza-tab > div:nth-child(2) button,
+.mizan-hafiza-tab [class*="rounded-xl"] > button {
+  color:#fff !important;
+  background:linear-gradient(135deg,#176b87,#124b68) !important;
+  border:1px solid rgba(18,75,104,.18) !important;
+  box-shadow:0 4px 10px rgba(18,75,104,.16) !important;
+}
+.mizan-hafiza-tab > div:nth-child(2) button:hover,
+.mizan-hafiza-tab [class*="rounded-xl"] > button:hover {
+  filter:brightness(1.08);
+  box-shadow:0 7px 16px rgba(18,75,104,.22) !important;
+}
+.mizan-hafiza-tab button:active { transform:translateY(1px) scale(.985); }
+.mizan-hafiza-tab button:disabled { opacity:.48; }
+.mizan-hafiza-tab > div:nth-child(2) > div > div {
+  background:linear-gradient(135deg,#159b82,#087e78) !important;
+  border:1px solid #087e78 !important;
+}
+.mizan-hafiza-tab [class*="rounded-2xl"][class*="shadow-lg"],
+.mizan-hafiza-tab [class*="rounded-2xl"][class*="shadow-md"] {
+  border:1px solid var(--hafiza-line) !important;
+  border-radius:1.1rem !important;
+  background:var(--hafiza-surface) !important;
+  box-shadow:0 8px 24px rgba(23,64,85,.09) !important;
+}
+.mizan-hafiza-tab [class*="rounded-2xl"][class*="shadow-lg"] > :first-child,
+.mizan-hafiza-tab [class*="rounded-2xl"][class*="shadow-md"] > :first-child {
+  border-color:var(--hafiza-line) !important;
+}
+.mizan-hafiza-tab [class*="bg-\\[hsla"] {
+  background:linear-gradient(110deg,#176b87,#20a68a) !important;
+}
+.mizan-hafiza-tab :where(input,select,textarea) {
+  color:#17324d !important;
+  background:#fff !important;
+  border:1px solid #b9d0dc !important;
+  border-radius:.7rem !important;
+}
+.mizan-hafiza-tab :where(input,select,textarea):focus {
+  outline:none !important;
+  border-color:#1686a2 !important;
+  box-shadow:0 0 0 3px rgba(22,134,162,.14) !important;
+}
+.mizan-hafiza-tab table thead th {
+  background:#dceef2 !important;
+  color:#153d55 !important;
+  border-color:#b8d1dc !important;
+}
+.mizan-hafiza-tab table tbody tr:nth-child(even) { background:#f1f7f9 !important; }
+.mizan-hafiza-tab table tbody tr:hover { background:#e2f2f2 !important; }
+.mizan-hafiza-tab table :where(th,td) { border-color:#d0e0e6 !important; }
+.mizan-hafiza-tab table tbody td { color:#203b50 !important; }
+.mizan-hafiza-tab [class*="bg-sky-600"] {
+  background:#176b87 !important;
+  color:#fff !important;
+}
+.mizan-hafiza-tab [class*="text-slate-900"],
+.mizan-hafiza-tab [class*="text-slate-800"] { color:#17324d !important; }
+@media (max-width:640px) {
+  .mizan-hafiza-tab { padding: .55rem !important; }
+  .mizan-hafiza-tab > div:first-child { padding: .85rem !important; }
+  .mizan-hafiza-tab > div:nth-child(2) { padding:.65rem !important; }
+  .mizan-hafiza-tab > div:nth-child(2) button { min-height:42px; font-size:.82rem !important; }
+}
