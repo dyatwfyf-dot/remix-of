@@ -1,0 +1,7 @@
+/* تنسيقات خاصة بتبويب الأقساط فقط.
+   تبقى قواعد هذا الملف معزولة عن بقية التبويبات. */
+
+.installments-table th,
+.installments-table td {
+  border: 1px solid #000 !important;
+}
