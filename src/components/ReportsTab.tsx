@@ -1499,7 +1499,8 @@ if (source === "tawfiqCustody") {
                   displayRows.map((row, index) => {
                     const isOpening = row.summaryLevel === "opening";
                     const isTotal = row.summaryLevel === "total" || row.total === "نعم";
-                     const isGrandTotal = isTotal && String(row.description ?? "").trim() === "الإجمالي الكلي";
+                     const grandTotalLabel = String(row.description ?? row.category ?? row.item ?? "").trim();
+                     const isGrandTotal = isTotal && grandTotalLabel.includes("الإجمالي الكلي");
                      const isMergedGrandTotal = isGrandTotal && amountColumnIndex >= 0;
                     const isSignature = row.summaryLevel === "signature";
                     const isTraineeDetail = source === "trainee" && row.displayType === "تفصيلي";
@@ -1622,7 +1623,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                             className="border border-black px-3 py-2 text-center font-black text-white"
                             style={totalCellStyle}
                           >
-                            الإجمالي الكلي
+                            {grandTotalLabel}
                           </td>
                           <td
                             data-col-key="amount"
@@ -1631,14 +1632,12 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                           >
                             {formatCurrency(row.amount)}
                           </td>
-                          {sourceConfig.columns.length - amountColumnIndex > 1 && (
-                            <td
-                              data-col-key="grand-total-spacer"
-                              colSpan={sourceConfig.columns.length - amountColumnIndex}
-                              className="border border-black px-1 py-1"
-                              style={totalCellStyle}
-                            />
-                          )}
+                          <td
+                            data-col-key="grand-total-spacer"
+                            colSpan={sourceConfig.columns.length - amountColumnIndex}
+                            className="border border-black px-1 py-1"
+                            style={totalCellStyle}
+                          />
                         </tr>
                       );
                     }
