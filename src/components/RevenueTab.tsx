@@ -116,7 +116,7 @@ export default function RevenueTab() {
 
   return (
     // الحاوية الخارجية: فرض الاتجاه العربي العام وضمان التباعد العمودي
-    <div className="sheet-tabs-ui w-full space-y-3 p-1.5 text-center sm:space-y-5 sm:p-3" dir="rtl">
+    <div className="mizan-revenue-tab sheet-tabs-ui w-full space-y-3 p-1.5 text-center sm:space-y-5 sm:p-3" dir="rtl">
       {/* لوحة التحكم والتحقق: تم تغيير لون الحدود هنا أيضاً إلى أسود متناسق */}
       <div className="grid grid-cols-2 items-end gap-1.5 rounded-xl border border-black bg-white p-1.5 shadow-sm sm:flex sm:flex-wrap sm:gap-3 sm:p-4">
         {/* اختيار الشهر */}
