@@ -846,8 +846,6 @@ export default function ReportsTab() {
      ...row,
      displayType: "تفصيلي",
      summaryLevel: "detail"
-     as
-     const
     })));
    }
    if (traineeDisplayMode === "summary" || traineeDisplayMode === "both") {
