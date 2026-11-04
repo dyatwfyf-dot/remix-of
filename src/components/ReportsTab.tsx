@@ -1417,17 +1417,26 @@ if (source === "tawfiqCustody") {
           <div className="reports-table-scroll">
             <table id="reports-table" className="reports-data-table text-center text-xs" style={{ tableLayout: "auto" }}>
               <thead>
+                {(source === "youssefLoan" || source === "tawfiqCustody") && (
+                  <>
+                    <tr className="reports-custody-title-row">
+                      <th colSpan={sourceConfig.columns.length + 2}>
+                        {title.split("\n")[0]}
+                      </th>
+                    </tr>
+                    <tr className="reports-custody-date-row">
+                      <th colSpan={sourceConfig.columns.length + 2}>
+                        {title.split("\n").slice(1).join(" ")}
+                      </th>
+                    </tr>
+                  </>
+                )}
   <tr className="border border-black bg-[#FFD700] text-black whitespace-normal">
    <th data-col-key="idx" className="w-10 border border-black px-2 py-3 font-black">م</th>
                   {sourceConfig.columns.map((col) => (
                     <th
                       key={col.key}
                       data-col-key={col.key}
-                      style={numericKeys.includes(col.key) ? {
-                        backgroundColor: "#f2f7fb",
-                        WebkitPrintColorAdjust: "exact",
-                        printColorAdjust: "exact",
-                      } : undefined}
                       onClick={() => {
                         if (source === "trainee") {
                           if (traineeSortColumn === col.key) {
