@@ -5,3 +5,49 @@
 .installments-table td {
   border: 1px solid #000 !important;
 }
+
+
+/* تنظيم أدوات جداول الأقساط: نطاق محلي للتبويب فقط */
+.mizan-installments-tab .installments-controls-2025,
+.mizan-installments-tab .installments-controls-2026 {
+  align-items: stretch;
+  min-width: 0;
+}
+
+.mizan-installments-tab .installments-controls-2025 > *,
+.mizan-installments-tab .installments-controls-2026 > * {
+  min-width: 0;
+}
+
+.mizan-installments-tab .installments-controls-2025 :where(button, label),
+.mizan-installments-tab .installments-controls-2026 :where(button, label) {
+  min-height: 40px;
+  line-height: 1.25;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.mizan-installments-tab :where(.installments-search-2025, .installments-search-2026) input {
+  min-width: 0;
+  width: 100%;
+  min-height: 40px;
+}
+
+@media (max-width: 420px) {
+  .mizan-installments-tab .installments-controls-2025,
+  .mizan-installments-tab .installments-controls-2026 {
+    gap: 0.5rem;
+  }
+
+  .mizan-installments-tab .installments-controls-2025 :where(button, label),
+  .mizan-installments-tab .installments-controls-2026 :where(button, label) {
+    padding-inline: 0.45rem;
+    font-size: 0.78rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .mizan-installments-tab .installments-controls-2025 {
+    justify-content: flex-end;
+  }
+}
