@@ -608,7 +608,7 @@ export function buildTableHtml(opts: {
     subtitle ??
     `المجلس اليمني للاختصاصات الطبية - صعدة • تاريخ التقرير: ${reportDateLabel} • عدد السجلات: ${rows.length}`;
 
-  const titleLines = String(title || "").split(/\\r?\\n/);
+  const titleLines = String(title || "").split(/\r?\n/);
   const reportHeading = titleLines.shift() || "";
   const custodyDateLine = titleLines.join(" ").trim();
   const titleRow = `<tr class="doc-title-row"><td colspan="${columns.length + 1}" class="doc-title-cell">
