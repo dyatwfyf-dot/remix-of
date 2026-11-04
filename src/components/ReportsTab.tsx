@@ -163,10 +163,10 @@ const formatCurrency = (val ? : number | string | null): string => {
 
 const normalizeFeeDescription = (value: unknown) =>
  String(value || "")
-  .trim()
-  .replace(/[ًٌٍَُِّْـ]/g, "")
-  .replace(/[إأآ]/g, "ا")
-  .replace(/\s+/g, " ");
+ .trim()
+ .replace(/[ًٌٍَُِّْـ]/g, "")
+ .replace(/[إأآ]/g, "ا")
+ .replace(/\s+/g, " ");
 const isExamFeeDescription = (value: unknown) =>
  /(امتحان|اختبار)/.test(normalizeFeeDescription(value));
 const isNewTraineeRegistrationDescription = (value: unknown) =>
@@ -185,11 +185,11 @@ const canonicalFeeCategory = (value: unknown) => {
 
 const normalizeTraineeReportName = (value: unknown): string =>
  String(value || "")
-  .trim()
-  .replace(/[ًٌٍَُِّْـ]/g, "")
-  .replace(/[إأآ]/g, "ا")
-  .replace(/ى/g, "ي")
-  .replace(/\s+/g, " ");
+ .trim()
+ .replace(/[ًٌٍَُِّْـ]/g, "")
+ .replace(/[إأآ]/g, "ا")
+ .replace(/ى/g, "ي")
+ .replace(/\s+/g, " ");
 
 const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "other" => {
  const text = String(description || "").trim();
@@ -226,26 +226,35 @@ const reportsTabPrintCss = `
   .reports-data-table tbody td.specialty-cell,
   .reports-data-table tbody td.batch-cell,
   .reports-data-table tbody td.desc-cell,
-  .reports-data-table tbody td.details-cell,
-  .reports-data-table tbody td.description-cell {
-    max-width: 280px !important;
-    white-space: normal !important;
+  {
+    min-width: 50px !important;
+    white-space: nowrap !important;
     word-break: normal !important;
     overflow-wrap: anywhere !important;
+  }
+  .reports-data-table tbody td.details-cell,
+  .reports-data-table tbody td.description-cell {
+  min-width: 330px !important;
+white-space: normal !important;
+word-break: normal !important;
+overflow-wrap:  anywhere!important;
   }
   .reports-data-table tbody td.num,
   .reports-data-table tbody td.numeric-cell,
   .reports-data-table tbody td.date-cell,
+  .reports-data-table tbody td.year-cell,
   .reports-data-table tbody td.ref-cell,
   .reports-data-table tbody td.compact-cell,
   .reports-data-table tbody td.idx,
   .reports-data-table tbody td.num .pdf-cell-text,
+  
   .reports-data-table tbody td.numeric-cell .pdf-cell-text,
   .reports-data-table tbody td.date-cell .pdf-cell-text,
+  .reports-data-table tbody td.year-cell .pdf-cell-text,
   .reports-data-table tbody td.ref-cell .pdf-cell-text,
   .reports-data-table tbody td.compact-cell .pdf-cell-text,
   .reports-data-table tbody td.idx .pdf-cell-text {
-    max-width: none !important;
+    min-width: auto !important;
     white-space: nowrap !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
@@ -255,26 +264,39 @@ const reportsTabPrintCss = `
   .reports-data-table tbody td.specialty-cell .pdf-cell-text,
   .reports-data-table tbody td.batch-cell .pdf-cell-text,
   .reports-data-table tbody td.desc-cell .pdf-cell-text,
-  .reports-data-table tbody td.details-cell .pdf-cell-text,
-  .reports-data-table tbody td.description-cell .pdf-cell-text {
+  {
     display: inline-block !important;
     width: auto !important;
-    max-width: 100% !important;
+    min-width: auto !important;
+    white-space: nowrap !important;
+    word-break: nowrap !important;
+    overflow-wrap: anywhere !important;
+  }
+   .reports-data-table tbody td.details- cell.pdf-cell-text,
+  .reports-data-table tbody td.description-cell.pdf-cell-text{
+   display: inline-block !important;
+    width: auto !important;
+    min-width: auto !important;
     white-space: normal !important;
     word-break: normal !important;
     overflow-wrap: anywhere !important;
   }
+ 
+  
   @media print {
-    @page { size: A4; margin: 8mm; }
+    @page {
+    size: A4 ; 
+    margin: 8mm;
+    }
     body { font-family: 'Cairo', Arial, sans-serif !important; color: #000000 !important; background: #ffffff !important; }
     .report-page-header { border: 2px solid #000 !important; margin-bottom: 8px !important; }
     table {
-      width: auto !important;
-      min-width: 0 !important;
+      width: 100% !important;
+   min-width: auto !important;
       max-width: auto !important;
       table-layout: auto !important;
       border-collapse: collapse !important;
-      border: 2px solid #000 !important;
+      border: 1px solid #000 !important;
     }
     thead th {
 background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important; color: #3b2600 !important;
@@ -283,15 +305,52 @@ font-weight: 900 !important; border: 1px solid #000 !important; }
     tbody td {
       background: #ffffff !important;
       border: 1px solid #000000 !important;
-      color: #1e293b !important;
-      font-size: 20px !important;
+      color: #000 !important;
+      font-size: 16px !important;
       font-weight: 800 !important;
     }
-    /* جميع خلايا جسم الجدول بيضاء؛ لا يُستثنى إلا صف الإجمالي الكلي */
-    tbody tr:not(.total-row):not(.report-grand-total-row) > td {
+    /* جميع خلايا جسم الجدول بيضاء؛ لا يُستثنى إلا صفوف الإجمالي */
+    tbody tr:not(.total-row):not(.report-grand-total-row):not(.reports-trainee-total-row):not(.reports-trainee-summary-row):not(.reports-fee-row):not(.reports-period-row) > td {
       background: #ffffff !important;
       background-color: #ffffff !important;
-      color: #1e293b !important;
+      color: #000 !important;
+    }
+    /* تنسيقات صفوف كشف المتدربين في الطباعة */
+    tbody tr.reports-trainee-total-row > td,
+    tbody tr.reports-trainee-total-row > td * {
+      background: #2C666E !important;
+      background-color: #2C666E !important;
+      color: #ffffff !important;
+      font-weight: 900 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    tbody tr.reports-trainee-summary-row > td,
+    tbody tr.reports-trainee-summary-row > td * {
+      background: #FFF1D6 !important;
+      background-color: #FFF1D6 !important;
+      color: #68420A !important;
+      font-weight: 900 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    tbody tr.reports-fee-row > td,
+    tbody tr.reports-fee-row > td * {
+      background: #F1BF98 !important;
+      background-color: #F1BF98 !important;
+      color: #000000 !important;
+      font-weight: 900 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    tbody tr.reports-period-row > td,
+    tbody tr.reports-period-row > td * {
+      background: #5B5750 !important;
+      background-color: #5B5750 !important;
+      color: #ffffff !important;
+      font-weight: 900 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
     }
     tbody tr.total-row > td,
     tbody tr.report-grand-total-row > td {
@@ -354,8 +413,8 @@ color: #ffffff !important;
   @media print {
     table.reports-data-table {
       width: 100% !important;
-      min-width: 0 !important;
-      max-width: 100% !important;
+      min-width: auto !important;
+      max-width: auto !important;
       table-layout: auto !important;
       border-collapse: collapse !important;
     }
@@ -363,7 +422,7 @@ color: #ffffff !important;
     table.reports-data-table td {
       border: 1px solid #000000 !important;
       padding: 4px 3px !important;
-      font-size: 10pt !important;
+      font-size: 16px !important;
       line-height: 1.35 !important;
       vertical-align: middle !important;
     }
@@ -374,9 +433,9 @@ color: #ffffff !important;
     }
     table.reports-data-table td.reports-description-cell,
     table.reports-data-table td.reports-text-cell {
-      max-width: 52mm !important;
-      min-width: 0 !important;
-      white-space: normal !important;
+      max-width: auto !important;
+      min-width: auto !important;
+      white-space: nowrap !important;
       overflow-wrap: anywhere !important;
       word-break: normal !important;
     }
@@ -447,11 +506,12 @@ export default function ReportsTab() {
   } catch {}
   return {
    sig1Dept: "الشؤون المالية",
-   sig1Name: "أ/ محمد الدباغ",
+   sig1Name: "أ/ صالح الشعبي",
    sig2Dept: "نائب رئيس المجلس",
-   sig2Name: "أ.د/ فضل علي حزام",
-   sig3Dept: "رئيس المجلس اليمني للاختصاصات الطبية",
-   sig3Name: "أ.د/ أثمار حسين علي",
+   sig2Name: "أ.د/ عبدالرب المروني",
+   sig3Dept:
+   "رئيس المجلس اليمني للاختصاصات الطبية",
+   sig3Name: "أ.د/ كمال الحوثي  ",
   };
  });
  
@@ -782,8 +842,13 @@ export default function ReportsTab() {
   categories.forEach((category) => {
    const categoryPayments = payments.filter((row) => row.category === category).sort((a, b) => String(a.notifyDate).localeCompare(String(b.notifyDate)));
    if (traineeDisplayMode === "detail" || traineeDisplayMode === "both") {
-    result.push(...categoryPayments.map((row) => ({ ...row, displayType: "تفصيلي", summaryLevel: "detail" as const
-     })));
+    result.push(...categoryPayments.map((row) => ({
+     ...row,
+     displayType: "تفصيلي",
+     summaryLevel: "detail"
+     as
+     const
+    })));
    }
    if (traineeDisplayMode === "summary" || traineeDisplayMode === "both") {
     const grouped = new Map < string,
@@ -876,15 +941,16 @@ export default function ReportsTab() {
   return grandTotal > 0 ? [...rows, { category: "الإجمالي الكلي لجميع الرسوم", source: "حوافظ التوريد", amount: grandTotal, total: "نعم" }] : rows;
  }, [hafiza, selectedTrainee]);
  
- const traineeFeeStatusRows = useMemo<ReportRow[]>(() => {
-  const byName = new Map<string, {
-   trainee: string;
-   batch: string;
-   specialty: string;
-  }>();
-  const paidExamKeys = new Set<string>();
-  const newTraineeKeys = new Set<string>();
-
+ const traineeFeeStatusRows = useMemo < ReportRow[] > (() => {
+  const byName = new Map < string,
+   {
+    trainee: string;
+    batch: string;
+    specialty: string;
+   } > ();
+  const paidExamKeys = new Set < string > ();
+  const newTraineeKeys = new Set < string > ();
+  
   // مصدر أسماء المتدربين وبياناتهم وتصنيف سدادهم هو حوافظ التوريد فقط.
   // يحتسب السداد من مبلغ وتاريخ التوريد، ويُعد البيان مدفوعاً فقط عند ورود امتحان/اختبار.
   hafiza.forEach((record) => {
@@ -903,7 +969,7 @@ export default function ReportsTab() {
     if (!current.batch && record.batch) current.batch = String(record.batch);
     if (!current.specialty && record.specialty) current.specialty = String(record.specialty);
    }
-
+   
    if (isNewTraineeRegistrationDescription(record.description)) {
     newTraineeKeys.add(key);
    }
@@ -913,7 +979,7 @@ export default function ReportsTab() {
     paidExamKeys.add(key);
    }
   });
-
+  
   // يستبعد المستجدون الذين وردت لهم رسوم قيد وتسجيل، ثم يعرض غير المسددين منذ 2022.
   return Array.from(byName.entries())
    .filter(([key]) => !paidExamKeys.has(key) && !newTraineeKeys.has(key))
@@ -924,8 +990,8 @@ export default function ReportsTab() {
     examStatus: "غير مسدد منذ 2022",
    }));
  }, [hafiza]);
-
- const sourceConfig = useMemo<{ title: string; columns: TabCol[] }>(() => {
+ 
+ const sourceConfig = useMemo < { title: string;columns: TabCol[] } > (() => {
   if (source === "youssefLoan") {
    return {
     title: "مسير إخلاء العهدة",
@@ -942,8 +1008,8 @@ export default function ReportsTab() {
      },
     ],
    }
-  }; 
-if (source === "tawfiqCustody") {
+  };
+  if (source === "tawfiqCustody") {
    return {
     title: "مسير إخلاء العهدة",
     columns: [
@@ -956,7 +1022,8 @@ if (source === "tawfiqCustody") {
      { key: "amount", label: "المبلغ" },
     ],
    };
-  }if (source === "traineeFeeStatus") {
+  }
+  if (source === "traineeFeeStatus") {
    return {
     title: "المتدربون غير المسددين لرسوم الامتحانات والاختبارات منذ 2022",
     columns: [
@@ -984,7 +1051,8 @@ if (source === "tawfiqCustody") {
      { key: "amount", label: "مبلغ التوريد" },
     ],
    };
-  }if (source === "feeTotals") {
+  }
+  if (source === "feeTotals") {
    return {
     title: "إجماليات الرسوم حسب النوع",
     columns: [
@@ -993,7 +1061,8 @@ if (source === "tawfiqCustody") {
      { key: "amount", label: "الإجمالي" },
     ],
    };
-  }if (source === "hafiza") {
+  }
+  if (source === "hafiza") {
    return {
     title: "تقرير حوافظ التوريد",
     columns: [
@@ -1005,8 +1074,9 @@ if (source === "tawfiqCustody") {
      { key: "income", label: "الإيرادات" },
     ],
    };
-
-  }if (source === "account") {
+   
+  }
+  if (source === "account") {
    return {
     title: "تقرير الحساب الجاري",
     columns: [
@@ -1018,7 +1088,8 @@ if (source === "tawfiqCustody") {
      { key: "expense", label: "المصروفات" },
     ],
    };
-  }if (source === "expenses") {
+  }
+  if (source === "expenses") {
    return {
     title: "تقرير المصروفات",
     columns: [
@@ -1028,7 +1099,8 @@ if (source === "tawfiqCustody") {
      { key: "expense", label: "المبلغ" },
     ],
    };
-  } if (source === "revenue") {
+  }
+  if (source === "revenue") {
    return {
     title: "تقرير الإيرادات",
     columns: [
@@ -1049,7 +1121,7 @@ if (source === "tawfiqCustody") {
     { key: "amount", label: "المبلغ" },
    ],
   };
- },  [source]);
+ }, [source]);
  
  const reportRows = useMemo < ReportRow[] > (() => {
   if (source === "youssefLoan") return youssefRows;
@@ -1071,12 +1143,11 @@ if (source === "tawfiqCustody") {
  const processedRows = useMemo < ReportRow[] > (() => {
   const activeSortCol = source === "trainee" ? traineeSortColumn : sortColumn;
   const activeSortDir = source === "trainee" ? traineeSortDirection : sortDirection;
-   const filtered = reportRows.filter((row) => !deletedRows.has(row));
+  const filtered = reportRows.filter((row) => !deletedRows.has(row));
   
   const isCustodySource = source === "youssefLoan" || source === "tawfiqCustody";
   const orderedRows = isCustodySource ?
-   filtered :
-   [...filtered].sort((a, b) => {
+   filtered : [...filtered].sort((a, b) => {
     const aVal = a[activeSortCol];
     const bVal = b[activeSortCol];
     if (aVal === undefined || aVal === null) return 1;
@@ -1161,21 +1232,13 @@ if (source === "tawfiqCustody") {
   `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
  
  const numericKeys =
-  source === "youssefLoan" || source === "tawfiqCustody" ?
-  ["amount"] :
-  source === "hafiza" ?
-  ["amount", "income"] :
-  source === "account" ?
-  ["income", "expense"] :
-  source === "expenses" ?
-  ["expense"] :
-  source === "revenue" ?
-  ["amount"] :
-  source === "traineeFeeStatus" ?
-  ["tuitionPaid", "examPaid"] :
-  source === "trainee" || source === "feeTotals" ?
-  ["amount"] :
-  ["income", "expense", "amount"];
+  source === "youssefLoan" || source === "tawfiqCustody" ? ["amount"] :
+  source === "hafiza" ? ["amount", "income"] :
+  source === "account" ? ["income", "expense"] :
+  source === "expenses" ? ["expense"] :
+  source === "revenue" ? ["amount"] :
+  source === "traineeFeeStatus" ? ["tuitionPaid", "examPaid"] :
+  source === "trainee" || source === "feeTotals" ? ["amount"] : ["income", "expense", "amount"];
  
  const noWrapKeys = sourceConfig.columns
   .filter((col) =>
@@ -1427,8 +1490,8 @@ if (source === "tawfiqCustody") {
                     </tr>
                   </>
                 )}
-  <tr className="reports-column-header-row border border-black bg-[#FFD700] text-black whitespace-normal">
-   <th data-col-key="idx" className="w-10 border border-black px-2 py-3 font-black">م</th>
+  <tr className="reports-column-header-row border border-black bg-[#FFD700] text-black">
+   <th data-col-key="idx" className="w-5 border border-black px-2 py-3 font-black">م</th>
                   {sourceConfig.columns.map((col) => (
                     <th
                       key={col.key}
@@ -1518,11 +1581,11 @@ color: "#ffffff",
  let rowStyle = "";
  if (isOpening) rowStyle = "bg-[#FBFEFF] font-bold text-black";
 else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
-                    else if (isTraineeDetail) rowStyle = "bg-white font-bold text-[#17324D]";
-                    else if (row.summaryLevel === "trainee-name-total") rowStyle = "bg-[#2C666E] font-bold text-white";
-                    else if (isTraineeSummary) rowStyle = "bg-[#FFF1D6] font-bold text-[#68420A]";
-                    else if (row.summaryLevel === "fee") rowStyle = "bg-[#F1BF98] font-bold text-black";
-                    else if (row.summaryLevel === "period") rowStyle = "bg-[#5B5750] font-bold text-white";
+                    else if (isTraineeDetail) rowStyle = "reports-detail-row bg-white font-bold text-[#17324D]";
+                    else if (row.summaryLevel === "trainee-name-total") rowStyle = "reports-trainee-total-row bg-[#2C666E] font-bold text-white";
+                    else if (isTraineeSummary) rowStyle = "reports-trainee-summary-row bg-[#FFF1D6] font-bold text-[#68420A]";
+                    else if (row.summaryLevel === "fee") rowStyle = "reports-fee-row bg-[#F1BF98] font-bold text-black";
+                    else if (row.summaryLevel === "period") rowStyle = "reports-period-row bg-[#5B5750] font-bold text-white";
                     else rowStyle = "bg-white text-slate-900";
 
                     // قسم التوقيعات المدمج أسفل تقارير العهد (في سطر أفقي واحد مدمج)
