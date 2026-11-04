@@ -1,20 +1,8 @@
 name: Build Mizan Android APK
 
+# APK builds are paused temporarily. Keep manual dispatch available.
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/**"
-      - "src/**"
-      - "public/**"
-      - "android/**"
-      - "scripts/**"
-      - "package.json"
-      - "pnpm-lock.yaml"
-      - "capacitor.config.ts"
-      - "vite.config.capacitor.ts"
-      - "capacitor.html"
 
 permissions:
   contents: read
