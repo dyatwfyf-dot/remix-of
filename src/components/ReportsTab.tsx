@@ -324,6 +324,160 @@ color: #ffffff !important;
   html body table tr.report-grand-total-row > td *, html body table tr.total-row > td * { 
   background: #0437bb !important; 
   color: #ffffff !important; }
+
+  @media print {
+    table.reports-data-table {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      table-layout: auto !important;
+      border-collapse: collapse !important;
+    }
+    table.reports-data-table th,
+    table.reports-data-table td {
+      padding: 4px 3px !important;
+      font-size: 10pt !important;
+      line-height: 1.35 !important;
+      vertical-align: middle !important;
+    }
+    table.reports-data-table th[data-col-key="idx"],
+    table.reports-data-table td[data-col-key="idx"] {
+      width: 1% !important;
+      white-space: nowrap !important;
+    }
+    table.reports-data-table td.reports-description-cell,
+    table.reports-data-table td.reports-text-cell {
+      max-width: 52mm !important;
+      min-width: 0 !important;
+      white-space: normal !important;
+      overflow-wrap: anywhere !important;
+      word-break: normal !important;
+    }
+    .reports-table-scroll { overflow: visible !important; border: 0 !important; box-shadow: none !important; }
+  }
+`;
+
+
+const reportsTabScreenCss = `
+  .reports-table-scroll {
+    width: 100%;
+    max-width: 100%;
+    overflow: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
+    scrollbar-width: thin;
+    scrollbar-color: #94a3b8 #f1f5f9;
+  }
+  .reports-table-scroll table.reports-data-table {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: auto;
+    text-align: center;
+    font-size: 12px;
+    direction: rtl;
+  }
+  .reports-table-scroll .reports-data-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    min-width: 76px;
+    max-width: 220px;
+    padding: 12px 10px;
+    border: 0;
+    border-bottom: 2px solid #0f2942;
+    background: #17324d;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.5;
+    white-space: normal;
+    vertical-align: middle;
+  }
+  .reports-table-scroll .reports-data-table thead th[data-col-key="idx"] {
+    position: sticky;
+    right: 0;
+    z-index: 4;
+    min-width: 46px;
+    background: #0f2942;
+  }
+  .reports-table-scroll .reports-data-table thead th[data-col-key="actions"] { min-width: 54px; }
+  .reports-table-scroll .reports-data-table tbody td {
+    padding: 10px 9px;
+    border: 0;
+    border-bottom: 1px solid #e2e8f0;
+    color: #1e293b;
+    background: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.6;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  .reports-table-scroll .reports-data-table tbody tr:nth-child(even):not(.total-row):not(.signature-block-row) td {
+    background: #f8fafc;
+  }
+  .reports-table-scroll .reports-data-table tbody tr:hover:not(.total-row) td { background: #eff6ff; }
+  .reports-table-scroll .reports-data-table tbody td[data-col-key="idx"] {
+    position: sticky;
+    right: 0;
+    z-index: 1;
+    min-width: 46px;
+    background: #f1f5f9;
+    color: #475569;
+    font-weight: 900;
+    box-shadow: -3px 0 6px rgba(15, 23, 42, .06);
+  }
+  .reports-table-scroll .reports-data-table tbody tr:nth-child(even) td[data-col-key="idx"] { background: #eaf0f6; }
+  .reports-table-scroll .reports-data-table tbody td.reports-description-cell,
+  .reports-table-scroll .reports-data-table tbody td.reports-text-cell {
+    min-width: 140px;
+    max-width: 250px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+  .reports-table-scroll .reports-data-table tbody td.reports-numeric-cell,
+  .reports-table-scroll .reports-data-table tbody td[data-col-key="idx"] {
+    direction: ltr;
+    unicode-bidi: isolate;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .reports-table-scroll .reports-data-table tbody td input {
+    min-width: 92px;
+    max-width: 180px;
+    padding: 7px 8px;
+    border-radius: 8px;
+    border-color: #cbd5e1;
+    font-size: 12px;
+  }
+  .reports-table-scroll .reports-data-table tbody tr.total-row td,
+  .reports-table-scroll .reports-data-table tbody tr.total-row td[data-col-key="idx"] {
+    background: #173f70 !important;
+    color: #ffffff !important;
+    font-weight: 900;
+  }
+  .reports-table-scroll .reports-data-table tbody tr.signature-block-row td { background: #ffffff !important; }
+  @media (max-width: 640px) {
+    .reports-table-scroll { border-radius: 12px; }
+    .reports-table-scroll .reports-data-table thead th { min-width: 68px; padding: 10px 8px; font-size: 11px; }
+    .reports-table-scroll .reports-data-table tbody td { padding: 9px 8px; font-size: 11px; }
+    .reports-table-scroll .reports-data-table tbody td.reports-description-cell,
+    .reports-table-scroll .reports-data-table tbody td.reports-text-cell { min-width: 126px; max-width: 190px; }
+    .reports-table-scroll .reports-data-table tbody td input { min-width: 104px; }
+  }
+  @media print {
+    .reports-table-scroll { overflow: visible !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
+    .reports-table-scroll table.reports-data-table { width: 100% !important; min-width: 0 !important; }
+    .reports-table-scroll .reports-data-table thead th,
+    .reports-table-scroll .reports-data-table tbody td { position: static !important; box-shadow: none !important; }
+  }
 `;
 
 export default function ReportsTab() {
@@ -1376,15 +1530,17 @@ if (source === "tawfiqCustody") {
         </div>
 
         {/* جدول عرض التقرير */}
-        <div className="overflow-x-auto p-4">
-          <div className="border border-black bg-white shadow-sm">
-            <table id="reports-table" className="w-full table-auto border-collapse text-center text-xs" style={{ tableLayout: "auto" }}>
+        <style>{reportsTabScreenCss}</style>
+        <div className="p-3 sm:p-4">
+          <div className="reports-table-scroll">
+            <table id="reports-table" className="reports-data-table text-center text-xs" style={{ tableLayout: "auto" }}>
               <thead>
   <tr className="border border-black bg-[#FFD700] text-black whitespace-normal">
-   <th className="w-10 border border-black px-2 py-3 font-white">م</th>
+   <th data-col-key="idx" className="w-10 border border-black px-2 py-3 font-black">م</th>
                   {sourceConfig.columns.map((col) => (
                     <th
                       key={col.key}
+                      data-col-key={col.key}
                       style={numericKeys.includes(col.key) ? {
                         backgroundColor: "#f2f7fb",
                         WebkitPrintColorAdjust: "exact",
@@ -1407,7 +1563,7 @@ if (source === "tawfiqCustody") {
                           }
                         }
                       }}
-                      className={`cursor-pointer border border-black px-1 py-0.5 font-black hover:bg-[#e6b800] ${col.key === "description" ? "w-[220px] max-w-[220px] whitespace-normal break-words" : "w-px whitespace-nowrap"}`}
+                      className={`cursor-pointer border border-black px-2 py-2 font-black hover:bg-[#e6b800] ${numericKeys.includes(col.key) ? "reports-numeric-cell" : ["description", "name", "trainee", "specialty", "notes", "item"].includes(col.key) ? "reports-text-cell" : ""}`}
                     >
                       <div className="flex items-center justify-center gap-1">
                         <span>{col.label}</span>
@@ -1420,7 +1576,7 @@ if (source === "tawfiqCustody") {
                       </div>
                     </th>
                   ))}
-                  <th className="w-12 border border-black px-2 py-3 font-black print:hidden">حذف</th>
+                  <th data-col-key="actions" className="w-12 border border-black px-2 py-3 font-black print:hidden">حذف</th>
                 </tr>
 
                 {/* صف التصفية والبحث في الأعمدة */}
@@ -1579,7 +1735,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                             : undefined
                         }
                       >
-                        <td className="border border-black px-2 py-2 font-bold" style={isTotal ? totalCellStyle : traineeRowCellStyle}>
+                        <td data-col-key="idx" className="border border-black px-2 py-2 font-bold" style={isTotal ? totalCellStyle : traineeRowCellStyle}>
                           {isOpening ? "—" : isTotal ? "★" : index + 1}
                         </td>
 
@@ -1592,7 +1748,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                           // حقول إدخال يدوية لرقم كشف التسوية والملاحظات والمبلغ في تقارير العهد
                           if (isEditableCustodyRow && (col.key === "settlementNo" || col.key === "notes")) {
                             return (
-                              <td key={col.key} className="max-w-[280px] whitespace-normal break-words [overflow-wrap:anywhere] border border-0 p-1">
+                              <td key={col.key} data-col-key={col.key} className="max-w-[280px] whitespace-normal break-words [overflow-wrap:anywhere] border border-0 p-1 reports-text-cell">
                                 <input
                                   type="text"
                                   value={val ?? ""}
@@ -1612,7 +1768,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
 
                           if (isEditableCustodyRow && col.key === "amount") {
                             return (
-                              <td key={col.key} className="border border-black p-1 font-mono font-black">
+                              <td key={col.key} data-col-key={col.key} className="border border-black p-1 font-mono font-black reports-numeric-cell">
                                 <input
                                   type="number"
                                   value={val ?? ""}
@@ -1629,8 +1785,9 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                           return (
                             <td
                               key={col.key}
-                              className={`border border-black px-1 py-0.5 font-bold ${
-                                col.key === "description" ? "w-[220px] max-w-[220px] whitespace-normal break-words [overflow-wrap:anywhere]" : `w-px whitespace-nowrap ${isNumeric ? "font-mono" : ""}`
+                              data-col-key={col.key}
+                              className={`border border-black px-2 py-2 font-bold ${
+                                col.key === "description" ? "reports-description-cell" : isNumeric ? "reports-numeric-cell font-mono" : ["name", "trainee", "specialty", "notes", "item"].includes(col.key) ? "reports-text-cell" : "whitespace-nowrap"
                               } bg-white text-slate-900`}
                               style={
                                 isTotal
@@ -1653,7 +1810,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                           );
                         })}
 
-                        <td className="border border-black px-1 py-1 print:hidden" style={isTotal ? totalCellStyle : traineeRowCellStyle}>
+                        <td data-col-key="actions" className="border border-black px-1 py-1 print:hidden" style={isTotal ? totalCellStyle : traineeRowCellStyle}>
                           {!isOpening && !isTotal && (
                             <button
                               onClick={() => deleteRow(row)}
