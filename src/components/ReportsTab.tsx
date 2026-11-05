@@ -277,13 +277,13 @@ const buildReportsScreenPrintHtml = (title: string, source: ReportSource) => {
   const sourceTable = document.getElementById("reports-table") as HTMLTableElement | null;
   if (!sourceTable) throw new Error("تعذر العثور على جدول التقرير الحالي");
   const table = sourceTable.cloneNode(true) as HTMLTableElement;
-  const actionHeader = Array.from(table.querySelectorAll("thead tr"))
+  const actionHeader = Array.from(table.querySelectorAll<HTMLTableRowElement>("thead tr"))
     .find((row) => row.querySelector(':scope > [data-col-key="actions"]'));
-  const originalColumnCount = actionHeader
-    ? Array.from(actionHeader.cells).reduce((sum, cell) => sum + cell.colSpan, 0)
+  const originalColumnCount: number = actionHeader
+    ? Array.from(actionHeader.cells).reduce<number>((sum, cell) => sum + cell.colSpan, 0)
     : 0;
 
-  Array.from(table.querySelectorAll("tr")).forEach((row) => {
+  Array.from(table.querySelectorAll<HTMLTableRowElement>("tr")).forEach((row) => {
     const actionCell = Array.from(row.cells).find((cell) => cell.dataset.colKey === "actions");
     if (actionCell) { actionCell.remove(); return; }
     const rowColumnCount = Array.from(row.cells).reduce((sum, cell) => sum + cell.colSpan, 0);
