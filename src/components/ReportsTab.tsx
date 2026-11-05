@@ -200,6 +200,8 @@ const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "ot
 };
 
 const reportsTabPrintCss = `
+  #tableContainer table.reports-data-table { width:100% !important; max-width:100% !important; table-layout:auto !important; font-size:8pt !important; }
+  #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td { font-size:8pt !important; }
   /* Appended last so the shared preview theme cannot override this report tab. */
   #tableContainer .reports-print-heading { margin:0 auto 4mm !important; padding:2mm 0 !important; text-align:center !important; direction:rtl !important; color:#17324d !important; page-break-after:avoid !important; }
   #tableContainer .reports-print-heading h1 { margin:0 !important; color:#17324d !important; font:900 17pt/1.35 Cairo,Tahoma,Arial,sans-serif !important; }
