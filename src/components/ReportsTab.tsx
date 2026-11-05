@@ -203,6 +203,7 @@ const reportsTabPrintCss = `
   /* Appended last so the shared preview theme cannot override this report tab. */
   #tableContainer .reports-print-heading { margin:0 auto 4mm !important; padding:2mm 0 !important; text-align:center !important; direction:rtl !important; color:#17324d !important; page-break-after:avoid !important; }
   #tableContainer .reports-print-heading h1 { margin:0 !important; color:#17324d !important; font:900 17pt/1.35 Cairo,Tahoma,Arial,sans-serif !important; }
+  #tableContainer .reports-print-heading .reports-print-sub { margin-top:1.5mm !important; color:#526a7e !important; font:700 8.5pt/1.4 Cairo,Tahoma,Arial,sans-serif !important; }
   #tableContainer table.reports-data-table { width:100% !important; min-width:0 !important; max-width:100% !important; margin:0 auto !important; border-collapse:collapse !important; border-spacing:0 !important; table-layout:auto !important; direction:rtl !important; text-align:center !important; color:#243b50 !important; font-family:Cairo,Tahoma,Arial,sans-serif !important; }
   #tableContainer table.reports-data-table th,
   #tableContainer table.reports-data-table td { box-sizing:border-box !important; width:auto !important; min-width:0 !important; max-width:100% !important; padding:5px 4px !important; border:1px solid #000 !important; text-align:center !important; vertical-align:middle !important; font-family:Cairo,Tahoma,Arial,sans-serif !important; font-size:9.5pt !important; font-weight:700 !important; line-height:1.35 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
@@ -273,7 +274,7 @@ const escapeReportsPrintHtml = (value: unknown) =>
   } as Record<string, string>)[character] || character);
 
 /** Clone the rendered table so print preserves its real structure and styling. */
-const buildReportsScreenPrintHtml = (title: string, source: ReportSource) => {
+const buildReportsScreenPrintHtml = (title: string, source: ReportSource, reportDateLabel: string, recordCount: number) => {
   const sourceTable = document.getElementById("reports-table") as HTMLTableElement | null;
   if (!sourceTable) throw new Error("تعذر العثور على جدول التقرير الحالي");
   const table = sourceTable.cloneNode(true) as HTMLTableElement;
@@ -307,7 +308,9 @@ const buildReportsScreenPrintHtml = (title: string, source: ReportSource) => {
 
   const isCustodyReport = source === "youssefLoan" || source === "tawfiqCustody";
   const heading = isCustodyReport ? "" :
-    '<div class="reports-print-heading"><h1>' + escapeReportsPrintHtml(title) + '</h1></div>';
+    '<div class="reports-print-heading"><h1>' + escapeReportsPrintHtml(title) +
+    '</h1><div class="reports-print-sub">المجلس اليمني للاختصاصات الطبية - صعدة • تاريخ التقرير: ' +
+    escapeReportsPrintHtml(reportDateLabel) + ' • عدد السجلات: ' + String(recordCount) + '</div></div>';
   return heading + '<div class="reports-print-table-shell">' + table.outerHTML + '</div>';
 };
 
@@ -1327,7 +1330,7 @@ export default function ReportsTab() {
             printColumns={sourceConfig.columns}
             numericKeys={numericKeys}
             pdfFinalCss={reportsTabPrintCss}
-            renderPrintTableHtml={() => buildReportsScreenPrintHtml(title, source)}
+            renderPrintTableHtml={(reportDateLabel) => buildReportsScreenPrintHtml(title, source, reportDateLabel, displayRows.length)}
             pdfOrientation={sourceConfig.columns.length + 1 > 7 ? "landscape" : "portrait"}
             includeTotalRow={!isLoanOrCustody && source !== "traineeFeeStatus"}
             printTableClassName={source === "trainee" ? "reports-trainee-payment-table" : ""}
