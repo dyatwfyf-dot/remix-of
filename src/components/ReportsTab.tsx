@@ -451,18 +451,6 @@ export default function ReportsTab() {
   const result: ReportRow[] = [];
   let sumAmount = 0;
   
-  result.push({
-   id: "y-opening",
-   date: "—",
-   docNo: "—",
-   description: "الرصيد الافتتاحي (سلفة د/يوسف)",
-   name: "د/ يوسف",
-   settlementNo: "—",
-   notes: "رصيد مرحل",
-   amount: youssefOpeningBalance,
-   summaryLevel: "opening",
-  });
-  
   matched.forEach((row, index) => {
    const rowKey = `youssef-${index}-${row.date}`;
    const defaultAmt = amountValue(row.income || row.hafizaAmount || row.expense);
@@ -522,18 +510,6 @@ export default function ReportsTab() {
   
   const result: ReportRow[] = [];
   let sumAmount = 0;
-  
-  result.push({
-   id: "t-opening",
-   date: "—",
-   docNo: "—",
-   description: "الرصيد الافتتاحي (عهدة توفيق الداعي)",
-   name: "توفيق الداعي",
-   settlementNo: "—",
-   notes: "رصيد مرحل",
-   amount: tawfiqOpeningBalance,
-   summaryLevel: "opening",
-  });
   
   matched.forEach((row, index) => {
    const rowKey = `tawfiq-${index}-${row.date}`;
