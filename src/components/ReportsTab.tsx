@@ -200,6 +200,8 @@ const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "ot
 };
 
 const reportsTabPrintCss = `
+  #tableContainer table.reports-data-table { width:100% !important; max-width:100% !important; table-layout:auto !important; font-size:8pt !important; }
+  #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td { font-size:8pt !important; }
   /* Appended last so the shared preview theme cannot override this report tab. */
   #tableContainer .reports-print-heading { margin:0 auto 4mm !important; padding:2mm 0 !important; text-align:center !important; direction:rtl !important; color:#17324d !important; page-break-after:avoid !important; }
   #tableContainer .reports-print-heading h1 { margin:0 !important; color:#17324d !important; font:900 17pt/1.35 Cairo,Tahoma,Arial,sans-serif !important; }
@@ -1101,7 +1103,7 @@ export default function ReportsTab() {
  
  return (
   <div className="mizan-reports-tab min-h-screen bg-gradient-to-br from-slate-100 via-sky-50 to-indigo-50 p-2 sm:p-4" dir="rtl">
-      <section className="mx-auto max-w-7xl overflow-hidden rounded-3xl border border-sky-200 bg-white shadow-xl">
+      <section className="mx-auto w-full max-w-[210mm] overflow-hidden rounded-3xl border border-sky-200 bg-white shadow-xl">
         <header className="reports-tab-header bg-gradient-to-l from-[#2e6b8a] via-[#3d7fa0] to-[#2e6b8a] p-4 text-white sm:p-6">
           <div className="flex items-center gap-3">
             <div className="reports-header-icon flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
@@ -1301,7 +1303,7 @@ export default function ReportsTab() {
             numericKeys={numericKeys}
             pdfFinalCss={reportsTabPrintCss}
             renderPrintTableHtml={(reportDateLabel) => buildReportsScreenPrintHtml(source, reportDateLabel, displayRows.length)}
-            pdfOrientation={sourceConfig.columns.length + 1 > 7 ? "landscape" : "portrait"}
+            pdfOrientation="portrait"
             includeTotalRow={!isLoanOrCustody && source !== "traineeFeeStatus"}
             printTableClassName={source === "trainee" ? "reports-trainee-payment-table" : ""}
           />
