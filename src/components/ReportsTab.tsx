@@ -1324,7 +1324,8 @@ export default function ReportsTab() {
             columns={sourceConfig.columns}
             printColumns={sourceConfig.columns}
             numericKeys={numericKeys}
-            pdfCss={reportsTabPrintCss}
+            pdfFinalCss={reportsTabPrintCss}
+            renderPrintTableHtml={() => buildReportsScreenPrintHtml(title, source)}
             pdfOrientation={sourceConfig.columns.length + 1 > 7 ? "landscape" : "portrait"}
             includeTotalRow={!isLoanOrCustody && source !== "traineeFeeStatus"}
             printTableClassName={source === "trainee" ? "reports-trainee-payment-table" : ""}
@@ -1459,7 +1460,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                         </tr>
                         <tr className="bg-white signature-block-row" style={{ border: 0, outline: 0, boxShadow: "none" }}>
                           <td colSpan={colCount} className="border-0 bg-white px-0 py-1" style={{ border: 0, outline: 0, boxShadow: "none" }}>
-                            <div className="mx-auto grid w-full max-w-5xl grid-cols-3 gap-x-3 gap-y-1">
+                            <div className="signature-block-grid mx-auto grid w-full max-w-5xl grid-cols-3 gap-x-3 gap-y-1">
                               <input
                                 type="text"
                                 value={signaturesMeta.sig1Dept}
