@@ -877,14 +877,12 @@ export default function ReportsTab() {
     columns: [
      { key: "year", label: "السنة" },
      { key: "notifyDate", label: "تاريخ التوريد" },
-     { key: "period", label: "الشهر / السنة" },
      { key: "trainee", label: "اسم المتدرب" },
      { key: "hafizaNo", label: "رقم الحافظة" },
      { key: "notifyNo", label: "رقم الإشعار" },
      { key: "description", label: "البيان الأصلي" },
      { key: "category", label: "التصنيف الموحد" },
      { key: "displayType", label: "نوع السجل" },
-     { key: "source", label: "المصدر" },
      { key: "amount", label: "مبلغ التوريد" },
     ],
    };
@@ -985,6 +983,12 @@ export default function ReportsTab() {
   const isCustodySource = source === "youssefLoan" || source === "tawfiqCustody";
   const orderedRows = isCustodySource ?
    filtered : [...filtered].sort((a, b) => {
+    // إبقاء صف إجمالي الرسوم في نهاية كشف مدفوعات المتدربين مهما كان اتجاه الفرز.
+    if (source === "trainee") {
+     const aIsGrandTotal = a.summaryLevel === "total" || a.total === "نعم";
+     const bIsGrandTotal = b.summaryLevel === "total" || b.total === "نعم";
+     if (aIsGrandTotal !== bIsGrandTotal) return aIsGrandTotal ? 1 : -1;
+    }
     const aVal = a[activeSortCol];
     const bVal = b[activeSortCol];
     if (aVal === undefined || aVal === null) return 1;
