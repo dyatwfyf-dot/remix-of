@@ -210,7 +210,7 @@ const reportsTabPrintCss = `
   #tableContainer table.reports-data-table thead { display:table-header-group !important; }
   #tableContainer table.reports-data-table thead tr.reports-column-header-row > th { background:linear-gradient(180deg,#fff7d7 0%,#f3d778 100%) !important; background-color:#f3d778 !important; color:#3c321b !important; border-color:#000 !important; font-size:10pt !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table thead tr.reports-custody-title-row > th,
-  #tableContainer table.reports-data-table thead tr.reports-custody-date-row > th { position:static !important; min-width:0 !important; max-width:none !important; background:linear-gradient(180deg,#fff7d7 0%,#f3d778 100%) !important; background-color:#f3d778 !important; color:#17324d !important; border:1px solid #000 !important; font-weight:900 !important; }
+  #tableContainer table.reports-data-table thead tr.reports-custody-date-row > th { position:static !important; min-width:0 !important; max-width:none !important; background:#fff !important; background-color:#fff !important; color:#17324d !important; border:1px solid #000 !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table thead tr.reports-custody-title-row > th { padding:10px 8px 4px !important; font-size:15pt !important; }
   #tableContainer table.reports-data-table thead tr.reports-custody-date-row > th { padding:3px 8px 8px !important; font-size:10pt !important; }
   #tableContainer table.reports-data-table tbody > tr > td { background:#fff !important; background-color:#fff !important; color:#243b50 !important; }
@@ -864,7 +864,6 @@ export default function ReportsTab() {
           { key: "date", label: "التاريخ" },
           { key: "docNo", label: "رقم المستند / الشيك" },
           { key: "description", label: "البيان" },
-          { key: "name", label: "الاسم" },
           { key: "settlementNo", label: "رقم كشف التسوية" },
           { key: "notes", label: "الملاحظات" },
           {
@@ -881,7 +880,6 @@ export default function ReportsTab() {
           { key: "date", label: "التاريخ" },
           { key: "docNo", label: "رقم المستند / الشيك" },
           { key: "description", label: "البيان" },
-          { key: "name", label: "الاسم" },
           { key: "settlementNo", label: "رقم كشف التسوية" },
           { key: "notes", label: "الملاحظات" },
           { key: "amount", label: "المبلغ" },

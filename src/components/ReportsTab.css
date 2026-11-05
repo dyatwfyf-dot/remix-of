@@ -269,8 +269,9 @@
   min-width: 0;
   max-width: none;
   padding: 12px 8px 5px;
-  border: 1px solid #9a7215 !important;
-  background: linear-gradient(180deg, #fff7d7 0%, #f3d778 100%) !important;
+  border: 1px solid #000 !important;
+  background: #fff !important;
+  background-color: #fff !important;
   color: #17324d !important;
   font-size: 17px;
   font-weight: 900;
@@ -281,10 +282,11 @@
   min-width: 0;
   max-width: none;
   padding: 4px 8px 10px;
-  border: 1px solid #9a7215 !important;
+  border: 1px solid #000 !important;
   border-top: 0 !important;
-  background: linear-gradient(180deg, #fff7d7 0%, #f3d778 100%) !important;
-  color: #513900 !important;
+  background: #fff !important;
+  background-color: #fff !important;
+  color: #17324d !important;
   font-size: 13px;
   font-weight: 800;
   text-align: center;
