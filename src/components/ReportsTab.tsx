@@ -381,6 +381,23 @@ const reportsTabPrintCss = `
     background-color: #ffffff !important;
   }
 
+  /* تقارير العهدة والسلف: تثبيت حدود كل خلايا الجدول بالأسود في معاينة الطباعة. */
+  #tableContainer table.reports-data-table.reports-custody-table th,
+  #tableContainer table.reports-data-table.reports-custody-table td,
+  #report-source table.reports-data-table.reports-custody-table th,
+  #report-source table.reports-data-table.reports-custody-table td,
+  .report-page-content table.reports-data-table.reports-custody-table th,
+  .report-page-content table.reports-data-table.reports-custody-table td,
+  table.reports-data-table.reports-custody-table th,
+  table.reports-data-table.reports-custody-table td {
+    border: 1px solid #000000 !important;
+    border-style: solid !important;
+    border-width: 1px !important;
+    border-color: #000000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   /* إجمالي العهدة في الطباعة يطابق تدرج الإجمالي الكلي الظاهر في الجدول. */
   #tableContainer table.reports-custody-table tbody > tr.total-row > td,
   #tableContainer table.reports-custody-table tbody > tr.report-grand-total-row > td,
