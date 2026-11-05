@@ -214,13 +214,15 @@ const reportsTabPrintCss = `
   #tableContainer table.reports-data-table thead tr.reports-custody-date-row > th { padding:3px 8px 8px !important; font-size:10pt !important; }
   #tableContainer table.reports-data-table tbody > tr > td { background:#fff !important; background-color:#fff !important; color:#243b50 !important; }
   #tableContainer table.reports-data-table tbody > tr:nth-child(even):not(.total-row):not(.report-grand-total-row):not(.reports-trainee-total-row):not(.reports-trainee-summary-row):not(.reports-fee-row):not(.reports-period-row):not(.signature-block-row):not(.signature-spacer-row) > td { background:#f7fafc !important; background-color:#f7fafc !important; }
+  #tableContainer table.reports-data-table tbody > tr > td[data-col-key="idx"] { background:#f2f6f8 !important; color:#526a7e !important; font-weight:900 !important; }
+  #tableContainer table.reports-data-table tbody > tr:nth-child(even):not(.total-row):not(.report-grand-total-row) > td[data-col-key="idx"] { background:#eaf0f4 !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-detail-row > td { background:#fff !important; color:#17324d !important; font-weight:800 !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-trainee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#2c666e !important; background-color:#2c666e !important; color:#fff !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-trainee-summary-row:not(.total-row):not(.report-grand-total-row) > td { background:#fff1d6 !important; background-color:#fff1d6 !important; color:#68420a !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-fee-row:not(.total-row):not(.report-grand-total-row) > td { background:#f1bf98 !important; background-color:#f1bf98 !important; color:#38291f !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-period-row:not(.total-row):not(.report-grand-total-row) > td { background:#5b5750 !important; background-color:#5b5750 !important; color:#fff !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table tbody > tr.total-row > td,
-  #tableContainer table.reports-data-table tbody > tr.report-grand-total-row > td { background:#0437bb !important; background-color:#0437bb !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
+  #tableContainer table.reports-data-table tbody > tr.report-grand-total-row > td { background:linear-gradient(105deg,#176db1 0%,#287fbe 55%,#15598f 100%) !important; background-color:#287fbe !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table tbody > tr.total-row > td *,
   #tableContainer table.reports-data-table tbody > tr.report-grand-total-row > td * { background:transparent !important; color:#fff !important; }
   #tableContainer table.reports-trainee-payment-table tbody > tr.reports-fee-row:not(.total-row):not(.report-grand-total-row) > td { background:#fff4d6 !important; background-color:#fff4d6 !important; color:#000 !important; border-color:#000 !important; font-weight:900 !important; }
