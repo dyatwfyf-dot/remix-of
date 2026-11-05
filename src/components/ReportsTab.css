@@ -100,7 +100,7 @@
   overflow: auto;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
-  border: 1px solid #cbd8e2;
+  border: 1px solid #000000;
   border-radius: 16px;
   background: #fff;
   box-shadow: 0 8px 24px rgba(15, 41, 63, 0.07);
@@ -126,7 +126,7 @@
   min-width: 78px;
   max-width: 230px;
   padding: 12px 10px;
-  border: 0;
+  border: 1px solid #000000 !important;
   border-bottom: 2px solid #9a7215 !important;
   background: linear-gradient(180deg, #fff7d7 0%, #f3d778 100%) !important;
   color: #3c321b !important;
@@ -158,8 +158,8 @@
 .reports-table-scroll .reports-data-table tbody td {
   height: auto;
   padding: 10px 9px;
-  border: 0;
-  border-bottom: 1px solid #e5edf2 !important;
+  border: 1px solid #000000 !important;
+  border-bottom: 1px solid #000000 !important;
   background: #fff !important;
   color: #243b50 !important;
   font-size: 12px;
@@ -240,13 +240,13 @@
   font-weight: 850;
 }
 .reports-table-scroll .reports-data-table tbody tr.reports-fee-row > td {
-  background: #f1bf98 !important;
-  color: #38291f !important;
+  background: #08B7E4 !important;
+  color: #000000 !important;
   font-weight: 900;
 }
 .reports-table-scroll .reports-data-table tbody tr.reports-period-row > td {
-  background: #5b5750 !important;
-  color: #fff !important;
+  background: #F5CC85 !important;
+  color: #000000 !important;
   font-weight: 900;
 }
 .reports-table-scroll .reports-data-table tbody tr.signature-block-row > td,
@@ -257,11 +257,11 @@
 .reports-table-scroll table.reports-data-table,
 .reports-table-scroll .reports-data-table thead th,
 .reports-table-scroll .reports-data-table tbody td {
-  border-color: #d5e0e7;
+  border-color: #000000;
 }
 .reports-table-scroll table.reports-data-table { border-collapse: collapse; }
 .reports-table-scroll .reports-data-table thead th,
-.reports-table-scroll .reports-data-table tbody td { border: 1px solid #d5e0e7 !important; }
+.reports-table-scroll .reports-data-table tbody td { border: 1px solid black !important; }
 
 /* عنوان تقرير العهدة وتاريخه */
 .reports-table-scroll .reports-data-table thead tr.reports-custody-title-row th {
@@ -306,42 +306,49 @@
   .reports-table-panel { padding: 8px 12px 14px !important; }
   .reports-table-scroll { border-radius: 12px; }
   .reports-table-scroll .reports-data-table thead th { min-width: 68px; padding: 10px 8px; font-size: 11px; }
-  .reports-table-scroll .reports-data-table tbody td { padding: 9px 8px; font-size: 11px; }
+  .reports-table-scroll .reports-data-table tbody td { padding: 9px 8px;
+  font-size: 16px;
+ border: 1px solid #000000 !important;
+  }
   .reports-table-scroll .reports-data-table tbody td.reports-description-cell,
   .reports-table-scroll .reports-data-table tbody td.reports-text-cell { min-width: 126px; max-width: 200px; }
   .reports-table-scroll .reports-data-table tbody td input { min-width: 104px; }
 }
 
 @media print {
-  .reports-table-scroll { overflow: visible !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
-  .reports-table-scroll table.reports-data-table { width: 100% !important; min-width: 0 !important; }
+  .reports-table-scroll { overflow: visible !important;
+  border: solid 1px black !important; 
+  border-radius: 0 !important; box-shadow: none !important; }
+  .reports-table-scroll table.reports-data-table { width: 100% !important; min-width: auto !important; }
   .reports-table-scroll .reports-data-table thead th,
-  .reports-table-scroll .reports-data-table tbody td { position: static !important; box-shadow: none !important; }
+  .reports-table-scroll .reports-data-table tbody td {
+    border: 1px solid #000000 !important;
+    position: static !important; box-shadow: none !important; }
 }
 
 
 /* ألوان خافتة وواضحة لإجماليات كشف مدفوعات المتدربين. */
 .reports-table-scroll .reports-trainee-payment-table tbody tr.reports-fee-row > td {
   background: #fff4d6 !important;
-  color: #654d18 !important;
-  border-color: #e6d8ad !important;
+  color: #000000 !important;
+  border-color: #000000 !important;
   font-weight: 900 !important;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
 .reports-table-scroll .reports-trainee-payment-table tbody tr.reports-trainee-total-row > td {
-  background: #dbeeea !important;
-  color: #174f50 !important;
-  border-color: #b8d8d2 !important;
+  background: #03A683 !important;
+  color: #000000 !important;
+  border-color: #000000 !important;
   font-weight: 900 !important;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
 .reports-table-scroll .reports-trainee-payment-table tbody tr.total-row > td,
 .reports-table-scroll .reports-trainee-payment-table tbody tr.report-grand-total-row > td {
-  background: #cde5dc !important;
-  color: #173f38 !important;
-  border-color: #a9cfc1 !important;
+  background: #DEE43D !important;
+  color: #00211C !important;
+  border-color: #000000 !important;
   font-weight: 900 !important;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
