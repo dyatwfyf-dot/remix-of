@@ -349,3 +349,18 @@
 .reports-table-scroll .reports-data-table tbody > tr > td {
   border: 1px solid #000000 !important;
 }
+
+
+/* تقارير العهدة والسلف: عمود الترقيم (م) ضيق وثابت دون تغيير بقية الجداول. */
+.reports-table-scroll .reports-custody-table thead th[data-col-key="idx"],
+.reports-table-scroll .reports-custody-table tbody td[data-col-key="idx"],
+.reports-custody-table thead th.reports-custody-index-cell,
+.reports-custody-table tbody td.reports-custody-index-cell {
+  width: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  padding: 4px 2px !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
+}

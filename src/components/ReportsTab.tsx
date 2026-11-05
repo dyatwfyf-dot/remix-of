@@ -242,6 +242,15 @@ const reportsTabPrintCss = `
     table.reports-data-table thead th { font-size: 10pt !important; }
   }
 
+  table.reports-custody-table th[data-col-key="idx"],
+  table.reports-custody-table td[data-col-key="idx"] {
+    width: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+    padding: 3px 2px !important;
+    white-space: nowrap !important;
+  }
+
   table.reports-data-table th.rc-num,
   table.reports-data-table td.rc-num,
   table.reports-data-table tbody td.num,
@@ -997,7 +1006,6 @@ export default function ReportsTab() {
      { key: "date", label: "التاريخ" },
      { key: "docNo", label: "رقم المستند / الشيك" },
      { key: "description", label: "البيان" },
-     { key: "name", label: "الاسم" },
      { key: "settlementNo", label: "رقم كشف التسوية" },
      { key: "notes", label: "الملاحظات" },
      {
@@ -1014,7 +1022,6 @@ export default function ReportsTab() {
      { key: "date", label: "التاريخ" },
      { key: "docNo", label: "رقم المستند / الشيك" },
      { key: "description", label: "البيان" },
-     { key: "name", label: "الاسم" },
      { key: "settlementNo", label: "رقم كشف التسوية" },
      { key: "notes", label: "الملاحظات" },
      { key: "amount", label: "المبلغ" },
@@ -1251,7 +1258,12 @@ export default function ReportsTab() {
   processedRows.filter((row) => row.summaryLevel !== "opening" && row.summaryLevel !== "total" && row.summaryLevel !== "signature") :
   processedRows;
  
- const displayRows = useMemo(() => processedRows, [processedRows]);
+ const displayRows = useMemo(
+  () => isLoanOrCustody
+   ? processedRows.filter((row) => row.summaryLevel !== "opening")
+   : processedRows,
+  [processedRows, isLoanOrCustody]
+ );
  
  const activeSortColumn = source === "trainee" ? traineeSortColumn : sortColumn;
  const activeSortDirection = source === "trainee" ? traineeSortDirection : sortDirection;
@@ -1490,7 +1502,7 @@ export default function ReportsTab() {
                   </>
                 )}
   <tr className="reports-column-header-row border border-black bg-[#FFD700] text-black">
-   <th data-col-key="idx" className="w-5 border border-black px-2 py-3 font-black">م</th>
+   <th data-col-key="idx" className={`border border-black px-1 py-2 font-black ${isLoanOrCustody ? "reports-custody-index-cell" : "w-5"}`}>م</th>
                   {sourceConfig.columns.map((col) => (
                     <th
                       key={col.key}
@@ -1705,7 +1717,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                             : undefined
                         }
                       >
-                        <td data-col-key="idx" className="border border-black px-2 py-2 font-bold" style={isTotal ? totalCellStyle : traineeRowCellStyle}>
+                        <td data-col-key="idx" className={`border border-black px-1 py-2 font-bold ${isLoanOrCustody ? "reports-custody-index-cell" : ""}`} style={isTotal ? totalCellStyle : traineeRowCellStyle}>
                           {isOpening ? "—" : isTotal ? "★" : index + 1}
                         </td>
 
