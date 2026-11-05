@@ -710,9 +710,7 @@ export default function ReportsTab() {
     result.push(...categoryPayments.map((row) => ({
      ...row,
      displayType: "تفصيلي",
-     summaryLevel: "detail"
-     as
-     const,
+     summaryLevel: "detail" as const,
     })));
    }
    if (traineeDisplayMode === "summary" || traineeDisplayMode === "both") {
