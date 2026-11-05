@@ -51,6 +51,10 @@ type Props = {
   pdfOrientation ? : string;
   pdfMarginMm ? : number;
   pdfCss ? : string;
+  /** CSS appended after shared preview styles for report-specific overrides. */
+  pdfFinalCss?: string;
+  /** Render the visible table markup when exact screen/print parity is required. */
+  renderPrintTableHtml?: () => string;
   includeTotalRow?: boolean;
   printTableClassName?: string;
   additionalWebActions ? : WebActionItem[];
