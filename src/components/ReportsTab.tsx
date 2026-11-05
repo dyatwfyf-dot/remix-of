@@ -270,7 +270,7 @@ const reportsTabPrintCss = `
 const escapeReportsPrintHtml = (value: unknown) =>
   String(value ?? "").replace(/[&<>"']/g, (character) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-  })[character] || character);
+  } as Record<string, string>)[character] || character);
 
 /** Clone the rendered table so print preserves its real structure and styling. */
 const buildReportsScreenPrintHtml = (title: string, source: ReportSource) => {
