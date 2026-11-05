@@ -447,7 +447,7 @@ background: transparent !important;
 
   /* كتلة التوقيعات الثلاثة لتقارير العهد (سطران متحاذيان) */
   .signature-spacer-row td {
-    height: 20mm !important;
+    height: 4mm !important;
     padding: 0 !important;
     border: 0 !important;
     background: #ffffff !important;
