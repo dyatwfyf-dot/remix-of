@@ -860,7 +860,6 @@ export default function ReportsTab() {
         title: "مسير إخلاء العهدة",
         columns: [
           { key: "date", label: "التاريخ" },
-          { key: "docNo", label: "رقم المستند / الشيك" },
           { key: "description", label: "البيان" },
           { key: "settlementNo", label: "رقم كشف التسوية" },
           { key: "notes", label: "الملاحظات" },
@@ -876,7 +875,6 @@ export default function ReportsTab() {
         title: "مسير إخلاء العهدة",
         columns: [
           { key: "date", label: "التاريخ" },
-          { key: "docNo", label: "رقم المستند / الشيك" },
           { key: "description", label: "البيان" },
           { key: "settlementNo", label: "رقم كشف التسوية" },
           { key: "notes", label: "الملاحظات" },
