@@ -54,7 +54,7 @@ type Props = {
   /** CSS appended after shared preview styles for report-specific overrides. */
   pdfFinalCss?: string;
   /** Render the visible table markup when exact screen/print parity is required. */
-  renderPrintTableHtml?: () => string;
+  renderPrintTableHtml?: (reportDateLabel: string) => string;
   includeTotalRow?: boolean;
   printTableClassName?: string;
   additionalWebActions ? : WebActionItem[];
@@ -88,7 +88,7 @@ export default function TabActions({
   // فصل بيانات الطباعة عن بيانات Excel حتى تظهر صفوف الإجمالي والتوقيعات دون تكرارها في Excel.
   const printData = printRows ?? rows;
   const tableHtml = () => renderPrintTableHtml
-    ? renderPrintTableHtml()
+    ? renderPrintTableHtml(reportDateLabel)
     : buildTableHtml({ title, columns: printColumns, rows: printData, numericKeys, reportDate, includeTotalRow, tableClassName: printTableClassName });
   
   const handlePrint = () => {
