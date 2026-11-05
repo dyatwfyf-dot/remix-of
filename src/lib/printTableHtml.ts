@@ -603,14 +603,18 @@ export function buildTableHtml(opts: {
       const amountColumn = columns[amountIndex];
       const trailingColSpan = columns.length - amountIndex - 1;
       const amountCellClass = getCellClass(amountColumn, row.amount);
-      return `<tr class="${getReportRowClass(row, index)}">
-        <td class="idx numeric-cell" data-col-key="description" colspan="${amountIndex + 1}">
+      const rowClass = [
+        getReportRowClass(row, index),
+        tableClassName.includes("reports-custody-table") ? "reports-custody-grand-total-row" : "",
+      ].filter(Boolean).join(" ");
+      return `<tr class="${rowClass}">
+        <td class="idx numeric-cell custody-grand-total-label-cell" data-col-key="description" colspan="${amountIndex + 1}">
           <span class="pdf-cell-text">${escapeHtml(grandTotalLabel)}</span>
         </td>
-        <td class="${amountCellClass}" data-col-key="amount" data-col-name="${escapeHtml(amountColumn.label)}">
+        <td class="${amountCellClass} custody-grand-total-amount-cell" data-col-key="amount" data-col-name="${escapeHtml(amountColumn.label)}">
           <span class="pdf-cell-text">${formatCellContent(row.amount, true)}</span>
         </td>
-        ${trailingColSpan > 0 ? `<td colspan="${trailingColSpan}"><span class="pdf-cell-text"></span></td>` : ""}
+        ${trailingColSpan > 0 ? `<td class="custody-grand-total-spacer-cell" data-col-key="grand-total-spacer" colspan="${trailingColSpan}"><span class="pdf-cell-text"></span></td>` : ""}
       </tr>`;
     }
 
