@@ -268,13 +268,8 @@ const reportsTabPrintCss = `
 
 
 
-const escapeReportsPrintHtml = (value: unknown) =>
-  String(value ?? "").replace(/[&<>"']/g, (character) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-  } as Record<string, string>)[character] || character);
-
 /** Clone the rendered table so print preserves its real structure and styling. */
-const buildReportsScreenPrintHtml = (title: string, source: ReportSource, reportDateLabel: string, recordCount: number) => {
+const buildReportsScreenPrintHtml = (source: ReportSource, reportDateLabel: string, recordCount: number) => {
   const sourceTable = document.getElementById("reports-table") as HTMLTableElement | null;
   if (!sourceTable) throw new Error("تعذر العثور على جدول التقرير الحالي");
   const table = sourceTable.cloneNode(true) as HTMLTableElement;
@@ -307,11 +302,14 @@ const buildReportsScreenPrintHtml = (title: string, source: ReportSource, report
   });
 
   const isCustodyReport = source === "youssefLoan" || source === "tawfiqCustody";
-  const heading = isCustodyReport ? "" :
-    '<div class="reports-print-heading"><h1>' + escapeReportsPrintHtml(title) +
-    '</h1><div class="reports-print-sub">المجلس اليمني للاختصاصات الطبية - صعدة • تاريخ التقرير: ' +
-    escapeReportsPrintHtml(reportDateLabel) + ' • عدد السجلات: ' + String(recordCount) + '</div></div>';
-  return heading + '<div class="reports-print-table-shell">' + table.outerHTML + '</div>';
+  if (!isCustodyReport) {
+    const dateCell = table.querySelector<HTMLTableCellElement>("thead tr.reports-custody-date-row th");
+    if (dateCell) {
+      dateCell.textContent = "المجلس اليمني للاختصاصات الطبية - صعدة • تاريخ التقرير: " +
+        reportDateLabel + " • عدد السجلات: " + String(recordCount);
+    }
+  }
+  return '<div class="reports-print-table-shell">' + table.outerHTML + '</div>';
 };
 
 export default function ReportsTab() {
@@ -1328,7 +1326,7 @@ export default function ReportsTab() {
             printColumns={sourceConfig.columns}
             numericKeys={numericKeys}
             pdfFinalCss={reportsTabPrintCss}
-            renderPrintTableHtml={(reportDateLabel) => buildReportsScreenPrintHtml(title, source, reportDateLabel, displayRows.length)}
+            renderPrintTableHtml={(reportDateLabel) => buildReportsScreenPrintHtml(source, reportDateLabel, displayRows.length)}
             pdfOrientation={sourceConfig.columns.length + 1 > 7 ? "landscape" : "portrait"}
             includeTotalRow={!isLoanOrCustody && source !== "traineeFeeStatus"}
             printTableClassName={source === "trainee" ? "reports-trainee-payment-table" : ""}
@@ -1341,20 +1339,20 @@ export default function ReportsTab() {
           <div className="reports-table-scroll">
             <table id="reports-table" className={`reports-data-table text-center text-xs ${source === "trainee" ? "reports-trainee-payment-table" : ""}`} style={{ tableLayout: "auto" }}>
               <thead>
-                {(source === "youssefLoan" || source === "tawfiqCustody") && (
-                  <>
-                    <tr className="reports-custody-title-row">
-                      <th colSpan={sourceConfig.columns.length + 2}>
-                        {title.split("\n")[0]}
-                      </th>
-                    </tr>
-                    <tr className="reports-custody-date-row">
-                      <th colSpan={sourceConfig.columns.length + 2}>
-                        {title.split("\n").slice(1).join(" ")}
-                      </th>
-                    </tr>
-                  </>
-                )}
+                <>
+                  <tr className="reports-custody-title-row">
+                    <th colSpan={sourceConfig.columns.length + 2}>
+                      {title.split("\n")[0]}
+                    </th>
+                  </tr>
+                  <tr className="reports-custody-date-row">
+                    <th colSpan={sourceConfig.columns.length + 2}>
+                      {(source === "youssefLoan" || source === "tawfiqCustody")
+                        ? title.split("\n").slice(1).join(" ")
+                        : `تاريخ التقرير: ${formatReportDate(reportIssuedAt)} • عدد السجلات: ${displayRows.length}`}
+                    </th>
+                  </tr>
+                </>
   <tr className="reports-column-header-row border border-black bg-[#FFD700] text-black">
    <th data-col-key="idx" className="w-5 border border-black px-2 py-3 font-black">م</th>
                   {sourceConfig.columns.map((col) => (
