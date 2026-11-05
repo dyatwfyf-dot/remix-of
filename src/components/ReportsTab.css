@@ -230,13 +230,13 @@
 }
 
 .reports-table-scroll .reports-data-table tbody tr.reports-trainee-total-row > td {
-  background: #2c666e !important;
-  color: #fff !important;
+  background: #54B9C7 !important;
+  color: #000000 !important;
   font-weight: 900;
 }
 .reports-table-scroll .reports-data-table tbody tr.reports-trainee-summary-row > td {
   background: #fff1d6 !important;
-  color: #68420a !important;
+  color: #000000 !important;
   font-weight: 850;
 }
 .reports-table-scroll .reports-data-table tbody tr.reports-fee-row > td {
@@ -339,7 +339,7 @@
   print-color-adjust: exact;
 }
 .reports-table-scroll .reports-trainee-payment-table tbody tr.reports-trainee-total-row > td {
-  background: #03A683 !important;
+  background: #8EE6D3 !important;
   color: #000000 !important;
   border-color: #000000 !important;
   font-weight: 900 !important;
