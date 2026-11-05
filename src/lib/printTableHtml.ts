@@ -517,8 +517,9 @@ export function buildTableHtml(opts: {
   subtitle?: string;
   reportDate?: string;
   includeTotalRow?: boolean;
+  tableClassName?: string;
 }) {
-  const { title, columns, rows, numericKeys = [], subtitle, reportDate, includeTotalRow = true } = opts;
+  const { title, columns, rows, numericKeys = [], subtitle, reportDate, includeTotalRow = true, tableClassName = "" } = opts;
 
   const isDescriptionColumn = (c: TableCol) =>
     c.key === "description" || /^(البيان|بيان|تفاصيل|وصف|الشرح)$/i.test(c.label.trim());
@@ -777,5 +778,5 @@ export function buildTableHtml(opts: {
         : bodyWithSpacer + totalRow)
     : bodyWithSpacer;
 
-  return `<table class="reports-data-table"><thead>${head}</thead><tbody>${bodyWithTotal}</tbody></table>`;
+  return `<table class="reports-data-table ${escapeHtml(tableClassName)}"><thead>${head}</thead><tbody>${bodyWithTotal}</tbody></table>`;
 }

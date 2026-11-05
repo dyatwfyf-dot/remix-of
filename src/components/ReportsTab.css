@@ -318,3 +318,31 @@
   .reports-table-scroll .reports-data-table thead th,
   .reports-table-scroll .reports-data-table tbody td { position: static !important; box-shadow: none !important; }
 }
+
+
+/* ألوان خافتة وواضحة لإجماليات كشف مدفوعات المتدربين. */
+.reports-table-scroll .reports-trainee-payment-table tbody tr.reports-fee-row > td {
+  background: #fff4d6 !important;
+  color: #654d18 !important;
+  border-color: #e6d8ad !important;
+  font-weight: 900 !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.reports-table-scroll .reports-trainee-payment-table tbody tr.reports-trainee-total-row > td {
+  background: #dbeeea !important;
+  color: #174f50 !important;
+  border-color: #b8d8d2 !important;
+  font-weight: 900 !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.reports-table-scroll .reports-trainee-payment-table tbody tr.total-row > td,
+.reports-table-scroll .reports-trainee-payment-table tbody tr.report-grand-total-row > td {
+  background: #cde5dc !important;
+  color: #173f38 !important;
+  border-color: #a9cfc1 !important;
+  font-weight: 900 !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}

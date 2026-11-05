@@ -367,6 +367,50 @@ const reportsTabPrintCss = `
     print-color-adjust: exact !important;
   }
 
+  /* ألوان إجماليات كشف مدفوعات المتدربين: درجات هادئة مع تباين واضح للطباعة. */
+  #tableContainer table.reports-trainee-payment-table tbody > tr.report-fee-row:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row) > td,
+  #report-source table.reports-trainee-payment-table tbody > tr.report-fee-row:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row) > td {
+    background: #fff4d6 !important;
+    background-color: #fff4d6 !important;
+    color: #654d18 !important;
+    border-color: #e6d8ad !important;
+    font-weight: 900 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  #tableContainer table.reports-trainee-payment-table tbody > tr.report-trainee-name-total-row:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row) > td,
+  #report-source table.reports-trainee-payment-table tbody > tr.report-trainee-name-total-row:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row) > td {
+    background: #dbeeea !important;
+    background-color: #dbeeea !important;
+    color: #174f50 !important;
+    border-color: #b8d8d2 !important;
+    font-weight: 900 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  #tableContainer table.reports-trainee-payment-table tbody > tr.report-grand-total-row > td,
+  #tableContainer table.reports-trainee-payment-table tbody > tr.total-row > td,
+  #report-source table.reports-trainee-payment-table tbody > tr.report-grand-total-row > td,
+  #report-source table.reports-trainee-payment-table tbody > tr.total-row > td {
+    background: #cde5dc !important;
+    background-color: #cde5dc !important;
+    color: #173f38 !important;
+    border-color: #a9cfc1 !important;
+    font-weight: 900 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  #tableContainer table.reports-trainee-payment-table tbody > tr.report-grand-total-row > td *,
+  #tableContainer table.reports-trainee-payment-table tbody > tr.total-row > td *,
+  #report-source table.reports-trainee-payment-table tbody > tr.report-grand-total-row > td *,
+  #report-source table.reports-trainee-payment-table tbody > tr.total-row > td * {
+    background: transparent !important;
+    color: #173f38 !important;
+  }
+
   @media print {
     table.reports-data-table {
       width: 100% !important;
@@ -1434,6 +1478,7 @@ export default function ReportsTab() {
             pdfCss={reportsTabPrintCss}
             pdfOrientation={sourceConfig.columns.length + 1 > 7 ? "landscape" : "portrait"}
             includeTotalRow={!isLoanOrCustody && source !== "traineeFeeStatus"}
+            printTableClassName={source === "trainee" ? "reports-trainee-payment-table" : ""}
           />
         </div>
 
@@ -1441,7 +1486,7 @@ export default function ReportsTab() {
         
         <div className="reports-table-panel p-3 sm:p-4">
           <div className="reports-table-scroll">
-            <table id="reports-table" className="reports-data-table text-center text-xs" style={{ tableLayout: "auto" }}>
+            <table id="reports-table" className={`reports-data-table text-center text-xs ${source === "trainee" ? "reports-trainee-payment-table" : ""}`} style={{ tableLayout: "auto" }}>
               <thead>
                 {(source === "youssefLoan" || source === "tawfiqCustody") && (
                   <>

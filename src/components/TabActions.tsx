@@ -52,6 +52,7 @@ type Props = {
   pdfMarginMm ? : number;
   pdfCss ? : string;
   includeTotalRow?: boolean;
+  printTableClassName?: string;
   additionalWebActions ? : WebActionItem[];
   webClassName ? : string;
 };
@@ -71,6 +72,7 @@ export default function TabActions({
   pdfMarginMm,
   pdfCss,
   includeTotalRow = true,
+  printTableClassName = "",
   additionalWebActions = [],
   webClassName = "",
 }: Props) {
@@ -79,7 +81,7 @@ export default function TabActions({
   
   // فصل بيانات الطباعة عن بيانات Excel حتى تظهر صفوف الإجمالي والتوقيعات دون تكرارها في Excel.
   const printData = printRows ?? rows;
-  const tableHtml = () => buildTableHtml({ title, columns: printColumns, rows: printData, numericKeys, reportDate, includeTotalRow });
+  const tableHtml = () => buildTableHtml({ title, columns: printColumns, rows: printData, numericKeys, reportDate, includeTotalRow, tableClassName: printTableClassName });
   
   const handlePrint = () => {
     if (!printData.length) {
