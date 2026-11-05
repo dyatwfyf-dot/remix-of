@@ -351,6 +351,15 @@
 }
 
 
+/* حدود جميع خلايا تقارير العهدة والسلف الداخلية بالأسود وبسُمك 1px. */
+.mizan-reports-tab .reports-table-scroll table.reports-data-table.reports-custody-table th,
+.mizan-reports-tab .reports-table-scroll table.reports-data-table.reports-custody-table td {
+  border: 1px solid #000000 !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-color: #000000 !important;
+}
+
 /* تقارير العهدة والسلف: عمود الترقيم (م) ضيق وثابت دون تغيير بقية الجداول. */
 .reports-table-scroll .reports-custody-table thead th[data-col-key="idx"],
 .reports-table-scroll .reports-custody-table tbody td[data-col-key="idx"],
