@@ -398,15 +398,17 @@ const reportsTabPrintCss = `
     print-color-adjust: exact !important;
   }
 
-  /* إجمالي العهدة في الطباعة يطابق تدرج الإجمالي الكلي الظاهر في الجدول. */
+  /* إجمالي العهدة والسلف في معاينة المتصفح يطابق الصف الظاهر على الشاشة. */
   #tableContainer table.reports-custody-table tbody > tr.total-row > td,
   #tableContainer table.reports-custody-table tbody > tr.report-grand-total-row > td,
   #report-source table.reports-custody-table tbody > tr.total-row > td,
   #report-source table.reports-custody-table tbody > tr.report-grand-total-row > td,
   .report-page-content table.reports-custody-table tbody > tr.total-row > td,
-  .report-page-content table.reports-custody-table tbody > tr.report-grand-total-row > td {
-    background: linear-gradient(105deg, #176db1 0%, #287fbe 55%, #15598f 100%) !important;
-    background-color: #287fbe !important;
+  .report-page-content table.reports-custody-table tbody > tr.report-grand-total-row > td,
+  table.reports-data-table.reports-custody-table tbody > tr.reports-custody-grand-total-row > td {
+    background: #0437bb !important;
+    background-color: #0437bb !important;
+    background-image: none !important;
     color: #ffffff !important;
     border: 1px solid #000000 !important;
     font-weight: 900 !important;
@@ -419,9 +421,27 @@ const reportsTabPrintCss = `
   #report-source table.reports-custody-table tbody > tr.total-row > td *,
   #report-source table.reports-custody-table tbody > tr.report-grand-total-row > td *,
   .report-page-content table.reports-custody-table tbody > tr.total-row > td *,
-  .report-page-content table.reports-custody-table tbody > tr.report-grand-total-row > td * {
+  .report-page-content table.reports-custody-table tbody > tr.report-grand-total-row > td *,
+  table.reports-data-table.reports-custody-table tbody > tr.reports-custody-grand-total-row > td * {
     background: transparent !important;
     color: #ffffff !important;
+    font-weight: 900 !important;
+  }
+
+  /* محاذاة وحشوات خلايا الإجمالي كما في صف الشاشة المدمج. */
+  table.reports-data-table.reports-custody-table tbody > tr.reports-custody-grand-total-row > td {
+    vertical-align: middle !important;
+    text-align: center !important;
+  }
+  table.reports-data-table.reports-custody-table tbody > tr.reports-custody-grand-total-row > td.custody-grand-total-label-cell {
+    padding: 8px 12px !important;
+  }
+  table.reports-data-table.reports-custody-table tbody > tr.reports-custody-grand-total-row > td.custody-grand-total-amount-cell {
+    padding: 8px !important;
+    white-space: nowrap !important;
+  }
+  table.reports-data-table.reports-custody-table tbody > tr.reports-custody-grand-total-row > td.custody-grand-total-spacer-cell {
+    padding: 4px !important;
   }
 
   @media print {
