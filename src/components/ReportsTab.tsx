@@ -268,13 +268,8 @@ const reportsTabPrintCss = `
 
 
 
-const escapeReportsPrintHtml = (value: unknown) =>
-  String(value ?? "").replace(/[&<>"']/g, (character) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-  } as Record<string, string>)[character] || character);
-
 /** Clone the rendered table so print preserves its real structure and styling. */
-const buildReportsScreenPrintHtml = (title: string, source: ReportSource, reportDateLabel: string, recordCount: number) => {
+const buildReportsScreenPrintHtml = (source: ReportSource, reportDateLabel: string, recordCount: number) => {
   const sourceTable = document.getElementById("reports-table") as HTMLTableElement | null;
   if (!sourceTable) throw new Error("تعذر العثور على جدول التقرير الحالي");
   const table = sourceTable.cloneNode(true) as HTMLTableElement;
@@ -1331,7 +1326,7 @@ export default function ReportsTab() {
             printColumns={sourceConfig.columns}
             numericKeys={numericKeys}
             pdfFinalCss={reportsTabPrintCss}
-            renderPrintTableHtml={(reportDateLabel) => buildReportsScreenPrintHtml(title, source, reportDateLabel, displayRows.length)}
+            renderPrintTableHtml={(reportDateLabel) => buildReportsScreenPrintHtml(source, reportDateLabel, displayRows.length)}
             pdfOrientation={sourceConfig.columns.length + 1 > 7 ? "landscape" : "portrait"}
             includeTotalRow={!isLoanOrCustody && source !== "traineeFeeStatus"}
             printTableClassName={source === "trainee" ? "reports-trainee-payment-table" : ""}
