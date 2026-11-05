@@ -253,6 +253,97 @@ const reportsTabPrintCss = `
     overflow-wrap: normal !important;
   }
 
+  /* ألوان لوحة التقارير الظاهرة على الشاشة، مطبقة على معاينة الطباعة فقط لهذا التبويب. */
+  #tableContainer table.reports-data-table thead tr.reports-column-header-row > th,
+  #report-source table.reports-data-table thead tr.reports-column-header-row > th,
+  #tableContainer table.reports-data-table thead tr.reports-custody-title-row > th,
+  #tableContainer table.reports-data-table thead tr.reports-custody-date-row > th,
+  #report-source table.reports-data-table thead tr.reports-custody-title-row > th,
+  #report-source table.reports-data-table thead tr.reports-custody-date-row > th {
+    background: linear-gradient(180deg, #fff7d7 0%, #f3d778 100%) !important;
+    background-color: #f3d778 !important;
+    color: #3c321b !important;
+    border-color: #d5e0e7 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  #tableContainer table.reports-data-table tbody > tr:not(.total-row):not(.report-grand-total-row):not(.report-trainee-name-total-row):not(.trainee-summary-row):not(.report-fee-row):not(.report-period-row):not(.report-row-striped) > td,
+  #report-source table.reports-data-table tbody > tr:not(.total-row):not(.report-grand-total-row):not(.report-trainee-name-total-row):not(.trainee-summary-row):not(.report-fee-row):not(.report-period-row):not(.report-row-striped) > td {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #243b50 !important;
+    border-color: #d5e0e7 !important;
+  }
+
+  #tableContainer table.reports-data-table tbody > tr.report-row-striped:not(.total-row):not(.report-grand-total-row):not(.report-trainee-name-total-row):not(.trainee-summary-row):not(.report-fee-row):not(.report-period-row) > td,
+  #report-source table.reports-data-table tbody > tr.report-row-striped:not(.total-row):not(.report-grand-total-row):not(.report-trainee-name-total-row):not(.trainee-summary-row):not(.report-fee-row):not(.report-period-row) > td {
+    background: #f7fafc !important;
+    background-color: #f7fafc !important;
+  }
+
+  #tableContainer table.reports-data-table tbody > tr.report-trainee-name-total-row:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row) > td,
+  #report-source table.reports-data-table tbody > tr.report-trainee-name-total-row:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row) > td {
+    background: #2c666e !important;
+    background-color: #2c666e !important;
+    color: #ffffff !important;
+    font-weight: 900 !important;
+  }
+
+  #tableContainer table.reports-data-table tbody > tr.trainee-summary-row:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row) > td,
+  #report-source table.reports-data-table tbody > tr.trainee-summary-row:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row) > td {
+    background: #fff1d6 !important;
+    background-color: #fff1d6 !important;
+    color: #68420a !important;
+    font-weight: 900 !important;
+  }
+
+  #tableContainer table.reports-data-table tbody > tr.report-fee-row:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row) > td,
+  #report-source table.reports-data-table tbody > tr.report-fee-row:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row) > td {
+    background: #f1bf98 !important;
+    background-color: #f1bf98 !important;
+    color: #38291f !important;
+    font-weight: 900 !important;
+  }
+
+  #tableContainer table.reports-data-table tbody > tr.report-period-row:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row) > td,
+  #report-source table.reports-data-table tbody > tr.report-period-row:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row) > td {
+    background: #5b5750 !important;
+    background-color: #5b5750 !important;
+    color: #ffffff !important;
+    font-weight: 900 !important;
+  }
+
+  #tableContainer table.reports-data-table tbody > tr.total-row > td,
+  #tableContainer table.reports-data-table tbody > tr.report-grand-total-row > td,
+  #report-source table.reports-data-table tbody > tr.total-row > td,
+  #report-source table.reports-data-table tbody > tr.report-grand-total-row > td {
+    background: linear-gradient(105deg, #176db1 0%, #287fbe 55%, #15598f 100%) !important;
+    background-color: #287fbe !important;
+    color: #ffffff !important;
+    border-color: #1761a4 !important;
+    font-weight: 900 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  #tableContainer table.reports-data-table tbody > tr.total-row > td *,
+  #tableContainer table.reports-data-table tbody > tr.report-grand-total-row > td *,
+  #report-source table.reports-data-table tbody > tr.total-row > td *,
+  #report-source table.reports-data-table tbody > tr.report-grand-total-row > td * {
+    background: transparent !important;
+    color: #ffffff !important;
+  }
+
+  #tableContainer table.reports-data-table th,
+  #tableContainer table.reports-data-table td,
+  #report-source table.reports-data-table th,
+  #report-source table.reports-data-table td {
+    border-color: #d5e0e7 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   @media print {
     table.reports-data-table {
       width: 100% !important;
