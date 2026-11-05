@@ -429,12 +429,12 @@ const reportsTabPrintCss = `
   }
 
   /* إجمالي العهدة في الطباعة يطابق تدرج الإجمالي الكلي الظاهر في الجدول. */
-  #tableContainer table.reports-data-table tbody > tr.total-row > td,
-  #tableContainer table.reports-data-table tbody > tr.report-grand-total-row > td,
-  #report-source table.reports-data-table tbody > tr.total-row > td,
-  #report-source table.reports-data-table tbody > tr.report-grand-total-row > td,
-  .report-page-content table.reports-data-table tbody > tr.total-row > td,
-  .report-page-content table.reports-data-table tbody > tr.report-grand-total-row > td {
+  #tableContainer table.reports-custody-table tbody > tr.total-row > td,
+  #tableContainer table.reports-custody-table tbody > tr.report-grand-total-row > td,
+  #report-source table.reports-custody-table tbody > tr.total-row > td,
+  #report-source table.reports-custody-table tbody > tr.report-grand-total-row > td,
+  .report-page-content table.reports-custody-table tbody > tr.total-row > td,
+  .report-page-content table.reports-custody-table tbody > tr.report-grand-total-row > td {
     background: linear-gradient(105deg, #176db1 0%, #287fbe 55%, #15598f 100%) !important;
     background-color: #287fbe !important;
     color: #ffffff !important;
@@ -444,12 +444,12 @@ const reportsTabPrintCss = `
     print-color-adjust: exact !important;
   }
 
-  #tableContainer table.reports-data-table tbody > tr.total-row > td *,
-  #tableContainer table.reports-data-table tbody > tr.report-grand-total-row > td *,
-  #report-source table.reports-data-table tbody > tr.total-row > td *,
-  #report-source table.reports-data-table tbody > tr.report-grand-total-row > td *,
-  .report-page-content table.reports-data-table tbody > tr.total-row > td *,
-  .report-page-content table.reports-data-table tbody > tr.report-grand-total-row > td * {
+  #tableContainer table.reports-custody-table tbody > tr.total-row > td *,
+  #tableContainer table.reports-custody-table tbody > tr.report-grand-total-row > td *,
+  #report-source table.reports-custody-table tbody > tr.total-row > td *,
+  #report-source table.reports-custody-table tbody > tr.report-grand-total-row > td *,
+  .report-page-content table.reports-custody-table tbody > tr.total-row > td *,
+  .report-page-content table.reports-custody-table tbody > tr.report-grand-total-row > td * {
     background: transparent !important;
     color: #ffffff !important;
   }
@@ -1521,7 +1521,7 @@ export default function ReportsTab() {
             pdfCss={reportsTabPrintCss}
             pdfOrientation={sourceConfig.columns.length + 1 > 7 ? "landscape" : "portrait"}
             includeTotalRow={!isLoanOrCustody && source !== "traineeFeeStatus"}
-            printTableClassName={source === "trainee" ? "reports-trainee-payment-table" : ""}
+            printTableClassName={source === "trainee" ? "reports-trainee-payment-table" : isLoanOrCustody ? "reports-custody-table" : ""}
           />
         </div>
 
@@ -1529,7 +1529,7 @@ export default function ReportsTab() {
         
         <div className="reports-table-panel p-3 sm:p-4">
           <div className="reports-table-scroll">
-            <table id="reports-table" className={`reports-data-table text-center text-xs ${source === "trainee" ? "reports-trainee-payment-table" : ""}`} style={{ tableLayout: "auto" }}>
+            <table id="reports-table" className={`reports-data-table text-center text-xs ${source === "trainee" ? "reports-trainee-payment-table" : isLoanOrCustody ? "reports-custody-table" : ""}`} style={{ tableLayout: "auto" }}>
               <thead>
                 {(source === "youssefLoan" || source === "tawfiqCustody") && (
                   <>
