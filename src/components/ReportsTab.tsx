@@ -1431,7 +1431,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                       return (
                         <React.Fragment key="unified-custody-signatures">
                         <tr aria-hidden="true" className="signature-spacer-row" style={{ height: "3mm" }}>
-                          <td colSpan={colCount} style={{ height: "8mm", padding: 0, border: 0, background: "#ffffff" }} />
+                          <td colSpan={colCount} style={{ height: "3mm", padding: 0, border: 0, background: "#ffffff" }} />
                         </tr>
                         <tr className="bg-white signature-block-row" style={{ border: 0, outline: 0, boxShadow: "none" }}>
                           <td colSpan={colCount} className="border-0 bg-white px-0 py-1" style={{ border: 0, outline: 0, boxShadow: "none" }}>
