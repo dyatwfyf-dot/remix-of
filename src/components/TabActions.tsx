@@ -51,6 +51,10 @@ type Props = {
   pdfOrientation ? : string;
   pdfMarginMm ? : number;
   pdfCss ? : string;
+  /** CSS appended after shared preview styles for report-specific overrides. */
+  pdfFinalCss?: string;
+  /** Render the visible table markup when exact screen/print parity is required. */
+  renderPrintTableHtml?: (reportDateLabel: string) => string;
   includeTotalRow?: boolean;
   printTableClassName?: string;
   additionalWebActions ? : WebActionItem[];
@@ -71,6 +75,8 @@ export default function TabActions({
   pdfOrientation,
   pdfMarginMm,
   pdfCss,
+  pdfFinalCss,
+  renderPrintTableHtml,
   includeTotalRow = true,
   printTableClassName = "",
   additionalWebActions = [],
@@ -81,7 +87,9 @@ export default function TabActions({
   
   // فصل بيانات الطباعة عن بيانات Excel حتى تظهر صفوف الإجمالي والتوقيعات دون تكرارها في Excel.
   const printData = printRows ?? rows;
-  const tableHtml = () => buildTableHtml({ title, columns: printColumns, rows: printData, numericKeys, reportDate, includeTotalRow, tableClassName: printTableClassName });
+  const tableHtml = () => renderPrintTableHtml
+    ? renderPrintTableHtml(reportDateLabel)
+    : buildTableHtml({ title, columns: printColumns, rows: printData, numericKeys, reportDate, includeTotalRow, tableClassName: printTableClassName });
   
   const handlePrint = () => {
     if (!printData.length) {
@@ -98,6 +106,7 @@ export default function TabActions({
       reportDateLabel,
       tableHtml: tableHtml(),
       contentCss: pdfCss ? `${reportDocumentCss}\n${pdfCss}` : reportDocumentCss,
+      finalCss: pdfFinalCss,
       defaultOrientation,
       defaultPageSize: "A4",
       ...(pdfMarginMm === undefined ? {} : { defaultMarginMm: pdfMarginMm }),
@@ -123,6 +132,7 @@ export default function TabActions({
         reportDateLabel,
         tableHtml: tableHtml(),
         contentCss: pdfCss ? `${reportDocumentCss}\n${pdfCss}` : reportDocumentCss,
+        finalCss: pdfFinalCss,
         defaultOrientation: orientation,
         defaultPageSize: "A4",
         ...(pdfMarginMm === undefined ? {} : { defaultMarginMm: pdfMarginMm }),
