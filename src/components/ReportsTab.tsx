@@ -244,7 +244,7 @@ const reportsTabPrintCss = `
   #tableContainer table.reports-data-table td.reports-description-cell,
   #tableContainer table.reports-data-table td.reports-text-cell { min-width:25mm !important; max-width:58mm !important; }
   #tableContainer table.reports-data-table td[data-col-key="idx"] { min-width:10mm !important; }
-  #tableContainer table.reports-data-table tr.signature-spacer-row > td { height:8mm !important; min-height:8mm !important; padding:0 !important; border:0 !important; background:#fff !important; }
+  #tableContainer table.reports-data-table tr.signature-spacer-row > td { height:3mm !important; min-height:3mm !important; padding:0 !important; border:0 !important; background:#fff !important; }
   #tableContainer table.reports-data-table tr.signature-block-row,
   #tableContainer table.reports-data-table tr.signature-block-row > td { background:#fff !important; color:#000 !important; page-break-inside:avoid !important; break-inside:avoid !important; }
   #tableContainer table.reports-data-table tr.signature-block-row > td { padding:5px 8px !important; border:0 !important; }
@@ -1430,7 +1430,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                       if (row.id !== "sig-1") return null;
                       return (
                         <React.Fragment key="unified-custody-signatures">
-                        <tr aria-hidden="true" className="signature-spacer-row" style={{ height: "8mm" }}>
+                        <tr aria-hidden="true" className="signature-spacer-row" style={{ height: "3mm" }}>
                           <td colSpan={colCount} style={{ height: "8mm", padding: 0, border: 0, background: "#ffffff" }} />
                         </tr>
                         <tr className="bg-white signature-block-row" style={{ border: 0, outline: 0, boxShadow: "none" }}>

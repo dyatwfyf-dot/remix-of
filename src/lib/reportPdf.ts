@@ -239,8 +239,8 @@ border: 1px solid #000000 !important;
   /* كتلة التوقيعات الموحدة: ثلاثة مسميات في صف وثلاثة أسماء أسفلها */
   .report-page-content .signature-spacer-row,
   .report-page-content .signature-spacer-row > td {
-    height: 20mm !important;
-    min-height: 20mm !important;
+    height: 4mm !important;
+    min-height: 4mm !important;
     padding: 0 !important;
     border: 0 !important;
     background: #ffffff !important;

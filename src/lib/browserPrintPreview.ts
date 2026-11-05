@@ -495,8 +495,8 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
     #tableContainer table .signature-spacer-row,
     #tableContainer table .signature-spacer-row > td {
-      height: 28mm !important;
-      min-height: 28mm !important;
+      height: 4mm !important;
+      min-height: 4mm !important;
       padding: 0 !important;
       border: 0 !important;
       background: #ffffff !important;
