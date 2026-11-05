@@ -20,12 +20,12 @@ export default function YearSelector() {
   };
 
   return (
-    <div className="flex items-center gap-1.5" dir="rtl">
-      <label className="text-[12px] font-bold text-white/90 whitespace-nowrap">السنة المالية</label>
+    <div className="flex shrink-0 items-center gap-1" dir="rtl">
+      <label className="whitespace-nowrap text-[10px] font-bold text-white/90 sm:text-[11px]">السنة</label>
       <select
         value={selectedYear}
         onChange={(e) => setSelectedYear(Number(e.target.value))}
-        className="rounded-lg border border-white/40 bg-white/15 px-2 py-1 text-[13px] font-extrabold text-white outline-none focus:ring-2 focus:ring-white/60"
+        className="max-w-[4.2rem] rounded-md border border-white/40 bg-white/15 px-1.5 py-0.5 text-[11px] font-extrabold text-white outline-none focus:ring-2 focus:ring-white/60 sm:text-xs"
         aria-label="السنة المالية"
       >
         {years.map((y) => (
@@ -37,10 +37,10 @@ export default function YearSelector() {
       <button
         type="button"
         onClick={handleAddYear}
-        className="flex items-center gap-1 rounded-lg bg-white px-2 py-1 text-[12px] font-bold text-[#2e6b8a] shadow-sm active:scale-[0.97]"
+        className="flex items-center gap-0.5 rounded-md bg-white px-1.5 py-0.5 text-[10px] font-bold text-[#2e6b8a] shadow-sm active:scale-[0.97] sm:text-[11px]"
         title={`إضافة سنة ${nextYear}`}
       >
-        <CalendarPlus className="h-4 w-4 shrink-0" />
+        <CalendarPlus className="h-3 w-3 shrink-0" />
         <span>{nextYear}</span>
       </button>
     </div>
