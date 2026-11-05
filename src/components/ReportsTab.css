@@ -346,15 +346,3 @@
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
-
-/* جميع صفوف البيانات في التقارير بيضاء؛ يبقى تمييز الرأس وصفوف الإجماليات فقط. */
-.reports-table-scroll .reports-data-table tbody > tr:not(.total-row):not(.report-grand-total-row) > td {
-  background: #ffffff !important;
-  background-color: #ffffff !important;
-  color: #243b50 !important;
-}
-
-.reports-table-scroll .reports-data-table thead th,
-.reports-table-scroll .reports-data-table tbody > tr > td {
-  border: 1px solid #000000 !important;
-}
