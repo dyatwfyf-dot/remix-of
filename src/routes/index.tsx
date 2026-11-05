@@ -273,21 +273,24 @@ function Index() {
       <div className="app-header relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 bg-gradient-to-l from-[#2e6b8a] via-[#3d7fa0] to-[#2e6b8a] px-3 py-3 sm:px-5 sm:py-4 border-b border-[#b8d4e8] shadow-sm text-white overflow-hidden">
         <div className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,#b8d4e8,#e8f0f8,#b8d4e8)] opacity-80" />
 
-        {/* الجزء الأيمن: الشعار والعنوان والوصف */}
-        <div className="flex items-center gap-2.5 min-w-0">
+        {/* الشعار واسم المجلس وشريط السنة في الهيدر العلوي */}
+        <div className="flex flex-wrap items-center gap-2.5 min-w-0">
           <div className="app-brand-logo relative shrink-0 flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center overflow-hidden rounded-2xl border border-white/35 bg-white/15 p-1 shadow-lg shadow-[#102f46]/20">
             <img src="/app-logo.png" alt="شعار مِيزان" className="h-full w-full object-contain" />
           </div>
-          <div className="flex flex-col gap-0.5 min-w-0">
-            <h1 className="app-brand-title text-[clamp(1.35rem,4.5vw,1.9rem)] font-black tracking-[0.08em] text-white leading-tight truncate sm:whitespace-normal">
-              المجلس اليمني للاختصاصات الطبية
-            </h1>
-            <p className="text-[clamp(0.75rem,2.4vw,0.875rem)] text-[#e8f0f8] font-medium flex items-center gap-1.5 leading-snug min-w-0">
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#b8d4e8] shrink-0"></span>
-              <span className="truncate sm:whitespace-normal">
-                النظام المالي — المجلس اليمني للاختصاصات الطبية
-              </span>
-            </p>
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1">
+            <div className="flex min-w-0 flex-[1_1_250px] flex-col gap-0.5">
+              <h1 className="app-brand-title text-[clamp(1.35rem,4.5vw,1.9rem)] font-black tracking-[0.08em] text-white leading-tight truncate sm:whitespace-normal">
+                المجلس اليمني للاختصاصات الطبية
+              </h1>
+              <p className="text-[clamp(0.75rem,2.4vw,0.875rem)] text-[#e8f0f8] font-medium flex items-center gap-1.5 leading-snug min-w-0">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#b8d4e8] shrink-0"></span>
+                <span className="truncate sm:whitespace-normal">
+                  النظام المالي — المجلس اليمني للاختصاصات الطبية
+                </span>
+              </p>
+            </div>
+            {isMounted && <YearSelector />}
           </div>
         </div>
 
@@ -304,13 +307,6 @@ function Index() {
           )}
         </div>
       </div>
-
-      {/* شريط السنة المالية */}
-      {isMounted && (
-        <div className="flex items-center justify-start border-b border-[#b8d4e8] bg-gradient-to-l from-[#2e6b8a] to-[#3d7fa0] px-3 pb-2">
-          <YearSelector />
-        </div>
-      )}
 
       {/* شريط التنقل الرئيسي: ثابت أعلى المحتوى لسهولة الوصول إلى جميع الأقسام */}
       <nav
