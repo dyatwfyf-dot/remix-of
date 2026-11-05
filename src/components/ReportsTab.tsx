@@ -1112,9 +1112,9 @@ export default function ReportsTab() {
  return (
   <div className="mizan-reports-tab min-h-screen bg-gradient-to-br from-slate-100 via-sky-50 to-indigo-50 p-2 sm:p-4" dir="rtl">
       <section className="mx-auto max-w-7xl overflow-hidden rounded-3xl border border-sky-200 bg-white shadow-xl">
-        <header className="bg-gradient-to-l from-[#2e6b8a] via-[#3d7fa0] to-[#2e6b8a] p-4 text-white sm:p-6">
+        <header className="reports-tab-header bg-gradient-to-l from-[#2e6b8a] via-[#3d7fa0] to-[#2e6b8a] p-4 text-white sm:p-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
+            <div className="reports-header-icon flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
               <BarChart3 className="h-6 w-6 text-white" />
             </div>
             <div>
@@ -1127,8 +1127,8 @@ export default function ReportsTab() {
         </header>
 
         {/* فلاتر واختيارات التقرير */}
-        <div className="border-b border-sky-100 bg-slate-50/70 p-4">
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="reports-filter-panel border-b border-sky-100 bg-slate-50/70 p-4">
+          <div className="reports-filter-grid grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
               نوع التقرير
               <select
@@ -1300,7 +1300,7 @@ export default function ReportsTab() {
         </div>
 
         {/* أزرار العمليات والتصدير والطباعة */}
-        <div className="p-4">
+        <div className="reports-actions-panel p-4">
           <TabActions
             title={title}
             fileName="financial-report"
@@ -1317,7 +1317,7 @@ export default function ReportsTab() {
 
         {/* جدول عرض التقرير */}
         
-        <div className="p-3 sm:p-4">
+        <div className="reports-table-panel p-3 sm:p-4">
           <div className="reports-table-scroll">
             <table id="reports-table" className="reports-data-table text-center text-xs" style={{ tableLayout: "auto" }}>
               <thead>
