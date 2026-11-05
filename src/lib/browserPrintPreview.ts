@@ -10,6 +10,8 @@ interface OpenBrowserPrintPreviewOptions {
   tableHtml: string;
   reportDateLabel?: string;
   contentCss?: string;
+  /** CSS appended after shared styles so report-specific rules take precedence. */
+  finalCss?: string;
   defaultOrientation?: "portrait" | "landscape";
   paperSize?: "A4" | "A3" | "Letter";
   defaultPageSize?: "A4" | "A3" | "Letter";
@@ -26,6 +28,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     tableHtml,
     reportDateLabel,
     contentCss = "",
+    finalCss = "",
     defaultOrientation = "landscape",
   } = options;
   const fitToContent = options.fitToContent ?? false;
@@ -643,6 +646,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
     ${reportsCompactColumnsCss}
     ${reportTableThemeCss}
+    ${finalCss}
   </style>
 </head>
 <body>
