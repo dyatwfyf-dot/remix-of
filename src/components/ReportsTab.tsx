@@ -877,14 +877,12 @@ export default function ReportsTab() {
     columns: [
      { key: "year", label: "السنة" },
      { key: "notifyDate", label: "تاريخ التوريد" },
-     { key: "period", label: "الشهر / السنة" },
      { key: "trainee", label: "اسم المتدرب" },
      { key: "hafizaNo", label: "رقم الحافظة" },
      { key: "notifyNo", label: "رقم الإشعار" },
      { key: "description", label: "البيان الأصلي" },
      { key: "category", label: "التصنيف الموحد" },
      { key: "displayType", label: "نوع السجل" },
-     { key: "source", label: "المصدر" },
      { key: "amount", label: "مبلغ التوريد" },
     ],
    };
