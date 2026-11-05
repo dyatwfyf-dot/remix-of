@@ -39,6 +39,7 @@ export const reportDocumentCss = `
     table-layout: auto; 
     text-align: center; 
     font-weight: 800;
+    border: 1px solid #000000 !important;
   }
   th, td {
     padding: 6px 7px;
@@ -60,9 +61,7 @@ export const reportDocumentCss = `
   color: #000000 !important; 
     
   }
-  tbody tr:nth-child(even) td { background: #f8fafc; }
-  .total-row td,
-  .report-grand-total-row td {
+  .total-row td, .report-grand-total-row td {
     background: #0437bb !important;
     font-weight: 900 !important;
     border-top: 2px solid #000000 !important;
@@ -297,6 +296,8 @@ border: 1px solid #000000 !important;
     width: 100% !important; 
     max-width: auto !important;
     table-layout: auto !important; 
+    border: 1px solid #000000 !important;
+
   }
   .report-page-content tbody td:not(.desc-cell):not(.details-cell):not(.description-cell):not([data-col-key="description"]),
   .report-page-content tbody td:not(.desc-cell):not(.details-cell):not(.description-cell):not([data-col-key="description"]) .pdf-cell-text {
@@ -354,6 +355,7 @@ border: 1px solid #000000 !important;
      remain consistent between the report view, browser preview, and PDF render. */
   .report-page-content table th,
   .report-page-content table td {
+  border: 1px solid #000000 !important;
     display: table-cell !important;
     vertical-align: middle !important;
     text-align: center !important;
@@ -365,6 +367,8 @@ border: 1px solid #000000 !important;
     vertical-align: middle !important;
   }
   .report-page-content .pdf-cell-text {
+  border: 1px solid #000000 !important;
+
     display: inline-block !important;
     vertical-align: middle !important;
     font-size: 16px !important;
@@ -387,6 +391,7 @@ border: 1px solid #000000 !important;
   html body table tr.report-grand-total-row > td, html body table tr.total-row > td,
   html body table tr.report-grand-total-row > td.description-cell, html body table tr.total-row > td.description-cell,
   html body table tr.report-grand-total-row > td.financial-amount-cell, html body table tr.total-row > td.financial-amount-cell {
+  border: 1px solid #000000 !important;
     background: #0437bb !important;
   color: #ffffff !important; font-weight: 900 !important;
     -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
@@ -404,6 +409,7 @@ background: #0437bb !important;
   .report-page-content table.reports-data-table tbody td.desc-cell,
   .report-page-content table.reports-data-table tbody td.details-cell,
   .report-page-content table.reports-data-table tbody td.description-cell {
+  border: 1px solid #000000 !important;
     width: auto !important;
     min-width: 0 !important;
     max-width: 280px !important;
@@ -424,6 +430,7 @@ background: #0437bb !important;
     white-space: normal !important;
     word-break: normal !important;
     overflow-wrap: anywhere !important;
+    border: 1px solid #000000 !important;
   }
   .report-page-content table.reports-data-table tbody td.num,
   .report-page-content table.reports-data-table tbody td.numeric-cell,
@@ -437,6 +444,7 @@ background: #0437bb !important;
   .report-page-content table.reports-data-table tbody td.compact-cell .pdf-cell-text,
   .report-page-content table.reports-data-table tbody td.ref-cell .pdf-cell-text,
   .report-page-content table.reports-data-table tbody td.idx .pdf-cell-text {
+border: 1px solid #000000 !important;
     max-width: auto !important;
     white-space: nowrap !important;
     word-break: keep-all !important;
