@@ -48,7 +48,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style id="dynamic-page-rule">
     @page {
-      /* اترك مقاس الورق واتجاهه لإعدادات نافذة طباعة المتصفح */
+      size: ${paperSize} ${defaultOrientation};
       margin: ${defaultMargin};
     }
   </style>
@@ -179,6 +179,8 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       box-shadow: 0 4px 16px rgba(0,0,0,0.35);
       border-radius: 2px;
       position: relative;
+      flex: 0 0 auto;
+      min-width: 0;
       transform-origin: top center;
       box-sizing: border-box;
       transition: width 0.15s ease, min-height 0.15s ease, padding 0.15s ease;
@@ -926,8 +928,16 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       function printOnce() {
         if (printInProgress) return;
         printInProgress = true;
-        window.print();
-        window.setTimeout(function() { printInProgress = false; }, 1000);
+        // Reapply the toolbar's selected page size/orientation immediately before printing.
+        updatePageSettings();
+        // updatePageSettings performs a second-frame fit calculation; wait for it
+        // so the preview and the actual @page print rule use the same selection.
+        window.requestAnimationFrame(function() {
+          window.requestAnimationFrame(function() {
+            window.print();
+            window.setTimeout(function() { printInProgress = false; }, 1000);
+          });
+        });
       }
 
       function updatePageSettings() {
@@ -938,6 +948,8 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
 
         paperContainer.classList.remove('portrait', 'landscape');
         paperContainer.classList.add(orientation);
+        paperContainer.dataset.pageOrientation = orientation;
+        paperContainer.dataset.pageSize = pageSize;
 
         if (pageSize === 'A3') {
           paperContainer.style.width = orientation === 'portrait' ? '297mm' : '420mm';
