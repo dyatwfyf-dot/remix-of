@@ -968,8 +968,8 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         const tableContainer = document.getElementById('tableContainer');
         tableContainer.style.zoom = String(scale);
         if (!fitToContent) {
-          // لا تفرض الاتجاه في طباعة المتصفح؛ يختاره المستخدم من نافذة الطباعة.
-          dynamicRule.innerHTML = '@page { margin: ' + margin + '; }';
+          // طابق حجم الورق والاتجاه المختارين في المعاينة مع إعداد الطباعة الفعلي.
+          dynamicRule.innerHTML = '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + margin + '; }';
         }
 
         window.requestAnimationFrame(function() {
@@ -980,7 +980,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
             parseFloat(getComputedStyle(paperContainer).paddingLeft) -
             parseFloat(getComputedStyle(paperContainer).paddingRight));
           const naturalWidth = Math.max(table.scrollWidth, table.getBoundingClientRect().width);
-          const fitScale = Math.max(0.9, Math.min(1, availableWidth / Math.max(1, naturalWidth)));
+          const fitScale = Math.max(0.65, Math.min(1, availableWidth / Math.max(1, naturalWidth)));
           tableContainer.style.zoom = String(scale * fitScale);
           if (fitToContent) {
             const heightMm = Math.max(40, Math.ceil((paperContainer.scrollHeight * 25.4 / 96) * 10) / 10);
