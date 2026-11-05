@@ -242,6 +242,15 @@ const reportsTabPrintCss = `
     table.reports-data-table thead th { font-size: 10pt !important; }
   }
 
+  table.reports-custody-table th[data-col-key="idx"],
+  table.reports-custody-table td[data-col-key="idx"] {
+    width: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+    padding: 3px 2px !important;
+    white-space: nowrap !important;
+  }
+
   table.reports-data-table th.rc-num,
   table.reports-data-table td.rc-num,
   table.reports-data-table tbody td.num,
