@@ -1022,7 +1022,6 @@ export default function ReportsTab() {
      { key: "date", label: "التاريخ" },
      { key: "docNo", label: "رقم المستند / الشيك" },
      { key: "description", label: "البيان" },
-     { key: "name", label: "الاسم" },
      { key: "settlementNo", label: "رقم كشف التسوية" },
      { key: "notes", label: "الملاحظات" },
      { key: "amount", label: "المبلغ" },
