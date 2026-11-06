@@ -96,7 +96,7 @@ font-size: 19px !important;
     word-break: keep-all !important; 
     overflow-wrap: normal !important; 
     hyphens: none !important;
-    font-family: 'Times New Roman', Times, serif !important; 
+    font-family: Cairo, sans-serif !important
     color: #000 !important; 
     font-weight: 900 !important; 
     direction: ltr; 

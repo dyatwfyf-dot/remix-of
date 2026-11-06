@@ -99,7 +99,7 @@ ${reportLetterheadStyles}
       line-height: 1.50;
     }
     .num, .numeric-cell, .date-cell {
-      font-family: 'Times New Roman', Times, serif !important;
+      font-family: Cairo, sans-serif !important;
       font-size: 20px !important;
       color: #000 !important;
       font-weight: 1000 !important;
@@ -311,7 +311,7 @@ ${reportLetterheadStyles}
       line-height: 1.5;
     }
     .num {
-      font-family: 'Times New Roman', Times, serif !important;
+      font-family: Cairo, sans-serif !important;
       font-size: 16px !important;
       direction: ltr;
       unicode-bidi: embed;
@@ -372,7 +372,7 @@ text-align:center;
       overflow-wrap: normal !important;
       word-break: keep-all !important;
       hyphens: none !important;
-      font-family: 'Times New Roman', Times, serif !important;
+      font-family: Cairo, sans-serif !important;
       font-size: 20px !important;
       font-variant-numeric: tabular-nums;
       direction: ltr;
