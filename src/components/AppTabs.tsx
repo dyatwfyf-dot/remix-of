@@ -632,7 +632,7 @@ const AppTabs: React.FC = () => {
 .report-date { text-align:center; color:#000 !important; margin:0 0 5px; font-size:18px; font-weight:700; }
       table { width:100%; max-width:100%; min-width:0; border-collapse:collapse; table-layout:auto !important; font-size:clamp(14px,1.05vw,16px); }
       th, td { border:1px solid #000; padding:2px 3px !important; text-align:center; vertical-align:middle; white-space:normal; overflow:visible; overflow-wrap:break-word; word-break:normal; hyphens:none; line-height:1.15; font-size:clamp(14px,1.05vw,16px); color:#000 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      .num, .numeric-cell, .date-cell { width:1%; min-width:0; white-space:nowrap !important; overflow:visible; overflow-wrap:normal; word-break:keep-all; hyphens:none; font-family:'Times New Roman',Times,serif !important; font-size:clamp(14px,1vw,16px) !important; font-variant-numeric:tabular-nums; direction:ltr; }
+      .num, .numeric-cell, .date-cell { width:1%; min-width:0; white-space:nowrap !important; overflow:visible; overflow-wrap:normal; word-break:keep-all; hyphens:none; font-family:Cairo, sans-serif !important; font-size:clamp(14px,1vw,16px) !important; font-variant-numeric:tabular-nums; direction:ltr; }
       .text-cell { 
 width:auto; 
 white-space:normal; overflow-wrap:break-word; word-break:normal; }

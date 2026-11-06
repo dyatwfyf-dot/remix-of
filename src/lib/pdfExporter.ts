@@ -220,7 +220,7 @@ font-family: AlQabas-Bold;
           width: 1% !important;
         }
         .num {
-          font-family: 'Times New Roman', Times, serif !important;
+          font-family: Cairo, sans-serif !important;
           color: #000 !important;
           font-weight: 900 !important;
           direction: ltr;
@@ -521,7 +521,7 @@ color: #000 !important;
       width: 1% !important;
     }
     .num {
-      font-family: 'Times New Roman', Times, serif !important;
+      font-family: Cairo, sans-serif !important;
       color: #000 !important;
       font-weight: 900 !important;
       direction: ltr;

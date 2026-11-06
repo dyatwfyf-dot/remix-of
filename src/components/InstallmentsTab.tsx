@@ -1414,7 +1414,7 @@ white-space: normal!important;
         word-break: normal !important;
       }
       td.numeric-cell, th.numeric-cell, td.date-cell, th.date-cell, td.compact-cell, th.compact-cell {
-        font-family: 'Times New Roman', Times, serif !important;
+        font-family: Cairo, sans-serif !important;
         font-size: ${fontSizePx}px !important;
         line-height: 1.15 !important;
         white-space: nowrap !important;

@@ -27,9 +27,9 @@
 
 :root {
   --font-ui: "Cairo";
-  --font-display: "Al Qabas Bold", "Noto Kufi Arabic", "Noto Sans Arabic", "Cairo", sans-serif;
-  --font-heading: "Al Qabas Bold";
-  --font-data: "Times New Roman", "Noto Sans Arabic", "Segoe UI", sans-serif;
+  --font-display: "Cairo", "Noto Sans Arabic", sans-serif;
+  --font-heading: "Cairo";
+  --font-data: "Cairo";
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -63,51 +63,60 @@
 :root {
   --radius: 0.7rem;
 
-  /* هوية "صقيع قطبي": أزرق ثلجي فاتح مع أزرق متوسط عميق */
-  --ice-050: oklch(0.975 0.012 235);
-  --ice-100: oklch(0.955 0.020 235);
-  --ice-200: oklch(0.885 0.038 235);
-  --ice-400: oklch(0.735 0.070 232);
-  --ice-600: oklch(0.545 0.085 232);
-  --ice-700: oklch(0.470 0.082 232);
+  /* لوحة مِيزان: مشتقة من اللون الأساسي الحالي #2E6B8A */
+  --primary-50: #F4F8FA;
+  --primary-100: #EAF2F6;
+  --primary-200: #D0E2EC;
+  --primary-300: #A3C9DC;
+  --primary-400: #70AECD;
+  --primary-500: #3D8FB8;
+  --primary-600: #337799;
+  --primary-700: #2A627E;
+  --primary-800: #225067;
+  --primary-900: #193B4D;
+  --primary-950: #0D1E26;
 
-  /* الخلفية العامة */
-  --background: oklch(0.955 0.020 235);
-  --foreground: oklch(0.24 0.035 240);
+  /* التوكنات الدلالية: كل خلفية لها لون أمامي واضح */
+  --background: var(--primary-50);
+  --foreground: var(--primary-950);
+  --card: #FFFFFF;
+  --card-foreground: var(--primary-900);
+  --primary: var(--primary-600);
+  --primary-foreground: #FFFFFF;
+  --secondary: var(--primary-100);
+  --secondary-foreground: var(--primary-900);
+  --muted: var(--primary-50);
+  --muted-foreground: var(--primary-700);
+  --accent: var(--primary-400);
+  --accent-foreground: var(--primary-950);
+  --destructive: #A4432F;
+  --destructive-foreground: #FFFFFF;
+  --success: #216343;
+  --success-foreground: #FFFFFF;
+  --border: var(--primary-200);
+  --input: var(--primary-200);
+  --ring: var(--primary-500);
+}
 
-  /* البطاقات والحاويات */
-  --card: oklch(0.995 0.004 235);
-  --card-foreground: oklch(0.20 0.03 240);
+.dark {
+  --background: var(--primary-950);
+  --foreground: var(--primary-50);
+  --card: var(--primary-900);
+  --card-foreground: var(--primary-50);
+  --primary: var(--primary-400);
+  --primary-foreground: var(--primary-950);
+  --secondary: var(--primary-800);
+  --secondary-foreground: var(--primary-50);
+  --muted: var(--primary-800);
+  --muted-foreground: var(--primary-300);
+  --accent: var(--primary-700);
+  --accent-foreground: var(--primary-50);
+  --border: var(--primary-800);
+  --input: var(--primary-800);
+  --ring: var(--primary-400);
+}
 
-  /* اللون الأساسي (Primary) */
-  --primary: var(--ice-600);
-  --primary-foreground: oklch(0.99 0.005 235);
 
-  /* اللون الثانوي (Secondary) */
-  --secondary: var(--ice-200);
-  --secondary-foreground: oklch(0.28 0.04 235);
-
-  /* العناصر الباهتة (Muted) */
-  --muted: oklch(0.925 0.024 235);
-  --muted-foreground: oklch(0.44 0.035 238);
-
-  /* التمييز (Accent) */
-  --accent: var(--ice-400);
-  --accent-foreground: oklch(0.20 0.03 240);
-
-  /* الحالات الخاصة */
-  --destructive: oklch(0.60 0.16 22);
-  --destructive-foreground: oklch(0.99 0.01 22);
-  --success: oklch(0.60 0.11 175);
-  --success-foreground: oklch(0.99 0.01 175);
-
-  /* الحدود وحقول الإدخال وحلقة التركيز */
-  --border: oklch(0.885 0.038 235);
-  --input: oklch(0.985 0.010 235);
-  --ring: var(--ice-400);
-  }
-
-  
 @layer base {
   * { border-color: var(--color-border); }
   html {
@@ -129,7 +138,7 @@
 
     color: var(--color-foreground);
     font-family: var(--font-ui);
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: 0;
     width: 100%;
     min-height: 100vh;
@@ -147,6 +156,23 @@
   }
   h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 800; letter-spacing: 0 }
 
+  /* Cairo هو الخط الموحد لكل تبويبات التطبيق وتقاريره وجداوله. */
+  .apk-tabs-ui,
+  .apk-tabs-ui * {
+    font-family: var(--font-ui) !important;
+  }
+
+  .apk-tabs-ui { font-size: 1rem; }
+  .apk-tabs-ui h1 { font-size: clamp(1.2rem, 2.4vw, 1.75rem); line-height: 1.35; }
+  .apk-tabs-ui h2 { font-size: clamp(1.08rem, 2vw, 1.4rem); line-height: 1.4; }
+  .apk-tabs-ui h3 { font-size: clamp(1rem, 1.7vw, 1.2rem); line-height: 1.45; }
+  .apk-tabs-ui h4 { font-size: 1rem; line-height: 1.5; }
+  .apk-tabs-ui button,
+  .apk-tabs-ui [role="button"],
+  .apk-tabs-ui input,
+  .apk-tabs-ui select,
+  .apk-tabs-ui textarea { font-size: 0.9rem; }
+
   /* نظام الخطوط المرئي: نص عربي واضح وعناوين قوية وأرقام سهلة القراءة */
   .font-tajawal,
   .font-cairo {
@@ -154,11 +180,14 @@
   }
 
   table th {
-    font-family: var(--font-heading);
+    font-family: var(--font-ui);
+    font-size: 0.88rem;
+    font-weight: 800;
   }
 
   table td {
     font-family: var(--font-ui);
+    font-size: 0.86rem;
   }
 
   table .num,
@@ -166,12 +195,12 @@
   table .date-cell,
   table input[type="number"],
   table input[type="date"] {
-    font-family: var(--font-data);
+    font-family: var(--font-ui);
     font-variant-numeric: tabular-nums;
   }
 
-  
-  /* حاوية التقرير 
+
+  /* حاوية التقرير
   التي تشبه صفحة A4أفقية داخل المتصفح */
   .a4-landscape-page {
     width: 297mm;
@@ -206,7 +235,7 @@
   }
 
   /* احتواء تلقائي للنصوص والكلمات لجميع الخلايا مع السماح بالالتفاف المرن */
-  table th, 
+  table th,
   table td {
     text-align: center;
     vertical-align: middle;
@@ -215,7 +244,7 @@
     word-break: normal !important;
     padding: 5px 6px !important;
     line-height: 1.3;
-    font-size: 14px ;
+    font-size: 0.86rem;
     border: 1px solid #000 !important;
   }
 
@@ -243,7 +272,7 @@ overflow-wrap:anywhere !important;
   .accounts-ledger-table .accounts-ledger-description > span {
     display:-webkit-box;
     -webkit-box-orient:vertical;
-    
+
     overflow:hidden;
   }
 
@@ -269,14 +298,14 @@ overflow-wrap:anywhere !important;
     overflow: hidden;
   }
 
-  .font-mono { font-family: var(--font-data); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .font-mono { font-family: var(--font-ui); font-weight: 600; font-variant-numeric: tabular-nums; }
   button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-  
+
   /* منع الزوم التلقائي في الشاشات الصغيرة عند التركيز */
   input, select, textarea {
     font-size: 18px;
   }
-  
+
   /* شريط التمرير الأفقي للجداول العريضة */
   .overflow-x-auto { -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
 }
@@ -291,21 +320,21 @@ overflow-wrap:anywhere !important;
   .safe-pad-x { padding-left: max(0.75rem, env(safe-area-inset-left)); padding-right: max(0.75rem, env(safe-area-inset-right)); }
   .safe-pad-bottom { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
   .safe-pad-top { padding-top: max(0.5rem, env(safe-area-inset-top)); }
-  
+
   .a4-landscape-page {
     width: 100%;
     padding: 5px;
     margin: 0;
   }
 
-  table { 
-    font-size: 16px; 
+  table {
+    font-size: 0.86rem;
   }
   table th, table td {
     padding: 3px 4px !important;
-    font-size: clamp(14px, 2.8vw, 16px);
+    font-size: clamp(0.78rem, 3.4vw, 0.9rem);
   }
-  table input { font-size: 14px; padding: 3px 4px; }
+  table input { font-size: 0.84rem; padding: 3px 4px; }
 }
 
 /* تنسيق أعمدة الأرقام والتواريخ والرموز المنفصلة (يمنع التفاف الأرقام والتواريخ للحفاظ على شكلها) */
@@ -319,8 +348,8 @@ table td.font-mono,
 table th.font-mono,
 table .tabular-nums,
 table input[type="number"] {
-  font-family: var(--font-data) !important;
-  font-size: clamp(14px, 2vw, 16px) !important;
+  font-family: var(--font-ui) !important;
+  font-size: clamp(0.82rem, 1.5vw, 0.98rem) !important;
   line-height: 1.5 !important;
   color: #000 !important;
   font-weight: 1000 !important;
@@ -358,7 +387,7 @@ table th.font-mono :where(span, div, input, button) {
   table th.font-mono,
   table .tabular-nums,
   table input[type="number"] {
-    font-size: clamp(16px, 2vw, 18px) !important;
+    font-size: clamp(0.88rem, 2vw, 1rem) !important;
   }
 }
 
@@ -390,8 +419,8 @@ table td > * {
     margin: 2mm;
   }
 
-  body { 
-    background: white !important; 
+  body {
+    background: white !important;
     padding: 0 !important;
     margin: 0 !important;
   }
@@ -877,7 +906,7 @@ body {
 .mizan-reports-tab { background: linear-gradient(135deg, #eaf0fa 0%, #f7f9fd 55%, #dfe8f6 100%) !important; }
 .mizan-usage-tab { background: linear-gradient(135deg, #e6f5f2 0%, #f5fbfa 55%, #d9eee9 100%) !important; }
 
- 
+
 /* هوية بصرية حديثة ومستقلة لتبويب حوافظ التوريد */
 .mizan-hafiza-tab {
   --hafiza-ink: #17324d;
