@@ -15,6 +15,11 @@ import {
 import { useStore, type Account } from "@/lib/store";
 import { useFiscalYear } from "@/lib/fiscalYear";
 import TabActions, { type TabCol } from "./TabActions";
+import PrintSettingsModal, { type InstallmentsPrintSettings } from "./PrintSettingsModal";
+import { toast } from "sonner";
+import { useReportDate } from "@/lib/reportDate";
+import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
+import { reportDocumentCss } from "@/lib/reportPdf";
 import revenueSchema from "@/data/revenueTemplate.json";
 
 type ReportSource = |
@@ -271,7 +276,12 @@ const reportsTabPrintCss = `
 
 
 /** Clone the rendered table so print preserves its real structure and styling. */
-const buildReportsScreenPrintHtml = (source: ReportSource, reportDateLabel: string, recordCount: number) => {
+const buildReportsScreenPrintHtml = (
+ source: ReportSource,
+ reportDateLabel: string,
+ recordCount: number,
+ settings?: InstallmentsPrintSettings,
+) => {
  const sourceTable = document.getElementById("reports-table") as HTMLTableElement | null;
  if (!sourceTable) throw new Error("تعذر العثور على جدول التقرير الحالي");
  const table = sourceTable.cloneNode(true) as HTMLTableElement;
@@ -290,6 +300,43 @@ const buildReportsScreenPrintHtml = (source: ReportSource, reportDateLabel: stri
    if (spanningCell) spanningCell.colSpan = Math.max(1, spanningCell.colSpan - 1);
   }
  });
+
+ if (settings) {
+  if (!settings.showHeader) {
+   table.querySelectorAll("thead .reports-custody-title-row, thead .reports-custody-date-row").forEach((row) => row.remove());
+  }
+  if (!settings.showTotals) {
+   table.querySelectorAll("tbody tr.total-row, tbody tr.report-grand-total-row, tbody tr.reports-trainee-total-row, tbody tr.reports-trainee-summary-row, tbody tr.reports-fee-row, tbody tr.reports-period-row").forEach((row) => row.remove());
+  }
+  const hidden = new Set(settings.hiddenColumns || []);
+  if (hidden.size) {
+   const header = table.querySelector<HTMLTableRowElement>("thead tr.reports-column-header-row");
+   const keys = header ? Array.from(header.cells).map((cell) => cell.dataset.colKey || "") : [];
+   const hiddenIndexes = new Set(keys.flatMap((key, index) => hidden.has(key) ? [index] : []));
+   Array.from(table.rows).forEach((row) => {
+    let logicalIndex = 0;
+    Array.from(row.cells).forEach((cell) => {
+     const start = logicalIndex;
+     const span = cell.colSpan;
+     logicalIndex += span;
+     const hiddenInSpan = Array.from(hiddenIndexes).filter((index) => index >= start && index < start + span).length;
+     if (cell.colSpan > 1 && hiddenInSpan > 0) {
+      cell.colSpan = Math.max(1, cell.colSpan - hiddenInSpan);
+     } else if (cell.dataset.colKey && hidden.has(cell.dataset.colKey)) {
+      cell.remove();
+     }
+    });
+   });
+  }
+  if (!settings.colored) {
+   table.querySelectorAll<HTMLTableCellElement>("th, td").forEach((cell) => {
+    cell.style.setProperty("background", "#ffffff", "important");
+    cell.style.setProperty("background-color", "#ffffff", "important");
+    cell.style.setProperty("color", "#000000", "important");
+    cell.style.setProperty("border-color", "#000000", "important");
+   });
+  }
+ }
  
  table.querySelectorAll("button, svg, script, style").forEach((element) => element.remove());
  table.querySelectorAll("input, textarea, select").forEach((control) => {
@@ -316,6 +363,8 @@ const buildReportsScreenPrintHtml = (source: ReportSource, reportDateLabel: stri
 
 export default function ReportsTab() {
  const { year: fiscalYear } = useFiscalYear();
+ const { reportDate, reportDateLabel } = useReportDate();
+ const [printSettingsOpen, setPrintSettingsOpen] = useState(false);
  const hafiza = useStore((state) => state.hafiza);
  const trainees = useStore((state) => state.trainees);
  const accounts = useStore((state) => state.accounts);
@@ -1104,7 +1153,46 @@ export default function ReportsTab() {
  const deleteRow = (row: ReportRow) => {
   setDeletedRows((prev) => new Set([...prev, row]));
  };
- 
+ const openReportsPrintSettings = () => {
+  if (!displayRows.length) {
+   toast.error("لا توجد بيانات للطباعة");
+   return;
+  }
+  setPrintSettingsOpen(true);
+ };
+ const printReportWithSettings = (settings: InstallmentsPrintSettings) => {
+  const marginMm = settings.margin === "narrow" ? 2 : settings.margin === "wide" ? 10 : 6;
+  const pageWidthMm = settings.pageSize === "A3"
+   ? (settings.orientation === "landscape" ? 420 : 297)
+   : (settings.orientation === "landscape" ? 297 : 210);
+  const visibleColumnCount = Math.max(1,
+   sourceConfig.columns.filter((column) => !settings.hiddenColumns.includes(column.key)).length +
+   (settings.hiddenColumns.includes("idx") ? 0 : 1));
+  const fontSizePx = settings.fontMode === "manual"
+   ? Math.max(5, Math.min(14, settings.fontSize))
+   : Math.max(7, Math.min(13, (pageWidthMm - marginMm * 2) / (visibleColumnCount * 2.35)));
+  const tableHtml = buildReportsScreenPrintHtml(source, settings.showHeader ? reportDateLabel : "", displayRows.length, settings);
+  const finalCss = `
+   #tableContainer .reports-print-table-shell { width:100%!important; min-width:0!important; max-width:100%!important; overflow:visible!important; }
+   #tableContainer table.reports-data-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:auto!important; border-collapse:collapse!important; }
+   #tableContainer table.reports-data-table thead { display:table-header-group!important; }
+   #tableContainer table.reports-data-table tbody { display:table-row-group!important; }
+   #tableContainer table.reports-data-table tr, #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td, #tableContainer table.reports-data-table .pdf-cell-text { page-break-inside:avoid!important; break-inside:avoid!important; font-size:${fontSizePx}px!important; }
+   #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td { min-width:0!important; max-width:100%!important; overflow-wrap:anywhere!important; }
+   #tableContainer table.reports-data-table tr.signature-block-row, #tableContainer table.reports-data-table tr.signature-block-row td { page-break-inside:avoid!important; break-inside:avoid!important; }
+  `;
+  const opened = openBrowserPrintPreview({
+   title,
+   reportDateLabel: settings.showHeader ? reportDateLabel : "",
+   tableHtml,
+   contentCss: reportDocumentCss,
+   finalCss: `${reportsTabPrintCss}\n${finalCss}`,
+   defaultOrientation: settings.orientation,
+   defaultPageSize: settings.pageSize,
+   defaultMarginMm: marginMm,
+  });
+  if (!opened) toast.error("تم منع فتح نافذة المعاينة، يرجى السماح بالنوافذ المنبثقة في كروم");
+ };
  return (
   <div className="mizan-reports-tab min-h-screen bg-gradient-to-br from-slate-100 via-sky-50 to-indigo-50 p-2 sm:p-4" dir="rtl">
       <section className="mx-auto w-full max-w-[210mm] overflow-hidden rounded-3xl border border-sky-200 bg-white shadow-xl">
@@ -1307,6 +1395,7 @@ export default function ReportsTab() {
             numericKeys={numericKeys}
             pdfFinalCss={reportsTabPrintCss}
             renderPrintTableHtml={(reportDateLabel) => buildReportsScreenPrintHtml(source, reportDateLabel, displayRows.length)}
+            onPrintRequest={openReportsPrintSettings}
             pdfOrientation="portrait"
             includeTotalRow={!isLoanOrCustody && source !== "traineeFeeStatus"}
             printTableClassName={source === "trainee" ? "reports-trainee-payment-table" : ""}
@@ -1644,6 +1733,16 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
           </div>
         </div>
       </section>
+      <PrintSettingsModal
+        open={printSettingsOpen}
+        year={fiscalYear}
+        columnOptions={[{ key: "idx", label: "م" }, ...sourceConfig.columns]}
+        onClose={() => setPrintSettingsOpen(false)}
+        onPrint={printReportWithSettings}
+        storageKey="reports-print-settings"
+        contextLabel="إعدادات تقارير العام"
+        manualFontMax={14}
+      />
     </div>
  );
 }

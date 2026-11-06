@@ -32,9 +32,9 @@ const STORAGE_PREFIX = "installments-print-settings";
 export const marginToCss = (m: PrintMargin) =>
   m === "narrow" ? "1mm 1mm" : m === "wide" ? "3mm 3mm" : "3mm 3mm";
 
-export function loadPrintSettings(year: number): InstallmentsPrintSettings {
+export function loadPrintSettings(year: number, storageKey = STORAGE_PREFIX): InstallmentsPrintSettings {
   try {
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}-${year}`);
+    const raw = localStorage.getItem(`${storageKey}-${year}`);
     if (!raw) return DEFAULT_PRINT_SETTINGS;
     return { ...DEFAULT_PRINT_SETTINGS, ...JSON.parse(raw) };
   } catch {
@@ -42,9 +42,9 @@ export function loadPrintSettings(year: number): InstallmentsPrintSettings {
   }
 }
 
-export function savePrintSettings(year: number, s: InstallmentsPrintSettings) {
+export function savePrintSettings(year: number, s: InstallmentsPrintSettings, storageKey = STORAGE_PREFIX) {
   try {
-    localStorage.setItem(`${STORAGE_PREFIX}-${year}`, JSON.stringify(s));
+    localStorage.setItem(`${storageKey}-${year}`, JSON.stringify(s));
   } catch {
     /* تجاهل التخزين المؤقت عند الحظر */
   }
@@ -56,6 +56,9 @@ type Props = {
   columnOptions: { key: string; label: string }[];
   onClose: () => void;
   onPrint: (settings: InstallmentsPrintSettings) => void;
+  storageKey?: string;
+  contextLabel?: string;
+  manualFontMax?: number;
 };
 
 const Segmented = <T extends string | number>({
@@ -120,12 +123,21 @@ export default function PrintSettingsModal({
   columnOptions,
   onClose,
   onPrint,
+  storageKey = STORAGE_PREFIX,
+  contextLabel = "تقرير أقساط العام",
+  manualFontMax,
 }: Props) {
   const [s, setS] = useState<InstallmentsPrintSettings>(DEFAULT_PRINT_SETTINGS);
 
   useEffect(() => {
-    if (open) setS(loadPrintSettings(year));
-  }, [open, year]);
+    if (open) {
+      const settings = loadPrintSettings(year, storageKey);
+      if (manualFontMax !== undefined) {
+        settings.fontSize = Math.max(5, Math.min(manualFontMax, settings.fontSize));
+      }
+      setS(settings);
+    }
+  }, [open, year, storageKey, manualFontMax]);
 
   const hidden = useMemo(() => new Set(s.hiddenColumns), [s.hiddenColumns]);
 
@@ -139,7 +151,7 @@ export default function PrintSettingsModal({
   };
 
   const handlePrint = () => {
-    savePrintSettings(year, s);
+    savePrintSettings(year, s, storageKey);
     onPrint(s);
     onClose();
   };
@@ -154,7 +166,7 @@ export default function PrintSettingsModal({
         <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-gradient-to-l from-sky-700 via-sky-600 to-sky-600 text-white">
           <div className="min-w-auto">
             <h3 className="text-sm sm:text-base font-extrabold truncate">إعدادات الطباعة والتوسيط التلقائي</h3>
-            <p className="text-[13px] text-sky-100">تقرير أقساط العام {year}م</p>
+            <p className="text-[13px] text-sky-100">{contextLabel} {year}م</p>
           </div>
           <button
             onClick={onClose}
@@ -218,7 +230,7 @@ export default function PrintSettingsModal({
                 <input
                   type="range"
                   min={5}
-                  max={14}
+                  max={manualFontMax ?? 14}
                   step={0.5}
                   value={s.fontSize}
                   onChange={(e) => setS({ ...s, fontSize: Number(e.target.value) })}

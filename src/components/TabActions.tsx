@@ -57,6 +57,7 @@ type Props = {
   renderPrintTableHtml?: (reportDateLabel: string) => string;
   includeTotalRow?: boolean;
   printTableClassName?: string;
+  onPrintRequest?: () => void;
   additionalWebActions ? : WebActionItem[];
   webClassName ? : string;
 };
@@ -79,6 +80,7 @@ export default function TabActions({
   renderPrintTableHtml,
   includeTotalRow = true,
   printTableClassName = "",
+  onPrintRequest,
   additionalWebActions = [],
   webClassName = "",
 }: Props) {
@@ -92,6 +94,10 @@ export default function TabActions({
     : buildTableHtml({ title, columns: printColumns, rows: printData, numericKeys, reportDate, includeTotalRow, tableClassName: printTableClassName });
   
   const handlePrint = () => {
+    if (onPrintRequest) {
+      onPrintRequest();
+      return;
+    }
     if (!printData.length) {
       toast.error("لا توجد بيانات للطباعة");
       return;
