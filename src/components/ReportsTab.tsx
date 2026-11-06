@@ -719,6 +719,18 @@ export default function ReportsTab() {
   ).sort((a, b) => a.localeCompare(b, "ar")),
   [hafiza]
  );
+
+ const batchOptions = useMemo(
+  () =>
+  Array.from(
+   new Set(
+    hafiza
+    .map((row) => String(row.batch || "").trim())
+    .filter(Boolean)
+   )
+  ).sort((a, b) => a.localeCompare(b, "ar", { numeric: true })),
+  [hafiza]
+ );
  
  const traineeRows = useMemo < ReportRow[] > (() => {
   const payments = hafiza.flatMap((row) => {
@@ -747,6 +759,7 @@ export default function ReportsTab() {
     year: date.getFullYear(),
     period: p,
     trainee,
+    batch,
     category,
     description: String(row.description || "رسوم أخرى").trim(),
     source: "حوافظ التوريد",
@@ -775,11 +788,12 @@ export default function ReportsTab() {
      if (current) {
       current.amount = amountValue(current.amount) + amountValue(row.amount);
      } else {
-      grouped.set(key, {
+       grouped.set(key, {
        year: row.year,
        period: row.period,
-       trainee: row.trainee,
-       category,
+        trainee: row.trainee,
+        batch: row.batch,
+        category,
        description: "إجمالي الفترة",
        source: "حوافظ التوريد",
        amount: row.amount,
@@ -793,7 +807,8 @@ export default function ReportsTab() {
    }
    result.push({
     period: `إجمالي ${category}`,
-    trainee: selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee,
+   trainee: selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee,
+    batch: selectedBatch.trim() || "—",
     category,
     description: "إجمالي الرسم",
     source: "حوافظ التوريد",
@@ -824,6 +839,7 @@ export default function ReportsTab() {
     .map(({ trainee, year, amount }) => ({
      year,
      trainee,
+     batch: selectedBatch.trim() || "—",
      category: "—",
      description: `إجمالي ${trainee} لعام ${year}`,
      source: "حوافظ التوريد",
@@ -953,6 +969,7 @@ export default function ReportsTab() {
      { key: "year", label: "السنة" },
      { key: "notifyDate", label: "تاريخ التوريد" },
      { key: "trainee", label: "اسم المتدرب" },
+     { key: "batch", label: "رقم الدفعة" },
      { key: "hafizaNo", label: "رقم الحافظة" },
      { key: "notifyNo", label: "رقم الإشعار" },
      { key: "description", label: "البيان الأصلي" },
@@ -1365,14 +1382,19 @@ export default function ReportsTab() {
 
                     <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
                       رقم الدفعة
-                      <input
-                        type="text"
+                      <select
                         value={selectedBatch}
                         onChange={(e) => setSelectedBatch(e.target.value)}
-                        placeholder="كل الدفعات"
                         aria-label="تصفية كشف المدفوعات حسب رقم الدفعة"
                         className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
-                      />
+                      >
+                        <option value="">كل الدفعات</option>
+                        {batchOptions.map((batch) => (
+                          <option key={batch} value={batch}>
+                            {batch}
+                          </option>
+                        ))}
+                      </select>
                     </label>
 
                     <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
