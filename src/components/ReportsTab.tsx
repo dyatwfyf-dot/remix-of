@@ -339,6 +339,28 @@ const buildReportsScreenPrintHtml = (
    });
   }
  }
+
+ // Preserve the exact screen colors for the two categorized fee totals in print/PDF.
+ if (settings?.colored !== false) {
+  ["reports-exam-fee-total-row", "reports-tuition-fee-total-row"].forEach((rowClass) => {
+   const sourceRows = Array.from(sourceTable.querySelectorAll<HTMLTableRowElement>(`tbody tr.${rowClass}`));
+   const printRows = Array.from(table.querySelectorAll<HTMLTableRowElement>(`tbody tr.${rowClass}`));
+   sourceRows.forEach((sourceRow, rowIndex) => {
+    const printRow = printRows[rowIndex];
+    if (!printRow) return;
+    Array.from(sourceRow.cells).forEach((sourceCell, cellIndex) => {
+     const printCell = printRow.cells[cellIndex];
+     if (!printCell) return;
+     const screenStyle = window.getComputedStyle(sourceCell);
+     printCell.style.setProperty("background-color", screenStyle.backgroundColor, "important");
+     printCell.style.setProperty("color", screenStyle.color, "important");
+     printCell.style.setProperty("border-color", screenStyle.borderColor, "important");
+     printCell.style.setProperty("-webkit-print-color-adjust", "exact", "important");
+     printCell.style.setProperty("print-color-adjust", "exact", "important");
+    });
+   });
+  });
+ }
  
  table.querySelectorAll("button, svg, script, style").forEach((element) => element.remove());
  table.querySelectorAll("input, textarea, select").forEach((control) => {
