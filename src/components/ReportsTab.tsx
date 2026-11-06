@@ -215,31 +215,29 @@ const reportsTabPrintCss = `
   #tableContainer table.reports-data-table th,
   #tableContainer table.reports-data-table td { box-sizing:border-box !important; width:auto !important; min-width:0 !important; max-width:100% !important; padding:5px 4px !important; border:1px solid #000 !important; text-align:center !important; vertical-align:middle !important; font-family:Cairo,Tahoma,Arial,sans-serif !important; font-size:9.5pt !important; font-weight:700 !important; line-height:1.35 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-data-table thead { display:table-header-group !important; }
-  #tableContainer table.reports-data-table thead tr.reports-column-header-row > th { background:linear-gradient(180deg,#fff7d7 0%,#f3d778 100%) !important; background-color:#f3d778 !important; color:#3c321b !important; border-color:#000 !important; font-size:10pt !important; font-weight:900 !important; }
+  #tableContainer table.reports-data-table thead tr.reports-column-header-row > th { background:#FFD700 !important; background-color:#FFD700 !important; color:#000 !important; border-color:#000 !important; font-size:10pt !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table thead tr.reports-custody-title-row > th,
   #tableContainer table.reports-data-table thead tr.reports-custody-date-row > th { position:static !important; min-width:0 !important; max-width:none !important; background:#fff !important; background-color:#fff !important; color:#17324d !important; border:1px solid #000 !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table thead tr.reports-custody-title-row > th { padding:10px 8px 4px !important; font-size:15pt !important; }
   #tableContainer table.reports-data-table thead tr.reports-custody-date-row > th { padding:3px 8px 8px !important; font-size:10pt !important; }
-  #tableContainer table.reports-data-table tbody > tr > td { background:#fff !important; background-color:#fff !important; color:#243b50 !important; }
-  #tableContainer table.reports-data-table tbody > tr:nth-child(even):not(.total-row):not(.report-grand-total-row):not(.reports-trainee-total-row):not(.reports-trainee-summary-row):not(.reports-fee-row):not(.reports-period-row):not(.signature-block-row):not(.signature-spacer-row) > td { background:#f7fafc !important; background-color:#f7fafc !important; }
-  #tableContainer table.reports-data-table tbody > tr > td[data-col-key="idx"] { background:#f2f6f8 !important; color:#526a7e !important; font-weight:900 !important; }
-  #tableContainer table.reports-data-table tbody > tr:nth-child(even):not(.total-row):not(.report-grand-total-row) > td[data-col-key="idx"] { background:#eaf0f4 !important; }
+  #tableContainer table.reports-data-table tbody > tr > td { background:#fff !important; background-color:#fff !important; color:#0f172a !important; }
+  #tableContainer table.reports-data-table tbody > tr.reports-opening-row > td { background:#FBFEFF !important; background-color:#FBFEFF !important; color:#000 !important; font-weight:700 !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-detail-row > td { background:#fff !important; color:#17324d !important; font-weight:800 !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-trainee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#2c666e !important; background-color:#2c666e !important; color:#fff !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-trainee-summary-row:not(.total-row):not(.report-grand-total-row) > td { background:#fff1d6 !important; background-color:#fff1d6 !important; color:#68420a !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-fee-row:not(.total-row):not(.report-grand-total-row) > td { background:#f1bf98 !important; background-color:#f1bf98 !important; color:#38291f !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-period-row:not(.total-row):not(.report-grand-total-row) > td { background:#5b5750 !important; background-color:#5b5750 !important; color:#fff !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table tbody > tr.total-row > td,
-  #tableContainer table.reports-data-table tbody > tr.report-grand-total-row > td { background:linear-gradient(105deg,#176db1 0%,#287fbe 55%,#15598f 100%) !important; background-color:#287fbe !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
+  #tableContainer table.reports-data-table tbody > tr.report-grand-total-row > td { background:#0437bb !important; background-color:#0437bb !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table tbody > tr.total-row > td *,
   #tableContainer table.reports-data-table tbody > tr.report-grand-total-row > td * { background:transparent !important; color:#fff !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-exam-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#D8F3DC !important; background-color:#D8F3DC !important; color:#1B4332 !important; border-color:#000 !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-tuition-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#E8DFF5 !important; background-color:#E8DFF5 !important; color:#3D315B !important; border-color:#000 !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-  #tableContainer table.reports-trainee-payment-table tbody > tr.reports-trainee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#03a683 !important; background-color:#03a683 !important; color:#000 !important; border-color:#000 !important; font-weight:900 !important; }
+  #tableContainer table.reports-trainee-payment-table tbody > tr.reports-trainee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#2C666E !important; background-color:#2C666E !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
   #tableContainer table.reports-trainee-payment-table tbody > tr.total-row > td,
-  #tableContainer table.reports-trainee-payment-table tbody > tr.report-grand-total-row > td { background:#dee43d !important; background-color:#dee43d !important; color:#00211c !important; border-color:#000 !important; font-weight:900 !important; }
+  #tableContainer table.reports-trainee-payment-table tbody > tr.report-grand-total-row > td { background:#0437bb !important; background-color:#0437bb !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
   #tableContainer table.reports-trainee-payment-table tbody > tr.total-row > td *,
-  #tableContainer table.reports-trainee-payment-table tbody > tr.report-grand-total-row > td * { color:#00211c !important; }
+  #tableContainer table.reports-trainee-payment-table tbody > tr.report-grand-total-row > td * { color:#fff !important; }
   #tableContainer table.reports-data-table th.rc-num,
   #tableContainer table.reports-data-table td.rc-num,
   #tableContainer table.reports-data-table td.reports-numeric-cell,
@@ -266,8 +264,7 @@ const reportsTabPrintCss = `
     #tableContainer table.reports-data-table th,
     #tableContainer table.reports-data-table td { position:static !important; box-shadow:none !important; page-break-inside:avoid !important; break-inside:avoid !important; }
     #tableContainer table.reports-data-table th,
-    #tableContainer table.reports-data-table td { padding:4px 3px !important; font-size:8.5pt !important; }
-    #tableContainer table.reports-data-table thead tr.reports-column-header-row > th { font-size:9pt !important; }
+    #tableContainer table.reports-data-table td { padding:4px 3px !important; }
   }
 
 `;
@@ -301,6 +298,35 @@ const buildReportsScreenPrintHtml = (
    if (spanningCell) spanningCell.colSpan = Math.max(1, spanningCell.colSpan - 1);
   }
  });
+
+  // انسخ التنسيق المرئي من الشاشة قبل تطبيق إعدادات إخفاء الصفوف والأعمدة؛
+  // بذلك تبقى مطابقة الصفوف صحيحة حتى عند إخفاء الإجماليات.
+  const sourceRows = Array.from(sourceTable.rows);
+  const printRows = Array.from(table.rows);
+  printRows.forEach((printRow, rowIndex) => {
+   const sourceRow = sourceRows[rowIndex];
+   if (!sourceRow) return;
+   const sourceCells = Array.from(sourceRow.cells).filter((cell) => cell.dataset.colKey !== "actions");
+   Array.from(printRow.cells).forEach((printCell, cellIndex) => {
+    const sourceCell = sourceCells[cellIndex];
+    if (!sourceCell) return;
+    const screenStyle = window.getComputedStyle(sourceCell);
+    [
+     ["background-color", screenStyle.backgroundColor],
+     ["color", screenStyle.color],
+     ["border-color", screenStyle.borderColor],
+     ["font-family", screenStyle.fontFamily],
+     ["font-weight", screenStyle.fontWeight],
+     ["font-style", screenStyle.fontStyle],
+     ["text-align", screenStyle.textAlign],
+     ["vertical-align", screenStyle.verticalAlign],
+     ["white-space", screenStyle.whiteSpace],
+     ["line-height", screenStyle.lineHeight],
+    ].forEach(([property, value]) => printCell.style.setProperty(property, value, "important"));
+    printCell.style.setProperty("-webkit-print-color-adjust", "exact", "important");
+    printCell.style.setProperty("print-color-adjust", "exact", "important");
+   });
+  });
 
  if (settings) {
   if (!settings.showHeader) {
@@ -339,7 +365,7 @@ const buildReportsScreenPrintHtml = (
   }
  }
 
- // Preserve the exact screen colors for the two categorized fee totals in print/PDF.
+  // Preserve the exact screen colors for the two categorized fee totals in print/PDF.
  if (settings?.colored !== false) {
   ["reports-exam-fee-total-row", "reports-tuition-fee-total-row"].forEach((rowClass) => {
    const sourceRows = Array.from(sourceTable.querySelectorAll<HTMLTableRowElement>(`tbody tr.${rowClass}`));
@@ -1571,7 +1597,7 @@ color: "#ffffff",
                       : undefined;
 
  let rowStyle = "";
- if (isOpening) rowStyle = "bg-[#FBFEFF] font-bold text-black";
+ if (isOpening) rowStyle = "reports-opening-row bg-[#FBFEFF] font-bold text-black";
 else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                     else if (isTraineeDetail) rowStyle = "reports-detail-row bg-white font-bold text-[#17324D]";
                     else if (row.summaryLevel === "trainee-name-total") rowStyle = "reports-trainee-total-row bg-[#2C666E] font-bold text-white";
