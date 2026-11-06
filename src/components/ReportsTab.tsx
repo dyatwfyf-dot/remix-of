@@ -400,6 +400,7 @@ export default function ReportsTab() {
  
  const [selectedTrainee, setSelectedTrainee] = useState < string > ("all");
  const [selectedFee, setSelectedFee] = useState < string > ("all");
+ const [selectedBatch, setSelectedBatch] = useState("");
  const [traineeGrouping, setTraineeGrouping] = useState < TraineeGrouping > ("month");
  const [traineeDisplayMode, setTraineeDisplayMode] = useState < TraineeDisplayMode > ("both");
  
@@ -723,6 +724,7 @@ export default function ReportsTab() {
   const payments = hafiza.flatMap((row) => {
    const date = normalizeDate(row.notifyDate);
    const trainee = String(row.name || "").trim();
+   const batch = String(row.batch || "").trim();
    const category = canonicalFeeCategory(row.description);
    const amount = amountValue(row.notifyAmount);
    if (
@@ -731,7 +733,8 @@ export default function ReportsTab() {
     !trainee ||
     amount <= 0 ||
     (selectedTrainee !== "all" && trainee !== selectedTrainee) ||
-    (selectedFee !== "all" && category !== selectedFee)
+    (selectedFee !== "all" && category !== selectedFee) ||
+    (selectedBatch.trim() !== "" && batch !== selectedBatch.trim())
    ) {
     return [];
    }
@@ -833,7 +836,7 @@ export default function ReportsTab() {
   }
   
   return result;
- }, [hafiza, selectedTrainee, selectedFee, traineeGrouping, traineeDisplayMode]);
+ }, [hafiza, selectedTrainee, selectedFee, selectedBatch, traineeGrouping, traineeDisplayMode]);
  
  const feeTotalsRows = useMemo < ReportRow[] > (() => {
   const totals = new Map < string,
@@ -1135,7 +1138,7 @@ export default function ReportsTab() {
  
  const title =
   source === "trainee" ?
-  `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFee === "all" ? "كل الرسوم" : selectedFee} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}` :
+  `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFee === "all" ? "كل الرسوم" : selectedFee}${selectedBatch.trim() ? ` — الدفعة ${selectedBatch.trim()}` : ""} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}` :
   source === "feeTotals" ?
   `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}` :
   source === "traineeFeeStatus" ?
@@ -1358,6 +1361,18 @@ export default function ReportsTab() {
                         <option value="month">تجميع شهري</option>
                         <option value="year">تجميع سنوي</option>
                       </select>
+                    </label>
+
+                    <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                      رقم الدفعة
+                      <input
+                        type="text"
+                        value={selectedBatch}
+                        onChange={(e) => setSelectedBatch(e.target.value)}
+                        placeholder="كل الدفعات"
+                        aria-label="تصفية كشف المدفوعات حسب رقم الدفعة"
+                        className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
+                      />
                     </label>
 
                     <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
