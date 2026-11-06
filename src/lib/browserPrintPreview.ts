@@ -1,6 +1,6 @@
 import { reportsCompactColumnsCss, tagReportCellsScript } from "./reportsCompactColumnsCss";
 import { Capacitor } from "@capacitor/core";
-import { REPORT_LETTERHEAD_SRC, reportLetterheadHtml } from "./printTableHtml";
+import { reportLetterheadHtml } from "./printTableHtml";
 import { downloadRenderedReportPdf } from "./reportPdf";
 import { reportTableThemeCss } from "./reportTheme";
 import { printReportHtmlAsync } from "./nativePrinter";

@@ -1,8 +1,6 @@
 import { Capacitor } from "@capacitor/core";
 import { registerReportWindow } from "@/lib/capacitorNavigation";
-import { REPORT_LETTERHEAD_SRC } from "@/lib/printTableHtml";
-
-const PRINT_LETTERHEAD_ALT = "ترويسة المجلس اليمني للاختصاصات الطبية";
+import { reportLetterheadHtml } from "@/lib/printTableHtml";
 
 /**
  * يضمن وجود الترويسة داخل رأس كل جدول، وليس كعنصر منفصل يظهر في الصفحة الأولى فقط.
@@ -15,15 +13,13 @@ const PRINT_LETTERHEAD_ALT = "ترويسة المجلس اليمني للاخت�
 function ensurePrintLetterhead(html: string, forceTable: boolean = true): string {
   if (!html) return html;
 
-  const letterheadRow = (columnCount: number) => `<tr class="report-letterhead-row" data-report-letterhead-injected="true"><th class="report-letterhead-cell" colspan="${Math.max(1, columnCount)}"><img class="report-letterhead-image" src="${REPORT_LETTERHEAD_SRC}" alt="${PRINT_LETTERHEAD_ALT}" /></th></tr>`;
-  const standaloneLetterhead = `<div class="report-letterhead-block" data-report-letterhead-injected="true"><img class="report-letterhead-image" src="${REPORT_LETTERHEAD_SRC}" alt="${PRINT_LETTERHEAD_ALT}" /></div>`;
+  const letterheadRow = (columnCount: number) => `<tr class="report-letterhead-row" data-report-letterhead-injected="true"><th class="report-letterhead-cell" colspan="${Math.max(1, columnCount)}">${reportLetterheadHtml()}</th></tr>`;
+  const standaloneLetterhead = `<div data-report-letterhead-injected="true">${reportLetterheadHtml()}</div>`;
   const printCss = `<style data-report-letterhead-styles="true">
     thead { display: table-header-group !important; }
     .report-letterhead-row { break-inside: avoid; page-break-inside: avoid; }
-    .report-letterhead-cell { border: 0 !important; background: #fff !important; padding: 0 0 2mm !important; height: 30mm !important; }
-    .report-letterhead-image { display: flex !important; width: 100% !important; max-width:auto!important; height: 30mm !important; max-height: 30mm !important; object-fit:fill !important; 
-object-position:top!important; margin: 0 auto !important; }
-    .report-letterhead-block { display: flex !important; width: 100% !important; height: 30mm !important; min-height: 30mm !important; max-height: 30mm !important; align-items: stretch !important; justify-content: center !important; overflow: hidden !important; margin: 0 auto 4mm !important; page-break-before: avoid !important; page-break-after: avoid !important; }
+    .report-letterhead-cell { border: 0 !important; background: #fff !important; padding: 0 0 2mm !important; }
+    .report-letterhead-block { display: block !important; width: 100% !important; margin: 0 auto 4mm !important; page-break-before: avoid !important; page-break-after: avoid !important; }
   </style>`;
 
   let printableHtml = html.includes("</head>") ? html.replace("</head>", `${printCss}</head>`) : `${printCss}${html}`;

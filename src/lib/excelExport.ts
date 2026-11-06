@@ -87,14 +87,9 @@ export async function createExcelWorkbook(): Promise<ExcelWorkbook> {
 }
 
 export async function loadReportLetterhead(workbook: ExcelWorkbook): Promise<number | null> {
-  try {
-    const response = await fetch("/report-letterhead.png");
-    if (!response.ok) return null;
-    const buffer = await response.arrayBuffer();
-    return workbook.addImage({ buffer: new Uint8Array(buffer) as any, extension: "png" });
-  } catch {
-    return null;
-  }
+  // الترويسة الرسمية أصبحت نصية في جميع صيغ التصدير؛ لا نضمّن صورة قديمة.
+  void workbook;
+  return null;
 }
 
 export function setWorksheetRtl(worksheet: ExcelWorksheet, freezeRow?: number) {
@@ -136,13 +131,22 @@ export function addReportHeader(
   const totalColumns = Math.max(1, meta.totalColumns);
   const palette = meta.palette || DEFAULT_PALETTE;
   setWorksheetRtl(worksheet);
-
-  if (imageId != null) {
-    worksheet.addImage(imageId, {
-      tl: { col: 0, row: 0 },
-      br: { col: totalColumns, row: 4 },
-    });
-  }
+  void imageId;
+  const textHeaderRows = [
+    "الجمهورية اليمنية",
+    "وزارة الصحة والبيئة",
+    INSTITUTION_NAME,
+    BRANCH_NAME,
+  ];
+  textHeaderRows.forEach((value, index) => {
+    worksheet.mergeCells(index + 1, 1, index + 1, totalColumns);
+    const cell = worksheet.getCell(index + 1, 1);
+    cell.value = value;
+    cell.border = blackBorder;
+    cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
+    cell.font = { name: "Arial", size: index === 0 ? 12 : 11, bold: true, color: { argb: BLACK } };
+    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFFFFFF" } };
+  });
 
   worksheet.mergeCells(5, 1, 5, totalColumns);
   worksheet.mergeCells(6, 1, 6, totalColumns);
@@ -166,10 +170,10 @@ export function addReportHeader(
   });
   reportTitleCell.font = { name: "Arial", size: 13, bold: true, color: { argb: BLACK } };
   reportTitleCell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: palette.header } };
-  worksheet.getRow(1).height = 30;
-  worksheet.getRow(2).height = 30;
-  worksheet.getRow(3).height = 30;
-  worksheet.getRow(4).height = 18;
+  worksheet.getRow(1).height = 24;
+  worksheet.getRow(2).height = 22;
+  worksheet.getRow(3).height = 22;
+  worksheet.getRow(4).height = 22;
   worksheet.getRow(5).height = 24;
   worksheet.getRow(6).height = 28;
   worksheet.getRow(7).height = 24;

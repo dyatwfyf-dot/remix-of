@@ -1,11 +1,7 @@
 import { fmt } from "./format";
 import { formatReportDate } from "@/lib/reportDate";
 import { noteRowClass, noteRowCss } from "@/lib/notesColors";
-import reportLetterheadUrl from "@/assets/report-letterhead.png";
-
 export type TableCol = { key: string; label: string };
-
-export const REPORT_LETTERHEAD_SRC = reportLetterheadUrl;
 
 /**
  * توليد ترويسة التقارير الرسمية كإطار نصي موحد بدلاً من الصورة

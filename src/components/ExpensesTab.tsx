@@ -853,7 +853,6 @@ export default function ExpensesTab() {
                 body { direction: rtl; background: #f1f5f9; color: #000; font-family: Cairo; font-weight: 900; }
                 .print-page { min-height: auto; width: 100%; margin: 0; padding: 0; border: 0; background: #fff; }
                 .report-letterhead-block { display: block; width: 100%; max-width: auto; height: 30mm; min-height: 30mm; max-height: 30mm; align-items: stretch; justify-content: center; margin: 0 0 3mm; page-break-before: avoid; page-break-after: avoid; }
-                .report-letterhead-image { display:flex; width: 100%; min-width: auto; height: 100%; min-height: auto; object-fit: fill; object-position:top; margin: 0; }
     ${runningLetterheadCss}
  #expenses-report { width: 100%; }
  #expenses-report > * { margin-bottom: 4mm; }

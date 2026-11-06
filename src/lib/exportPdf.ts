@@ -7,7 +7,7 @@ import {
   getReportPeriodLabel,
   type ReportPeriodMode,
 } from "./reportPeriods";
-import { REPORT_LETTERHEAD_SRC } from "@/lib/printTableHtml";
+import { reportLetterheadHtml } from "@/lib/printTableHtml";
 import revSchema from "@/data/revenueTemplate.json";
 import { printReportHtmlAsync } from "@/lib/nativePrinter";
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
@@ -16,7 +16,7 @@ import { reportDocumentCss } from "@/lib/reportPdf";
 const reportLetterheadRow = (columnCount: number) => `
   <tr class="report-letterhead-row">
     <th class="report-letterhead-cell" colspan="${Math.max(1, Math.floor(columnCount))}">
-      <img class="report-letterhead-image" src="${REPORT_LETTERHEAD_SRC}" alt="ترويسة المجلس اليمني للااختصاصات الطبية" />
+      ${reportLetterheadHtml()}
     </th>
   </tr>`;
 
@@ -28,15 +28,6 @@ const reportLetterheadStyles = `
       background: #fff !important;
       padding: 0 0 2mm !important;
       height: auto !important;
-    }
-    .report-letterhead-image {
-      display: flex;
-      width: 100%;
-      max-height: 20mm;
-      height: 100%;
-      object-fit: fill;
-      margin: 0 auto;
-    object-position:top;
     }
     tbody tr { break-inside: avoid; page-break-inside: avoid; }
 `;
@@ -355,14 +346,6 @@ background: #733f12 !important; color: #fff;
     body { padding: 0 1px; width: 100%; }
     .report-letterhead-row { width: 100%; }
     .report-letterhead-cell { padding: 0 !important; width: 100%; }
-    .report-letterhead-image {
-    width: 100% !important;
-    max-width: auto !important;
-    height: 30mm !important;
-    object-fit:fill !important;
-    margin: 0 !important;
-    object-position:top;
-    }
     table { 
 width: 100%; 
 min-width: auto; 

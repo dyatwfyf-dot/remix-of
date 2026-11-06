@@ -1,7 +1,4 @@
-import {
-  REPORT_LETTERHEAD_SRC,
-  reportLetterheadHtml,
-} from "@/lib/printTableHtml";
+import { reportLetterheadHtml } from "@/lib/printTableHtml";
 import { printReportHtmlAsync } from "@/lib/nativePrinter";
 
 export type PrintOrientation = "portrait" | "landscape";
@@ -146,16 +143,6 @@ border: 0 !important;
 background: #fff !important;
 text-align: center; 
   }
-  .report-letterhead-cell img {
-    display: flex;
-    width: 100%;
-    max-width: auto;
-    height: 30mm;
-    max-height: 30mm;
-    object-fit: fill;
-    object-position:top;
-    margin: 0;
-  }
 
   /* إخفاء عناصر غير مطبوعة صراحة */
   .no-print { display: none !important; }
@@ -266,11 +253,7 @@ ${body}
       var cell = document.createElement("th");
       cell.className = "report-letterhead-cell";
       cell.colSpan = Math.max(1, columnCount);
-      var image = document.createElement("img");
-      image.className = "report-letterhead-image";
-      image.src = ${JSON.stringify(REPORT_LETTERHEAD_SRC)};
-      image.alt = "ترويسة المجلس اليمني للاختصاصات الطبية";
-      cell.appendChild(image);
+      cell.innerHTML = ${JSON.stringify(reportLetterheadHtml())};
       row.appendChild(cell);
       thead.insertBefore(row, thead.firstChild);
     });
