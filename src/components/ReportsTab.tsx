@@ -215,7 +215,7 @@ const reportsTabPrintCss = `
   #tableContainer table.reports-data-table th,
   #tableContainer table.reports-data-table td { box-sizing:border-box !important; width:auto !important; min-width:0 !important; max-width:100% !important; padding:5px 4px !important; border:1px solid #000 !important; text-align:center !important; vertical-align:middle !important; font-family:Cairo,Tahoma,Arial,sans-serif !important; font-size:9.5pt !important; font-weight:700 !important; line-height:1.35 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-data-table thead { display:table-header-group !important; }
-  #tableContainer table.reports-data-table thead tr.reports-column-header-row > th { background:#FFD700 !important; background-color:#FFD700 !important; color:#000 !important; border-color:#000 !important; font-size:10pt !important; font-weight:900 !important; }
+  #tableContainer table.reports-data-table thead tr.reports-column-header-row > th { background:linear-gradient(180deg,#fff4a3 0%,#ffd700 48%,#d99b00 100%) !important; background-color:#ffd700 !important; color:#000 !important; border-color:#000 !important; font-size:10pt !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-data-table thead tr.reports-custody-title-row > th,
   #tableContainer table.reports-data-table thead tr.reports-custody-date-row > th { position:static !important; min-width:0 !important; max-width:none !important; background:#fff !important; background-color:#fff !important; color:#17324d !important; border:1px solid #000 !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table thead tr.reports-custody-title-row > th { padding:10px 8px 4px !important; font-size:15pt !important; }
@@ -264,7 +264,12 @@ const reportsTabPrintCss = `
     #tableContainer table.reports-data-table th,
     #tableContainer table.reports-data-table td { position:static !important; box-shadow:none !important; page-break-inside:avoid !important; break-inside:avoid !important; }
     #tableContainer table.reports-data-table th,
-    #tableContainer table.reports-data-table td { padding:4px 3px !important; }
+    #tableContainer table.reports-data-table td { padding:4px 3px !important; white-space:normal !important; word-break:normal !important; overflow-wrap:anywhere !important; }
+    #tableContainer table.reports-data-table th.rc-num,
+    #tableContainer table.reports-data-table td.rc-num,
+    #tableContainer table.reports-data-table td.reports-numeric-cell,
+    #tableContainer table.reports-data-table td.reports-no-wrap-cell,
+    #tableContainer table.reports-data-table td[data-col-key="idx"] { white-space:nowrap !important; word-break:keep-all !important; overflow-wrap:normal !important; }
   }
 
 `;
@@ -323,6 +328,22 @@ const buildReportsScreenPrintHtml = (
      ["white-space", screenStyle.whiteSpace],
      ["line-height", screenStyle.lineHeight],
     ].forEach(([property, value]) => printCell.style.setProperty(property, value, "important"));
+    const isTextCell = printCell.classList.contains("rc-text") ||
+     printCell.classList.contains("reports-text-cell") ||
+     printCell.classList.contains("reports-description-cell");
+    const isNumericCell = printCell.classList.contains("rc-num") ||
+     printCell.classList.contains("reports-numeric-cell") ||
+     printCell.classList.contains("reports-no-wrap-cell") ||
+     printCell.dataset.colKey === "idx";
+    if (isTextCell) {
+     printCell.style.setProperty("white-space", "normal", "important");
+     printCell.style.setProperty("word-break", "normal", "important");
+     printCell.style.setProperty("overflow-wrap", "anywhere", "important");
+    } else if (isNumericCell) {
+     printCell.style.setProperty("white-space", "nowrap", "important");
+     printCell.style.setProperty("word-break", "keep-all", "important");
+     printCell.style.setProperty("overflow-wrap", "normal", "important");
+    }
     printCell.style.setProperty("-webkit-print-color-adjust", "exact", "important");
     printCell.style.setProperty("print-color-adjust", "exact", "important");
    });
