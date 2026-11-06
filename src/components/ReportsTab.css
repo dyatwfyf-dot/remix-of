@@ -355,3 +355,22 @@
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
+
+
+/* Distinct pastel colors for trainee exam-fee and tuition-fee totals; period totals stay unchanged. */
+.reports-table-scroll .reports-trainee-payment-table tbody tr.reports-fee-row.reports-exam-fee-total-row > td {
+  background: #D8F3DC !important;
+  color: #1B4332 !important;
+  border-color: #000000 !important;
+  font-weight: 900 !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.reports-table-scroll .reports-trainee-payment-table tbody tr.reports-fee-row.reports-tuition-fee-total-row > td {
+  background: #E8DFF5 !important;
+  color: #3D315B !important;
+  border-color: #000000 !important;
+  font-weight: 900 !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
