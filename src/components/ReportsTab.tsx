@@ -206,32 +206,58 @@ const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "ot
 
 const reportsTabPrintCss = `
   #tableContainer table.reports-data-table { width:100% !important; max-width:100% !important; table-layout:auto !important; font-size:8pt !important; }
-  #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td { font-size:8pt !important; }
-  /* Appended last so the shared preview theme cannot override this report tab. */
-  #tableContainer .reports-print-heading { margin:0 auto 4mm !important; padding:2mm 0 !important; text-align:center !important; direction:rtl !important; color:#17324d !important; page-break-after:avoid !important; }
-  #tableContainer .reports-print-heading h1 { margin:0 !important; color:#17324d !important; font:900 17pt/1.35 Cairo,Tahoma,Arial,sans-serif !important; }
-  #tableContainer .reports-print-heading .reports-print-sub { margin-top:1.5mm !important; color:#526a7e !important; font:700 8.5pt/1.4 Cairo,Tahoma,Arial,sans-serif !important; }
-  #tableContainer table.reports-data-table { width:100% !important; min-width:0 !important; max-width:100% !important; margin:0 auto !important; border-collapse:collapse !important; border-spacing:0 !important; table-layout:auto !important; direction:rtl !important; text-align:center !important; color:#243b50 !important; font-family:Cairo,Tahoma,Arial,sans-serif !important; }
+  #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td { font-size: 18px !important; }
+
+  #tableContainer .reports-print-heading { margin:0 auto 4mm !important; padding:2mm 0 !important; text-align:center !important; direction:rtl !important; color:#17324d !important; page-break-after:avoid !important; 
+    
+  }
+  #tableContainer .reports-print-heading h1 { margin:0 !important;
+  color: #17324d !important; 
+  font-weight:900  !important;
+  font-size: 18px !important;
+font-Family: Cairo !important; 
+  }
+  #tableContainer .reports-print-heading .reports-print-sub { margin-top:1.5mm !important; color:#526a7e !important; font:900 18px/1.4 Cairo !important; }
+  #tableContainer table.reports-data-table { width:100% !important; min-width:0 !important; max-width:100% !important; margin:0 auto !important; border-collapse:collapse !important; border-spacing:0 !important; table-layout:auto !important; direction:rtl !important; text-align:center !important; color:#243b50 !important; font-family:Cairo !important; }
   #tableContainer table.reports-data-table th,
-  #tableContainer table.reports-data-table td { box-sizing:border-box !important; width:auto !important; min-width:0 !important; max-width:100% !important; padding:5px 4px !important; border:1px solid #000 !important; text-align:center !important; vertical-align:middle !important; font-family:Cairo,Tahoma,Arial,sans-serif !important; font-size:9.5pt !important; font-weight:700 !important; line-height:1.35 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  #tableContainer table.reports-data-table td { box-sizing:border-box !important; width:auto !important; min-width:0 !important; max-width:100% !important; padding:5px 4px !important; border:1px solid #000 !important; text-align:center !important; vertical-align:middle !important;
+  font-family: Cairo !important; 
+  font-size: 16px !important; font-weight:1000 !important; line-height:1.35 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-data-table thead { display:table-header-group !important; }
-  #tableContainer table.reports-data-table thead tr.reports-column-header-row > th { background:linear-gradient(180deg,#fff4a3 0%,#ffd700 48%,#d99b00 100%) !important; background-color:#ffd700 !important; color:#000 !important; border-color:#000 !important; font-size:10pt !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  #tableContainer table.reports-data-table thead tr.reports-column-header-row > th { background:linear-gradient(180deg,#fff4a3 0%,#ffd700 48%,#d99b00 100%) !important; background-color:#ffd700 !important; color:#000 !important; border-color:#000 !important; font-size: 18px !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-data-table thead tr.reports-custody-title-row > th,
-  #tableContainer table.reports-data-table thead tr.reports-custody-date-row > th { position:static !important; min-width:0 !important; max-width:none !important; background:#fff !important; background-color:#fff !important; color:#17324d !important; border:1px solid #000 !important; font-weight:900 !important; }
-  #tableContainer table.reports-data-table thead tr.reports-custody-title-row > th { padding:10px 8px 4px !important; font-size:15pt !important; }
-  #tableContainer table.reports-data-table thead tr.reports-custody-date-row > th { padding:3px 8px 8px !important; font-size:10pt !important; }
-  #tableContainer table.reports-data-table tbody > tr > td { background:#fff !important; background-color:#fff !important; color:#0f172a !important; }
+  #tableContainer table.reports-data-table thead tr.reports-custody-date-row > th { position:static !important; min-width:0 !important; max-width:none !important; background:#fff !important; background-color:#fff !important; color:#17324d !important; border:1px solid #000 !important;
+  font-weight:900 !important;
+  }
+  #tableContainer table.reports-data-table thead tr.reports-custody-title-row > th {
+  padding:10px 8px 4px !important; font-size: 18px !important;
+  font-weight:1000 !important;
+font-family: Cairo !important;
+  }
+  #tableContainer table.reports-data-table thead tr.reports-custody-date-row > th { padding:3px 8px 8px !important;
+  font-size: 13px !important;
+font-family: Cairo !important; 
+  }
+  #tableContainer table.reports-data-table tbody > tr > td { 
+font-family: Cairo !important; font-weight:900 !important;
+  background:#fff !important; background-color:#fff !important; color:#0f172a !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-opening-row > td { background:#FBFEFF !important; background-color:#FBFEFF !important; color:#000 !important; font-weight:700 !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-detail-row > td { background:#fff !important; color:#17324d !important; font-weight:800 !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-trainee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#2c666e !important; background-color:#2c666e !important; color:#fff !important; font-weight:900 !important; }
-  #tableContainer table.reports-data-table tbody > tr.reports-trainee-summary-row:not(.total-row):not(.report-grand-total-row) > td { background:#fff1d6 !important; background-color:#fff1d6 !important; color:#68420a !important; font-weight:900 !important; }
-  #tableContainer table.reports-data-table tbody > tr.reports-fee-row:not(.total-row):not(.report-grand-total-row) > td { background:#f1bf98 !important; background-color:#f1bf98 !important; color:#38291f !important; font-weight:900 !important; }
+  #tableContainer table.reports-data-table tbody > tr.reports-trainee-summary-row:not(.total-row):not(.report-grand-total-row) > td {
+  font-size: 15px !important;
+  background:#fff1d6 !important; background-color:#fff1d6 !important; color:#68420a !important; font-weight:900 !important; }
+  #tableContainer table.reports-data-table tbody > tr.reports-fee-row:not(.total-row):not(.report-grand-total-row) > td { background:#f1bf98 !important; background-color:#f1bf98 !important; color:#38291f !important;
+  font-size: 15px !important;
+  font-weight:900 !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-period-row:not(.total-row):not(.report-grand-total-row) > td { background:#5b5750 !important; background-color:#5b5750 !important; color:#fff !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table tbody > tr.total-row > td,
   #tableContainer table.reports-data-table tbody > tr.report-grand-total-row > td { background:#0437bb !important; background-color:#0437bb !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table tbody > tr.total-row > td *,
   #tableContainer table.reports-data-table tbody > tr.report-grand-total-row > td * { background:transparent !important; color:#fff !important; }
-  #tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-exam-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#D8F3DC !important; background-color:#D8F3DC !important; color:#1B4332 !important; border-color:#000 !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  #tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-exam-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#D8F3DC !important; background-color:#D8F3DC !important; color:#1B4332 !important; border-color:#000 !important; 
+font-size: 18px !important;
+  font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-tuition-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#E8DFF5 !important; background-color:#E8DFF5 !important; color:#3D315B !important; border-color:#000 !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-trainee-payment-table tbody > tr.reports-trainee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#2C666E !important; background-color:#2C666E !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
   #tableContainer table.reports-trainee-payment-table tbody > tr.total-row > td,

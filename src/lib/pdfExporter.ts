@@ -18,7 +18,7 @@ const statementCss = `
   ${reportTableThemeCss}
   body, .pdf-page { 
 font-size: 24px; 
-font-family: Cairo;
+font-family: Cairo !important;
     font-weight: 900; 
     margin: 0;
     padding: 0;
@@ -37,7 +37,7 @@ table-layout: auto
  font-weight: 900 !important;; 
 height:100% !important;
 min-height: auto !important;
-font-family: Cairo;
+font-family: Cairo !important;
 
   }
     th { 
@@ -162,7 +162,7 @@ export function printHtmlContent(htmlContent: string): void {
         * { margin: 0; padding: 0; box-sizing: border-box; }
 @page { size: A4 portrait; margin: 3mm; }
         body {
-font-family: Cairo;
+font-family: Cairo !important;
           direction: rtl;
           color: #000 !important;
           background: white;
