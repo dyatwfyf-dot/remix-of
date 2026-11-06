@@ -276,6 +276,13 @@ const reportsTabPrintCss = `
 
 
 
+/**
+ * PDF variant: the downloaded document wraps the report in <div id="report-source">,
+ * so the #tableContainer-prefixed rules above never match there. Re-pointing the
+ * prefix at #report-source keeps the same row colors (fee / period / totals) in the PDF.
+ */
+const reportsTabPdfPrintCss = reportsTabPrintCss.replaceAll("#tableContainer", "#report-source");
+
 /** Clone the rendered table so print preserves its real structure and styling. */
 const buildReportsScreenPrintHtml = (
  source: ReportSource,
@@ -1394,7 +1401,7 @@ export default function ReportsTab() {
             columns={sourceConfig.columns}
             printColumns={sourceConfig.columns}
             numericKeys={numericKeys}
-            pdfFinalCss={reportsTabPrintCss}
+            pdfFinalCss={reportsTabPdfPrintCss}
             renderPrintTableHtml={(reportDateLabel) => buildReportsScreenPrintHtml(source, reportDateLabel, displayRows.length)}
             onPrintRequest={openReportsPrintSettings}
             pdfOrientation="portrait"
