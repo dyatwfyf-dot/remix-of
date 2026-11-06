@@ -339,7 +339,9 @@ const buildReportsScreenPrintHtml = (
    if (!sourceRow) return;
    const sourceCells = Array.from(sourceRow.cells).filter((cell) => cell.dataset.colKey !== "actions");
    Array.from(printRow.cells).forEach((printCell, cellIndex) => {
-    const sourceCell = sourceCells[cellIndex];
+    const sourceCell = printCell.dataset.colKey
+     ? sourceCells.find((cell) => cell.dataset.colKey === printCell.dataset.colKey)
+     : sourceCells[cellIndex];
     if (!sourceCell) return;
     const screenStyle = window.getComputedStyle(sourceCell);
     [
@@ -419,9 +421,11 @@ const buildReportsScreenPrintHtml = (
    const printRows = Array.from(table.querySelectorAll<HTMLTableRowElement>(`tbody tr.${rowClass}`));
    sourceRows.forEach((sourceRow, rowIndex) => {
     const printRow = printRows[rowIndex];
-    if (!printRow) return;
-    Array.from(sourceRow.cells).forEach((sourceCell, cellIndex) => {
-     const printCell = printRow.cells[cellIndex];
+   if (!printRow) return;
+   Array.from(sourceRow.cells).forEach((sourceCell, cellIndex) => {
+     const printCell = sourceCell.dataset.colKey
+      ? Array.from(printRow.cells).find((cell) => cell.dataset.colKey === sourceCell.dataset.colKey)
+      : printRow.cells[cellIndex];
      if (!printCell) return;
      const screenStyle = window.getComputedStyle(sourceCell);
      printCell.style.setProperty("background-color", screenStyle.backgroundColor, "important");
