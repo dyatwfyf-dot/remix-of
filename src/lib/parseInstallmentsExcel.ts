@@ -21,7 +21,6 @@ const MONTHS_2025 = [
   "نوفمبر2025",
   "ديسمبر2025",
 ];
-
 const MONTHS_2026 = [
   "يناير",
   "فبراير",
@@ -36,71 +35,156 @@ const MONTHS_2026 = [
   "نوفمبر",
   "ديسمبر",
 ];
-
-// تدعم ملفات Excel القديمة التي تحفظ الأرقام بالأرقام العربية أو الفارسية.
+const MONTH_ALIASES: Record<string, string[]> = {
+  يناير: ["يناير", "كانون الثاني", "January", "Jan"],
+  فبراير: ["فبراير", "شباط", "February", "Feb"],
+  مارس: ["مارس", "آذار", "March", "Mar"],
+  ابريل: ["ابريل", "نيسان", "April", "Apr"],
+  مايو: ["مايو", "أيار", "May"],
+  يونيو: ["يونيو", "حزيران", "June", "Jun"],
+  يوليو: ["يوليو", "تموز", "July", "Jul"],
+  اغسطس: ["اغسطس", "آب", "August", "Aug"],
+  سبتمبر: ["سبتمبر", "أيلول", "September", "Sep", "Sept"],
+  اكتوبر: ["اكتوبر", "تشرين الأول", "October", "Oct"],
+  نوفمبر: ["نوفمبر", "تشرين الثاني", "November", "Nov"],
+  ديسمبر: ["ديسمبر", "كانون الأول", "December", "Dec"],
+};
 const normalizeNumericText = (value: string): string =>
   value
     .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 1632))
     .replace(/[۰-۹]/g, (digit) => String(digit.charCodeAt(0) - 1776))
     .replace(/[٫]/g, ".")
     .replace(/[٬،]/g, ",");
-
 const cleanNumber = (value: unknown): number => {
   const normalized = normalizeNumericText(String(value ?? "")).replace(/[^0-9.-]/g, "");
   return normalized && Number.isFinite(Number(normalized)) ? Number(normalized) : 0;
 };
-
-// تطبيع النص العربي: توحيد أشكال الألف والتاء المربوطة/الياء، وإزالة كل المسافات،
-// وتوحيد حالة الأحرف — لضمان مطابقة أسماء الأعمدة حتى مع اختلافات الكتابة الشائعة.
-const normalizeArabic = (value: unknown): string =>
-  String(value ?? "")
-    .replace(/[أإآا]/g, "ا")
+const normalizeHeader = (value: unknown): string =>
+  normalizeNumericText(String(value ?? ""))
+    .normalize("NFD")
+    .replace(/[\u064B-\u065F\u0670\u0640]/g, "")
+    .replace(/[أإآٱ]/g, "ا")
     .replace(/ى/g, "ي")
     .replace(/ة/g, "ه")
-    .replace(/\s+/g, "")
-    .toLowerCase()
-    .trim();
-
-// إزالة الأرقام (السنة) من اسم الشهر لمطابقة مثل «نوفمبر2025» مع «نوفمبر»
-const monthCore = (value: unknown): string =>
-  normalizeArabic(value).replace(/[0-9\u0660-\u0669]/g, "");
-
-// مطابقة أسماء الأشهر: تامة أولاً، ثم بتجاهل السنة الملحقة
-const findKeyExact = (keys: string[], target: string, fallback: string): string => {
-  const normTarget = normalizeArabic(target);
-  const exact = keys.find((key) => normalizeArabic(key) === normTarget);
-  if (exact) return exact;
-  const core = monthCore(target);
-  return (core && keys.find((key) => monthCore(key) === core)) || fallback;
-};
-
-// مطابقة جزئية (بعد التطبيع) — تُستخدم للحقول الوصفية مثل "اسم المتدرب"
-const findKeyContains = (keys: string[], part: string, fallback: string): string => {
-  const normPart = normalizeArabic(part);
-  return keys.find((key) => normalizeArabic(key).includes(normPart)) ?? fallback;
-};
-
-// أول مطابقة ناجحة من عدة بدائل
-const findKeyAny = (keys: string[], parts: string[], fallback: string): string => {
-  for (const part of parts) {
-    const found = findKeyContains(keys, part, "");
-    if (found) return found;
+    .replace(/[^\p{L}\p{N}]/gu, "")
+    .toLowerCase();
+const monthCore = (value: unknown): string => normalizeHeader(value).replace(/20?2?[0-9]/g, "");
+const editDistance = (a: string, b: string): number => {
+  const row = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i += 1) {
+    let diagonal = row[0];
+    row[0] = i;
+    for (let j = 1; j <= b.length; j += 1) {
+      const above = row[j];
+      row[j] = Math.min(row[j] + 1, row[j - 1] + 1, diagonal + (a[i - 1] === b[j - 1] ? 0 : 1));
+      diagonal = above;
+    }
   }
-  return fallback;
+  return row[b.length];
 };
+const similarity = (a: string, b: string): number => {
+  if (!a || !b) return 0;
+  if (a === b) return 1;
+  if (a.includes(b) || b.includes(a)) return Math.min(a.length, b.length) >= 4 ? 0.92 : 0.78;
+  return 1 - editDistance(a, b) / Math.max(a.length, b.length);
+};
+const bestHeaderIndex = (headers: string[], aliases: string[], threshold = 0.65): number => {
+  let bestIndex = -1;
+  let bestScore = 0;
+  headers.forEach((header, index) => {
+    if (!header.trim()) return;
+    const normalized = normalizeHeader(header);
+    const score = Math.max(
+      ...aliases.map((alias) => similarity(normalized, normalizeHeader(alias))),
+    );
+    if (score > bestScore) {
+      bestScore = score;
+      bestIndex = index;
+    }
+  });
+  return bestScore >= threshold ? bestIndex : -1;
+};
+const monthIndex = (header: string, month: string): number => {
+  const target = monthCore(month);
+  const aliases = MONTH_ALIASES[target] || [month];
+  const normalized = monthCore(header);
+  return Math.max(...aliases.map((alias) => similarity(normalized, monthCore(alias)))) >= 0.72
+    ? 1
+    : 0;
+};
+const monthColumnIndex = (
+  headers: string[],
+  month: string,
+  usedColumns = new Set<number>(),
+): number => {
+  const targetYear = month.match(/20\d{2}/)?.[0];
+  const aliases = MONTH_ALIASES[monthCore(month)] || [month];
+  let bestIndex = -1;
+  let bestScore = 0;
+  headers.forEach((header, index) => {
+    if (!header.trim() || usedColumns.has(index)) return;
+    const digits = normalizeNumericText(header);
+    const headerYear = digits.match(/20\d{2}/)?.[0];
+    if (targetYear && headerYear && targetYear !== headerYear) return;
+    const normalized = monthCore(header);
+    const score = Math.max(...aliases.map((alias) => similarity(normalized, monthCore(alias))));
+    if (score > bestScore) {
+      bestScore = score;
+      bestIndex = index;
+    }
+  });
+  return bestScore >= 0.72 ? bestIndex : -1;
+};
+const toHeaders = (row: unknown[]): string[] => row.map((cell) => String(cell ?? "").trim());
+const headersForRow = (
+  grid: unknown[][],
+  worksheet: XLSX.WorkSheet,
+  rowIndex: number,
+): string[] => {
+  const headers = toHeaders(grid[rowIndex] || []);
+  for (const merge of worksheet["!merges"] || []) {
+    if (merge.s.c !== merge.e.c || rowIndex < merge.s.r || rowIndex > merge.e.r) continue;
+    const mergedHeader = String(grid[merge.s.r]?.[merge.s.c] ?? "").trim();
+    if (mergedHeader) headers[merge.s.c] = mergedHeader;
+  }
+  return headers;
+};
+const locateHeaderRow = (
+  grid: unknown[][],
+  worksheet: XLSX.WorkSheet,
+  months: string[],
+): number => {
+  let bestIndex = -1;
+  let bestScore = -1;
+  for (let index = 0; index < Math.min(grid.length, 30); index += 1) {
+    const headers = headersForRow(grid, worksheet, index);
+    const nameIndex = bestHeaderIndex(
+      headers,
+      ["اسم المتدرب", "اسم الطالب", "اسم", "الاسم", "trainee name", "student name", "name"],
+      0.5,
+    );
+    if (nameIndex < 0) continue;
+    const monthMatches = months.reduce(
+      (count, month) => count + (monthColumnIndex(headers, month) >= 0 ? 1 : 0),
+      0,
+    );
+    const score = 100 + monthMatches * 5 + headers.filter(Boolean).length / 100;
+    if (score > bestScore) {
+      bestScore = score;
+      bestIndex = index;
+    }
+  }
+  return bestIndex;
+};
+const valueAt = (row: unknown[], index: number): unknown => (index < 0 ? "" : (row[index] ?? ""));
 
 export function parseInstallmentsExcel(buffer: ArrayBuffer, year: 2025 | 2026): Installment[] {
-  if (buffer.byteLength === 0) {
-    throw new Error("الملف فارغ.");
-  }
+  if (buffer.byteLength === 0) throw new Error("الملف فارغ.");
   if (buffer.byteLength > MAX_INSTALLMENT_IMPORT_BYTES) {
     throw new Error(
       "حجم ملف الأقساط أكبر من الحد المسموح (20 ميجابايت). قسّم الملف ثم أعد الاستيراد.",
     );
   }
-
-  // اقرأ هامش صف واحد فقط فوق الحد حتى نرفض الملف الكبير برسالة واضحة، بدلاً
-  // من إنشاء مصفوفات غير محدودة قد تُغلق WebView على أجهزة Android منخفضة الذاكرة.
   const workbook = XLSX.read(new Uint8Array(buffer), {
     type: "array",
     dense: true,
@@ -108,86 +192,86 @@ export function parseInstallmentsExcel(buffer: ArrayBuffer, year: 2025 | 2026): 
   });
   const worksheet = workbook.Sheets[workbook.SheetNames[0]];
   if (!worksheet) return [];
-
   const usedRange = worksheet["!fullref"] || worksheet["!ref"];
   if (usedRange) {
     const range = XLSX.utils.decode_range(usedRange);
-    const rowCount = range.e.r - range.s.r + 1;
-    const columnCount = range.e.c - range.s.c + 1;
-    if (rowCount > MAX_INSTALLMENT_IMPORT_ROWS + 1) {
+    if (range.e.r - range.s.r + 1 > MAX_INSTALLMENT_IMPORT_ROWS + 1) {
       throw new Error(
         `ورقة Excel تحتوي على أكثر من ${MAX_INSTALLMENT_IMPORT_ROWS.toLocaleString("en-US")} صف بيانات. احذف الصفوف الزائدة أو قسّم الملف ثم أعد المحاولة.`,
       );
     }
-    if (columnCount > MAX_INSTALLMENT_IMPORT_COLUMNS) {
+    if (range.e.c - range.s.c + 1 > MAX_INSTALLMENT_IMPORT_COLUMNS) {
       throw new Error(
         "نطاق ورقة Excel عريض بشكل غير طبيعي. احذف الأعمدة الفارغة/التنسيقات الزائدة ثم أعد الاستيراد.",
       );
     }
   }
-
-  const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet, {
+  const grid = XLSX.utils.sheet_to_json<unknown[]>(worksheet, {
+    header: 1,
     defval: "",
     blankrows: false,
   });
   const months = year === 2025 ? MONTHS_2025 : MONTHS_2026;
-  const keys = rows.length ? Object.keys(rows[0]) : [];
-
-  const monthKeys = months.map((month) => findKeyExact(keys, month, ""));
-
-  const nameKey = findKeyAny(
-    keys,
-    ["اسم المتدرب", "اسم الطالب", "الاسم", "اسم", "trainee name", "student name", "name"],
-    "name",
-  );
-  if (!keys.includes(nameKey)) {
+  const headerRowIndex = locateHeaderRow(grid, worksheet, months);
+  if (headerRowIndex < 0) {
     throw new Error(
-      "لم يتم العثور على عمود اسم المتدرب. تأكد من وجود عنوان مثل «اسم المتدرب» في صف العناوين.",
+      "لم يتم العثور على عناوين متوافقة؛ تأكد من وجود عمود الاسم وعناوين أشهر الأقساط.",
     );
   }
-  if (!monthKeys.some((key) => key && keys.includes(key))) {
-    throw new Error(`ملف الأقساط لا يحتوي على أي عمود دفعة شهري معروف للعام ${year}`);
-  }
-  const batchKey = findKeyAny(keys, ["رقم الدفعة", "الدفعة"], "batch");
-  const specialtyKey = findKeyAny(keys, ["المساق", "التخصص"], "specialty");
-  const feesKey = findKeyAny(keys, ["مبلغ الرسوم", "الرسوم"], "fees");
-  const prevDueKey = findKeyAny(
-    keys,
-    ["المتبقي عليهم من العام 2025", "المتبقي من العام", "متبقي سابق"],
-    "prevDue",
+  const headers = headersForRow(grid, worksheet, headerRowIndex);
+  const usedMonthColumns = new Set<number>();
+  const monthColumns = months.map((month) => {
+    const column = monthColumnIndex(headers, month, usedMonthColumns);
+    if (column >= 0) usedMonthColumns.add(column);
+    return column;
+  });
+  const nameColumn = bestHeaderIndex(
+    headers,
+    ["اسم المتدرب", "اسم الطالب", "اسم", "الاسم", "trainee name", "student name", "name"],
+    0.5,
   );
-  const remainingKey = findKeyExact(keys, "المتبقي", "remaining");
-  const notesKey = findKeyContains(keys, "ملاحظات", "notes");
-  const phoneKey = findKeyAny(keys, ["رقم الهاتف", "الهاتف", "الجوال"], "phone");
-
-  return rows.flatMap((row) => {
-    const name = String(row[nameKey] ?? "").trim();
+  const batchColumn = bestHeaderIndex(headers, ["رقم الدفعة", "الدفعة", "batch"]);
+  const specialtyColumn = bestHeaderIndex(headers, ["المساق", "التخصص", "specialty", "course"]);
+  const feesColumn = bestHeaderIndex(headers, ["مبلغ الرسوم", "الرسوم", "fees", "tuition"]);
+  const prevDueColumn = bestHeaderIndex(
+    headers,
+    ["المتبقي عليهم من العام 2025", "المتبقي من العام", "متبقي سابق"],
+    0.55,
+  );
+  const remainingColumn = bestHeaderIndex(
+    headers,
+    ["المتبقي", "الرصيد المتبقي", "remaining", "balance"],
+    0.55,
+  );
+  const notesColumn = bestHeaderIndex(headers, ["ملاحظات", "ملاحظة", "notes", "note"], 0.6);
+  const phoneColumn = bestHeaderIndex(
+    headers,
+    ["رقم الهاتف", "الهاتف", "الجوال", "phone", "mobile"],
+    0.55,
+  );
+  const totalColumn = bestHeaderIndex(headers, ["الإجمالي", "المجموع", "total"]);
+  return grid.slice(headerRowIndex + 1).flatMap((row) => {
+    const name = String(valueAt(row, nameColumn)).trim();
     if (!name) return [];
-
     const payments: Record<string, number> = {};
     let totalPaid = 0;
     months.forEach((month, index) => {
-      const monthKey = monthKeys[index];
-      const amount = monthKey ? cleanNumber(row[monthKey]) : 0;
+      const amount = cleanNumber(valueAt(row, monthColumns[index]));
       payments[month] = amount;
       totalPaid += amount;
     });
-
-    const fees = cleanNumber(row[feesKey]);
-    const prevDue = cleanNumber(row[prevDueKey]);
-    const importedTotal = row["الإجمالي"] ? cleanNumber(row["الإجمالي"]) : totalPaid;
-
+    const totalValue = valueAt(row, totalColumn);
     return [
       {
         name,
-        batch: String(row[batchKey] ?? "").trim(),
-        specialty: String(row[specialtyKey] ?? "").trim(),
-        fees,
-        prevDue,
-        totalPaid: importedTotal,
-        remaining: cleanNumber(row[remainingKey]),
-        notes: String(row[notesKey] ?? "").trim(),
-        phone: String(row[phoneKey] ?? "").trim(),
+        batch: String(valueAt(row, batchColumn)).trim(),
+        specialty: String(valueAt(row, specialtyColumn)).trim(),
+        fees: cleanNumber(valueAt(row, feesColumn)),
+        prevDue: cleanNumber(valueAt(row, prevDueColumn)),
+        totalPaid: totalValue === "" ? totalPaid : cleanNumber(totalValue),
+        remaining: cleanNumber(valueAt(row, remainingColumn)),
+        notes: String(valueAt(row, notesColumn)).trim(),
+        phone: String(valueAt(row, phoneColumn)).trim(),
         payments,
         customData: {},
       },
