@@ -85,7 +85,11 @@ const editDistance = (a: string, b: string): number => {
 const similarity = (a: string, b: string): number => {
   if (!a || !b) return 0;
   if (a === b) return 1;
-  if (a.includes(b) || b.includes(a)) return Math.min(a.length, b.length) >= 4 ? 0.92 : 0.78;
+  if (a.includes(b) || b.includes(a)) {
+    return Math.min(a.length, b.length) >= 3
+      ? Math.min(a.length, b.length) / Math.max(a.length, b.length)
+      : 0;
+  }
   return 1 - editDistance(a, b) / Math.max(a.length, b.length);
 };
 const bestHeaderIndex = (headers: string[], aliases: string[], threshold = 0.65): number => {
@@ -140,12 +144,21 @@ const headersForRow = (
   grid: unknown[][],
   worksheet: XLSX.WorkSheet,
   rowIndex: number,
+  originalRowIndices: number[],
+  originalColumnIndices: number[],
 ): string[] => {
   const headers = toHeaders(grid[rowIndex] || []);
+  const originalRow = originalRowIndices[rowIndex];
   for (const merge of worksheet["!merges"] || []) {
-    if (merge.s.c !== merge.e.c || rowIndex < merge.s.r || rowIndex > merge.e.r) continue;
-    const mergedHeader = String(grid[merge.s.r]?.[merge.s.c] ?? "").trim();
-    if (mergedHeader) headers[merge.s.c] = mergedHeader;
+    if (
+      merge.s.c !== merge.e.c ||
+      originalRow < merge.s.r ||
+      originalRow > merge.e.r
+    ) continue;
+    const compactColumn = originalColumnIndices.indexOf(merge.s.c);
+    if (compactColumn < 0) continue;
+    const mergedHeader = String(worksheet[XLSX.utils.encode_cell(merge.s)]?.v ?? "").trim();
+    if (mergedHeader) headers[compactColumn] = mergedHeader;
   }
   return headers;
 };
@@ -153,11 +166,19 @@ const locateHeaderRow = (
   grid: unknown[][],
   worksheet: XLSX.WorkSheet,
   months: string[],
+  originalRowIndices: number[],
+  originalColumnIndices: number[],
 ): number => {
   let bestIndex = -1;
   let bestScore = -1;
   for (let index = 0; index < Math.min(grid.length, 30); index += 1) {
-    const headers = headersForRow(grid, worksheet, index);
+    const headers = headersForRow(
+      grid,
+      worksheet,
+      index,
+      originalRowIndices,
+      originalColumnIndices,
+    );
     const nameIndex = bestHeaderIndex(
       headers,
       ["اسم المتدرب", "اسم الطالب", "اسم", "الاسم", "trainee name", "student name", "name"],
@@ -187,38 +208,73 @@ export function parseInstallmentsExcel(buffer: ArrayBuffer, year: 2025 | 2026): 
   }
   const workbook = XLSX.read(new Uint8Array(buffer), {
     type: "array",
-    dense: true,
+    // Sparse mode avoids allocating the formatting-only rectangle of exported Excel sheets.
+    dense: false,
     sheetRows: MAX_INSTALLMENT_IMPORT_ROWS + 2,
   });
   const worksheet = workbook.Sheets[workbook.SheetNames[0]];
   if (!worksheet) return [];
-  const usedRange = worksheet["!fullref"] || worksheet["!ref"];
-  if (usedRange) {
-    const range = XLSX.utils.decode_range(usedRange);
-    if (range.e.r - range.s.r + 1 > MAX_INSTALLMENT_IMPORT_ROWS + 1) {
-      throw new Error(
-        `ورقة Excel تحتوي على أكثر من ${MAX_INSTALLMENT_IMPORT_ROWS.toLocaleString("en-US")} صف بيانات. احذف الصفوف الزائدة أو قسّم الملف ثم أعد المحاولة.`,
-      );
-    }
-    if (range.e.c - range.s.c + 1 > MAX_INSTALLMENT_IMPORT_COLUMNS) {
-      throw new Error(
-        "نطاق ورقة Excel عريض بشكل غير طبيعي. احذف الأعمدة الفارغة/التنسيقات الزائدة ثم أعد الاستيراد.",
-      );
-    }
-  }
-  const grid = XLSX.utils.sheet_to_json<unknown[]>(worksheet, {
-    header: 1,
-    defval: "",
-    blankrows: false,
-  });
   const months = year === 2025 ? MONTHS_2025 : MONTHS_2026;
-  const headerRowIndex = locateHeaderRow(grid, worksheet, months);
+  // تجاهل الامتداد الذي تضيفه التنسيقات/الخلايا الفارغة في !ref. نبني شبكة مضغوطة
+  // من الخلايا ذات القيم الفعلية فقط، لذا لا تؤثر الأعمدة الفارغة أو المدمجة على الحد.
+  const populatedCells: { row: number; column: number; value: unknown }[] = [];
+  for (const [address, cell] of Object.entries(worksheet)) {
+    if (address.startsWith("!")) continue;
+    const value = (cell as XLSX.CellObject | undefined)?.v;
+    if (value === undefined || value === null || value === "") continue;
+    const position = XLSX.utils.decode_cell(address);
+    populatedCells.push({ row: position.r, column: position.c, value });
+  }
+  const originalRowIndices = [...new Set(populatedCells.map((cell) => cell.row))].sort(
+    (a, b) => a - b,
+  );
+  const originalColumnIndices = [...new Set(populatedCells.map((cell) => cell.column))].sort(
+    (a, b) => a - b,
+  );
+  if (originalRowIndices.length > MAX_INSTALLMENT_IMPORT_ROWS + 1) {
+    throw new Error(
+      `ورقة Excel تحتوي على أكثر من ${MAX_INSTALLMENT_IMPORT_ROWS.toLocaleString("en-US")} صف بيانات. احذف الصفوف الزائدة أو قسّم الملف ثم أعد المحاولة.`,
+    );
+  }
+  if (originalColumnIndices.length > MAX_INSTALLMENT_IMPORT_COLUMNS) {
+    throw new Error(
+      `ورقة Excel تحتوي على أكثر من ${MAX_INSTALLMENT_IMPORT_COLUMNS} عموداً مستخدماً فعلياً. احذف البيانات الزائدة ثم أعد المحاولة.`,
+    );
+  }
+  if (!populatedCells.length) return [];
+  const rowIndexByOriginal = new Map(originalRowIndices.map((row, index) => [row, index]));
+  const columnIndexByOriginal = new Map(
+    originalColumnIndices.map((column, index) => [column, index]),
+  );
+  const grid: unknown[][] = originalRowIndices.map(() =>
+    Array.from({ length: originalColumnIndices.length }, () => ""),
+  );
+  populatedCells.forEach(({ row, column, value }) => {
+    const compactRow = rowIndexByOriginal.get(row);
+    const compactColumn = columnIndexByOriginal.get(column);
+    if (compactRow !== undefined && compactColumn !== undefined) {
+      grid[compactRow][compactColumn] = value;
+    }
+  });
+  const headerRowIndex = locateHeaderRow(
+    grid,
+    worksheet,
+    months,
+    originalRowIndices,
+    originalColumnIndices,
+  );
   if (headerRowIndex < 0) {
     throw new Error(
       "لم يتم العثور على عناوين متوافقة؛ تأكد من وجود عمود الاسم وعناوين أشهر الأقساط.",
     );
   }
-  const headers = headersForRow(grid, worksheet, headerRowIndex);
+  const headers = headersForRow(
+    grid,
+    worksheet,
+    headerRowIndex,
+    originalRowIndices,
+    originalColumnIndices,
+  );
   const usedMonthColumns = new Set<number>();
   const monthColumns = months.map((month) => {
     const column = monthColumnIndex(headers, month, usedMonthColumns);
@@ -235,8 +291,14 @@ export function parseInstallmentsExcel(buffer: ArrayBuffer, year: 2025 | 2026): 
   const feesColumn = bestHeaderIndex(headers, ["مبلغ الرسوم", "الرسوم", "fees", "tuition"]);
   const prevDueColumn = bestHeaderIndex(
     headers,
-    ["المتبقي عليهم من العام 2025", "المتبقي من العام", "متبقي سابق"],
-    0.55,
+    [
+      "المتبقي عليهم من العام 2025",
+      "المتبقي من العام",
+      "متبقي سابق",
+      "باقي من عام سابق",
+      "رصيد سابق",
+    ],
+    0.72,
   );
   const remainingColumn = bestHeaderIndex(
     headers,
