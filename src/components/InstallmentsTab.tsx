@@ -2118,15 +2118,6 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       toast.error("هناك عملية استيراد أخرى قيد التنفيذ.");
       return;
     }
-    const currentRows = year === 2025
-      ? useStore.getState().installments2025
-      : useStore.getState().installments;
-    if ((currentRows?.length || 0) > 0 && !window.confirm(
-      `سيتم استبدال بيانات الأقساط الحالية لعام ${year} بعد نجاح قراءة الملف. هل تريد المتابعة؟`,
-    )) {
-      input.value = "";
-      return;
-    }
     setImportingYear(year);
     const loadingToast = toast.loading(`جارٍ فحص ملف الأقساط لعام ${year}…`);
     try {
