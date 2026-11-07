@@ -1731,7 +1731,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                       );
                     }
 
-                    if (isMergedGrandTotal) {
+                     if (isMergedGrandTotal) {
                       return (
                         <tr
                           key={`${String(row.id || row.date)}-grand-total-${index}`}
@@ -1759,9 +1759,8 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                             {formatCurrency(row.amount)}
                           </td>
                           <td
-                            data-col-key="grand-total-spacer"
-                            colSpan={sourceConfig.columns.length - amountColumnIndex}
-                            className="border border-black px-1 py-1"
+                            data-col-key="actions"
+                            className="border border-black px-1 py-1 print:hidden"
                             style={totalCellStyle}
                           />
                         </tr>
