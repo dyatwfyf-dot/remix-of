@@ -288,12 +288,21 @@ export function parseInstallmentsExcel(buffer: ArrayBuffer, year: 2025 | 2026): 
   );
   const batchColumn = bestHeaderIndex(headers, ["رقم الدفعة", "الدفعة", "batch"]);
   const specialtyColumn = bestHeaderIndex(headers, ["المساق", "التخصص", "specialty", "course"]);
-  const feesColumn = bestHeaderIndex(headers, ["مبلغ الرسوم", "الرسوم", "fees", "tuition"]);
+  const feesColumn = bestHeaderIndex(headers, [
+    "مبلغ الرسوم",
+    "الرسوم",
+    "رسوم الدراسة",
+    "مبلغ الدراسة",
+    "fees",
+    "tuition",
+  ]);
   const prevDueColumn = bestHeaderIndex(
     headers,
     [
       "المتبقي عليهم من العام 2025",
       "المتبقي من العام",
+      "المتبقي من 2025",
+      "المتبقي السابق",
       "متبقي سابق",
       "باقي من عام سابق",
       "رصيد سابق",
