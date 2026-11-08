@@ -2364,14 +2364,15 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         padding-left: 16px;
         font-variant-numeric: tabular-nums;
       }
-      .row-fees td { background: #eff6ff !important; }
+      .row-fees td { background: ${year === 2026 ? "#dbeafe" : "#eff6ff"} !important; }
       .row-due-old td { background: #fef3c7 !important; }
-      .row-total-due td { background: #fee2e2 !important; font-weight: 900; }
-      .row-paid td { background: #f0fdf4 !important; font-weight: 800; }
+      .row-total-due td { background: ${year === 2026 ? "#fecaca" : "#fee2e2"} !important; font-weight: 900; }
+      .row-paid td { background: ${year === 2026 ? "#dcfce7" : "#f0fdf4"} !important; font-weight: 800; }
       .row-unpaid td { background: #f8fafc !important; color: #64748b !important; }
-      .row-total-paid td { background: #d1fae5 !important; font-weight: 900; }
+      .row-total-paid td { background: ${year === 2026 ? "#a7f3d0" : "#d1fae5"} !important; font-weight: 900; }
       .row-final td {
-        background: #f1f5f9 !important;
+        background: ${year === 2026 ? "#0f766e" : "#f1f5f9"} !important;
+        ${year === 2026 ? "color: #ffffff !important;" : ""}
         font-size: 20px;
         font-weight: 900;
         border-top: 2.5px solid #0f766e !important;
@@ -2555,18 +2556,18 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     const totalPaid = payments.reduce((sum: number, payment: any) => sum + payment.amount, 0);
     const safeName = safePdfFileName(traineeName);
     const detailRows = payments.map((payment: any) =>
-      '<tr class="row-paid"><td>' + payment.year + '</td><td class="num">' + formatDate(payment.date) +
+      '<tr class="row-paid' + (payment.year === 2026 ? ' row-paid-2026' : '') + '"><td>' + payment.year + '</td><td class="num">' + formatDate(payment.date) +
       '</td><td>' + escapeHtml(payment.hafizaNo || "—") + '</td><td>' +
       escapeHtml(payment.notifyNo || "—") + '</td><td class="lbl">' +
       escapeHtml(payment.description) + '</td><td class="num">' +
       escapeHtml(fmt(payment.amount)) + '</td></tr>'
     ).join("");
     const monthlyRows = Array.from(monthlyTotals.values()).map((item) =>
-      '<tr class="row-period"><td colspan="5">إجمالي ' + escapeHtml(item.label) +
+      '<tr class="row-period' + (item.label.endsWith("2026") ? ' row-period-2026' : '') + '"><td colspan="5">إجمالي ' + escapeHtml(item.label) +
       '</td><td class="num">' + escapeHtml(fmt(item.amount)) + '</td></tr>'
     ).join("");
     const yearlyRows = Array.from(yearlyTotals.entries()).sort((a, b) => a[0] - b[0]).map(([year, amount]) =>
-      '<tr class="row-year"><td colspan="5">إجمالي رسوم الامتحانات لعام ' + year +
+      '<tr class="row-year' + (year === 2026 ? ' row-year-2026' : '') + '"><td colspan="5">إجمالي رسوم الامتحانات لعام ' + year +
       '</td><td class="num">' + escapeHtml(fmt(amount)) + '</td></tr>'
     ).join("");
 
@@ -2587,6 +2588,9 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       '.lbl { font-weight: 900; } .num { direction: ltr; white-space: nowrap; font-variant-numeric: tabular-nums; }',
       '.row-paid td { background: #f0fdf4 !important; } .row-period td { background: #e0f2fe !important; font-weight: 900; }',
       '.row-year td { background: #dbeafe !important; font-weight: 900; }',
+      '.row-paid-2026 td { background: #dcfce7 !important; color: #14532d !important; font-weight: 900; }',
+      '.row-period-2026 td { background: #bfdbfe !important; color: #1e3a8a !important; font-weight: 900; }',
+      '.row-year-2026 td { background: #1d4ed8 !important; color: #ffffff !important; font-weight: 900; }',
       '.row-final td { background: #0437bb !important; color: #fff !important; font-size: 17px; font-weight: 900; }',
       '.foot { margin-top: 10px; padding-top: 10px; display: flex; justify-content: space-between; font-size: 14px; font-weight: 800; border-top: 1.5px dashed #0f766e; }',
     ].join("\n");

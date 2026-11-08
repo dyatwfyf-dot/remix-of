@@ -1209,17 +1209,28 @@ export default function ReportsTab() {
   const isCustodySource = source === "youssefLoan" || source === "tawfiqCustody";
   const orderedRows = isCustodySource ?
    filtered : [...filtered].sort((a, b) => {
-    // إبقاء صفوف الإجماليات بعد التفاصيل مهما كان عمود الفرز أو اتجاهه.
+    // تبقى صفوف إجماليات الرسم العامة في نهاية الجدول ولا تدخل في الفرز.
     if (source === "trainee") {
-     const sortRank = (row: ReportRow) => {
-      if (row.summaryLevel === "period") return 1;
-      if (row.summaryLevel === "fee") return 2;
-      if (row.summaryLevel === "trainee-fee-total") return 3;
-      if (row.summaryLevel === "trainee-name-total") return 4;
-      if (row.summaryLevel === "total" || row.total === "نعم") return 5;
-      return 0;
-     };
-     const rankDiff = sortRank(a) - sortRank(b);
+     const aIsFeeGrandTotal = a.summaryLevel === "fee";
+     const bIsFeeGrandTotal = b.summaryLevel === "fee";
+     if (aIsFeeGrandTotal !== bIsFeeGrandTotal) return aIsFeeGrandTotal ? 1 : -1;
+     if (aIsFeeGrandTotal && bIsFeeGrandTotal) return 0;
+
+     // إبقاء كل إجماليات المتدرب معه عند الترتيب بأي عمود.
+     const aTrainee = String(a.trainee ?? a.name ?? "").trim();
+     const bTrainee = String(b.trainee ?? b.name ?? "").trim();
+     if (aTrainee && bTrainee) {
+      const traineeOrder = aTrainee.localeCompare(bTrainee, "ar");
+      if (traineeOrder !== 0) return traineeOrder;
+     }
+
+     const rowRank = (row: ReportRow) =>
+      row.summaryLevel === "detail" ? 0 :
+      row.summaryLevel === "period" ? 1 :
+      row.summaryLevel === "trainee-fee-total" ? 2 :
+      row.summaryLevel === "trainee-name-total" ? 3 :
+      row.summaryLevel === "total" || row.total === "نعم" ? 4 : 0;
+     const rankDiff = rowRank(a) - rowRank(b);
      if (rankDiff !== 0) return rankDiff;
     }
     const aVal = a[activeSortCol];
