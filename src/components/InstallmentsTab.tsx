@@ -2365,7 +2365,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         font-variant-numeric: tabular-nums;
       }
       .row-fees td { background: ${year === 2026 ? "#dbeafe" : "#eff6ff"} !important; }
-      .row-due-old td { background: #fef3c7 !important; }
+      .row-due-old td { background: ${year === 2026 ? "#fde68a" : "#fef3c7"} !important; }
       .row-total-due td { background: ${year === 2026 ? "#fecaca" : "#fee2e2"} !important; font-weight: 900; }
       .row-paid td { background: ${year === 2026 ? "#dcfce7" : "#f0fdf4"} !important; font-weight: 800; }
       .row-unpaid td { background: #f8fafc !important; color: #64748b !important; }

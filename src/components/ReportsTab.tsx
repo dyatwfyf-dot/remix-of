@@ -508,6 +508,7 @@ export default function ReportsTab() {
  const [sortDirection, setSortDirection] = useState < "asc" | "desc" > ("asc");
  const [traineeSortColumn, setTraineeSortColumn] = useState < string > ("notifyDate");
  const [traineeSortDirection, setTraineeSortDirection] = useState < "asc" | "desc" > ("asc");
+ const [traineeHasUserSorted, setTraineeHasUserSorted] = useState(false);
  const [deletedRows, setDeletedRows] = useState<Set<string>>(new Set());
  
  const [youssefOpeningBalance, setYoussefOpeningBalance] = useState < number > (() => {
@@ -1207,9 +1208,9 @@ export default function ReportsTab() {
   const filtered = reportRows.filter((row) => !deletedRows.has(getReportRowKey(row, source)));
   
   const isCustodySource = source === "youssefLoan" || source === "tawfiqCustody";
-  const orderedRows = isCustodySource ?
+  const orderedRows = isCustodySource || (source === "trainee" && !traineeHasUserSorted) ?
    filtered : [...filtered].sort((a, b) => {
-    // تبقى صفوف إجماليات الرسم العامة في نهاية الجدول ولا تدخل في الفرز.
+    // عند الفرز فقط، يبقى إجمالي الرسم العام في النهاية، بينما تتبع إجماليات المتدرب اسمه.
     if (source === "trainee") {
      const aIsFeeGrandTotal = a.summaryLevel === "fee";
      const bIsFeeGrandTotal = b.summaryLevel === "fee";
@@ -1220,7 +1221,10 @@ export default function ReportsTab() {
      const aTrainee = String(a.trainee ?? a.name ?? "").trim();
      const bTrainee = String(b.trainee ?? b.name ?? "").trim();
      if (aTrainee && bTrainee) {
-      const traineeOrder = aTrainee.localeCompare(bTrainee, "ar");
+      const traineeOrder = aTrainee.localeCompare(bTrainee, "ar") *
+       (activeSortCol === "trainee" || activeSortCol === "name"
+        ? activeSortDir === "asc" ? 1 : -1
+        : 1);
       if (traineeOrder !== 0) return traineeOrder;
      }
 
@@ -1652,6 +1656,7 @@ export default function ReportsTab() {
                       data-col-key={col.key}
                       onClick={() => {
                         if (source === "trainee") {
+                          setTraineeHasUserSorted(true);
                           if (traineeSortColumn === col.key) {
                             setTraineeSortDirection((d) => (d === "asc" ? "desc" : "asc"));
                           } else {
