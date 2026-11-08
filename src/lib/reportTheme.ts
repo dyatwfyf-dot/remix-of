@@ -55,9 +55,9 @@ export const reportTableThemeCss = `
     color: #3b2600 !important;
   }
 
-  .report-page-content table tbody > tr:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row):not(.installments-statement-row) > td,
-  #tableContainer table tbody > tr:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row):not(.installments-statement-row) > td,
-  body > table tbody > tr:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row):not(.installments-statement-row) > td {
+  .report-page-content table tbody > tr:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row):not(.installments-statement-row):not(.reports-fee-row) > td,
+  #tableContainer table tbody > tr:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row):not(.installments-statement-row):not(.reports-fee-row) > td,
+  body > table tbody > tr:not(.report-grand-total-row):not(.total-row):not(.signature-block-row):not(.signature-spacer-row):not(.installments-statement-row):not(.reports-fee-row) > td {
     background: var(--report-table-body) !important;
     background-color: var(--report-table-body) !important;
     color: var(--report-table-ink) !important;

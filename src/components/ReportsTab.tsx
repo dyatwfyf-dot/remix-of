@@ -229,7 +229,7 @@ const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "ot
 
 const reportsTabPrintCss = `
   #tableContainer table.reports-data-table { width:100% !important; max-width:100% !important; table-layout:auto !important; font-size:8pt !important; }
-  #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td { font-size: 18px !important; }
+  #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td { font-size: 14px !important; }
 
   #tableContainer .reports-print-heading { margin:0 auto 4mm !important; padding:2mm 0 !important; text-align:center !important; direction:rtl !important; color:#17324d !important; page-break-after:avoid !important; 
     
@@ -245,9 +245,9 @@ font-Family: Cairo !important;
   #tableContainer table.reports-data-table th,
   #tableContainer table.reports-data-table td { box-sizing:border-box !important; width:auto !important; min-width:0 !important; max-width:100% !important; padding:5px 4px !important; border:1px solid #000 !important; text-align:center !important; vertical-align:middle !important;
   font-family: Cairo !important; 
-  font-size: 16px !important; font-weight:1000 !important; line-height:1.35 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  font-size: 14px !important; font-weight:1000 !important; line-height:1.35 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-data-table thead { display:table-header-group !important; }
-  #tableContainer table.reports-data-table thead tr.reports-column-header-row > th { background:linear-gradient(180deg,#fff4a3 0%,#ffd700 48%,#d99b00 100%) !important; background-color:#ffd700 !important; color:#000 !important; border-color:#000 !important; font-size: 18px !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  #tableContainer table.reports-data-table thead tr.reports-column-header-row > th { background:linear-gradient(180deg,#fff4a3 0%,#ffd700 48%,#d99b00 100%) !important; background-color:#ffd700 !important; color:#000 !important; border-color:#000 !important; font-size: 12px !important; white-space:nowrap !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-data-table thead tr.reports-custody-title-row > th,
   #tableContainer table.reports-data-table thead tr.reports-custody-date-row > th { position:static !important; min-width:0 !important; max-width:none !important; background:#fff !important; background-color:#fff !important; color:#17324d !important; border:1px solid #000 !important;
   font-weight:900 !important;
@@ -278,10 +278,10 @@ font-family: Cairo !important; font-weight:900 !important;
   #tableContainer table.reports-data-table tbody > tr.report-grand-total-row > td { background:#0437bb !important; background-color:#0437bb !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table tbody > tr.total-row > td *,
   #tableContainer table.reports-data-table tbody > tr.report-grand-total-row > td * { background:transparent !important; color:#fff !important; }
-  #tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-exam-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#D8F3DC !important; background-color:#D8F3DC !important; color:#1B4332 !important; border-color:#000 !important; 
-font-size: 18px !important;
+#tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-exam-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#D8F3DC !important; background-color:#D8F3DC !important; color:#1B4332 !important; border-color:#000 !important;
+font-size: 13px !important; white-space:nowrap !important;
   font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-  #tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-tuition-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#E8DFF5 !important; background-color:#E8DFF5 !important; color:#3D315B !important; border-color:#000 !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  #tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-tuition-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#E8DFF5 !important; background-color:#E8DFF5 !important; color:#3D315B !important; border-color:#000 !important; font-size:13px !important; white-space:nowrap !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-trainee-payment-table tbody > tr.reports-trainee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#2C666E !important; background-color:#2C666E !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
   #tableContainer table.reports-trainee-payment-table tbody > tr.total-row > td,
   #tableContainer table.reports-trainee-payment-table tbody > tr.report-grand-total-row > td { background:#0437bb !important; background-color:#0437bb !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
@@ -927,14 +927,21 @@ export default function ReportsTab() {
   // ضمن فترة التجميع المختارة، وتظهر حتى في وضع التفاصيل فقط.
   const traineeFeeTotals = new Map<string, ReportRow>();
   payments.forEach((row) => {
-   if (row.category !== "رسوم الامتحانات" && row.category !== "أقساط الدراسة والتسجيل") return;
+   const isExamFee = row.category === "رسوم الامتحانات";
+   const isTuitionFee = row.category === "أقساط الدراسة والتسجيل";
+   const isSelectedFee = selectedFee !== "all" && row.category === selectedFee;
+   if (!isExamFee && !isTuitionFee && !isSelectedFee) return;
    const key = `${row.trainee}|${row.batch}|${row.year}|${row.period}|${row.category}`;
    const existing = traineeFeeTotals.get(key);
    if (existing) {
     existing.amount = amountValue(existing.amount) + amountValue(row.amount);
     return;
    }
-   const isExamFee = row.category === "رسوم الامتحانات";
+   const totalLabel = isExamFee
+    ? "إجمالي رسوم الامتحانات"
+    : isTuitionFee
+     ? "إجمالي الرسوم الدراسية"
+     : `إجمالي ${row.category}`;
    traineeFeeTotals.set(key, {
     id: `trainee-fee-total-${key}`,
     year: row.year,
@@ -943,11 +950,11 @@ export default function ReportsTab() {
     trainee: row.trainee,
     batch: row.batch,
     category: row.category,
-    description: isExamFee ? "إجمالي رسوم الامتحانات" : "إجمالي الرسوم الدراسية",
+    description: totalLabel,
     source: "حوافظ التوريد",
     amount: amountValue(row.amount),
-    displayType: isExamFee ? "إجمالي رسوم الامتحانات" : "إجمالي الرسوم الدراسية",
-    notes: isExamFee ? "إجمالي رسوم الامتحانات" : "إجمالي الرسوم الدراسية",
+    displayType: totalLabel,
+    notes: totalLabel,
     summaryLevel: "trainee-fee-total",
    });
   });
