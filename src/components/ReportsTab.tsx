@@ -263,14 +263,14 @@ font-family: Cairo !important;
   }
   #tableContainer table.reports-data-table tbody > tr > td { 
 font-family: Cairo !important; font-weight:900 !important;
-  background:#fff !important; background-color:#fff !important; color:#0f172a !important; }
+  background:#fff !important; background-color:#fff !important; color:#000000 !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-opening-row > td { background:#FBFEFF !important; background-color:#FBFEFF !important; color:#000 !important; font-weight:700 !important; }
-  #tableContainer table.reports-data-table tbody > tr.reports-detail-row > td { background:#fff !important; color:#17324d !important; font-weight:800 !important; }
+  #tableContainer table.reports-data-table tbody > tr.reports-detail-row > td { background:#fff !important; color:#000000 !important; font-weight:800 !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-trainee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#2c666e !important; background-color:#2c666e !important; color:#fff !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-trainee-summary-row:not(.total-row):not(.report-grand-total-row) > td {
   font-size: 15px !important;
-  background:#fff1d6 !important; background-color:#fff1d6 !important; color:#68420a !important; font-weight:900 !important; }
-  #tableContainer table.reports-data-table tbody > tr.reports-fee-row:not(.total-row):not(.report-grand-total-row) > td { background:#f1bf98 !important; background-color:#f1bf98 !important; color:#38291f !important;
+  background:#fff1d6 !important; background-color:#fff1d6 !important; color:#000000 !important; font-weight:900 !important; }
+  #tableContainer table.reports-data-table tbody > tr.reports-fee-row:not(.total-row):not(.report-grand-total-row) > td { background:#f1bf98 !important; background-color:#f1bf98 !important; color:#000000 !important;
   font-size: 15px !important;
   font-weight:900 !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-period-row:not(.total-row):not(.report-grand-total-row) > td { background:#5b5750 !important; background-color:#5b5750 !important; color:#fff !important; font-weight:900 !important; }
@@ -278,10 +278,10 @@ font-family: Cairo !important; font-weight:900 !important;
   #tableContainer table.reports-data-table tbody > tr.report-grand-total-row > td { background:#0437bb !important; background-color:#0437bb !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
   #tableContainer table.reports-data-table tbody > tr.total-row > td *,
   #tableContainer table.reports-data-table tbody > tr.report-grand-total-row > td * { background:transparent !important; color:#fff !important; }
-#tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-exam-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#D8F3DC !important; background-color:#D8F3DC !important; color:#1B4332 !important; border-color:#000 !important;
+#tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-exam-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#D8F3DC !important; background-color:#D8F3DC !important; color:#000000 !important; border-color:#000 !important;
 font-size: 13px !important; white-space:nowrap !important;
   font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-  #tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-tuition-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#E8DFF5 !important; background-color:#E8DFF5 !important; color:#3D315B !important; border-color:#000 !important; font-size:13px !important; white-space:nowrap !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  #tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-tuition-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#E8DFF5 !important; background-color:#E8DFF5 !important; color:#000000 !important; border-color:#000 !important; font-size:13px !important; white-space:nowrap !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-trainee-payment-table tbody > tr.reports-trainee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#2C666E !important; background-color:#2C666E !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
   #tableContainer table.reports-trainee-payment-table tbody > tr.total-row > td,
   #tableContainer table.reports-trainee-payment-table tbody > tr.report-grand-total-row > td { background:#0437bb !important; background-color:#0437bb !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
@@ -1725,14 +1725,14 @@ export default function ReportsTab() {
                       : isTraineeDetail
                         ? {
                             backgroundColor: "#ffffff",
-                            color: "#17324D",
+                            color: "#000000",
                             WebkitPrintColorAdjust: "exact" as const,
                             printColorAdjust: "exact" as const,
                           }
                         : isTraineeSummary
                           ? {
                               backgroundColor: "#FFF1D6",
-                              color: "#68420A",
+                              color: "#000000",
                               WebkitPrintColorAdjust: "exact" as const,
                               printColorAdjust: "exact" as const,
                             }
@@ -1748,24 +1748,24 @@ color: "#ffffff",
  let rowStyle = "";
  if (isOpening) rowStyle = "reports-opening-row bg-[#FBFEFF] font-bold text-black";
 else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
-                    else if (isTraineeDetail) rowStyle = "reports-detail-row bg-white font-bold text-[#17324D]";
+                    else if (isTraineeDetail) rowStyle = "reports-detail-row bg-white font-bold text-black";
                     else if (row.summaryLevel === "trainee-name-total") rowStyle = "reports-trainee-total-row bg-[#2C666E] font-bold text-white";
                     else if (row.summaryLevel === "fee") {
                       if (row.category === "رسوم الامتحانات") {
-                        rowStyle = "reports-fee-row reports-exam-fee-total-row bg-[#D8F3DC] font-bold text-[#1B4332]";
+                        rowStyle = "reports-fee-row reports-exam-fee-total-row bg-[#D8F3DC] font-bold text-black";
                       } else if (row.category === "أقساط الدراسة والتسجيل") {
-                        rowStyle = "reports-fee-row reports-tuition-fee-total-row bg-[#E8DFF5] font-bold text-[#3D315B]";
+                        rowStyle = "reports-fee-row reports-tuition-fee-total-row bg-[#E8DFF5] font-bold text-black";
                       } else {
-                        rowStyle = "reports-fee-row bg-[#F1BF98] font-bold text-[#38291F]";
+                        rowStyle = "reports-fee-row bg-[#F1BF98] font-bold text-black";
                       }
                     }
                     else if (isTraineeFeeTotal) {
                       rowStyle = row.category === "رسوم الامتحانات"
-                        ? "reports-fee-row reports-exam-fee-total-row bg-[#D8F3DC] font-bold text-[#1B4332]"
-                        : "reports-fee-row reports-tuition-fee-total-row bg-[#E8DFF5] font-bold text-[#3D315B]";
+                        ? "reports-fee-row reports-exam-fee-total-row bg-[#D8F3DC] font-bold text-black"
+                        : "reports-fee-row reports-tuition-fee-total-row bg-[#E8DFF5] font-bold text-black";
                     }
                     else if (row.summaryLevel === "period") rowStyle = "reports-period-row bg-[#5B5750] font-bold text-white";
-                    else if (isTraineeSummary) rowStyle = "reports-trainee-summary-row bg-[#FFF1D6] font-bold text-[#68420A]";
+                    else if (isTraineeSummary) rowStyle = "reports-trainee-summary-row bg-[#FFF1D6] font-bold text-black";
                     else rowStyle = "bg-white text-slate-900";
 
                     // قسم التوقيعات المدمج أسفل تقارير العهد (في سطر أفقي واحد مدمج)

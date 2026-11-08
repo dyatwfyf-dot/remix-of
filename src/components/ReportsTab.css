@@ -161,7 +161,7 @@
   border: 1px solid #000000 !important;
   border-bottom: 1px solid #000000 !important;
   background: #fff !important;
-  color: #243b50 !important;
+  color: #000000 !important;
   font-size: 12px;
   font-weight: 650;
   line-height: 1.55;
@@ -185,7 +185,7 @@
   z-index: 1;
   min-width: 46px;
   background: #f2f6f8 !important;
-  color: #526a7e !important;
+  color: #000000 !important;
   font-weight: 900;
   box-shadow: -3px 0 6px rgba(15, 41, 63, 0.06);
 }
@@ -360,7 +360,7 @@
 /* Distinct pastel colors for trainee exam-fee and tuition-fee totals; period totals stay unchanged. */
 .reports-table-scroll .reports-trainee-payment-table tbody tr.reports-fee-row.reports-exam-fee-total-row > td {
   background: #D8F3DC !important;
-  color: #1B4332 !important;
+  color: #000000 !important;
   border-color: #000000 !important;
   font-size: 13px !important;
   white-space: nowrap !important;
@@ -370,7 +370,7 @@
 }
 .reports-table-scroll .reports-trainee-payment-table tbody tr.reports-fee-row.reports-tuition-fee-total-row > td {
   background: #E8DFF5 !important;
-  color: #3D315B !important;
+  color: #000000 !important;
   border-color: #000000 !important;
   font-size: 13px !important;
   white-space: nowrap !important;
