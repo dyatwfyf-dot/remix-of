@@ -2202,7 +2202,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         const amount = Number(row?.payments?.[m]) || 0;
         if (amount <= 0) return "";
         return `
-          <tr class="row-paid">
+          <tr class="${year === 2026 ? "installments-statement-row " : ""}row-paid">
             <td class="lbl">قسط شهر ${escapeHtml(m)}</td>
             <td class="num">${escapeHtml(fmt(amount))}</td>
           </tr>`;
@@ -2218,7 +2218,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
 
     const prevRow =
       year === 2026
-        ? `<tr class="row-due-old">
+        ? `<tr class="${year === 2026 ? "installments-statement-row " : ""}row-due-old">
             <td class="lbl">متبقي من العام 2025 (مدور)</td>
             <td class="num">${escapeHtml(fmt(prevDue))}</td>
           </tr>`
@@ -2424,12 +2424,12 @@ td.t-fees { background: ${colorTokens.fees} !important; }
                 </tr>
               </thead>
               <tbody>
-                <tr class="row-fees"><td class="lbl">إجمالي الرسوم المستحقة</td><td class="num">${escapeHtml(fmt(fees))}</td></tr>
+                <tr class="${year === 2026 ? "installments-statement-row " : ""}row-fees"><td class="lbl">إجمالي الرسوم المستحقة</td><td class="num">${escapeHtml(fmt(fees))}</td></tr>
                 ${prevRow}
-                <tr class="row-total-due"><td class="lbl">إجمالي المبلغ المطلوب</td><td class="num">${escapeHtml(fmt(dueTotal))}</td></tr>
+                <tr class="${year === 2026 ? "installments-statement-row " : ""}row-total-due"><td class="lbl">إجمالي المبلغ المطلوب</td><td class="num">${escapeHtml(fmt(dueTotal))}</td></tr>
                 ${monthlyRows}
-                <tr class="row-total-paid"><td class="lbl">إجمالي المسدد (له)</td><td class="num">${escapeHtml(fmt(totalPaid))}</td></tr>
-                <tr class="row-final"><td class="lbl">${escapeHtml(remainingLabel)}</td><td class="num">${escapeHtml(fmt(Math.abs(remaining)))}</td></tr>
+                <tr class="${year === 2026 ? "installments-statement-row " : ""}row-total-paid"><td class="lbl">إجمالي المسدد (له)</td><td class="num">${escapeHtml(fmt(totalPaid))}</td></tr>
+                <tr class="${year === 2026 ? "installments-statement-row " : ""}row-final"><td class="lbl">${escapeHtml(remainingLabel)}</td><td class="num">${escapeHtml(fmt(Math.abs(remaining)))}</td></tr>
               </tbody>
             </table>
           </div>
@@ -2560,18 +2560,18 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     const totalPaid = payments.reduce((sum: number, payment: any) => sum + payment.amount, 0);
     const safeName = safePdfFileName(traineeName);
     const detailRows = payments.map((payment: any) =>
-      '<tr class="row-paid' + (payment.year === 2026 ? ' row-paid-2026' : '') + '"><td>' + payment.year + '</td><td class="num">' + formatDate(payment.date) +
+      '<tr class="row-paid' + (payment.year === 2026 ? ' installments-statement-row row-paid-2026' : '') + '"><td>' + payment.year + '</td><td class="num">' + formatDate(payment.date) +
       '</td><td>' + escapeHtml(payment.hafizaNo || "—") + '</td><td>' +
       escapeHtml(payment.notifyNo || "—") + '</td><td class="lbl">' +
       escapeHtml(payment.description) + '</td><td class="num">' +
       escapeHtml(fmt(payment.amount)) + '</td></tr>'
     ).join("");
     const monthlyRows = Array.from(monthlyTotals.values()).map((item) =>
-      '<tr class="row-period' + (item.label.endsWith("2026") ? ' row-period-2026' : '') + '"><td colspan="5">إجمالي ' + escapeHtml(item.label) +
+      '<tr class="row-period' + (item.label.endsWith("2026") ? ' installments-statement-row row-period-2026' : '') + '"><td colspan="5">إجمالي ' + escapeHtml(item.label) +
       '</td><td class="num">' + escapeHtml(fmt(item.amount)) + '</td></tr>'
     ).join("");
     const yearlyRows = Array.from(yearlyTotals.entries()).sort((a, b) => a[0] - b[0]).map(([year, amount]) =>
-      '<tr class="row-year' + (year === 2026 ? ' row-year-2026' : '') + '"><td colspan="5">إجمالي رسوم الامتحانات لعام ' + year +
+      '<tr class="row-year' + (year === 2026 ? ' installments-statement-row row-year-2026' : '') + '"><td colspan="5">إجمالي رسوم الامتحانات لعام ' + year +
       '</td><td class="num">' + escapeHtml(fmt(amount)) + '</td></tr>'
     ).join("");
 
@@ -2610,7 +2610,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       infoCard("الفترة", "من عام 2022 وحتى آخر توريد مسجل"),
       '</div><table><thead><tr><th>السنة</th><th>تاريخ التوريد</th><th>رقم الحافظة</th><th>رقم الإشعار</th><th>البيان الأصلي</th><th>مبلغ التوريد</th></tr></thead><tbody>',
       detailRows, monthlyRows, yearlyRows,
-      '<tr class="row-final"><td colspan="5">إجمالي المسدد لرسوم الامتحانات</td><td class="num">' +
+      '<tr class="installments-statement-row row-final"><td colspan="5">إجمالي المسدد لرسوم الامتحانات</td><td class="num">' +
       escapeHtml(fmt(totalPaid)) + '</td></tr></tbody></table>',
       '<div class="foot"><span>تاريخ التقرير: ' + escapeHtml(reportDateLabel) +
       '</span><span>التوقيع: ________________</span></div></div></div>',
