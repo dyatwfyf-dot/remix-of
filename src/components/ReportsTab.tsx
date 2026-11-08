@@ -66,6 +66,29 @@ export interface ReportRow {
  [key: string]: any;
 }
 
+const getReportRowKey = (row: ReportRow, source: ReportSource): string => {
+if (row.id !== undefined && row.id !== null && String(row.id).trim()) {
+return `${source}|id|${String(row.id)}`;
+}
+const identity = [
+row.summaryLevel,
+row.trainee ?? row.name,
+row.batch,
+row.year,
+row.period,
+row.category,
+row.notifyDate ?? row.date,
+row.notifyNo,
+row.hafizaNo,
+row.description ?? row.item,
+row.source,
+row.displayType,
+]
+.map((value) => String(value ?? "").trim())
+.join("\u001f");
+return `${source}|row|${identity}`;
+};
+
 interface SignaturesMeta {
  sig1Dept: string;
  sig1Name: string;
@@ -485,7 +508,7 @@ export default function ReportsTab() {
  const [sortDirection, setSortDirection] = useState < "asc" | "desc" > ("asc");
  const [traineeSortColumn, setTraineeSortColumn] = useState < string > ("notifyDate");
  const [traineeSortDirection, setTraineeSortDirection] = useState < "asc" | "desc" > ("asc");
- const [deletedRows, setDeletedRows] = useState < Set < ReportRow >> (new Set());
+ const [deletedRows, setDeletedRows] = useState<Set<string>>(new Set());
  
  const [youssefOpeningBalance, setYoussefOpeningBalance] = useState < number > (() => {
   try {
@@ -830,6 +853,7 @@ export default function ReportsTab() {
    const p = traineeGrouping === "year" ? String(date.getFullYear()) : `${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
    return [
    {
+    id: `trainee-payment-${row.id}`,
     notifyDate: row.notifyDate,
     hafizaNo: row.hafizaNo || "",
     notifyNo: row.notifyNo || "",
@@ -865,7 +889,8 @@ export default function ReportsTab() {
      if (current) {
       current.amount = amountValue(current.amount) + amountValue(row.amount);
      } else {
-       grouped.set(key, {
+      grouped.set(key, {
+       id: `trainee-period-${category}-${row.year}-${row.period}`,
        year: row.year,
        period: row.period,
         trainee: row.trainee,
@@ -883,6 +908,7 @@ export default function ReportsTab() {
     result.push(...Array.from(grouped.values()));
    }
    result.push({
+    id: `trainee-fee-category-${category}`,
     period: `إجمالي ${category}`,
    trainee: selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee,
     batch: selectedBatch.trim() || "—",
@@ -908,7 +934,8 @@ export default function ReportsTab() {
     return;
    }
    const isExamFee = row.category === "رسوم الامتحانات";
-  traineeFeeTotals.set(key, {
+   traineeFeeTotals.set(key, {
+    id: `trainee-fee-total-${key}`,
     year: row.year,
     period: row.period,
     notifyDate: row.period,
@@ -943,6 +970,7 @@ export default function ReportsTab() {
      return cmp !== 0 ? cmp : a.year - b.year;
     })
     .map(({ trainee, year, amount }) => ({
+     id: `trainee-name-total-${trainee}-${year}`,
      year,
      trainee,
      batch: selectedBatch.trim() || "—",
@@ -1176,7 +1204,7 @@ export default function ReportsTab() {
  const processedRows = useMemo < ReportRow[] > (() => {
   const activeSortCol = source === "trainee" ? traineeSortColumn : sortColumn;
   const activeSortDir = source === "trainee" ? traineeSortDirection : sortDirection;
-  const filtered = reportRows.filter((row) => !deletedRows.has(row));
+  const filtered = reportRows.filter((row) => !deletedRows.has(getReportRowKey(row, source)));
   
   const isCustodySource = source === "youssefLoan" || source === "tawfiqCustody";
   const orderedRows = isCustodySource ?
@@ -1317,7 +1345,7 @@ export default function ReportsTab() {
  const amountColumnIndex = sourceConfig.columns.findIndex((col) => col.key === "amount");
  
  const deleteRow = (row: ReportRow) => {
-  setDeletedRows((prev) => new Set([...prev, row]));
+  setDeletedRows((prev) => new Set([...prev, getReportRowKey(row, source)]));
  };
  const openReportsPrintSettings = () => {
   if (!displayRows.length) {
