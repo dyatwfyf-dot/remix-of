@@ -167,20 +167,37 @@ export default function TabActions({
     
     try {
       const headers = ["م", ...columns.map((c) => c.label)];
-      const dataRows = excelRows.map((r, i) => [
-        i + 1,
-        ...columns.map((c) => {
-          const v = r[c.key];
-          return numericKeys.includes(c.key) || typeof v === "number" ? Number(v) || 0 : v ?? "";
-        }),
-      ]);
-      const totalRow = [
-        "الإجمالي",
-        ...columns.map((c) =>
-          numericKeys.includes(c.key) ?
-          excelRows.reduce((sum, r) => sum + (Number(r[c.key]) || 0), 0) :
-          "",
-        ),
+    const dataRows = excelRows.map((r, i) => [
+      i + 1,
+      ...columns.map((c) => {
+        const v = r[c.key];
+        return numericKeys.includes(c.key) || typeof v === "number" ? Number(v) || 0 : v ?? "";
+      }),
+    ]);
+    const detailRows = excelRows.filter((r) => r?.summaryLevel === "detail");
+    const feeRows = excelRows.filter((r) => r?.summaryLevel === "fee");
+    const periodRows = excelRows.filter((r) => r?.summaryLevel === "period");
+    const totalRows = detailRows.length
+      ? detailRows
+      : feeRows.length
+        ? feeRows
+        : periodRows.length
+          ? periodRows
+          : excelRows.filter((r) =>
+              r?.summaryLevel !== "total" &&
+              r?.summaryLevel !== "opening" &&
+              r?.summaryLevel !== "signature" &&
+              r?.summaryLevel !== "trainee-fee-total" &&
+              r?.summaryLevel !== "trainee-name-total" &&
+              r?.total !== "نعم"
+            );
+    const totalRow = [
+      "الإجمالي",
+      ...columns.map((c) =>
+      numericKeys.includes(c.key) ?
+      totalRows.reduce((sum, r) => sum + (Number(r[c.key]) || 0), 0) :
+      "",
+      ),
       ];
       
       const workbook = await createExcelWorkbook();

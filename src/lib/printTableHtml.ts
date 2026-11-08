@@ -568,6 +568,11 @@ export function buildTableHtml(opts: {
     const level = row?.summaryLevel;
     // إجمالي المتدرب السنوي له لون مميز خاص، ولا ينبغي أن تطغى عليه ألوان الملاحظات.
     if (level === "trainee-name-total") return "report-trainee-name-total-row";
+    if (level === "trainee-fee-total") {
+      return row?.category === "رسوم الامتحانات"
+        ? "reports-fee-row reports-exam-fee-total-row"
+        : "reports-fee-row reports-tuition-fee-total-row";
+    }
     const noteClass = noteRowClass(row?.notes);
     if (noteClass) return noteClass;
 

@@ -61,7 +61,7 @@ export interface ReportRow {
  notes ? : string;
  settlementNo ? : string;
  item ? : string;
- summaryLevel ? : "opening" | "total" | "fee" | "trainee-name-total" | "period" | "signature" | "detail";
+ summaryLevel ? : "opening" | "total" | "fee" | "trainee-fee-total" | "trainee-name-total" | "period" | "signature" | "detail";
  total ? : string;
  [key: string]: any;
 }
@@ -895,7 +895,36 @@ export default function ReportsTab() {
     summaryLevel: "fee",
    });
   });
-  
+
+  // إجماليات مستقلة لرسوم الامتحانات والرسوم الدراسية لكل متدرب
+  // ضمن فترة التجميع المختارة، وتظهر حتى في وضع التفاصيل فقط.
+  const traineeFeeTotals = new Map<string, ReportRow>();
+  payments.forEach((row) => {
+   if (row.category !== "رسوم الامتحانات" && row.category !== "أقساط الدراسة والتسجيل") return;
+   const key = `${row.trainee}|${row.batch}|${row.year}|${row.period}|${row.category}`;
+   const existing = traineeFeeTotals.get(key);
+   if (existing) {
+    existing.amount = amountValue(existing.amount) + amountValue(row.amount);
+    return;
+   }
+   const isExamFee = row.category === "رسوم الامتحانات";
+  traineeFeeTotals.set(key, {
+    year: row.year,
+    period: row.period,
+    notifyDate: row.period,
+    trainee: row.trainee,
+    batch: row.batch,
+    category: row.category,
+    description: isExamFee ? "إجمالي رسوم الامتحانات" : "إجمالي الرسوم الدراسية",
+    source: "حوافظ التوريد",
+    amount: amountValue(row.amount),
+    displayType: isExamFee ? "إجمالي رسوم الامتحانات" : "إجمالي الرسوم الدراسية",
+    notes: isExamFee ? "إجمالي رسوم الامتحانات" : "إجمالي الرسوم الدراسية",
+    summaryLevel: "trainee-fee-total",
+   });
+  });
+  result.push(...Array.from(traineeFeeTotals.values()));
+
   if (traineeDisplayMode === "summary" || traineeDisplayMode === "both") {
    const nameYearMap = new Map < string,
     { trainee: string;year: number;amount: number } > ();
@@ -1041,11 +1070,11 @@ export default function ReportsTab() {
   }
   if (source === "trainee") {
    return {
-    title: "كشف مدفوعات المتدربين من حوافظ التوريد",
-    columns: [
-     { key: "year", label: "السنة" },
-     { key: "notifyDate", label: "تاريخ التوريد" },
-     { key: "trainee", label: "اسم المتدرب" },
+   title: "كشف مدفوعات المتدربين من حوافظ التوريد",
+   columns: [
+    { key: "year", label: "السنة" },
+    { key: "notifyDate", label: "تاريخ التوريد / الفترة" },
+    { key: "trainee", label: "اسم المتدرب" },
      { key: "batch", label: "رقم الدفعة" },
      { key: "hafizaNo", label: "رقم الحافظة" },
      { key: "notifyNo", label: "رقم الإشعار" },
@@ -1152,16 +1181,24 @@ export default function ReportsTab() {
   const isCustodySource = source === "youssefLoan" || source === "tawfiqCustody";
   const orderedRows = isCustodySource ?
    filtered : [...filtered].sort((a, b) => {
-    // إبقاء صف إجمالي الرسوم في نهاية كشف مدفوعات المتدربين مهما كان اتجاه الفرز.
+    // إبقاء صفوف الإجماليات بعد التفاصيل مهما كان عمود الفرز أو اتجاهه.
     if (source === "trainee") {
-     const aIsGrandTotal = a.summaryLevel === "total" || a.total === "نعم";
-     const bIsGrandTotal = b.summaryLevel === "total" || b.total === "نعم";
-     if (aIsGrandTotal !== bIsGrandTotal) return aIsGrandTotal ? 1 : -1;
+     const sortRank = (row: ReportRow) => {
+      if (row.summaryLevel === "period") return 1;
+      if (row.summaryLevel === "fee") return 2;
+      if (row.summaryLevel === "trainee-fee-total") return 3;
+      if (row.summaryLevel === "trainee-name-total") return 4;
+      if (row.summaryLevel === "total" || row.total === "نعم") return 5;
+      return 0;
+     };
+     const rankDiff = sortRank(a) - sortRank(b);
+     if (rankDiff !== 0) return rankDiff;
     }
     const aVal = a[activeSortCol];
     const bVal = b[activeSortCol];
-    if (aVal === undefined || aVal === null) return 1;
-    if (bVal === undefined || bVal === null) return -1;
+    const aMissing = aVal === undefined || aVal === null;
+    const bMissing = bVal === undefined || bVal === null;
+    if (aMissing || bMissing) return aMissing === bMissing ? 0 : aMissing ? 1 : -1;
     const numA = Number(aVal);
     const numB = Number(bVal);
     if (!isNaN(numA) && !isNaN(numB)) {
@@ -1211,6 +1248,15 @@ export default function ReportsTab() {
     } else if (row.summaryLevel === "trainee-name-total") {
      matchingDetails = detailRows.filter(
       (item) => item.trainee === row.trainee && Number(item.year) === Number(row.year)
+     );
+    } else if (row.summaryLevel === "trainee-fee-total") {
+     matchingDetails = detailRows.filter(
+      (item) =>
+       item.trainee === row.trainee &&
+       item.batch === row.batch &&
+       item.category === row.category &&
+       Number(item.year) === Number(row.year) &&
+       item.period === row.period
      );
     }
     if (matchingDetails) {
@@ -1615,7 +1661,8 @@ export default function ReportsTab() {
                     const isSignature = row.summaryLevel === "signature";
                     const isTraineeDetail = source === "trainee" && row.displayType === "تفصيلي";
                     const isTraineeAnnualTotal = source === "trainee" && row.summaryLevel === "trainee-name-total";
-                    const isTraineeSummary = source === "trainee" && Boolean(row.displayType) && row.displayType !== "تفصيلي" && !isTraineeAnnualTotal && row.summaryLevel !== "fee" && row.summaryLevel !== "period";
+                    const isTraineeFeeTotal = source === "trainee" && row.summaryLevel === "trainee-fee-total";
+                    const isTraineeSummary = source === "trainee" && Boolean(row.displayType) && row.displayType !== "تفصيلي" && !isTraineeAnnualTotal && !isTraineeFeeTotal && row.summaryLevel !== "fee" && row.summaryLevel !== "period";
                     const isTraineeTypedRow = isTraineeDetail || isTraineeSummary || isTraineeAnnualTotal;
                     const traineeRowCellStyle = isTraineeAnnualTotal
                       ? {
@@ -1660,6 +1707,11 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                       } else {
                         rowStyle = "reports-fee-row bg-[#F1BF98] font-bold text-[#38291F]";
                       }
+                    }
+                    else if (isTraineeFeeTotal) {
+                      rowStyle = row.category === "رسوم الامتحانات"
+                        ? "reports-fee-row reports-exam-fee-total-row bg-[#D8F3DC] font-bold text-[#1B4332]"
+                        : "reports-fee-row reports-tuition-fee-total-row bg-[#E8DFF5] font-bold text-[#3D315B]";
                     }
                     else if (row.summaryLevel === "period") rowStyle = "reports-period-row bg-[#5B5750] font-bold text-white";
                     else if (isTraineeSummary) rowStyle = "reports-trainee-summary-row bg-[#FFF1D6] font-bold text-[#68420A]";
