@@ -6,6 +6,7 @@ import React, { useDeferredValue, useMemo,
   useState } from "react";
 import { useStore,
   type InstallmentCustomColumn } from "@/lib/store";
+import { isRegistrationFeeDescription } from "@/lib/feeClassification";
 import { fmt } from "@/lib/format";
 import { importInstallmentsInWorker } from "@/lib/excelImportWorkerClient";
 import { toast } from "sonner";
@@ -2518,7 +2519,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       installmentNameParts.every((part, index) => part === hafizaNameParts[index]);
   };
 
-  // كشف مستقل لسداد رسوم الامتحانات من حوافظ التوريد مع مطابقة مرنة للأسماء.
+  // كشف لسداد رسوم الامتحانات والقيد والتسجيل من حوافظ التوريد.
   const printExamFeesStatement = (row: any) => {
     const traineeName = String(row?.name || "").trim();
     if (!traineeName) return toast.error("اسم المتدرب غير محدد");
@@ -2529,49 +2530,61 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       const amount = cleanNumber(item?.notifyAmount);
       const description = String(item?.description || "")
         .trim().replace(/[ًٌٍَُِّْـ]/g, "").replace(/[إأآ]/g, "ا").replace(/\s+/g, " ");
+      const isExamFee = /(امتحان|اختبار)/.test(description);
+      const isRegistrationFee = isRegistrationFeeDescription(item?.description);
       if (!traineeNamesMatch(traineeName, name) || !date || Number.isNaN(date.getTime()) ||
-          date.getFullYear() < 2022 || amount <= 0 || !/(امتحان|اختبار)/.test(description)) return [];
+          date.getFullYear() < 2022 || amount <= 0 || (!isExamFee && !isRegistrationFee)) return [];
       return [{
         date, year: date.getFullYear(), month: date.getMonth(),
+        category: isExamFee ? "رسوم الامتحانات" : "رسوم القيد والتسجيل",
         hafizaNo: String(item.hafizaNo || ""), notifyNo: String(item.notifyNo || ""),
         description: String(item.description || "رسوم امتحانات").trim(), amount,
       }];
     }).sort((a: any, b: any) => a.date.getTime() - b.date.getTime());
 
     if (!payments.length) {
-      toast.error("لا توجد حوافظ توريد لرسوم امتحانات هذا المتدرب منذ عام 2022");
+      toast.error("لا توجد حوافظ توريد لرسوم الامتحانات أو القيد والتسجيل لهذا المتدرب منذ عام 2022");
       return;
     }
 
     const formatDate = (date: Date) =>
       String(date.getDate()).padStart(2, "0") + "/" +
       String(date.getMonth() + 1).padStart(2, "0") + "/" + date.getFullYear();
-    const monthlyTotals = new Map<string, { label: string; amount: number }>();
-    const yearlyTotals = new Map<number, number>();
+    const monthlyTotals = new Map<string, { category: string; label: string; amount: number }>();
+    const yearlyTotals = new Map<string, { category: string; year: number; amount: number }>();
+    const categoryTotals = new Map<string, number>();
     payments.forEach((payment: any) => {
-      const key = payment.year + "-" + payment.month;
+      const key = payment.category + "|" + payment.year + "-" + payment.month;
       const monthName = payment.date.toLocaleDateString("ar", { month: "long" });
       const current = monthlyTotals.get(key);
       if (current) current.amount += payment.amount;
-      else monthlyTotals.set(key, { label: monthName + " " + payment.year, amount: payment.amount });
-      yearlyTotals.set(payment.year, (yearlyTotals.get(payment.year) || 0) + payment.amount);
+      else monthlyTotals.set(key, { category: payment.category, label: monthName + " " + payment.year, amount: payment.amount });
+      const yearKey = payment.category + "|" + payment.year;
+      const yearly = yearlyTotals.get(yearKey);
+      if (yearly) yearly.amount += payment.amount;
+      else yearlyTotals.set(yearKey, { category: payment.category, year: payment.year, amount: payment.amount });
+      categoryTotals.set(payment.category, (categoryTotals.get(payment.category) || 0) + payment.amount);
     });
 
     const totalPaid = payments.reduce((sum: number, payment: any) => sum + payment.amount, 0);
     const safeName = safePdfFileName(traineeName);
     const detailRows = payments.map((payment: any) =>
-      '<tr class="row-paid' + (payment.year === 2026 ? ' installments-statement-row row-paid-2026' : '') + '"><td>' + payment.year + '</td><td class="num">' + formatDate(payment.date) +
+      '<tr class="row-paid' + (payment.category === "رسوم القيد والتسجيل" ? ' row-registration' : '') + (payment.year === 2026 ? ' installments-statement-row row-paid-2026' : '') + '"><td>' + payment.year + '</td><td class="num">' + formatDate(payment.date) +
       '</td><td>' + escapeHtml(payment.hafizaNo || "—") + '</td><td>' +
       escapeHtml(payment.notifyNo || "—") + '</td><td class="lbl">' +
       escapeHtml(payment.description) + '</td><td class="num">' +
       escapeHtml(fmt(payment.amount)) + '</td></tr>'
     ).join("");
     const monthlyRows = Array.from(monthlyTotals.values()).map((item) =>
-      '<tr class="row-period' + (item.label.endsWith("2026") ? ' installments-statement-row row-period-2026' : '') + '"><td colspan="5">إجمالي ' + escapeHtml(item.label) +
+      '<tr class="row-period' + (item.label.endsWith("2026") ? ' installments-statement-row row-period-2026' : '') + '"><td colspan="5">إجمالي ' + escapeHtml(item.category) + ' لشهر ' + escapeHtml(item.label) +
       '</td><td class="num">' + escapeHtml(fmt(item.amount)) + '</td></tr>'
     ).join("");
-    const yearlyRows = Array.from(yearlyTotals.entries()).sort((a, b) => a[0] - b[0]).map(([year, amount]) =>
-      '<tr class="row-year' + (year === 2026 ? ' installments-statement-row row-year-2026' : '') + '"><td colspan="5">إجمالي رسوم الامتحانات لعام ' + year +
+    const yearlyRows = Array.from(yearlyTotals.values()).sort((a, b) => a.year - b.year || a.category.localeCompare(b.category, "ar")).map((item) =>
+      '<tr class="row-year' + (item.year === 2026 ? ' installments-statement-row row-year-2026' : '') + '"><td colspan="5">إجمالي ' + escapeHtml(item.category) + ' لعام ' + item.year +
+      '</td><td class="num">' + escapeHtml(fmt(item.amount)) + '</td></tr>'
+    ).join("");
+    const categoryRows = Array.from(categoryTotals.entries()).map(([category, amount]) =>
+      '<tr class="row-category-total"><td colspan="5">الإجمالي الكلي لـ ' + escapeHtml(category) +
       '</td><td class="num">' + escapeHtml(fmt(amount)) + '</td></tr>'
     ).join("");
 
@@ -2585,13 +2598,13 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       '.info-box { border: 1px solid #000; background: #CDD5AE; padding: 2mm 1.5mm; min-height: 12mm; text-align: center; }',
       '.info-lbl { font-size: 16px; font-weight: 700; color: #0f766e; margin-bottom: 2px; }',
       '.info-val { font-size: 18px; font-weight: 900; color: #000; }',
-      'table { width: 100%; table-layout: auto; border-collapse: collapse; margin-top: 4px; }',
-      'th, td { border: 1.5px solid #0f766e; text-align: center; vertical-align: middle; padding: 7px 6px; font-size: 14px; }',
+      '.statement-table { width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 4px; }',
+      '.statement-table th, .statement-table td { border: 1.5px solid #0f766e; text-align: center; vertical-align: middle; padding: 2px; font-size: 12px; white-space: nowrap; }',
       'th { background: #0f766e !important; color: #fff !important; font-weight: 900; }',
       'td { color: #000 !important; font-weight: 800; }',
       '.lbl { font-weight: 900; } .num { direction: ltr; white-space: nowrap; font-variant-numeric: tabular-nums; }',
       '.row-paid td { background: #f0fdf4 !important; } .row-period td { background: #e0f2fe !important; font-weight: 900; }',
-      '.row-year td { background: #dbeafe !important; font-weight: 900; }',
+      '.row-year td { background: #dbeafe !important; font-weight: 900; } .row-registration td { background: #DDEBFF !important; } .row-category-total td { background: #e0f2fe !important; font-weight: 900; }',
       '.row-paid-2026 td { background: #dcfce7 !important; color: #14532d !important; font-weight: 900; }',
       '.row-period-2026 td { background: #bfdbfe !important; color: #1e3a8a !important; font-weight: 900; }',
       '.row-year-2026 td { background: #1d4ed8 !important; color: #ffffff !important; font-weight: 900; }',
@@ -2603,19 +2616,19 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       '</div><div class="info-val">' + escapeHtml(value || "—") + '</div></div>';
     const body = [
       '<div class="container"><div class="page-frame">',
-      '<h2 class="statement-title">كشف سداد رسوم الامتحانات</h2><div class="info-grid">',
+      '<h2 class="statement-title">كشف سداد رسوم الامتحانات والقيد والتسجيل</h2><div class="info-grid">',
       infoCard("اسم المتدرب", traineeName),
       infoCard("الدفعة", String(row.batch || "—")),
       infoCard("المساق", String(row.specialty || "—")),
       infoCard("الفترة", "من عام 2022 وحتى آخر توريد مسجل"),
-      '</div><table><thead><tr><th>السنة</th><th>تاريخ التوريد</th><th>رقم الحافظة</th><th>رقم الإشعار</th><th>البيان الأصلي</th><th>مبلغ التوريد</th></tr></thead><tbody>',
-      detailRows, monthlyRows, yearlyRows,
-      '<tr class="installments-statement-row row-final"><td colspan="5">إجمالي المسدد لرسوم الامتحانات</td><td class="num">' +
+      '</div><table class="statement-table"><colgroup><col style="width:6%"><col style="width:12%"><col style="width:10%"><col style="width:10%"><col style="width:48%"><col style="width:14%"></colgroup><thead><tr><th>السنة</th><th>تاريخ التوريد</th><th>رقم الحافظة</th><th>رقم الإشعار</th><th>البيان الأصلي</th><th>مبلغ التوريد</th></tr></thead><tbody>',
+      detailRows, monthlyRows, yearlyRows, categoryRows,
+      '<tr class="installments-statement-row row-final"><td colspan="5">الإجمالي الكلي لرسوم الامتحانات والقيد والتسجيل</td><td class="num">' +
       escapeHtml(fmt(totalPaid)) + '</td></tr></tbody></table>',
       '<div class="foot"><span>تاريخ التقرير: ' + escapeHtml(reportDateLabel) +
       '</span><span>التوقيع: ________________</span></div></div></div>',
     ].join("");
-    const title = "كشف_سداد_رسوم_الامتحانات_" + safeName + "_من_2022_" + reportDate;
+    const title = "كشف_سداد_رسوم_الامتحانات_والقيد_والتسجيل_" + safeName + "_من_2022_" + reportDate;
     const opened = openBrowserPrintPreview({
       title, reportDateLabel, tableHtml: body, contentCss: statementCss,
       defaultOrientation: "landscape", defaultPageSize: "A4",
@@ -3496,7 +3509,7 @@ className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transit
                             <button
                               onClick={() => printExamFeesStatement(r)}
                               className="p-1 bg-violet-50 text-violet-700 rounded border border-violet-200 hover:bg-violet-600 hover:text-white transition-colors"
-                              title="معاينة كشف سداد رسوم الامتحانات"
+                              title="معاينة كشف سداد رسوم الامتحانات والقيد والتسجيل"
                             >
                               <FileSpreadsheet className={ICON_MOBILE} />
                             </button>
