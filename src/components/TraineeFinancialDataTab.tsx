@@ -10,10 +10,12 @@ import {
   Trash2,
   Upload,
   X,
+  WalletCards,
 } from "lucide-react";
 import { toast } from "sonner";
 import database from "@/data/traineeFinancialDatabase.json";
 import { useStore, type TraineeFinancialRecord } from "@/lib/store";
+import { isRegistrationFeeDescription } from "@/lib/feeClassification";
 
 const HEADERS = database.headers as string[];
 const SHEET_NAME = database.sheetName;
@@ -36,15 +38,85 @@ const formatValue = (value: unknown, header: string) =>
   CURRENCY_COLUMNS.has(header) && typeof value === "number"
     ? value.toLocaleString("en-US")
     : String(value ?? "");
+const parseAmount = (value: unknown) => Number(String(value ?? 0).replace(/[,٬\s]/g, "")) || 0;
+const normalizeDescription = (value: unknown) =>
+  String(value ?? "")
+    .replace(/[ًٌٍَُِّْـ]/g, "")
+    .replace(/[إأآ]/g, "ا")
+    .replace(/\s+/g, " ");
 
 export default function TraineeFinancialDataTab() {
   const records = useStore((state) => state.traineeFinancialRecords);
   const setRecords = useStore((state) => state.setTraineeFinancialRecords);
+  const customColumns = useStore((state) => state.traineeFinancialCustomColumns);
+  const setCustomColumns = useStore((state) => state.setTraineeFinancialCustomColumns);
+  const hafiza = useStore((state) => state.hafiza);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const columns = useMemo(() => [...HEADERS, ...customColumns], [customColumns]);
   const [query, setQuery] = useState("");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [draft, setDraft] = useState<TraineeFinancialRecord>({});
   const [sort, setSort] = useState<{ key: string; desc: boolean } | null>(null);
+  const [cardTrainee, setCardTrainee] = useState<string | null>(null);
+
+  const addColumn = () => {
+    const name = normalize(window.prompt("اكتب اسم العمود الجديد:") || "");
+    if (!name) return;
+    if (columns.some((column) => normalize(column) === name)) {
+      toast.error("يوجد عمود بهذا الاسم بالفعل");
+      return;
+    }
+    setCustomColumns([...customColumns, name]);
+    toast.success(`تمت إضافة العمود «${name}»`);
+  };
+
+  const removeColumn = (name: string) => {
+    if (!window.confirm(`حذف العمود «${name}» وبياناته من جميع الصفوف؟`)) return;
+    setCustomColumns(customColumns.filter((column) => column !== name));
+    setRecords(
+      records.map((row) => {
+        const next = { ...row };
+        delete next[name];
+        return next;
+      }),
+    );
+  };
+
+  const normalizeTraineeName = (value: unknown) =>
+    normalize(value)
+      .replace(/[ًٌٍَُِّْـ]/g, "")
+      .replace(/[إأآ]/g, "ا")
+      .replace(/ى/g, "ي")
+      .replace(/[ـ،,.]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .split(" ")
+      .filter(Boolean)
+      .sort()
+      .join(" ");
+
+  const accountCardRows = useMemo(() => {
+    if (!cardTrainee) return [];
+    const key = normalizeTraineeName(cardTrainee);
+    return (hafiza || [])
+      .filter((item) => {
+        const amount = parseAmount(item.notifyAmount);
+        const description = String(item.description || "");
+        const isAllowedFee =
+          isRegistrationFeeDescription(description) ||
+          /(امتحان|اختبار)/.test(normalizeDescription(description));
+        return (
+          normalizeTraineeName(item.name) === key &&
+          Boolean(normalize(item.hafizaNo)) &&
+          Boolean(normalize(item.notifyNo)) &&
+          amount > 0 &&
+          isAllowedFee
+        );
+      })
+      .sort((a, b) =>
+        String(a.notifyDate || a.date || "").localeCompare(String(b.notifyDate || b.date || "")),
+      );
+  }, [cardTrainee, hafiza]);
 
   const visibleRows = useMemo(() => {
     const q = normalize(query).toLocaleLowerCase("ar");
@@ -53,7 +125,7 @@ export default function TraineeFinancialDataTab() {
       .filter(
         ({ row }) =>
           !q ||
-          HEADERS.some((header) => normalize(row[header]).toLocaleLowerCase("ar").includes(q)),
+          columns.some((header) => normalize(row[header]).toLocaleLowerCase("ar").includes(q)),
       );
     if (sort) {
       filtered.sort((a, b) => {
@@ -69,7 +141,7 @@ export default function TraineeFinancialDataTab() {
       });
     }
     return filtered;
-  }, [records, query, sort]);
+  }, [records, query, sort, columns]);
 
   const startEdit = (index: number) => {
     setEditingIndex(index);
@@ -82,7 +154,7 @@ export default function TraineeFinancialDataTab() {
       return;
     }
     const next = [...records];
-    const nextRow = Object.fromEntries(HEADERS.map((header) => [header, draft[header] ?? ""]));
+    const nextRow = Object.fromEntries(columns.map((header) => [header, draft[header] ?? ""]));
     if (editingIndex === next.length) next.push(nextRow);
     else next[editingIndex] = nextRow;
     setRecords(next);
@@ -90,7 +162,7 @@ export default function TraineeFinancialDataTab() {
     toast.success("تم حفظ بيانات المتدرب");
   };
   const addRow = () => {
-    const row = Object.fromEntries(HEADERS.map((header) => [header, ""])) as TraineeFinancialRecord;
+    const row = Object.fromEntries(columns.map((header) => [header, ""])) as TraineeFinancialRecord;
     const index = records.length;
     setEditingIndex(index);
     setDraft(row);
@@ -108,16 +180,16 @@ export default function TraineeFinancialDataTab() {
       [TITLE],
       [RULES],
       [],
-      HEADERS,
-      ...records.map((row) => HEADERS.map((header) => row[header] ?? "")),
+      columns,
+      ...records.map((row) => columns.map((header) => row[header] ?? "")),
     ];
     const sheet = XLSX.utils.aoa_to_sheet(aoa);
     sheet["!views"] = [{ rightToLeft: true }];
-    sheet["!cols"] = HEADERS.map((header) => ({
+    sheet["!cols"] = columns.map((header) => ({
       wch: Math.min(34, Math.max(14, header.length + 4)),
     }));
     sheet["!autofilter"] = {
-      ref: `A4:${XLSX.utils.encode_col(HEADERS.length - 1)}${records.length + 4}`,
+      ref: `A4:${XLSX.utils.encode_col(columns.length - 1)}${records.length + 4}`,
     };
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, sheet, SHEET_NAME.slice(0, 31));
@@ -132,6 +204,7 @@ export default function TraineeFinancialDataTab() {
     try {
       const workbook = XLSX.read(await file.arrayBuffer(), { type: "array", cellDates: true });
       let imported: TraineeFinancialRecord[] | null = null;
+      let nextCustomColumns = customColumns;
       for (const sheetName of workbook.SheetNames) {
         const sheet = workbook.Sheets[sheetName];
         const matrix = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
@@ -145,11 +218,17 @@ export default function TraineeFinancialDataTab() {
         });
         if (headerIndex < 0) continue;
         const sourceHeaders = matrix[headerIndex].map(normalize);
-        const indexes = HEADERS.map((header) => sourceHeaders.indexOf(header));
+        const importedCustomColumns = sourceHeaders.filter(
+          (header) => header && !HEADERS.includes(header),
+        );
+        const mergedCustomColumns = [...new Set([...customColumns, ...importedCustomColumns])];
+        nextCustomColumns = mergedCustomColumns;
+        const importedColumns = [...HEADERS, ...mergedCustomColumns];
+        const indexes = importedColumns.map((header) => sourceHeaders.indexOf(header));
         const rows = matrix.slice(headerIndex + 1).flatMap((row) => {
           if (!row.some((value) => normalize(value))) return [];
           const record = Object.fromEntries(
-            HEADERS.map((header, i) => [
+            importedColumns.map((header, i) => [
               header,
               indexes[i] < 0 ? "" : ((row[indexes[i]] as string | number | undefined) ?? ""),
             ]),
@@ -176,6 +255,7 @@ export default function TraineeFinancialDataTab() {
         )
       )
         return;
+      setCustomColumns(nextCustomColumns);
       setRecords(imported);
       setEditingIndex(null);
       toast.success(`تم استيراد ${imported.length} سجلًا إلى تبويب بيانات المتدربين`);
@@ -190,10 +270,7 @@ export default function TraineeFinancialDataTab() {
       Object.fromEntries(
         [...CURRENCY_COLUMNS].map((header) => [
           header,
-          records.reduce(
-            (sum, row) => sum + (Number(String(row[header] ?? 0).replace(/[,٬\s]/g, "")) || 0),
-            0,
-          ),
+          records.reduce((sum, row) => sum + parseAmount(row[header]), 0),
         ]),
       ),
     [records],
@@ -221,6 +298,13 @@ export default function TraineeFinancialDataTab() {
               className="flex items-center gap-1.5 rounded-lg bg-[#176db1] px-3 py-2 text-sm font-bold text-white"
             >
               <Plus className="h-4 w-4" /> إضافة صف
+            </button>
+            <button
+              type="button"
+              onClick={addColumn}
+              className="flex items-center gap-1.5 rounded-lg bg-[#7055a5] px-3 py-2 text-sm font-bold text-white"
+            >
+              <Plus className="h-4 w-4" /> إضافة عمود
             </button>
             <button
               type="button"
@@ -280,7 +364,7 @@ export default function TraineeFinancialDataTab() {
             </div>
           </div>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            {HEADERS.map((header) => (
+            {columns.map((header) => (
               <label
                 key={header}
                 className="flex min-w-0 flex-col gap-1 text-xs font-bold text-slate-700"
@@ -314,7 +398,7 @@ export default function TraineeFinancialDataTab() {
         <table className="w-full border-collapse text-center text-xs" dir="rtl">
           <thead className="sticky top-0 z-10 bg-[#126c8e] text-white">
             <tr>
-              {HEADERS.map((header) => (
+              {columns.map((header) => (
                 <th
                   key={header}
                   className="whitespace-nowrap border border-slate-500 px-1 py-2 font-extrabold"
@@ -333,6 +417,16 @@ export default function TraineeFinancialDataTab() {
                     {header}
                     {sort?.key === header ? (sort.desc ? " ↓" : " ↑") : " ↕"}
                   </button>
+                  {customColumns.includes(header) && (
+                    <button
+                      type="button"
+                      title={`حذف العمود ${header}`}
+                      onClick={() => removeColumn(header)}
+                      className="mr-1 rounded bg-white/20 px-1 text-white"
+                    >
+                      ×
+                    </button>
+                  )}
                 </th>
               ))}
               <th className="sticky left-0 border border-slate-500 bg-[#126c8e] px-2 py-2">
@@ -346,7 +440,7 @@ export default function TraineeFinancialDataTab() {
                 key={`${index}-${String(row[HEADERS[1]])}`}
                 className={index % 2 ? "bg-slate-50" : "bg-white"}
               >
-                {HEADERS.map((header) => (
+                {columns.map((header) => (
                   <td
                     key={header}
                     className="whitespace-nowrap border border-slate-300 px-1 py-1 font-medium text-black"
@@ -371,6 +465,14 @@ export default function TraineeFinancialDataTab() {
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
+                  <button
+                    type="button"
+                    title="عرض بطاقة حساب المتدرب"
+                    onClick={() => setCardTrainee(String(row[HEADERS[2]] ?? ""))}
+                    className="mx-0.5 inline-flex items-center gap-1 rounded bg-sky-100 px-2 py-1.5 text-sky-900"
+                  >
+                    <WalletCards className="h-4 w-4" /> بطاقة حساب متدرب
+                  </button>
                 </td>
               </tr>
             ))}
@@ -390,6 +492,9 @@ export default function TraineeFinancialDataTab() {
                     : ""}
                 </td>
               ))}
+              {customColumns.map((header) => (
+                <td key={header} className="border border-slate-500 px-1 py-2" />
+              ))}
               <td className="border border-slate-500" />
             </tr>
           </tfoot>
@@ -398,6 +503,115 @@ export default function TraineeFinancialDataTab() {
           <p className="p-8 text-center font-bold text-slate-500">لا توجد صفوف مطابقة للبحث.</p>
         )}
       </div>
+      {cardTrainee !== null && (
+        <div
+          className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/60 p-2 sm:p-5"
+          role="dialog"
+          aria-modal="true"
+          aria-label="بطاقة حساب المتدرب"
+        >
+          <section className="max-h-[92dvh] w-full max-w-5xl overflow-hidden rounded-2xl border border-sky-200 bg-white shadow-2xl">
+            <header className="flex items-center justify-between gap-3 bg-[#176db1] px-4 py-3 text-white">
+              <div>
+                <h2 className="text-lg font-black">بطاقة حساب متدرب</h2>
+                <p className="text-sm font-bold">{cardTrainee}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCardTrainee(null)}
+                aria-label="إغلاق"
+                className="rounded-lg bg-white/15 p-2"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </header>
+            <div className="max-h-[calc(92dvh-90px)] overflow-auto p-3">
+              <p className="mb-2 text-xs font-bold text-slate-600">
+                تُعرض حركات رسوم القيد والتسجيل والامتحانات/الاختبارات فقط إذا توفر رقم الحافظة ورقم
+                الإشعار ومبلغ توريد موجب.
+              </p>
+              <div className="overflow-auto rounded-lg border border-slate-300">
+                <table className="w-full border-collapse text-center text-xs" dir="rtl">
+                  <thead className="sticky top-0 bg-[#126c8e] text-white">
+                    <tr>
+                      {[
+                        "نوع الرسم",
+                        "التاريخ",
+                        "رقم الحافظة",
+                        "رقم الإشعار",
+                        "البيان",
+                        "مبلغ التوريد",
+                      ].map((header) => (
+                        <th
+                          key={header}
+                          className="whitespace-nowrap border border-slate-400 px-2 py-2"
+                        >
+                          {header}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {accountCardRows.map((item, index) => {
+                      const description = String(item.description || "");
+                      const category = isRegistrationFeeDescription(description)
+                        ? "رسوم القيد والتسجيل"
+                        : "رسوم الامتحانات/الاختبارات";
+                      const amount = parseAmount(item.notifyAmount);
+                      return (
+                        <tr
+                          key={`${item.id}-${index}`}
+                          className={index % 2 ? "bg-slate-50" : "bg-white"}
+                        >
+                          <td className="whitespace-nowrap border border-slate-300 px-2 py-2">
+                            {category}
+                          </td>
+                          <td className="whitespace-nowrap border border-slate-300 px-2 py-2">
+                            {item.notifyDate || item.date || "—"}
+                          </td>
+                          <td className="whitespace-nowrap border border-slate-300 px-2 py-2">
+                            {item.hafizaNo}
+                          </td>
+                          <td className="whitespace-nowrap border border-slate-300 px-2 py-2">
+                            {item.notifyNo}
+                          </td>
+                          <td className="whitespace-nowrap border border-slate-300 px-2 py-2">
+                            {description}
+                          </td>
+                          <td className="whitespace-nowrap border border-slate-300 px-2 py-2 font-bold">
+                            {amount.toLocaleString("en-US")}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    {!accountCardRows.length && (
+                      <tr>
+                        <td colSpan={6} className="p-8 text-center font-bold text-slate-500">
+                          لا توجد حركات مطابقة ببيانات الحوافظ المتاحة.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                  {accountCardRows.length > 0 && (
+                    <tfoot className="bg-[#e2eef5] font-black">
+                      <tr>
+                        <td colSpan={5} className="border border-slate-400 px-2 py-2 text-right">
+                          إجمالي المبالغ المسددة
+                        </td>
+                        <td className="whitespace-nowrap border border-slate-400 px-2 py-2">
+                          {accountCardRows
+                            .reduce((sum, item) => sum + parseAmount(item.notifyAmount), 0)
+                            .toLocaleString("en-US")}
+                        </td>
+                      </tr>
+                    </tfoot>
+                  )}
+                </table>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
       <p className="mt-2 text-[11px] font-semibold text-slate-600">
         البيانات محفوظة تلقائيًا على هذا الجهاز. استيراد ملف Excel يستبدل الجدول الحالي بعد التأكيد.
       </p>

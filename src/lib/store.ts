@@ -119,6 +119,7 @@ export type CustomTab = {
 type State = {
   trainees: Trainee[];
   traineeFinancialRecords: TraineeFinancialRecord[];
+  traineeFinancialCustomColumns: string[];
   hafiza: Hafiza[];
   hafizas: Hafiza[];
   accounts: Account[];
@@ -155,6 +156,7 @@ type State = {
   deleteTrainee: (index: number) => void;
   importTrainees: (trainees: Trainee[]) => void;
   setTraineeFinancialRecords: (records: TraineeFinancialRecord[]) => void;
+  setTraineeFinancialCustomColumns: (columns: string[]) => void;
 
   addHafiza: (h: Omit<Hafiza, "id">) => Hafiza;
   updateHafiza: (id: string, h: Partial<Hafiza>) => void;
@@ -246,18 +248,19 @@ const flushStorageWrite = () => {
     window.localStorage.setItem(pending.name, pending.value);
   } catch (error) {
     console.error("[Storage] Failed to persist application data", error);
-    window.dispatchEvent(new CustomEvent("mizan:storage-error", {
-      detail: {
-        message: error instanceof Error ? error.message : String(error),
-        recoverable: true,
-      },
-    }));
+    window.dispatchEvent(
+      new CustomEvent("mizan:storage-error", {
+        detail: {
+          message: error instanceof Error ? error.message : String(error),
+          recoverable: true,
+        },
+      }),
+    );
   }
 };
 
 const deferredStorage: StateStorage = {
-  getItem: (name) =>
-    typeof window === "undefined" ? null : window.localStorage.getItem(name),
+  getItem: (name) => (typeof window === "undefined" ? null : window.localStorage.getItem(name)),
   setItem: (name, value) => {
     pendingStorageWrite = { name, value };
     if (storageWriteTimer) clearTimeout(storageWriteTimer);
@@ -338,7 +341,9 @@ export const useStore = create<State>()(
   persist(
     (set, get) => ({
       trainees: seedTrainees as Trainee[],
-      traineeFinancialRecords: (seedTraineeFinancialDatabase as { rows: TraineeFinancialRecord[] }).rows,
+      traineeFinancialRecords: (seedTraineeFinancialDatabase as { rows: TraineeFinancialRecord[] })
+        .rows,
+      traineeFinancialCustomColumns: [],
       hafiza: [],
       hafizas: [],
       accounts: [],
@@ -626,6 +631,8 @@ export const useStore = create<State>()(
         set((s) => ({ trainees: s.trainees.filter((_, i) => i !== index) })),
       importTrainees: (trainees) => set((s) => ({ trainees: [...s.trainees, ...trainees] })),
       setTraineeFinancialRecords: (records) => set({ traineeFinancialRecords: records }),
+      setTraineeFinancialCustomColumns: (columns) =>
+        set({ traineeFinancialCustomColumns: columns }),
 
       addHafiza: (h) => {
         const item: Hafiza = {
@@ -818,6 +825,8 @@ export const useStore = create<State>()(
           return {
             trainees: d.trainees ? [...s.trainees, ...d.trainees] : s.trainees,
             traineeFinancialRecords: d.traineeFinancialRecords ?? s.traineeFinancialRecords,
+            traineeFinancialCustomColumns:
+              d.traineeFinancialCustomColumns ?? s.traineeFinancialCustomColumns,
             journal: d.journal
               ? [
                   ...s.journal,
@@ -867,6 +876,7 @@ export const useStore = create<State>()(
       exportAllData: () => ({
         trainees: get().trainees,
         traineeFinancialRecords: get().traineeFinancialRecords,
+        traineeFinancialCustomColumns: get().traineeFinancialCustomColumns,
         hafiza: get().hafiza,
         hafizas: get().hafizas,
         accounts: get().accounts,
@@ -890,6 +900,7 @@ export const useStore = create<State>()(
           accounts: [],
           journal: [],
           traineeFinancialRecords: [],
+          traineeFinancialCustomColumns: [],
           installments: [],
           installments2025: [],
           installmentsByYear: {},
@@ -898,7 +909,8 @@ export const useStore = create<State>()(
       clearTab: (tab) =>
         set((s) => {
           if (tab === "hafiza" || tab === "hafizas") return { ...s, hafiza: [], hafizas: [] };
-          if (tab === "traineeFinancialRecords" || tab === "trainee-data") return { ...s, traineeFinancialRecords: [] };
+          if (tab === "traineeFinancialRecords" || tab === "trainee-data")
+            return { ...s, traineeFinancialRecords: [], traineeFinancialCustomColumns: [] };
           return { ...s, [tab]: [] };
         }),
 
@@ -962,6 +974,7 @@ export const useStore = create<State>()(
       partialize: (state) => ({
         trainees: state.trainees,
         traineeFinancialRecords: state.traineeFinancialRecords,
+        traineeFinancialCustomColumns: state.traineeFinancialCustomColumns,
         hafiza: state.hafiza,
         hafizas: state.hafizas,
         accounts: state.accounts,
