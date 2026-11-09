@@ -218,7 +218,6 @@ const normalizeTraineeReportName = (value: unknown): string =>
  .replace(/[ًٌٍَُِّْـ]/g, "")
  .replace(/[إأآ]/g, "ا")
  .replace(/ى/g, "ي")
- .replace(/ى/g, "ي")
  .replace(/[ـ،,.]/g, " ")
  .replace(/\s+/g, " ")
  .trim()
@@ -1038,6 +1037,7 @@ export default function ReportsTab() {
    specialties: Set<string>;
    registrationDue: number;
    examDue: number;
+   cardRecordCount: number;
   };
   type PaymentSummary = {
    registrationPaid: number;
@@ -1063,6 +1063,7 @@ export default function ReportsTab() {
      specialties: new Set<string>(),
      registrationDue: 0,
      examDue: 0,
+     cardRecordCount: 0,
     };
     cardTrainees.set(key, item);
    }
@@ -1070,6 +1071,7 @@ export default function ReportsTab() {
    const batch = String(record["رقم الدفعة"] ?? "").trim();
    const level = String(record["المستوى الحالي"] ?? "").trim();
    const specialty = String(record["المساق الطبي"] ?? "").trim();
+   item.cardRecordCount += 1;
    if (registry) item.registryNumbers.add(registry);
    if (batch) item.batches.add(batch);
    if (level) item.levels.add(level);
@@ -1149,6 +1151,7 @@ export default function ReportsTab() {
     registrationLastDate: formatStatusDate(payment.registrationLastDate),
     examLastDate: formatStatusDate(payment.examLastDate),
     overallStatus: status.label,
+    cardNote: card.cardRecordCount > 1 ? `تم جمع ${card.cardRecordCount} سجلات بطاقة بالاسم نفسه` : "—",
     statusGroup: status.label,
     statusKey,
    };
@@ -1214,6 +1217,7 @@ export default function ReportsTab() {
      { key: "registrationLastDate", label: "آخر توريد للقيد" },
      { key: "examLastDate", label: "آخر توريد للامتحانات" },
      { key: "overallStatus", label: "التصنيف العام" },
+     { key: "cardNote", label: "ملاحظات بطاقة المتدرب" },
     ],
    };
   }
@@ -1790,6 +1794,7 @@ export default function ReportsTab() {
                       key={col.key}
                       data-col-key={col.key}
                       onClick={() => {
+                        if (source === "traineeFeeStatus") return;
                         if (source === "trainee") {
                           setTraineeHasUserSorted(true);
                           if (traineeSortColumn === col.key) {
