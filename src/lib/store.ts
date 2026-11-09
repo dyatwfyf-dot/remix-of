@@ -3,12 +3,14 @@ import { create } from "zustand";
 import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
 import seedTrainees from "@/data/trainees.json";
 import seedInstallments from "@/data/installments.json";
+import seedTraineeFinancialDatabase from "@/data/traineeFinancialDatabase.json";
 
 // ==========================================
 // 1. تعريف الأنواع (Types)
 // ==========================================
 
 export type Trainee = { name: string; batch: string; specialty: string };
+export type TraineeFinancialRecord = Record<string, string | number>;
 
 export const INSTALLMENT_MONTHS = [
   "يناير",
@@ -116,6 +118,7 @@ export type CustomTab = {
 // ==========================================
 type State = {
   trainees: Trainee[];
+  traineeFinancialRecords: TraineeFinancialRecord[];
   hafiza: Hafiza[];
   hafizas: Hafiza[];
   accounts: Account[];
@@ -151,6 +154,7 @@ type State = {
   updateTrainee: (index: number, t: Trainee) => void;
   deleteTrainee: (index: number) => void;
   importTrainees: (trainees: Trainee[]) => void;
+  setTraineeFinancialRecords: (records: TraineeFinancialRecord[]) => void;
 
   addHafiza: (h: Omit<Hafiza, "id">) => Hafiza;
   updateHafiza: (id: string, h: Partial<Hafiza>) => void;
@@ -334,6 +338,7 @@ export const useStore = create<State>()(
   persist(
     (set, get) => ({
       trainees: seedTrainees as Trainee[],
+      traineeFinancialRecords: (seedTraineeFinancialDatabase as { rows: TraineeFinancialRecord[] }).rows,
       hafiza: [],
       hafizas: [],
       accounts: [],
@@ -620,6 +625,7 @@ export const useStore = create<State>()(
       deleteTrainee: (index) =>
         set((s) => ({ trainees: s.trainees.filter((_, i) => i !== index) })),
       importTrainees: (trainees) => set((s) => ({ trainees: [...s.trainees, ...trainees] })),
+      setTraineeFinancialRecords: (records) => set({ traineeFinancialRecords: records }),
 
       addHafiza: (h) => {
         const item: Hafiza = {
@@ -811,6 +817,7 @@ export const useStore = create<State>()(
 
           return {
             trainees: d.trainees ? [...s.trainees, ...d.trainees] : s.trainees,
+            traineeFinancialRecords: d.traineeFinancialRecords ?? s.traineeFinancialRecords,
             journal: d.journal
               ? [
                   ...s.journal,
@@ -859,6 +866,7 @@ export const useStore = create<State>()(
 
       exportAllData: () => ({
         trainees: get().trainees,
+        traineeFinancialRecords: get().traineeFinancialRecords,
         hafiza: get().hafiza,
         hafizas: get().hafizas,
         accounts: get().accounts,
@@ -881,6 +889,7 @@ export const useStore = create<State>()(
           hafizas: [],
           accounts: [],
           journal: [],
+          traineeFinancialRecords: [],
           installments: [],
           installments2025: [],
           installmentsByYear: {},
@@ -889,6 +898,7 @@ export const useStore = create<State>()(
       clearTab: (tab) =>
         set((s) => {
           if (tab === "hafiza" || tab === "hafizas") return { ...s, hafiza: [], hafizas: [] };
+          if (tab === "traineeFinancialRecords" || tab === "trainee-data") return { ...s, traineeFinancialRecords: [] };
           return { ...s, [tab]: [] };
         }),
 
@@ -951,6 +961,7 @@ export const useStore = create<State>()(
       storage: createJSONStorage(() => deferredStorage),
       partialize: (state) => ({
         trainees: state.trainees,
+        traineeFinancialRecords: state.traineeFinancialRecords,
         hafiza: state.hafiza,
         hafizas: state.hafizas,
         accounts: state.accounts,

@@ -13,6 +13,7 @@ import {
   ReceiptText,
   DownloadCloud,
   BarChart3,
+  ContactRound,
 } from "lucide-react";
 
 // تحميل ملفات التبويبات عند فتحها فقط لتقليل حجم التشغيل الأول.
@@ -20,6 +21,7 @@ const HafizaTab = lazy(() => import("@/components/HafizaTab"));
 const AccountTab = lazy(() => import("@/components/AccountTab"));
 const JournalTab = lazy(() => import("@/components/JournalTab"));
 const InstallmentsTab = lazy(() => import("@/components/InstallmentsTab"));
+const TraineeFinancialDataTab = lazy(() => import("@/components/TraineeFinancialDataTab"));
 const MonthlyStatementTab = lazy(() => import("@/components/MonthlyStatementTab"));
 const RevenueTab = lazy(() => import("@/components/RevenueTab"));
 const ExpensesTab = lazy(() => import("@/components/ExpensesTab"));
@@ -60,6 +62,7 @@ export const Route = createFileRoute("/")({
 });
 
 type Tab =
+  | "trainee-data"
   | "installments"
   | "hafiza"
   | "account"
@@ -81,6 +84,14 @@ type TabItem = {
 
 // تعريف قائمة التبويبات مع بياناتها
 const tabs: TabItem[] = [
+  {
+    value: "trainee-data",
+    navTintClass: "bg-secondary border-border text-secondary-foreground",
+    label: "بيانات المتدربين",
+    shortLabel: "بيانات المتدربين",
+    icon: <ContactRound className="w-5 h-5 sm:w-6 sm:h-6" />,
+    activeClass: "bg-primary",
+  },
   {
     value: "installments",
     navTintClass: "bg-secondary border-border text-secondary-foreground",
@@ -367,6 +378,7 @@ function Index() {
               </div>
             }
           >
+            {activeTab === "trainee-data" && <TraineeFinancialDataTab />}
             {activeTab === "installments" && <InstallmentsTab />}
             {activeTab === "hafiza" && <HafizaTab />}
             {activeTab === "account" && <AccountTab />}
