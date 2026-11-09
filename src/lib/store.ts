@@ -343,7 +343,7 @@ export const useStore = create<State>()(
       trainees: seedTrainees as Trainee[],
       traineeFinancialRecords: (seedTraineeFinancialDatabase as { rows: TraineeFinancialRecord[] })
         .rows,
-      traineeFinancialCustomColumns: [],
+      traineeFinancialCustomColumns: ["الحالة الأكاديمية"],
       hafiza: [],
       hafizas: [],
       accounts: [],

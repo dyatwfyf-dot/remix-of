@@ -5,6 +5,7 @@ import {
   FileSpreadsheet,
   Pencil,
   Plus,
+  Printer,
   Save,
   Search,
   Trash2,
@@ -16,6 +17,8 @@ import { toast } from "sonner";
 import database from "@/data/traineeFinancialDatabase.json";
 import { useStore, type TraineeFinancialRecord } from "@/lib/store";
 import { isRegistrationFeeDescription } from "@/lib/feeClassification";
+import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
+import { escapeHtml, reportLetterheadHtml } from "@/lib/printTableHtml";
 
 const HEADERS = database.headers as string[];
 const SHEET_NAME = database.sheetName;
@@ -57,7 +60,7 @@ export default function TraineeFinancialDataTab() {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [draft, setDraft] = useState<TraineeFinancialRecord>({});
   const [sort, setSort] = useState<{ key: string; desc: boolean } | null>(null);
-  const [cardTrainee, setCardTrainee] = useState<string | null>(null);
+  const [cardTrainee, setCardTrainee] = useState<TraineeFinancialRecord | null>(null);
 
   const addColumn = () => {
     const name = normalize(window.prompt("اكتب اسم العمود الجديد:") || "");
@@ -97,7 +100,7 @@ export default function TraineeFinancialDataTab() {
 
   const accountCardRows = useMemo(() => {
     if (!cardTrainee) return [];
-    const key = normalizeTraineeName(cardTrainee);
+    const key = normalizeTraineeName(cardTrainee[HEADERS[2]]);
     return (hafiza || [])
       .filter((item) => {
         const amount = parseAmount(item.notifyAmount);
@@ -117,6 +120,60 @@ export default function TraineeFinancialDataTab() {
         String(a.notifyDate || a.date || "").localeCompare(String(b.notifyDate || b.date || "")),
       );
   }, [cardTrainee, hafiza]);
+
+  const printTraineeAccountCard = () => {
+    if (!cardTrainee) return;
+    const value = (key: string, fallback = "—") =>
+      String(cardTrainee[key] ?? "").trim() || fallback;
+    const academicStatus =
+      value("الحالة الأكاديمية", "") ||
+      value("حالة أكاديمية", "") ||
+      value("حالة المتدرب", "غير محدد");
+    const info = [
+      ["اسم المتدرب", value(HEADERS[2])],
+      ["التخصص", value(HEADERS[5])],
+      ["رقم الدفعة", value(HEADERS[3])],
+      ["المستوى", value(HEADERS[4])],
+      ["الحالة الأكاديمية", academicStatus],
+    ]
+      .map(
+        ([label, content]) =>
+          `<div class="info"><b>${escapeHtml(label)}</b><span>${escapeHtml(content)}</span></div>`,
+      )
+      .join("");
+    const rows = accountCardRows
+      .map((item) => {
+        const category = isRegistrationFeeDescription(item.description)
+          ? "رسوم القيد والتسجيل"
+          : "رسوم الامتحانات/الاختبارات";
+        return `<tr><td>${escapeHtml(category)}</td><td>${escapeHtml(item.notifyDate || item.date || "—")}</td><td>${escapeHtml(item.hafizaNo)}</td><td>${escapeHtml(item.notifyNo)}</td><td>${escapeHtml(item.description)}</td><td class="amount">${escapeHtml(parseAmount(item.notifyAmount).toLocaleString("en-US"))}</td></tr>`;
+      })
+      .join("");
+    const total = accountCardRows.reduce((sum, item) => sum + parseAmount(item.notifyAmount), 0);
+    const body = `${reportLetterheadHtml()}<h1>كشف بطاقة حساب متدرب</h1><div class="info-grid">${info}</div><table><thead><tr><th>نوع الرسم</th><th>تاريخ التوريد</th><th>رقم الحافظة</th><th>رقم الإشعار</th><th>البيان</th><th>مبلغ التوريد</th></tr></thead><tbody>${rows || '<tr><td colspan="6">لا توجد حركات مطابقة</td></tr>'}</tbody><tfoot><tr><td colspan="5">إجمالي المبالغ المسددة</td><td class="amount">${total.toLocaleString("en-US")}</td></tr></tfoot></table><div class="report-date">تاريخ الطباعة: ${new Date().toLocaleDateString("ar-YE")}</div>`;
+    const contentCss = `
+      .report-letterhead-block { margin-bottom: 5mm !important; }
+      h1 { text-align:center; font-size:18px; margin:4mm 0; font-weight:900; }
+      .info-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:3mm; margin:0 0 5mm; }
+      .info { border:1px solid #64748b; padding:2mm; display:flex; justify-content:space-between; gap:2mm; font-size:10px; white-space:nowrap; }
+      table { width:100%; border-collapse:collapse; table-layout:auto; font-size:9px; }
+      th,td { border:1px solid #334155; padding:1.5mm 0; text-align:center; white-space:nowrap; }
+      thead th { background:#126c8e !important; color:#fff !important; }
+      tfoot td { background:#e2eef5 !important; font-weight:900; }
+      .amount { direction:ltr; font-variant-numeric:tabular-nums; }
+      .report-date { margin-top:4mm; text-align:left; font-size:9px; }
+      @media print { @page { size:A4 landscape; margin:6mm; } }
+    `;
+    const opened = openBrowserPrintPreview({
+      title: `كشف بطاقة حساب متدرب - ${escapeHtml(String(cardTrainee[HEADERS[2]] ?? ""))}`,
+      tableHtml: body,
+      contentCss,
+      defaultOrientation: "landscape",
+      defaultPageSize: "A4",
+      defaultMarginMm: 6,
+    });
+    if (!opened) toast.error("تعذر فتح معاينة الطباعة؛ اسمح بالنوافذ المنبثقة في المتصفح");
+  };
 
   const visibleRows = useMemo(() => {
     const q = normalize(query).toLocaleLowerCase("ar");
@@ -395,13 +452,17 @@ export default function TraineeFinancialDataTab() {
         className="overflow-auto rounded-xl border border-slate-400 bg-white shadow-sm"
         style={{ maxHeight: "calc(100dvh - 280px)" }}
       >
-        <table className="w-full border-collapse text-center text-xs" dir="rtl">
+        <table
+          className="w-max min-w-full table-auto border-collapse text-center text-xs"
+          dir="rtl"
+          style={{ width: "max-content", minWidth: "100%" }}
+        >
           <thead className="sticky top-0 z-10 bg-[#126c8e] text-white">
             <tr>
               {columns.map((header) => (
                 <th
                   key={header}
-                  className="whitespace-nowrap border border-slate-500 px-1 py-2 font-extrabold"
+                  className="whitespace-nowrap border border-slate-500 px-0 py-2 font-extrabold"
                 >
                   <button
                     type="button"
@@ -443,7 +504,7 @@ export default function TraineeFinancialDataTab() {
                 {columns.map((header) => (
                   <td
                     key={header}
-                    className="whitespace-nowrap border border-slate-300 px-1 py-1 font-medium text-black"
+                    className="whitespace-nowrap border border-slate-300 px-0 py-1 font-medium text-black"
                   >
                     {formatValue(row[header], header)}
                   </td>
@@ -468,7 +529,7 @@ export default function TraineeFinancialDataTab() {
                   <button
                     type="button"
                     title="عرض بطاقة حساب المتدرب"
-                    onClick={() => setCardTrainee(String(row[HEADERS[2]] ?? ""))}
+                    onClick={() => setCardTrainee(row)}
                     className="mx-0.5 inline-flex items-center gap-1 rounded bg-sky-100 px-2 py-1.5 text-sky-900"
                   >
                     <WalletCards className="h-4 w-4" /> بطاقة حساب متدرب
@@ -514,16 +575,25 @@ export default function TraineeFinancialDataTab() {
             <header className="flex items-center justify-between gap-3 bg-[#176db1] px-4 py-3 text-white">
               <div>
                 <h2 className="text-lg font-black">بطاقة حساب متدرب</h2>
-                <p className="text-sm font-bold">{cardTrainee}</p>
+                <p className="text-sm font-bold">{String(cardTrainee[HEADERS[2]] ?? "")}</p>
               </div>
-              <button
-                type="button"
-                onClick={() => setCardTrainee(null)}
-                aria-label="إغلاق"
-                className="rounded-lg bg-white/15 p-2"
-              >
-                <X className="h-5 w-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={printTraineeAccountCard}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-2 text-sm font-extrabold text-[#176db1]"
+                >
+                  <Printer className="h-4 w-4" /> طباعة كشف البطاقة
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCardTrainee(null)}
+                  aria-label="إغلاق"
+                  className="rounded-lg bg-white/15 p-2"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
             </header>
             <div className="max-h-[calc(92dvh-90px)] overflow-auto p-3">
               <p className="mb-2 text-xs font-bold text-slate-600">
@@ -544,7 +614,7 @@ export default function TraineeFinancialDataTab() {
                       ].map((header) => (
                         <th
                           key={header}
-                          className="whitespace-nowrap border border-slate-400 px-2 py-2"
+                          className="whitespace-nowrap border border-slate-400 px-0 py-2"
                         >
                           {header}
                         </th>
@@ -563,22 +633,22 @@ export default function TraineeFinancialDataTab() {
                           key={`${item.id}-${index}`}
                           className={index % 2 ? "bg-slate-50" : "bg-white"}
                         >
-                          <td className="whitespace-nowrap border border-slate-300 px-2 py-2">
+                          <td className="whitespace-nowrap border border-slate-300 px-0 py-2">
                             {category}
                           </td>
-                          <td className="whitespace-nowrap border border-slate-300 px-2 py-2">
+                          <td className="whitespace-nowrap border border-slate-300 px-0 py-2">
                             {item.notifyDate || item.date || "—"}
                           </td>
-                          <td className="whitespace-nowrap border border-slate-300 px-2 py-2">
+                          <td className="whitespace-nowrap border border-slate-300 px-0 py-2">
                             {item.hafizaNo}
                           </td>
-                          <td className="whitespace-nowrap border border-slate-300 px-2 py-2">
+                          <td className="whitespace-nowrap border border-slate-300 px-0 py-2">
                             {item.notifyNo}
                           </td>
-                          <td className="whitespace-nowrap border border-slate-300 px-2 py-2">
+                          <td className="whitespace-nowrap border border-slate-300 px-0 py-2">
                             {description}
                           </td>
-                          <td className="whitespace-nowrap border border-slate-300 px-2 py-2 font-bold">
+                          <td className="whitespace-nowrap border border-slate-300 px-0 py-2 font-bold">
                             {amount.toLocaleString("en-US")}
                           </td>
                         </tr>
@@ -598,7 +668,7 @@ export default function TraineeFinancialDataTab() {
                         <td colSpan={5} className="border border-slate-400 px-2 py-2 text-right">
                           إجمالي المبالغ المسددة
                         </td>
-                        <td className="whitespace-nowrap border border-slate-400 px-2 py-2">
+                        <td className="whitespace-nowrap border border-slate-400 px-0 py-2">
                           {accountCardRows
                             .reduce((sum, item) => sum + parseAmount(item.notifyAmount), 0)
                             .toLocaleString("en-US")}
