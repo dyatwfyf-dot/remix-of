@@ -212,19 +212,17 @@ const canonicalFeeCategory = (value: unknown) => {
  return String(value).trim() || "رسوم أخرى";
 };
 
+// توحيد الاسم للمطابقة بين بيانات المتدربين وحوافظ التوريد:
+ // تجاهل اختلافات الهمزة والتشكيل والتطويل والمسافات وعلامات الترقيم،
+ // مع مقارنة تسلسل الأحرف نفسه دون اشتراط عدد أجزاء الاسم.
 const normalizeTraineeReportName = (value: unknown): string =>
  String(value || "")
- .trim()
- .replace(/[ًٌٍَُِّْـ]/g, "")
- .replace(/[إأآ]/g, "ا")
+ .normalize("NFKC")
+ .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g, "")
+ .replace(/[إأآٱ]/g, "ا")
  .replace(/ى/g, "ي")
- .replace(/[ـ،,.]/g, " ")
- .replace(/\s+/g, " ")
- .trim()
- .split(" ")
- .filter(Boolean)
- .sort()
- .join(" ");
+ .replace(/\u0640/g, "")
+ .replace(/[^\p{L}\p{N}]/gu, "");
 
 const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "other" => {
  const text = String(description || "").trim();
