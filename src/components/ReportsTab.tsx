@@ -510,6 +510,7 @@ export default function ReportsTab() {
  const [selectedTrainee, setSelectedTrainee] = useState < string > ("all");
  const [selectedFee, setSelectedFee] = useState < string > ("all");
  const [selectedBatch, setSelectedBatch] = useState("");
+ const [selectedTraineeFeeStatus, setSelectedTraineeFeeStatus] = useState<string>("all");
  const [traineeGrouping, setTraineeGrouping] = useState < TraineeGrouping > ("month");
  const [traineeDisplayMode, setTraineeDisplayMode] = useState < TraineeDisplayMode > ("both");
  
@@ -1086,7 +1087,8 @@ export default function ReportsTab() {
    const date = normalizeDate(record.notifyDate || record.date);
    const amount = amountValue(record.notifyAmount);
    if (!key || !date || date.getFullYear() < 2022 || amount <= 0) return;
-   const isRegistration = isNewTraineeRegistrationDescription(record.description);
+   // تُعامل رسوم القسط/الدراسة مع رسوم القيد والتسجيل ضمن جانب الرسوم غير الامتحانية.
+   const isRegistration = isNewTraineeRegistrationDescription(record.description) || isTuitionFeeDescription(record.description);
    const isExam = isExamFeeDescription(record.description);
    if (!isRegistration && !isExam) return;
 
@@ -1108,10 +1110,10 @@ export default function ReportsTab() {
   });
 
   const statusDefinitions = [
-   { key: "registration-only", label: "سدد القيد والتسجيل ولم يسدد رسوم الامتحانات", tone: "#FEF3C7" },
-   { key: "exam-only", label: "سدد رسوم الامتحانات ولم يسدد القيد والتسجيل", tone: "#E0E7FF" },
-   { key: "neither", label: "لم يسدد رسوم القيد والتسجيل ولا رسوم الامتحانات", tone: "#FEE2E2" },
-   { key: "both", label: "سدد رسوم القيد والتسجيل ورسوم الامتحانات", tone: "#DCFCE7" },
+   { key: "registration-only", label: "سدد القيد والتسجيل/الأقساط ولم يسدد رسوم الامتحانات", tone: "#FEF3C7" },
+   { key: "exam-only", label: "سدد رسوم الامتحانات ولم يسدد القيد والتسجيل/الأقساط", tone: "#E0E7FF" },
+   { key: "neither", label: "لم يسدد القيد والتسجيل/الأقساط ولا رسوم الامتحانات", tone: "#FEE2E2" },
+   { key: "both", label: "سدد القيد والتسجيل/الأقساط ورسوم الامتحانات معاً", tone: "#DCFCE7" },
   ];
 
   const feeStatus = (paid: number, due: number) => {
@@ -1332,7 +1334,10 @@ export default function ReportsTab() {
   const filtered = reportRows.filter((row) => !deletedRows.has(getReportRowKey(row, source)));
   if (source === "traineeFeeStatus") {
    const summaryRows = filtered.filter((row) => row.summaryLevel === "status-summary");
-   const traineeRows = filtered.filter((row) => row.summaryLevel !== "status-summary");
+   const allTraineeRows = filtered.filter((row) => row.summaryLevel !== "status-summary");
+   const traineeRows = selectedTraineeFeeStatus === "all"
+    ? allTraineeRows
+    : allTraineeRows.filter((row) => row.statusKey === selectedTraineeFeeStatus);
    return [
     ...summaryRows.map((summary) => ({
      ...summary,
@@ -1446,7 +1451,7 @@ export default function ReportsTab() {
    }
    return row;
   });
- }, [reportRows, sortColumn, sortDirection, source, traineeSortColumn, traineeSortDirection, deletedRows]);
+ }, [reportRows, sortColumn, sortDirection, source, traineeSortColumn, traineeSortDirection, deletedRows, selectedTraineeFeeStatus]);
  
  const reportIssuedAt = new Date();
  const reportYearStart = new Date(reportIssuedAt.getFullYear(), 0, 1);
@@ -1572,6 +1577,7 @@ export default function ReportsTab() {
                     setSortDirection("asc");
                   }
                   setDeletedRows(new Set());
+                  setSelectedTraineeFeeStatus("all");
                 }}
                 className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
               >
@@ -1909,12 +1915,13 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                     else rowStyle = "bg-white text-slate-900";
 
                     if (isStatusSummary) {
+                      const isSelectedStatus = selectedTraineeFeeStatus === String(row.statusKey);
                       return (
-                        <tr key={String(row.id)} className="reports-fee-status-summary-row" style={{ backgroundColor: String(row.statusSummaryTone || "#E2E8F0"), color: "#111827", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}>
+                        <tr key={String(row.id)} onClick={() => setSelectedTraineeFeeStatus((current) => current === String(row.statusKey) ? "all" : String(row.statusKey))} role="button" aria-pressed={isSelectedStatus} title="اضغط لعرض أسماء المتدربين في هذه الحالة فقط، واضغط مرة أخرى لإلغاء التصفية" className={`reports-fee-status-summary-row cursor-pointer transition-all ${isSelectedStatus ? "ring-2 ring-inset ring-sky-700" : "hover:brightness-95"}`} style={{ backgroundColor: String(row.statusSummaryTone || "#E2E8F0"), color: "#111827", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}>
                           <td colSpan={colCount} className="border border-black px-3 py-2 text-right font-black" style={{ backgroundColor: String(row.statusSummaryTone || "#E2E8F0"), color: "#111827" }}>
                             <div className="flex flex-wrap items-center justify-between gap-2">
                               <span>{String(row.statusSummaryLabel || "")}</span>
-                              <strong>عدد المتدربين: {Number(row.statusSummaryCount) || 0}</strong>
+                              <strong>{isSelectedStatus ? "✓ الحالة المختارة • " : ""}عدد المتدربين: {Number(row.statusSummaryCount) || 0}</strong>
                             </div>
                           </td>
                         </tr>
