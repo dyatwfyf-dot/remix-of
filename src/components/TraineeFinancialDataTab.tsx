@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as XLSX from "xlsx";
 import {
   Download,
@@ -54,6 +54,7 @@ export default function TraineeFinancialDataTab() {
   const customColumns = useStore((state) => state.traineeFinancialCustomColumns);
   const setCustomColumns = useStore((state) => state.setTraineeFinancialCustomColumns);
   const hafiza = useStore((state) => state.hafiza);
+  const installments2026 = useStore((state) => state.installments);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const columns = useMemo(() => [...HEADERS, ...customColumns], [customColumns]);
   const [query, setQuery] = useState("");
@@ -97,6 +98,71 @@ export default function TraineeFinancialDataTab() {
       .filter(Boolean)
       .sort()
       .join(" ");
+
+  // مزامنة متدربي الدفعة السادسة من جدول أقساط 2026 إلى قاعدة بيانات المتدربين.
+  // تتم الإضافة/استكمال الحقول الناقصة فقط، دون تعديل سجلات الأقساط أو بيانات المتدرب الأخرى.
+  useEffect(() => {
+    const isSixthBatch = (value: unknown) => {
+      const batch = normalize(value)
+        .replace(/[ًٌٍَُِّْـ]/g, "")
+        .replace(/[إأآ]/g, "ا")
+        .replace(/\s+/g, "")
+        .replace(/^الدفعة/, "")
+        .replace(/^دفعة/, "");
+      return batch === "السادسة" || batch === "سادسة" ||
+        batch === "السادس" || batch === "سادس" ||
+        batch === "6" || batch === "٦";
+    };
+
+    const sixthBatchRows = (installments2026 || []).filter((row) => isSixthBatch(row.batch));
+    if (!sixthBatchRows.length) return;
+
+    const nextRecords = [...(records || [])];
+    let changed = false;
+
+    sixthBatchRows.forEach((installment) => {
+      const name = normalizeTraineeName(installment.name);
+      if (!name) return;
+
+      const existingIndex = nextRecords.findIndex((record) => {
+        const sameName = normalizeTraineeName(record[HEADERS[2]]) === name;
+        const existingBatch = normalize(record[HEADERS[3]]);
+        // استكمل رقم الدفعة للمتدرب الموجود إذا كان حقل الدفعة فارغاً،
+        // أو حدّث التخصص الناقص إذا كان مسجلاً بالفعل في الدفعة السادسة.
+        return sameName && (!existingBatch || isSixthBatch(existingBatch));
+      });
+
+      if (existingIndex >= 0) {
+        const existing = nextRecords[existingIndex];
+        const next = { ...existing };
+        if (!normalize(next[HEADERS[3]])) next[HEADERS[3]] = installment.batch || "السادسة";
+        if (!normalize(next[HEADERS[5]])) next[HEADERS[5]] = installment.specialty || "";
+        if (next[HEADERS[3]] !== existing[HEADERS[3]] ||
+            next[HEADERS[5]] !== existing[HEADERS[5]]) {
+          nextRecords[existingIndex] = next;
+          changed = true;
+        }
+        return;
+      }
+
+      // إذا كان الاسم موجوداً ببيانات دفعة أخرى فلا ندمج السجلين ولا نستبدل بياناته.
+      const duplicateInSource = nextRecords.some((record) =>
+        normalizeTraineeName(record[HEADERS[2]]) === name &&
+        isSixthBatch(record[HEADERS[3]])
+      );
+      if (duplicateInSource) return;
+
+      nextRecords.push({
+        [HEADERS[0]]: nextRecords.length + 1,
+        [HEADERS[2]]: installment.name || "",
+        [HEADERS[3]]: installment.batch || "السادسة",
+        [HEADERS[5]]: installment.specialty || "",
+      });
+      changed = true;
+    });
+
+    if (changed) setRecords(nextRecords);
+  }, [installments2026, records, setRecords]);
 
   const accountCardRows = useMemo(() => {
     if (!cardTrainee) return [];
