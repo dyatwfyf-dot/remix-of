@@ -490,7 +490,7 @@ export default function TraineeFinancialDataTab() {
                   )}
                 </th>
               ))}
-              <th className="sticky left-0 border border-slate-500 bg-[#126c8e] px-2 py-2">
+              <th className="whitespace-nowrap border border-slate-500 bg-[#126c8e] px-2 py-2">
                 إجراءات
               </th>
             </tr>
@@ -509,7 +509,7 @@ export default function TraineeFinancialDataTab() {
                     {formatValue(row[header], header)}
                   </td>
                 ))}
-                <td className="sticky left-0 whitespace-nowrap border border-slate-300 bg-white px-1 py-1">
+                <td className="whitespace-nowrap border border-slate-300 bg-white px-1 py-1">
                   <button
                     type="button"
                     title="تحرير الصف"
