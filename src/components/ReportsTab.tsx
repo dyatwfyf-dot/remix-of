@@ -62,7 +62,7 @@ export interface ReportRow {
  notes ? : string;
  settlementNo ? : string;
  item ? : string;
- summaryLevel ? : "opening" | "total" | "fee" | "trainee-fee-total" | "trainee-name-total" | "period" | "signature" | "detail";
+ summaryLevel ? : "opening" | "total" | "fee" | "trainee-fee-total" | "trainee-name-total" | "period" | "signature" | "detail" | "status-summary";
  total ? : string;
  [key: string]: any;
 }
@@ -124,7 +124,7 @@ const SOURCES: Array < { value: ReportSource;label: string } > = [
  { value: "combined", label: "تقرير مجمّع لكل التبويبات" },
  { value: "trainee", label: "كشف مدفوعات المتدربين" },
  { value: "feeTotals", label: "إجماليات الرسوم حسب النوع" },
- { value: "traineeFeeStatus", label: "غير المسددين لرسوم الامتحانات منذ 2022" },
+ { value: "traineeFeeStatus", label: "حالة سداد رسوم القيد والتسجيل والامتحانات منذ 2022" },
 ];
 
 const normalizeDate = (value: unknown): Date | null => {
@@ -218,7 +218,13 @@ const normalizeTraineeReportName = (value: unknown): string =>
  .replace(/[ًٌٍَُِّْـ]/g, "")
  .replace(/[إأآ]/g, "ا")
  .replace(/ى/g, "ي")
- .replace(/\s+/g, " ");
+ .replace(/[ـ،,.]/g, " ")
+ .replace(/\s+/g, " ")
+ .trim()
+ .split(" ")
+ .filter(Boolean)
+ .sort()
+ .join(" ");
 
 const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "other" => {
  const text = String(description || "").trim();
@@ -492,6 +498,7 @@ export default function ReportsTab() {
  const [printSettingsOpen, setPrintSettingsOpen] = useState(false);
  const hafiza = useStore((state) => state.hafiza);
  const trainees = useStore((state) => state.trainees);
+ const traineeFinancialRecords = useStore((state) => state.traineeFinancialRecords);
  const accounts = useStore((state) => state.accounts);
  const revenue = useStore((state) => state.revenue);
  
@@ -1022,55 +1029,148 @@ export default function ReportsTab() {
  }, [hafiza, selectedTrainee]);
  
  const traineeFeeStatusRows = useMemo < ReportRow[] > (() => {
-  const byName = new Map < string,
-   {
-    trainee: string;
-    batch: string;
-    specialty: string;
-   } > ();
-  const paidExamKeys = new Set < string > ();
-  const newTraineeKeys = new Set < string > ();
-  
-  // مصدر أسماء المتدربين وبياناتهم وتصنيف سدادهم هو حوافظ التوريد فقط.
-  // يحتسب السداد من مبلغ وتاريخ التوريد، ويُعد البيان مدفوعاً فقط عند ورود امتحان/اختبار.
-  hafiza.forEach((record) => {
-   const name = String(record.name || "").trim();
-   const key = normalizeTraineeReportName(name);
+  type TraineeCardSummary = {
+   trainee: string;
+   registryNumbers: Set<string>;
+   batches: Set<string>;
+   levels: Set<string>;
+   specialties: Set<string>;
+   registrationDue: number;
+   examDue: number;
+   cardRecordCount: number;
+  };
+  type PaymentSummary = {
+   registrationPaid: number;
+   examPaid: number;
+   registrationLastDate: Date | null;
+   examLastDate: Date | null;
+  };
+
+  // بطاقة بيانات المتدرب هي المرجع الأساسي لقائمة الأسماء والدفعة والمستوى والتخصص والرسوم المستحقة.
+  // تُجمع الحركات المسددة من حوافظ التوريد فقط منذ 2022، بحسب مبلغ التوريد الموجب والبيان.
+  const cardTrainees = new Map<string, TraineeCardSummary>();
+  (traineeFinancialRecords || []).forEach((record) => {
+   const trainee = String(record["اسم المتدرب حسب الشهادة"] || "").trim();
+   const key = normalizeTraineeReportName(trainee);
    if (!key) return;
-   let current = byName.get(key);
-   if (!current) {
-    current = {
-     trainee: name,
-     batch: String(record.batch || ""),
-     specialty: String(record.specialty || ""),
+   let item = cardTrainees.get(key);
+   if (!item) {
+    item = {
+     trainee,
+     registryNumbers: new Set<string>(),
+     batches: new Set<string>(),
+     levels: new Set<string>(),
+     specialties: new Set<string>(),
+     registrationDue: 0,
+     examDue: 0,
+     cardRecordCount: 0,
     };
-    byName.set(key, current);
-   } else {
-    if (!current.batch && record.batch) current.batch = String(record.batch);
-    if (!current.specialty && record.specialty) current.specialty = String(record.specialty);
+    cardTrainees.set(key, item);
    }
-   
-   if (isNewTraineeRegistrationDescription(record.description)) {
-    newTraineeKeys.add(key);
-   }
-   const amount = amountValue(record.notifyAmount);
-   const date = normalizeDate(record.notifyDate);
-   if (amount > 0 && date && date.getFullYear() >= 2022 && isExamFeeDescription(record.description)) {
-    paidExamKeys.add(key);
-   }
+   const registry = String(record["رقم السجل"] ?? "").trim();
+   const batch = String(record["رقم الدفعة"] ?? "").trim();
+   const level = String(record["المستوى الحالي"] ?? "").trim();
+   const specialty = String(record["المساق الطبي"] ?? "").trim();
+   item.cardRecordCount += 1;
+   if (registry) item.registryNumbers.add(registry);
+   if (batch) item.batches.add(batch);
+   if (level) item.levels.add(level);
+   if (specialty) item.specialties.add(specialty);
+   item.registrationDue = Math.max(item.registrationDue, amountValue(record["رسوم القيد والتسجيل"]));
+   item.examDue = Math.max(item.examDue, amountValue(record["إجمالي رسوم الامتحانات"]));
   });
-  
-  // يستبعد المستجدون الذين وردت لهم رسوم قيد وتسجيل، ثم يعرض غير المسددين منذ 2022.
-  return Array.from(byName.entries())
-   .filter(([key]) => !paidExamKeys.has(key) && !newTraineeKeys.has(key))
-   .map(([, item]) => ({
-    trainee: item.trainee,
-    batch: item.batch || "—",
-    specialty: item.specialty || "—",
-    examStatus: "غير مسدد منذ 2022",
-   }));
- }, [hafiza]);
- 
+
+  const paymentsByTrainee = new Map<string, PaymentSummary>();
+  (hafiza || []).forEach((record) => {
+   const key = normalizeTraineeReportName(record.name);
+   const date = normalizeDate(record.notifyDate || record.date);
+   const amount = amountValue(record.notifyAmount);
+   if (!key || !date || date.getFullYear() < 2022 || amount <= 0) return;
+   const isRegistration = isNewTraineeRegistrationDescription(record.description);
+   const isExam = isExamFeeDescription(record.description);
+   if (!isRegistration && !isExam) return;
+
+   const payment = paymentsByTrainee.get(key) || {
+    registrationPaid: 0,
+    examPaid: 0,
+    registrationLastDate: null,
+    examLastDate: null,
+   };
+   if (isRegistration) {
+    payment.registrationPaid += amount;
+    if (!payment.registrationLastDate || date > payment.registrationLastDate) payment.registrationLastDate = date;
+   }
+   if (isExam) {
+    payment.examPaid += amount;
+    if (!payment.examLastDate || date > payment.examLastDate) payment.examLastDate = date;
+   }
+   paymentsByTrainee.set(key, payment);
+  });
+
+  const statusDefinitions = [
+   { key: "registration-only", label: "سدد القيد والتسجيل ولم يسدد رسوم الامتحانات", tone: "#FEF3C7" },
+   { key: "exam-only", label: "سدد رسوم الامتحانات ولم يسدد القيد والتسجيل", tone: "#E0E7FF" },
+   { key: "neither", label: "لم يسدد رسوم القيد والتسجيل ولا رسوم الامتحانات", tone: "#FEE2E2" },
+   { key: "both", label: "سدد رسوم القيد والتسجيل ورسوم الامتحانات", tone: "#DCFCE7" },
+  ];
+
+  const feeStatus = (paid: number, due: number) => {
+   if (paid <= 0) return due > 0 ? "غير مسدد" : "غير محدد في البطاقة";
+   if (due > 0 && paid < due) return "مسدد جزئياً";
+   return due > 0 ? "مسدد بالكامل" : "مسدد (المستحق غير محدد)";
+  };
+  const formatStatusDate = (date: Date | null) =>
+   date ? date.toLocaleDateString("ar-YE") : "—";
+
+  const detailRows: ReportRow[] = Array.from(cardTrainees.entries()).map(([key, card]) => {
+   const payment = paymentsByTrainee.get(key) || {
+    registrationPaid: 0,
+    examPaid: 0,
+    registrationLastDate: null,
+    examLastDate: null,
+   };
+   const hasRegistrationPayment = payment.registrationPaid > 0;
+   const hasExamPayment = payment.examPaid > 0;
+   const statusKey = hasRegistrationPayment
+    ? hasExamPayment ? "both" : "registration-only"
+    : hasExamPayment ? "exam-only" : "neither";
+   const status = statusDefinitions.find((item) => item.key === statusKey)!;
+   return {
+    id: `trainee-fee-status-${key}`,
+    trainee: card.trainee,
+    registryNo: Array.from(card.registryNumbers).join("، ") || "—",
+    batch: Array.from(card.batches).join("، ") || "—",
+    level: Array.from(card.levels).join("، ") || "—",
+    specialty: Array.from(card.specialties).join("، ") || "—",
+    registrationDue: card.registrationDue,
+    registrationPaid: payment.registrationPaid,
+    registrationStatus: feeStatus(payment.registrationPaid, card.registrationDue),
+    examDue: card.examDue,
+    examPaid: payment.examPaid,
+    examStatus: feeStatus(payment.examPaid, card.examDue),
+    registrationLastDate: formatStatusDate(payment.registrationLastDate),
+    examLastDate: formatStatusDate(payment.examLastDate),
+    overallStatus: status.label,
+    cardNote: card.cardRecordCount > 1 ? `تم جمع ${card.cardRecordCount} سجلات بطاقة بالاسم نفسه` : "—",
+    statusGroup: status.label,
+    statusKey,
+   };
+  }).sort((a, b) => {
+   const rank = (key: string) => statusDefinitions.findIndex((item) => item.key === key);
+   const groupOrder = rank(String(a.statusKey)) - rank(String(b.statusKey));
+   return groupOrder || String(a.trainee).localeCompare(String(b.trainee), "ar");
+  });
+
+  const summaryRows: ReportRow[] = statusDefinitions.map((status) => ({
+   id: `trainee-fee-status-summary-${status.key}`,
+   summaryLevel: "status-summary",
+   statusSummaryLabel: status.label,
+   statusSummaryCount: detailRows.filter((row) => row.statusKey === status.key).length,
+   statusSummaryTone: status.tone,
+   statusKey: status.key,
+  }));
+  return [...summaryRows, ...detailRows];
+ }, [hafiza, traineeFinancialRecords]);
  const sourceConfig = useMemo < { title: string;columns: TabCol[] } > (() => {
   if (source === "youssefLoan") {
    return {
@@ -1101,12 +1201,23 @@ export default function ReportsTab() {
   }
   if (source === "traineeFeeStatus") {
    return {
-    title: "المتدربون غير المسددين لرسوم الامتحانات والاختبارات منذ 2022",
+    title: "تقرير حالة سداد رسوم القيد والتسجيل والامتحانات منذ 2022",
     columns: [
      { key: "trainee", label: "اسم المتدرب" },
+     { key: "registryNo", label: "رقم السجل" },
      { key: "batch", label: "الدفعة" },
+     { key: "level", label: "المستوى" },
      { key: "specialty", label: "التخصص" },
-     { key: "examStatus", label: "حالة السداد منذ 2022" },
+     { key: "registrationDue", label: "المستحق للقيد والتسجيل" },
+     { key: "registrationPaid", label: "المسدد للقيد والتسجيل" },
+     { key: "registrationStatus", label: "حالة القيد والتسجيل" },
+     { key: "examDue", label: "المستحق للامتحانات" },
+     { key: "examPaid", label: "المسدد للامتحانات" },
+     { key: "examStatus", label: "حالة الامتحانات" },
+     { key: "registrationLastDate", label: "آخر توريد للقيد" },
+     { key: "examLastDate", label: "آخر توريد للامتحانات" },
+     { key: "overallStatus", label: "التصنيف العام" },
+     { key: "cardNote", label: "ملاحظات بطاقة المتدرب" },
     ],
    };
   }
@@ -1219,6 +1330,17 @@ export default function ReportsTab() {
   const activeSortCol = source === "trainee" ? traineeSortColumn : sortColumn;
   const activeSortDir = source === "trainee" ? traineeSortDirection : sortDirection;
   const filtered = reportRows.filter((row) => !deletedRows.has(getReportRowKey(row, source)));
+  if (source === "traineeFeeStatus") {
+   const summaryRows = filtered.filter((row) => row.summaryLevel === "status-summary");
+   const traineeRows = filtered.filter((row) => row.summaryLevel !== "status-summary");
+   return [
+    ...summaryRows.map((summary) => ({
+     ...summary,
+     statusSummaryCount: traineeRows.filter((row) => row.statusKey === summary.statusKey).length,
+    })),
+    ...traineeRows,
+   ];
+  }
   
   const isCustodySource = source === "youssefLoan" || source === "tawfiqCustody";
   const orderedRows = isCustodySource || (source === "trainee" && !traineeHasUserSorted) ?
@@ -1338,7 +1460,7 @@ export default function ReportsTab() {
   source === "feeTotals" ?
   `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}` :
   source === "traineeFeeStatus" ?
-  "المتدربون غير المسددين لرسوم الامتحانات والاختبارات منذ 2022" :
+  "تقرير حالة سداد رسوم القيد والتسجيل والامتحانات منذ 2022" :
   source === "youssefLoan" || source === "tawfiqCustody" ?
   `مسير إخلاء - عهدة - ${source === "youssefLoan" ? "د/ يوسف" : "توفيق الداعي"}\n${custodyDateRange}` :
   `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
@@ -1349,7 +1471,7 @@ export default function ReportsTab() {
   source === "account" ? ["income", "expense"] :
   source === "expenses" ? ["expense"] :
   source === "revenue" ? ["amount"] :
-  source === "traineeFeeStatus" ? ["tuitionPaid", "examPaid"] :
+  source === "traineeFeeStatus" ? ["registrationDue", "registrationPaid", "examDue", "examPaid"] :
   source === "trainee" || source === "feeTotals" ? ["amount"] : ["income", "expense", "amount"];
  
  const noWrapKeys = sourceConfig.columns
@@ -1363,9 +1485,13 @@ export default function ReportsTab() {
  const isLoanOrCustody = source === "youssefLoan" || source === "tawfiqCustody";
  const actionRows = isLoanOrCustody ?
   processedRows.filter((row) => row.summaryLevel !== "opening" && row.summaryLevel !== "total" && row.summaryLevel !== "signature") :
+  source === "traineeFeeStatus" ? processedRows.filter((row) => row.summaryLevel !== "status-summary") :
   processedRows;
  
  const displayRows = useMemo(() => processedRows, [processedRows]);
+ const reportRecordCount = source === "traineeFeeStatus"
+  ? displayRows.filter((row) => row.summaryLevel !== "status-summary").length
+  : displayRows.length;
  
  const activeSortColumn = source === "trainee" ? traineeSortColumn : sortColumn;
  const activeSortDirection = source === "trainee" ? traineeSortDirection : sortDirection;
@@ -1393,7 +1519,7 @@ export default function ReportsTab() {
   const fontSizePx = settings.fontMode === "manual"
    ? Math.max(5, Math.min(14, settings.fontSize))
    : Math.max(7, Math.min(13, (pageWidthMm - marginMm * 2) / (visibleColumnCount * 2.35)));
-  const tableHtml = buildReportsScreenPrintHtml(source, settings.showHeader ? reportDateLabel : "", displayRows.length, settings);
+  const tableHtml = buildReportsScreenPrintHtml(source, settings.showHeader ? reportDateLabel : "", reportRecordCount, settings);
   const finalCss = `
    #tableContainer .reports-print-table-shell { width:100%!important; min-width:0!important; max-width:100%!important; overflow:visible!important; }
    #tableContainer table.reports-data-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:auto!important; border-collapse:collapse!important; }
@@ -1633,9 +1759,9 @@ export default function ReportsTab() {
             printColumns={sourceConfig.columns}
             numericKeys={numericKeys}
             pdfFinalCss={reportsTabPrintCss}
-            renderPrintTableHtml={(reportDateLabel) => buildReportsScreenPrintHtml(source, reportDateLabel, displayRows.length)}
+            renderPrintTableHtml={(reportDateLabel) => buildReportsScreenPrintHtml(source, reportDateLabel, reportRecordCount)}
             onPrintRequest={openReportsPrintSettings}
-            pdfOrientation="portrait"
+            pdfOrientation={source === "traineeFeeStatus" ? "landscape" : "portrait"}
             includeTotalRow={!isLoanOrCustody && source !== "traineeFeeStatus"}
             printTableClassName={source === "trainee" ? "reports-trainee-payment-table" : ""}
           />
@@ -1657,7 +1783,7 @@ export default function ReportsTab() {
                     <th colSpan={sourceConfig.columns.length + 2}>
                       {(source === "youssefLoan" || source === "tawfiqCustody")
                         ? title.split("\n").slice(1).join(" ")
-                        : `تاريخ التقرير: ${formatReportDate(reportIssuedAt)} • عدد السجلات: ${displayRows.length}`}
+                        : `تاريخ التقرير: ${formatReportDate(reportIssuedAt)} • عدد السجلات: ${reportRecordCount}`}
                     </th>
                   </tr>
                 </>
@@ -1668,6 +1794,7 @@ export default function ReportsTab() {
                       key={col.key}
                       data-col-key={col.key}
                       onClick={() => {
+                        if (source === "traineeFeeStatus") return;
                         if (source === "trainee") {
                           setTraineeHasUserSorted(true);
                           if (traineeSortColumn === col.key) {
@@ -1711,6 +1838,7 @@ export default function ReportsTab() {
                 ) : (
                   displayRows.map((row, index) => {
                     const isOpening = row.summaryLevel === "opening";
+                    const isStatusSummary = row.summaryLevel === "status-summary";
                     const isTotal = row.summaryLevel === "total" || row.total === "نعم";
                      const grandTotalLabel = String(row.description ?? row.category ?? row.item ?? "").trim();
                      const isGrandTotal = isTotal && grandTotalLabel.includes("الإجمالي الكلي");
@@ -1779,6 +1907,19 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                     else if (row.summaryLevel === "period") rowStyle = "reports-period-row bg-[#5B5750] font-bold text-white";
                     else if (isTraineeSummary) rowStyle = "reports-trainee-summary-row bg-[#FFF1D6] font-bold text-black";
                     else rowStyle = "bg-white text-slate-900";
+
+                    if (isStatusSummary) {
+                      return (
+                        <tr key={String(row.id)} className="reports-fee-status-summary-row" style={{ backgroundColor: String(row.statusSummaryTone || "#E2E8F0"), color: "#111827", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}>
+                          <td colSpan={colCount} className="border border-black px-3 py-2 text-right font-black" style={{ backgroundColor: String(row.statusSummaryTone || "#E2E8F0"), color: "#111827" }}>
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <span>{String(row.statusSummaryLabel || "")}</span>
+                              <strong>عدد المتدربين: {Number(row.statusSummaryCount) || 0}</strong>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    }
 
                     // قسم التوقيعات المدمج أسفل تقارير العهد (في سطر أفقي واحد مدمج)
                     if (isSignature) {
@@ -1898,7 +2039,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                         }
                       >
                         <td data-col-key="idx" className="border border-black px-2 py-2 font-bold" style={isTotal ? totalCellStyle : traineeRowCellStyle}>
-                          {isOpening ? "—" : isTotal ? "★" : index + 1}
+                          {isOpening ? "—" : isTotal ? "★" : source === "traineeFeeStatus" ? index - 3 : index + 1}
                         </td>
 
                         {sourceConfig.columns.map((col) => {
