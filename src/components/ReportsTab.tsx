@@ -1203,7 +1203,7 @@ export default function ReportsTab() {
   }
   if (source === "traineeFeeStatus") {
    return {
-    title: "تقرير حالة سداد رسوم القيد والتسجيل والامتحانات منذ 2022",
+    title: "تقرير حالة سداد رسوم القيد والتسجيل والأقساط والامتحانات منذ 2022",
     columns: [
      { key: "trainee", label: "اسم المتدرب" },
      { key: "registryNo", label: "رقم السجل" },
@@ -1341,7 +1341,7 @@ export default function ReportsTab() {
    return [
     ...summaryRows.map((summary) => ({
      ...summary,
-     statusSummaryCount: traineeRows.filter((row) => row.statusKey === summary.statusKey).length,
+     statusSummaryCount: allTraineeRows.filter((row) => row.statusKey === summary.statusKey).length,
     })),
     ...traineeRows,
    ];
@@ -1465,7 +1465,7 @@ export default function ReportsTab() {
   source === "feeTotals" ?
   `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}` :
   source === "traineeFeeStatus" ?
-  "تقرير حالة سداد رسوم القيد والتسجيل والامتحانات منذ 2022" :
+  "تقرير حالة سداد رسوم القيد والتسجيل والأقساط والامتحانات منذ 2022" :
   source === "youssefLoan" || source === "tawfiqCustody" ?
   `مسير إخلاء - عهدة - ${source === "youssefLoan" ? "د/ يوسف" : "توفيق الداعي"}\n${custodyDateRange}` :
   `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
