@@ -221,7 +221,43 @@ export default function TraineeFinancialDataTab() {
       .report-letterhead-block { margin-bottom: 5mm !important; }
       h1 { text-align:center; font-size:18px; margin:4mm 0; font-weight:900; }
       .info-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:3mm; margin:0 0 5mm; }
-      .info { border:1px solid #64748b; padding:2mm; display:flex; justify-content:space-between; gap:2mm; font-size:10px; white-space:nowrap; }
+      .info {
+        min-height:22mm;
+        border:1.4px solid #8aa9c2;
+        border-radius:3mm;
+        padding:3mm 2mm;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        gap:2mm;
+        text-align:center;
+        font-size:12px;
+        font-weight:800;
+        line-height:1.5;
+        white-space:normal;
+        color:#172b4d;
+        background:#eaf3fb;
+        box-shadow:0 1mm 2mm rgba(23,43,77,.10);
+        print-color-adjust:exact;
+        -webkit-print-color-adjust:exact;
+      }
+      .info b { color:#173b63; font-size:12px; font-weight:900; }
+      .info span { color:#111f33; font-size:13px; font-weight:900; overflow-wrap:anywhere; }
+      .info:nth-child(2) { background:#e7f5f1; border-color:#78b8a8; }
+      .info:nth-child(2) b { color:#145b4c; }
+      .info:nth-child(3) { background:#fff2df; border-color:#e3b66e; }
+      .info:nth-child(3) b { color:#75430d; }
+      .info:nth-child(4) { background:#f0eafd; border-color:#ad98dc; }
+      .info:nth-child(4) b { color:#4b347e; }
+      .info:nth-child(5) { background:#fcebed; border-color:#d99aa3; }
+      .info:nth-child(5) b { color:#7b2938; }
+      @media print {
+        .info, .info * {
+          print-color-adjust:exact !important;
+          -webkit-print-color-adjust:exact !important;
+        }
+      }
       table { width:100%; border-collapse:collapse; table-layout:auto; font-size:9px; }
       th,td { border:1px solid #334155; padding:1.5mm 0; text-align:center; white-space:nowrap; }
       thead th { background:#126c8e !important; color:#fff !important; }
