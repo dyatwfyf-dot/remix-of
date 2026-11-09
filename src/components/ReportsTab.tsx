@@ -198,7 +198,7 @@ const normalizeFeeDescription = (value: unknown) =>
 const isExamFeeDescription = (value: unknown) =>
  /(امتحان|اختبار)/.test(normalizeFeeDescription(value));
 const isNewTraineeRegistrationDescription = (value: unknown) =>
- /(?:رسوم\s+)?(?:ال)?قسط\s+و(?:ال)?تسجيل/.test(normalizeFeeDescription(value));
+ /(?:رسوم\s+)?(?:ال)?قسط\s+و\s*(?:ال)?تسجيل/.test(normalizeFeeDescription(value));
 const isTuitionFeeDescription = (value: unknown) => {
  const text = normalizeFeeDescription(value);
  return /(رسوم\s*(?:ال)?(?:دراس|دراسه|دراسي)|(?:قسط|اقساط)\s*(?:ال)?(?:دراس|دراسه|دراسي)|تسجيل|قيد)/.test(text);
@@ -815,9 +815,10 @@ export default function ReportsTab() {
   () =>
   Array.from(
    new Set(
-    hafiza
-    .map((row) => canonicalFeeCategory(row.description))
-    .filter(Boolean)
+    [
+     ...hafiza.map((row) => canonicalFeeCategory(row.description)).filter(Boolean),
+     "رسوم القيد والتسجيل",
+    ]
    )
   ).sort((a, b) => a.localeCompare(b, "ar")),
   [hafiza]
