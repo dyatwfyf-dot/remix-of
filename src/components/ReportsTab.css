@@ -378,3 +378,13 @@
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
+.reports-table-scroll .reports-trainee-payment-table tbody tr.reports-fee-row.reports-registration-fee-total-row > td {
+  background: #DDEBFF !important;
+  color: #000000 !important;
+  border-color: #000000 !important;
+  font-size: 13px !important;
+  white-space: nowrap !important;
+  font-weight: 900 !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}

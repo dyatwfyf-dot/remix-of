@@ -198,7 +198,7 @@ const normalizeFeeDescription = (value: unknown) =>
 const isExamFeeDescription = (value: unknown) =>
  /(امتحان|اختبار)/.test(normalizeFeeDescription(value));
 const isNewTraineeRegistrationDescription = (value: unknown) =>
- /رسوم\s+(?:ال)?قيد\s+و(?:ال)?تسجيل/.test(normalizeFeeDescription(value));
+ /(?:رسوم\s+)?(?:ال)?قسط\s+و(?:ال)?تسجيل/.test(normalizeFeeDescription(value));
 const isTuitionFeeDescription = (value: unknown) => {
  const text = normalizeFeeDescription(value);
  return /(رسوم\s*(?:ال)?(?:دراس|دراسه|دراسي)|(?:قسط|اقساط)\s*(?:ال)?(?:دراس|دراسه|دراسي)|تسجيل|قيد)/.test(text);
@@ -207,7 +207,8 @@ const canonicalFeeCategory = (value: unknown) => {
  const text = normalizeFeeDescription(value);
  if (!text) return "رسوم أخرى";
  if (isExamFeeDescription(text)) return "رسوم الامتحانات";
- if (isTuitionFeeDescription(text)) return "أقساط الدراسة والتسجيل";
+ if (isNewTraineeRegistrationDescription(text)) return "رسوم القيد والتسجيل";
+ if (isTuitionFeeDescription(text)) return "الأقساط الدراسية السنوية";
  return String(value).trim() || "رسوم أخرى";
 };
 
@@ -282,6 +283,7 @@ font-family: Cairo !important; font-weight:900 !important;
 font-size: 13px !important; white-space:nowrap !important;
   font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-tuition-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#E8DFF5 !important; background-color:#E8DFF5 !important; color:#000000 !important; border-color:#000 !important; font-size:13px !important; white-space:nowrap !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  #tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-registration-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#DDEBFF !important; background-color:#DDEBFF !important; color:#000000 !important; border-color:#000 !important; font-size:13px !important; white-space:nowrap !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-trainee-payment-table tbody > tr.reports-trainee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#2C666E !important; background-color:#2C666E !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
   #tableContainer table.reports-trainee-payment-table tbody > tr.total-row > td,
   #tableContainer table.reports-trainee-payment-table tbody > tr.report-grand-total-row > td { background:#0437bb !important; background-color:#0437bb !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
@@ -439,7 +441,7 @@ const buildReportsScreenPrintHtml = (
 
   // Preserve the exact screen colors for the two categorized fee totals in print/PDF.
  if (settings?.colored !== false) {
-  ["reports-exam-fee-total-row", "reports-tuition-fee-total-row"].forEach((rowClass) => {
+  ["reports-exam-fee-total-row", "reports-tuition-fee-total-row", "reports-registration-fee-total-row"].forEach((rowClass) => {
    const sourceRows = Array.from(sourceTable.querySelectorAll<HTMLTableRowElement>(`tbody tr.${rowClass}`));
    const printRows = Array.from(table.querySelectorAll<HTMLTableRowElement>(`tbody tr.${rowClass}`));
    sourceRows.forEach((sourceRow, rowIndex) => {
@@ -928,9 +930,10 @@ export default function ReportsTab() {
   const traineeFeeTotals = new Map<string, ReportRow>();
   payments.forEach((row) => {
    const isExamFee = row.category === "رسوم الامتحانات";
-   const isTuitionFee = row.category === "أقساط الدراسة والتسجيل";
+   const isTuitionFee = row.category === "الأقساط الدراسية السنوية";
+   const isRegistrationFee = row.category === "رسوم القيد والتسجيل";
    const isSelectedFee = selectedFee !== "all" && row.category === selectedFee;
-   if (!isExamFee && !isTuitionFee && !isSelectedFee) return;
+   if (!isExamFee && !isTuitionFee && !isRegistrationFee && !isSelectedFee) return;
    const key = `${row.trainee}|${row.batch}|${row.year}|${row.period}|${row.category}`;
    const existing = traineeFeeTotals.get(key);
    if (existing) {
@@ -941,6 +944,8 @@ export default function ReportsTab() {
     ? "إجمالي رسوم الامتحانات"
     : isTuitionFee
      ? "إجمالي الرسوم الدراسية"
+     : isRegistrationFee
+      ? "إجمالي رسوم القيد والتسجيل"
      : `إجمالي ${row.category}`;
    traineeFeeTotals.set(key, {
     id: `trainee-fee-total-${key}`,
@@ -1753,8 +1758,10 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                     else if (row.summaryLevel === "fee") {
                       if (row.category === "رسوم الامتحانات") {
                         rowStyle = "reports-fee-row reports-exam-fee-total-row bg-[#D8F3DC] font-bold text-black";
-                      } else if (row.category === "أقساط الدراسة والتسجيل") {
+                      } else if (row.category === "الأقساط الدراسية السنوية") {
                         rowStyle = "reports-fee-row reports-tuition-fee-total-row bg-[#E8DFF5] font-bold text-black";
+                      } else if (row.category === "رسوم القيد والتسجيل") {
+                        rowStyle = "reports-fee-row reports-registration-fee-total-row bg-[#DDEBFF] font-bold text-black";
                       } else {
                         rowStyle = "reports-fee-row bg-[#F1BF98] font-bold text-black";
                       }
@@ -1762,7 +1769,11 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                     else if (isTraineeFeeTotal) {
                       rowStyle = row.category === "رسوم الامتحانات"
                         ? "reports-fee-row reports-exam-fee-total-row bg-[#D8F3DC] font-bold text-black"
-                        : "reports-fee-row reports-tuition-fee-total-row bg-[#E8DFF5] font-bold text-black";
+                        : row.category === "الأقساط الدراسية السنوية"
+                          ? "reports-fee-row reports-tuition-fee-total-row bg-[#E8DFF5] font-bold text-black"
+                          : row.category === "رسوم القيد والتسجيل"
+                            ? "reports-fee-row reports-registration-fee-total-row bg-[#DDEBFF] font-bold text-black"
+                            : "reports-fee-row bg-[#F1BF98] font-bold text-black";
                     }
                     else if (row.summaryLevel === "period") rowStyle = "reports-period-row bg-[#5B5750] font-bold text-white";
                     else if (isTraineeSummary) rowStyle = "reports-trainee-summary-row bg-[#FFF1D6] font-bold text-black";

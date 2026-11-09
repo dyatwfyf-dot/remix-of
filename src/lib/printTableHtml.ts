@@ -315,6 +315,36 @@ export const tablePrintStyles = `
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+  tbody tr.reports-fee-row.reports-exam-fee-total-row > td {
+    background: #D8F3DC !important;
+    background-color: #D8F3DC !important;
+    color: #000000 !important;
+    font-size: 13px !important;
+    white-space: nowrap !important;
+    font-weight: 900 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  tbody tr.reports-fee-row.reports-tuition-fee-total-row > td {
+    background: #E8DFF5 !important;
+    background-color: #E8DFF5 !important;
+    color: #000000 !important;
+    font-size: 13px !important;
+    white-space: nowrap !important;
+    font-weight: 900 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  tbody tr.reports-fee-row.reports-registration-fee-total-row > td {
+    background: #DDEBFF !important;
+    background-color: #DDEBFF !important;
+    color: #000000 !important;
+    font-size: 13px !important;
+    white-space: nowrap !important;
+    font-weight: 900 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 
   /* إجمالي مدفوعات كل متدرب في السنة: استعادة اللون المميز المستخدم سابقاً */
   tbody tr.report-trainee-name-total-row > td,
@@ -569,9 +599,10 @@ export function buildTableHtml(opts: {
     // إجمالي المتدرب السنوي له لون مميز خاص، ولا ينبغي أن تطغى عليه ألوان الملاحظات.
     if (level === "trainee-name-total") return "report-trainee-name-total-row";
     if (level === "trainee-fee-total") {
-      return row?.category === "رسوم الامتحانات"
-        ? "reports-fee-row reports-exam-fee-total-row"
-        : "reports-fee-row reports-tuition-fee-total-row";
+      if (row?.category === "رسوم الامتحانات") return "reports-fee-row reports-exam-fee-total-row";
+      if (row?.category === "الأقساط الدراسية السنوية") return "reports-fee-row reports-tuition-fee-total-row";
+      if (row?.category === "رسوم القيد والتسجيل") return "reports-fee-row reports-registration-fee-total-row";
+      return "reports-fee-row";
     }
     const noteClass = noteRowClass(row?.notes);
     if (noteClass) return noteClass;
