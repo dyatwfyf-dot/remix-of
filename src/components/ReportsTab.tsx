@@ -197,8 +197,12 @@ const normalizeFeeDescription = (value: unknown) =>
  .replace(/\s+/g, " ");
 const isExamFeeDescription = (value: unknown) =>
  /(امتحان|اختبار)/.test(normalizeFeeDescription(value));
-const isNewTraineeRegistrationDescription = (value: unknown) =>
- /(?:رسوم\s+)?(?:ال)?قسط\s+و\s*(?:ال)?تسجيل/.test(normalizeFeeDescription(value));
+const isNewTraineeRegistrationDescription = (value: unknown) => {
+ const text = normalizeFeeDescription(value);
+ const hasSingleInstallment = /(?:^|[^\p{L}])(?:و)?(?:ال)?قسط(?=$|[^\p{L}])/u.test(text);
+ const hasRegistration = /تسجيل/.test(text);
+ return hasSingleInstallment && hasRegistration;
+};
 const isTuitionFeeDescription = (value: unknown) => {
  const text = normalizeFeeDescription(value);
  return /(رسوم\s*(?:ال)?(?:دراس|دراسه|دراسي)|(?:قسط|اقساط)\s*(?:ال)?(?:دراس|دراسه|دراسي)|تسجيل|قيد)/.test(text);
