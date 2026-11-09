@@ -147,8 +147,7 @@ export default function TraineeFinancialDataTab() {
           ? "رسوم القيد والتسجيل"
           : "رسوم الامتحانات/الاختبارات";
         return `<tr><td>${escapeHtml(category)}</td><td>${escapeHtml(item.notifyDate || item.date || "—")}</td><td>${escapeHtml(item.hafizaNo)}</td><td>${escapeHtml(item.notifyNo)}</td><td>${escapeHtml(item.description)}</td><td class="amount">${escapeHtml(parseAmount(item.notifyAmount).toLocaleString("en-US"))}</td></tr>`;
-      })
-      .join("");
+      })      .join("");
     const total = accountCardRows.reduce((sum, item) => sum + parseAmount(item.notifyAmount), 0);
     const body = `${reportLetterheadHtml()}<h1>كشف بطاقة حساب متدرب</h1><div class="info-grid">${info}</div><table><thead><tr><th>نوع الرسم</th><th>تاريخ التوريد</th><th>رقم الحافظة</th><th>رقم الإشعار</th><th>البيان</th><th>مبلغ التوريد</th></tr></thead><tbody>${rows || '<tr><td colspan="6">لا توجد حركات مطابقة</td></tr>'}</tbody><tfoot><tr><td colspan="5">إجمالي المبالغ المسددة</td><td class="amount">${total.toLocaleString("en-US")}</td></tr></tfoot></table><div class="report-date">تاريخ الطباعة: ${new Date().toLocaleDateString("ar-YE")}</div>`;
     const contentCss = `
@@ -297,8 +296,7 @@ export default function TraineeFinancialDataTab() {
         break;
       }
       if (!imported) {
-        toast.error(
-          "لم أجد ورقة تحتوي الأعمدة المطلوبة (رقم السجل، اسم المتدرب، رسوم القيد والتسجيل)",
+        toast.error(          "لم أجد ورقة تحتوي الأعمدة المطلوبة (رقم السجل، اسم المتدرب، رسوم القيد والتسجيل)",
         );
         return;
       }
@@ -447,7 +445,6 @@ export default function TraineeFinancialDataTab() {
           </div>
         </section>
       )}
-
       <div
         className="overflow-auto rounded-xl border border-slate-400 bg-white shadow-sm"
         style={{ maxHeight: "calc(100dvh - 280px)" }}
@@ -490,7 +487,7 @@ export default function TraineeFinancialDataTab() {
                   )}
                 </th>
               ))}
-              <th className="sticky left-0 border border-slate-500 bg-[#126c8e] px-2 py-2">
+              <th className="whitespace-nowrap border border-slate-500 bg-[#126c8e] px-2 py-2">
                 إجراءات
               </th>
             </tr>
@@ -509,7 +506,7 @@ export default function TraineeFinancialDataTab() {
                     {formatValue(row[header], header)}
                   </td>
                 ))}
-                <td className="sticky left-0 whitespace-nowrap border border-slate-300 bg-white px-1 py-1">
+                <td className="whitespace-nowrap border border-slate-300 bg-white px-1 py-1">
                   <button
                     type="button"
                     title="تحرير الصف"
@@ -597,8 +594,7 @@ export default function TraineeFinancialDataTab() {
             </header>
             <div className="max-h-[calc(92dvh-90px)] overflow-auto p-3">
               <p className="mb-2 text-xs font-bold text-slate-600">
-                تُعرض حركات رسوم القيد والتسجيل والامتحانات/الاختبارات فقط إذا توفر رقم الحافظة ورقم
-                الإشعار ومبلغ توريد موجب.
+                تُعرض حركات رسوم القيد والتسجيل والامتحانات/الاختبارات فقط إذا توفر رقم الحافظة ورقم                الإشعار ومبلغ توريد موجب.
               </p>
               <div className="overflow-auto rounded-lg border border-slate-300">
                 <table className="w-full border-collapse text-center text-xs" dir="rtl">
