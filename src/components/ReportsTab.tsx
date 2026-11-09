@@ -2039,7 +2039,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                         }
                       >
                         <td data-col-key="idx" className="border border-black px-2 py-2 font-bold" style={isTotal ? totalCellStyle : traineeRowCellStyle}>
-                          {isOpening ? "—" : isTotal ? "★" : index + 1}
+                          {isOpening ? "—" : isTotal ? "★" : source === "traineeFeeStatus" ? index - 3 : index + 1}
                         </td>
 
                         {sourceConfig.columns.map((col) => {
