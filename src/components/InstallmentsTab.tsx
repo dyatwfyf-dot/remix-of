@@ -2289,27 +2289,56 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         break-inside: avoid;
       }
       .info-box {
-    border: 1px solid #000;
-      background: #CDD5AE;
-      padding: 2mm 1.5mm;
-      min-height: 12mm;
-      border-radius: 1.5mm;
-      text-align: center;
-      box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        border: 1.5px solid #0f172a;
+        background: #dbeafe;
+        padding: 2.5mm 2mm;
+        min-height: 16mm;
+        border-radius: 2mm;
+        text-align: center;
+        box-sizing: border-box;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .info-box:nth-child(1) {
+        background: #dbeafe !important;
+        border-color: #2563eb !important;
+      }
+      .info-box:nth-child(2) {
+        background: #fef3c7 !important;
+        border-color: #d97706 !important;
+      }
+      .info-box:nth-child(3) {
+        background: #ede9fe !important;
+        border-color: #7c3aed !important;
+      }
+      .info-box:nth-child(4) {
+        background: #d1fae5 !important;
+        border-color: #059669 !important;
       }
       .info-lbl {
-        font-size: 20px;
-        font-weight: 700;
-        color: #0f766e;
-        margin-bottom: 2px;
+        width: 100%;
+        font-size: 19px;
+        line-height: 1.35;
+        font-weight: 900 !important;
+        color: #172554 !important;
+        margin: 0;
+        text-align: center !important;
       }
       .info-val {
-        font-size: 20px;
-        font-weight: 900;
+        width: 100%;
+        font-size: 22px;
+        line-height: 1.4;
+        font-weight: 900 !important;
         color: #000000 !important;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        text-align: center !important;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
       }
       .table-wrapper {
         flex: 1 1 auto;
