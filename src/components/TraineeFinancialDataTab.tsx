@@ -124,10 +124,13 @@ export default function TraineeFinancialDataTab() {
       const name = normalizeTraineeName(installment.name);
       if (!name) return;
 
-      const existingIndex = nextRecords.findIndex((record) =>
-        normalizeTraineeName(record[HEADERS[2]]) === name &&
-        isSixthBatch(record[HEADERS[3]])
-      );
+      const existingIndex = nextRecords.findIndex((record) => {
+        const sameName = normalizeTraineeName(record[HEADERS[2]]) === name;
+        const existingBatch = normalize(record[HEADERS[3]]);
+        // استكمل رقم الدفعة للمتدرب الموجود إذا كان حقل الدفعة فارغاً،
+        // أو حدّث التخصص الناقص إذا كان مسجلاً بالفعل في الدفعة السادسة.
+        return sameName && (!existingBatch || isSixthBatch(existingBatch));
+      });
 
       if (existingIndex >= 0) {
         const existing = nextRecords[existingIndex];
