@@ -1343,7 +1343,7 @@ export default function ReportsTab() {
   }
   
   const isCustodySource = source === "youssefLoan" || source === "tawfiqCustody";
-  const orderedRows = isCustodySource || source === "traineeFeeStatus" || (source === "trainee" && !traineeHasUserSorted) ?
+  const orderedRows = isCustodySource || (source === "trainee" && !traineeHasUserSorted) ?
    filtered : [...filtered].sort((a, b) => {
     // عند الفرز فقط، يبقى إجمالي الرسم العام في النهاية، بينما تتبع إجماليات المتدرب اسمه.
     if (source === "trainee") {
