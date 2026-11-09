@@ -1204,20 +1204,14 @@ export default function ReportsTab() {
     title: "تقرير حالة سداد رسوم القيد والتسجيل والأقساط والامتحانات منذ 2022",
     columns: [
      { key: "trainee", label: "اسم المتدرب" },
-     { key: "registryNo", label: "رقم السجل" },
      { key: "batch", label: "الدفعة" },
-     { key: "level", label: "المستوى" },
      { key: "specialty", label: "التخصص" },
-     { key: "registrationDue", label: "المستحق للقيد والتسجيل" },
-     { key: "registrationPaid", label: "المسدد للقيد والتسجيل" },
-     { key: "registrationStatus", label: "حالة القيد والتسجيل" },
+     { key: "registrationDue", label: "المستحق للقيد والتسجيل والأقساط" },
+     { key: "registrationPaid", label: "المسدد للقيد والتسجيل والأقساط" },
+     { key: "registrationStatus", label: "حالة سداد القيد والتسجيل والأقساط" },
      { key: "examDue", label: "المستحق للامتحانات" },
      { key: "examPaid", label: "المسدد للامتحانات" },
-     { key: "examStatus", label: "حالة الامتحانات" },
-     { key: "registrationLastDate", label: "آخر توريد للقيد" },
-     { key: "examLastDate", label: "آخر توريد للامتحانات" },
-     { key: "overallStatus", label: "التصنيف العام" },
-     { key: "cardNote", label: "ملاحظات بطاقة المتدرب" },
+     { key: "examStatus", label: "حالة سداد الامتحانات" },
     ],
    };
   }
@@ -1336,12 +1330,27 @@ export default function ReportsTab() {
    const traineeRows = selectedTraineeFeeStatus === "all"
     ? allTraineeRows
     : allTraineeRows.filter((row) => row.statusKey === selectedTraineeFeeStatus);
+   const sortedTraineeRows = [...traineeRows].sort((a, b) => {
+    const aValue = a[activeSortCol];
+    const bValue = b[activeSortCol];
+    const aMissing = aValue === undefined || aValue === null || aValue === "";
+    const bMissing = bValue === undefined || bValue === null || bValue === "";
+    if (aMissing || bMissing) return aMissing === bMissing ? 0 : aMissing ? 1 : -1;
+    const aNumber = Number(aValue);
+    const bNumber = Number(bValue);
+    const bothNumeric = String(aValue).trim() !== "" && String(bValue).trim() !== "" &&
+     Number.isFinite(aNumber) && Number.isFinite(bNumber);
+    const comparison = bothNumeric
+     ? aNumber - bNumber
+     : String(aValue).localeCompare(String(bValue), "ar", { numeric: true, sensitivity: "base" });
+    return activeSortDir === "asc" ? comparison : -comparison;
+   });
    return [
     ...summaryRows.map((summary) => ({
      ...summary,
      statusSummaryCount: allTraineeRows.filter((row) => row.statusKey === summary.statusKey).length,
     })),
-    ...traineeRows,
+    ...sortedTraineeRows,
    ];
   }
   
