@@ -824,9 +824,29 @@ export const useStore = create<State>()(
 
           return {
             trainees: d.trainees ? [...s.trainees, ...d.trainees] : s.trainees,
-            traineeFinancialRecords: d.traineeFinancialRecords ?? s.traineeFinancialRecords,
-            traineeFinancialCustomColumns:
-              d.traineeFinancialCustomColumns ?? s.traineeFinancialCustomColumns,
+            traineeFinancialRecords: (d.traineeFinancialRecords ?? s.traineeFinancialRecords).map((record: TraineeFinancialRecord) => {
+              const name = String(record["اسم المتدرب حسب الشهادة"] ?? "")
+                .trim()
+                .replace(/[ًٌٍَُِّْـ]/g, "")
+                .replace(/[إأآ]/g, "ا")
+                .replace(/\s+/g, " ");
+              const batch = String(record["رقم الدفعة"] ?? "").trim();
+              const unclearNames = [
+                "امجد امين غانم الشويع",
+                "ابتسام قراص علي ناصر القهالي",
+                "معين محمد محمد مجمل",
+                "مهيب احمد قاسم الحكيمي",
+                "نجيب محمد علي مقبل",
+              ];
+              if (unclearNames.includes(name) && (!batch || batch === "غير محدد")) {
+                return { ...record, "المستوى الحالي": "" };
+              }
+              return record;
+            }),
+            traineeFinancialCustomColumns: Array.from(new Set([
+              ...(d.traineeFinancialCustomColumns ?? s.traineeFinancialCustomColumns),
+              "الحالة الأكاديمية",
+            ])),
             journal: d.journal
               ? [
                   ...s.journal,
