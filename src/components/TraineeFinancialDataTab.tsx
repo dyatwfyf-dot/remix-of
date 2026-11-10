@@ -19,8 +19,13 @@ import { useStore, type TraineeFinancialRecord } from "@/lib/store";
 import { isRegistrationFeeDescription } from "@/lib/feeClassification";
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import { escapeHtml, reportLetterheadHtml } from "@/lib/printTableHtml";
+import { recalculateTraineeFinancialRecord, STUDY_YEARS_HEADER } from "@/lib/traineeFinancialCalculations";
 
 const HEADERS = database.headers as string[];
+const REGISTRY_HEADER = HEADERS[1];
+const VISIBLE_BASE_HEADERS = [
+  HEADERS[0], HEADERS[2], HEADERS[3], HEADERS[4], STUDY_YEARS_HEADER, ...HEADERS.slice(5),
+];
 const SHEET_NAME = database.sheetName;
 const TITLE = database.title;
 const RULES = database.rules;
@@ -56,7 +61,7 @@ export default function TraineeFinancialDataTab() {
   const hafiza = useStore((state) => state.hafiza);
   const installments2026 = useStore((state) => state.installments);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const columns = useMemo(() => [...HEADERS, ...customColumns], [customColumns]);
+  const columns = useMemo(() => [...VISIBLE_BASE_HEADERS, ...customColumns], [customColumns]);
   const [query, setQuery] = useState("");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [draft, setDraft] = useState<TraineeFinancialRecord>({});
@@ -313,7 +318,9 @@ export default function TraineeFinancialDataTab() {
       return;
     }
     const next = [...records];
-    const nextRow = Object.fromEntries(columns.map((header) => [header, draft[header] ?? ""]));
+    const nextRow = recalculateTraineeFinancialRecord(
+      Object.fromEntries(columns.map((header) => [header, draft[header] ?? ""])),
+    );
     if (editingIndex === next.length) next.push(nextRow);
     else next[editingIndex] = nextRow;
     setRecords(next);
@@ -373,16 +380,20 @@ export default function TraineeFinancialDataTab() {
         });
         const headerIndex = matrix.findIndex((row) => {
           const values = new Set(row.map(normalize));
-          return values.has(HEADERS[1]) && values.has(HEADERS[2]) && values.has(HEADERS[6]);
+          return values.has(HEADERS[2]) && values.has(HEADERS[6]);
         });
         if (headerIndex < 0) continue;
         const sourceHeaders = matrix[headerIndex].map(normalize);
         const importedCustomColumns = sourceHeaders.filter(
-          (header) => header && !HEADERS.includes(header),
+          (header) =>
+            header &&
+            !HEADERS.includes(header) &&
+            header !== STUDY_YEARS_HEADER &&
+            header !== REGISTRY_HEADER,
         );
         const mergedCustomColumns = [...new Set([...customColumns, ...importedCustomColumns])];
         nextCustomColumns = mergedCustomColumns;
-        const importedColumns = [...HEADERS, ...mergedCustomColumns];
+        const importedColumns = [...VISIBLE_BASE_HEADERS, ...mergedCustomColumns];
         const indexes = importedColumns.map((header) => sourceHeaders.indexOf(header));
         const rows = matrix.slice(headerIndex + 1).flatMap((row) => {
           if (!row.some((value) => normalize(value))) return [];
@@ -400,7 +411,7 @@ export default function TraineeFinancialDataTab() {
       }
       if (!imported) {
         toast.error(
-          "لم أجد ورقة تحتوي الأعمدة المطلوبة (رقم السجل، اسم المتدرب، رسوم القيد والتسجيل)",
+          "لم أجد ورقة تحتوي الأعمدة المطلوبة (اسم المتدرب، رسوم القيد والتسجيل)",
         );
         return;
       }
@@ -522,6 +533,9 @@ export default function TraineeFinancialDataTab() {
               </button>
             </div>
           </div>
+          <p className="mb-2 text-xs font-semibold leading-6 text-slate-600">
+            تُحسب الرسوم الدراسية تلقائيًا بمبلغ 300,000 ريال عن كل سنة دراسة، مع إعفاء الدفعة الأولى من الرسوم الدراسية فقط. وتُحدّث حالات مراحل الامتحانات والإجماليات عند تعديل المستوى.
+          </p>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {columns.map((header) => (
               <label
@@ -531,16 +545,21 @@ export default function TraineeFinancialDataTab() {
                 {header}
                 <input
                   value={String(draft[header] ?? "")}
+                  type={header === STUDY_YEARS_HEADER ? "number" : "text"}
+                  min={header === STUDY_YEARS_HEADER ? 1 : undefined}
+                  step={header === STUDY_YEARS_HEADER ? 1 : undefined}
                   onChange={(event) =>
-                    setDraft((current) => ({
-                      ...current,
-                      [header]:
-                        CURRENCY_COLUMNS.has(header) &&
-                        event.target.value !== "" &&
-                        Number.isFinite(Number(event.target.value.replace(/[,٬\s]/g, "")))
-                          ? Number(event.target.value.replace(/[,٬\s]/g, ""))
-                          : event.target.value,
-                    }))
+                    setDraft((current) =>
+                      recalculateTraineeFinancialRecord({
+                        ...current,
+                        [header]:
+                          (CURRENCY_COLUMNS.has(header) || header === STUDY_YEARS_HEADER) &&
+                          event.target.value !== "" &&
+                          Number.isFinite(Number(event.target.value.replace(/[,٬\s]/g, "")))
+                            ? Number(event.target.value.replace(/[,٬\s]/g, ""))
+                            : event.target.value,
+                      }),
+                    )
                   }
                   className="min-w-0 rounded-md border border-slate-300 px-2 py-2 text-sm font-semibold text-black outline-none focus:border-sky-600"
                 />
@@ -600,7 +619,7 @@ export default function TraineeFinancialDataTab() {
           <tbody>
             {visibleRows.map(({ row, index }) => (
               <tr
-                key={`${index}-${String(row[HEADERS[1]])}`}
+                key={`${index}-${String(row[HEADERS[2]] ?? "")}`}
                 className={index % 2 ? "bg-slate-50" : "bg-white"}
               >
                 {columns.map((header) => (
@@ -643,12 +662,12 @@ export default function TraineeFinancialDataTab() {
           <tfoot className="sticky bottom-0 bg-[#e2eef5] font-extrabold text-black">
             <tr>
               <td
-                colSpan={6}
+                colSpan={VISIBLE_BASE_HEADERS.indexOf(HEADERS[6])}
                 className="border border-slate-500 px-2 py-2 text-right text-[14px] font-black text-black"
               >
                 الإجمالي العام ({records.length} متدربًا)
               </td>
-              {HEADERS.slice(6).map((header) => (
+              {columns.slice(VISIBLE_BASE_HEADERS.indexOf(HEADERS[6]), VISIBLE_BASE_HEADERS.length).map((header) => (
                 <td key={header} className="max-w-[280px] border border-slate-500 px-2 py-2 text-[14px] font-black text-black [overflow-wrap:anywhere]">
                   {totals[header] !== undefined
                     ? Number(totals[header]).toLocaleString("en-US")
