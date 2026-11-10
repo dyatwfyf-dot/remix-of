@@ -317,6 +317,7 @@ const EXPENSES_TABLE_CSS = `
 .mizan-expenses-tab .expenses-month-table col.month-name { width:26%; }
 .mizan-expenses-tab .expenses-month-table col.month-value { width:5%; }
 .mizan-expenses-tab .expenses-month-table col.month-total { width:14%; }
+.mizan-expenses-tab .expenses-year-table { min-width:900px !important; }
 .mizan-expenses-tab .expenses-subtabs button { min-height:38px; padding:8px 12px; font-size:13px; }
 @media (max-width:640px) {
  .mizan-expenses-tab .expenses-fit-table th,.mizan-expenses-tab .expenses-fit-table td { padding:4px 1px !important; font-size:12px !important; line-height:1.3; }
@@ -326,6 +327,7 @@ const EXPENSES_TABLE_CSS = `
  .mizan-expenses-tab .expenses-main-table col.expense-value { width:8%; }
  .mizan-expenses-tab .expenses-month-table th,.mizan-expenses-tab .expenses-month-table td { font-size:10.5px !important; padding:3px 0 !important; }
  .mizan-expenses-tab .expenses-month-table td:first-child { font-size:11px !important; }
+ .mizan-expenses-tab .expenses-year-table .numeric-cell { font-size:10px !important; white-space:nowrap !important; }
  .mizan-expenses-tab .expenses-subtabs button { min-height:40px; padding:8px 11px; font-size:13px; }
 }
 `;
@@ -736,7 +738,7 @@ export default function ExpensesTab() {
             <p className="text-xs opacity-90">ملخص جميع الأشهر للعام {year}م</p>
           </div>
           <div className="overflow-auto max-h-[65vh]">
-            <table className="expenses-fit-table expenses-month-table w-full border-collapse text-sm">
+            <table className="expenses-fit-table expenses-month-table expenses-year-table w-full border-collapse text-sm">
               <colgroup><col className="month-name" />{Array.from({ length: 12 }, (_, i) => <col key={i} className="month-value" />)}<col className="month-total" /></colgroup>
               <thead className="font-bold text-xs sticky top-0 z-20">
                 <tr>
@@ -772,7 +774,7 @@ export default function ExpensesTab() {
             <p className="text-xs opacity-80">المبالغ بالريال — الشهر الجاري فقط</p>
           </div>
           <div className="overflow-auto">
-            <table className="expenses-fit-table expenses-month-table w-full border-collapse text-sm">
+            <table className="expenses-fit-table expenses-month-table expenses-year-table w-full border-collapse text-sm">
               <colgroup><col className="month-name" />{Array.from({ length: 12 }, (_, i) => <col key={i} className="month-value" />)}<col className="month-total" /></colgroup>
               <thead className="font-bold text-xs sticky top-0 z-10">
                 <tr>
@@ -878,7 +880,7 @@ export default function ExpensesTab() {
               if (!el) return;
               const html = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escapeHtml(`المصروفات - ${view} - ${reportDateLabel}`)}</title>
                 <style>
-                @page { size: A4 portrait; margin: 3mm; }
+                @page { size: A4 ${view === "year" ? "landscape" : "portrait"}; margin: 3mm; }
                 * { box-sizing: border-box; }
                 html, body { margin: 0; padding: 0; }
                 body { direction: rtl; background: #f1f5f9; color: #000; font-family: Cairo; font-weight: 900; }
@@ -937,6 +939,8 @@ export default function ExpensesTab() {
                 #expenses-report .expenses-month-table col.month-name { width:26%; }
                 #expenses-report .expenses-month-table col.month-value { width:5%; }
                 #expenses-report .expenses-month-table col.month-total { width:14%; }
+                #expenses-report .expenses-year-table { width:100% !important; min-width:0 !important; }
+                #expenses-report .expenses-year-table .numeric-cell { font-size:10px !important; }
                 @media print {
                   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                   body { background: #fff; }
