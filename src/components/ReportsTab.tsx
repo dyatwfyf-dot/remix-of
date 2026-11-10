@@ -415,6 +415,26 @@ const buildReportsScreenPrintHtml = (
      printCell.classList.contains("reports-numeric-cell") ||
      printCell.classList.contains("reports-no-wrap-cell") ||
      printCell.dataset.colKey === "idx";
+    if (
+     source === "traineeFeeStatus" &&
+     printCell.tagName === "TH" &&
+     printCell.parentElement?.classList.contains("reports-column-header-row")
+    ) {
+     // رؤوس تقرير حالة السداد تلتف داخل عرض العمود بدلاً من وراثة منع الالتفاف.
+     printCell.style.setProperty("white-space", "normal", "important");
+     printCell.style.setProperty("word-break", "normal", "important");
+     printCell.style.setProperty("overflow-wrap", "anywhere", "important");
+     printCell.style.setProperty("min-width", "0", "important");
+     printCell.style.setProperty("max-width", "100%", "important");
+     printCell.style.setProperty("line-height", "1.25", "important");
+     printCell.querySelectorAll<HTMLElement>("div, span").forEach((element) => {
+      element.style.setProperty("display", "block", "important");
+      element.style.setProperty("width", "100%", "important");
+      element.style.setProperty("min-width", "0", "important");
+      element.style.setProperty("white-space", "normal", "important");
+      element.style.setProperty("overflow-wrap", "anywhere", "important");
+     });
+    }
     if (isCustodyReport && !isNumericCell) {
      // Allow text to wrap naturally instead of shrinking or clipping it.
      printCell.style.setProperty("white-space", "normal", "important");
@@ -1583,7 +1603,7 @@ export default function ReportsTab() {
    #tableContainer table.reports-data-table tbody { display:table-row-group!important; }
    #tableContainer table.reports-data-table tr, #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td, #tableContainer table.reports-data-table .pdf-cell-text { page-break-inside:avoid!important; break-inside:avoid!important; font-size:${fontSizePx}px!important; }
    #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td { min-width:0!important; max-width:100%!important; overflow-wrap:anywhere!important; }
-   ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:fixed!important; } #tableContainer table.reports-fee-status-table th, #tableContainer table.reports-fee-status-table td { font-size:${fontSizePx}px!important; color:#111111!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; padding-left:0!important; padding-right:0!important; }` : ""}
+   ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:fixed!important; border-collapse:collapse!important; } #tableContainer table.reports-fee-status-table th, #tableContainer table.reports-fee-status-table td { box-sizing:border-box!important; min-width:0!important; max-width:100%!important; font-size:${fontSizePx}px!important; color:#111111!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; padding-left:3px!important; padding-right:3px!important; vertical-align:middle!important; } #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th { white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; line-height:1.25!important; } #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th > div, #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th > div > span { display:block!important; width:100%!important; min-width:0!important; white-space:normal!important; overflow-wrap:anywhere!important; }` : ""}
    ${source === "trainee" ? `#tableContainer table.reports-trainee-payment-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:auto!important; } #tableContainer table.reports-trainee-payment-table thead tr.reports-column-header-row th { font-size:${fontSizePx}px!important; white-space:normal!important; overflow-wrap:anywhere!important; } #tableContainer table.reports-trainee-payment-table tbody tr > td { font-size:${fontSizePx}px!important; white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important; } #tableContainer table.reports-trainee-payment-table tbody td.reports-numeric-cell { white-space:nowrap!important; overflow-wrap:normal!important; }` : ""}
    ${isCustodyReport ? custodyPortraitPrintCss : ""}
    #tableContainer table.reports-data-table tr.signature-block-row, #tableContainer table.reports-data-table tr.signature-block-row td { page-break-inside:avoid!important; break-inside:avoid!important; }
