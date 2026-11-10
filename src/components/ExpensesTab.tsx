@@ -462,7 +462,8 @@ export default function ExpensesTab() {
           إجمالي الاستخدامات — ملخص حسب الأبواب
         </div>
         <div className="overflow-visible">
-          <table className="expenses-fit-table expenses-summary-table w-full border-collapse text-sm sm:text-base">\n            <colgroup><col className="summary-name" />{Array.from({ length: 6 }, (_, i) => <col key={i} className="summary-value" />)}</colgroup>
+          <table className="expenses-fit-table expenses-summary-table w-full border-collapse text-sm sm:text-base">
+            <colgroup><col className="summary-name" />{Array.from({ length: 6 }, (_, i) => <col key={i} className="summary-value" />)}</colgroup>
             <thead className="font-bold text-sm">
               <tr>
                 <TH rowSpan={2} cls="bg-slate-200 text-slate-800 text-center w-1/4">
@@ -587,7 +588,8 @@ export default function ExpensesTab() {
       <div className="space-y-0" dir="rtl">
         <div className="w-full min-w-auto overflow-hidden rounded-lg border border-black bg-white shadow-sm text-center">
           <div className="overflow-visible">
-            <table className="expenses-fit-table expenses-main-table w-full border-collapse text-sm">\n              <colgroup><col className="expense-name" />{Array.from({ length: 4 }, (_, i) => <col key={i} className="expense-code" />)}{Array.from({ length: 6 }, (_, i) => <col key={i} className="expense-value" />)}</colgroup>
+            <table className="expenses-fit-table expenses-main-table w-full border-collapse text-sm">
+              <colgroup><col className="expense-name" />{Array.from({ length: 4 }, (_, i) => <col key={i} className="expense-code" />)}{Array.from({ length: 6 }, (_, i) => <col key={i} className="expense-value" />)}</colgroup>
               <thead className="sticky top-0 z-10 font-bold text-sm">
                 <tr>
                   {/* تغيير تنسيق الرأس ليكون متوسط النص بدلاً من المحاذاة لليمين فقط */}
@@ -734,7 +736,8 @@ export default function ExpensesTab() {
             <p className="text-xs opacity-90">ملخص جميع الأشهر للعام {year}م</p>
           </div>
           <div className="overflow-auto max-h-[65vh]">
-            <table className="expenses-fit-table expenses-month-table w-full border-collapse text-sm">\n              <colgroup><col className="month-name" />{Array.from({ length: 12 }, (_, i) => <col key={i} className="month-value" />)}<col className="month-total" /></colgroup>
+            <table className="expenses-fit-table expenses-month-table w-full border-collapse text-sm">
+              <colgroup><col className="month-name" />{Array.from({ length: 12 }, (_, i) => <col key={i} className="month-value" />)}<col className="month-total" /></colgroup>
               <thead className="font-bold text-xs sticky top-0 z-20">
                 <tr>
                   <TH cls="bg-slate-200 text-slate-800 text-center w-1/4">البيان</TH>
@@ -769,7 +772,8 @@ export default function ExpensesTab() {
             <p className="text-xs opacity-80">المبالغ بالريال — الشهر الجاري فقط</p>
           </div>
           <div className="overflow-auto">
-            <table className="expenses-fit-table expenses-month-table w-full border-collapse text-sm">\n              <colgroup><col className="month-name" />{Array.from({ length: 12 }, (_, i) => <col key={i} className="month-value" />)}<col className="month-total" /></colgroup>
+            <table className="expenses-fit-table expenses-month-table w-full border-collapse text-sm">
+              <colgroup><col className="month-name" />{Array.from({ length: 12 }, (_, i) => <col key={i} className="month-value" />)}<col className="month-total" /></colgroup>
               <thead className="font-bold text-xs sticky top-0 z-10">
                 <tr>
                   <TH cls="bg-slate-200 text-slate-800 text-center w-1/4">البيان</TH>
@@ -841,7 +845,8 @@ export default function ExpensesTab() {
   ];
   
   return (
-    <div className="mizan-expenses-tab sheet-tabs-ui space-y-3" dir="rtl">\n      <style>{EXPENSES_TABLE_CSS}</style>
+    <div className="mizan-expenses-tab sheet-tabs-ui space-y-3" dir="rtl">
+      <style>{EXPENSES_TABLE_CSS}</style>
       {/* شريط التبويبات + أزرار */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-2">
         <div className="expenses-subtabs bg-slate-100 p-1.5 rounded-xl border border-slate-200 overflow-x-auto flex-1 min-w-0">
@@ -921,7 +926,8 @@ export default function ExpensesTab() {
                 #expenses-report .numeric-cell,#expenses-report .date-cell,#expenses-report .font-bold,#expenses-report input[type="number"],#expenses-report input[type="date"] { min-width:0 !important; white-space:nowrap !important; overflow:visible !important; overflow-wrap:normal !important; word-break:keep-all !important; font-family:Cairo,sans-serif !important; font-size:13px !important; font-variant-numeric:tabular-nums; direction:ltr; }
                 #expenses-report input { width: 100% !important; min-width: 0 !important; border: 0; background: transparent; color: #000; font: inherit; text-align: center; }
                 #expenses-report .text-white { color: #fff !important; }
-                ${EXPENSES_TABLE_CSS}\n                #expenses-report .expenses-fit-table { width:100% !important; min-width:0 !important; table-layout:fixed !important; }
+                ${EXPENSES_TABLE_CSS}
+                #expenses-report .expenses-fit-table { width:100% !important; min-width:0 !important; table-layout:fixed !important; }
                 #expenses-report .expenses-fit-table th,#expenses-report .expenses-fit-table td { padding:4px 2px !important; font-size:14px !important; }
                 #expenses-report .expenses-main-table col.expense-name { width:31%; }
                 #expenses-report .expenses-main-table col.expense-code { width:5%; }
