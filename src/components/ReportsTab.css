@@ -119,6 +119,26 @@
   font-size: 12px;
 }
 
+.reports-table-scroll table.reports-fee-status-table {
+  width: max-content;
+  min-width: 100%;
+  table-layout: auto;
+}
+.reports-table-scroll .reports-fee-status-table thead th,
+.reports-table-scroll .reports-fee-status-table tbody td {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  font-size: 15px !important;
+  font-weight: 850 !important;
+  color: #111111 !important;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+}
+.reports-table-scroll .reports-fee-status-table thead th {
+  font-size: 14px !important;
+}
+
 .reports-table-scroll .reports-data-table thead th {
   position: sticky;
   top: 0;
@@ -326,6 +346,16 @@
   .reports-table-scroll .reports-data-table tbody td {
     border: 1px solid #000000 !important;
     position: static !important; box-shadow: none !important; }
+  .reports-table-scroll .reports-fee-status-table thead th,
+  .reports-table-scroll .reports-fee-status-table tbody td {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    font-size: 12px !important;
+    color: #111111 !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
 }
 
 

@@ -1521,16 +1521,20 @@ export default function ReportsTab() {
   setPrintSettingsOpen(true);
  };
  const printReportWithSettings = (settings: InstallmentsPrintSettings) => {
+  const printOrientation = source === "traineeFeeStatus" ? "landscape" : settings.orientation;
   const marginMm = settings.margin === "narrow" ? 2 : settings.margin === "wide" ? 10 : 6;
   const pageWidthMm = settings.pageSize === "A3"
-   ? (settings.orientation === "landscape" ? 420 : 297)
-   : (settings.orientation === "landscape" ? 297 : 210);
+   ? (printOrientation === "landscape" ? 420 : 297)
+   : (printOrientation === "landscape" ? 297 : 210);
   const visibleColumnCount = Math.max(1,
    sourceConfig.columns.filter((column) => !settings.hiddenColumns.includes(column.key)).length +
    (settings.hiddenColumns.includes("idx") ? 0 : 1));
-  const fontSizePx = settings.fontMode === "manual"
+  const configuredFontSize = settings.fontMode === "manual"
    ? Math.max(5, Math.min(14, settings.fontSize))
    : Math.max(7, Math.min(13, (pageWidthMm - marginMm * 2) / (visibleColumnCount * 2.35)));
+  const fontSizePx = source === "traineeFeeStatus"
+   ? Math.max(12, Math.min(14, configuredFontSize + 2))
+   : configuredFontSize;
   const tableHtml = buildReportsScreenPrintHtml(source, settings.showHeader ? reportDateLabel : "", reportRecordCount, settings);
   const finalCss = `
    #tableContainer .reports-print-table-shell { width:100%!important; min-width:0!important; max-width:100%!important; overflow:visible!important; }
@@ -1539,6 +1543,7 @@ export default function ReportsTab() {
    #tableContainer table.reports-data-table tbody { display:table-row-group!important; }
    #tableContainer table.reports-data-table tr, #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td, #tableContainer table.reports-data-table .pdf-cell-text { page-break-inside:avoid!important; break-inside:avoid!important; font-size:${fontSizePx}px!important; }
    #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td { min-width:0!important; max-width:100%!important; overflow-wrap:anywhere!important; }
+   ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table th, #tableContainer table.reports-fee-status-table td { font-size:${fontSizePx}px!important; color:#111111!important; white-space:nowrap!important; word-break:keep-all!important; overflow-wrap:normal!important; padding-left:0!important; padding-right:0!important; }` : ""}
    #tableContainer table.reports-data-table tr.signature-block-row, #tableContainer table.reports-data-table tr.signature-block-row td { page-break-inside:avoid!important; break-inside:avoid!important; }
   `;
   const opened = openBrowserPrintPreview({
@@ -1547,7 +1552,7 @@ export default function ReportsTab() {
    tableHtml,
    contentCss: reportDocumentCss,
    finalCss: `${reportsTabPrintCss}\n${finalCss}`,
-   defaultOrientation: settings.orientation,
+   defaultOrientation: printOrientation,
    defaultPageSize: settings.pageSize,
    defaultMarginMm: marginMm,
   });
@@ -1784,7 +1789,7 @@ export default function ReportsTab() {
         
         <div className="reports-table-panel p-3 sm:p-4">
           <div className="reports-table-scroll">
-            <table id="reports-table" className={`reports-data-table text-center text-xs ${source === "trainee" ? "reports-trainee-payment-table" : ""}`} style={{ tableLayout: "auto" }}>
+            <table id="reports-table" className={`reports-data-table text-center text-xs ${source === "trainee" ? "reports-trainee-payment-table" : ""} ${source === "traineeFeeStatus" ? "reports-fee-status-table" : ""}`} style={{ tableLayout: "auto" }}>
               <thead>
                 <>
                   <tr className="reports-custody-title-row">
