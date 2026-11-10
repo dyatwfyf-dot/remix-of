@@ -533,6 +533,9 @@ export default function TraineeFinancialDataTab() {
               </button>
             </div>
           </div>
+          <p className="mb-2 text-xs font-semibold leading-6 text-slate-600">
+            تُحسب الرسوم الدراسية تلقائيًا بمبلغ 300,000 ريال عن كل سنة دراسة، مع إعفاء الدفعة الأولى من الرسوم الدراسية فقط. وتُحدّث حالات مراحل الامتحانات والإجماليات عند تعديل المستوى.
+          </p>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {columns.map((header) => (
               <label
@@ -664,7 +667,7 @@ export default function TraineeFinancialDataTab() {
               >
                 الإجمالي العام ({records.length} متدربًا)
               </td>
-              {columns.slice(VISIBLE_BASE_HEADERS.indexOf(HEADERS[6])).map((header) => (
+              {columns.slice(VISIBLE_BASE_HEADERS.indexOf(HEADERS[6]), VISIBLE_BASE_HEADERS.length).map((header) => (
                 <td key={header} className="max-w-[280px] border border-slate-500 px-2 py-2 text-[14px] font-black text-black [overflow-wrap:anywhere]">
                   {totals[header] !== undefined
                     ? Number(totals[header]).toLocaleString("en-US")
