@@ -824,7 +824,7 @@ export const useStore = create<State>()(
 
           return {
             trainees: d.trainees ? [...s.trainees, ...d.trainees] : s.trainees,
-            traineeFinancialRecords: (d.traineeFinancialRecords ?? s.traineeFinancialRecords).map((record) => {
+            traineeFinancialRecords: (d.traineeFinancialRecords ?? s.traineeFinancialRecords).map((record: TraineeFinancialRecord) => {
               const name = String(record["اسم المتدرب حسب الشهادة"] ?? "")
                 .trim()
                 .replace(/[ًٌٍَُِّْـ]/g, "")
