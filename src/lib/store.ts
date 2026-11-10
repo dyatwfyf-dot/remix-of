@@ -843,8 +843,10 @@ export const useStore = create<State>()(
               }
               return record;
             }),
-            traineeFinancialCustomColumns:
-              d.traineeFinancialCustomColumns ?? s.traineeFinancialCustomColumns,
+            traineeFinancialCustomColumns: Array.from(new Set([
+              ...(d.traineeFinancialCustomColumns ?? s.traineeFinancialCustomColumns),
+              "الحالة الأكاديمية",
+            ])),
             journal: d.journal
               ? [
                   ...s.journal,
