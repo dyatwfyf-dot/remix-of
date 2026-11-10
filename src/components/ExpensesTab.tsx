@@ -304,6 +304,32 @@ const PREV_C = "bg-sky-50";
 const TOT_H = "bg-emerald-200 text-black-900";
 const TOT_C = "bg-emerald-50";
 
+// تنسيق موحّد لعرض جداول المصروفات على كامل عرض الشاشة مع الحفاظ على لوحة الألوان الحالية.
+const EXPENSES_TABLE_CSS = `
+.mizan-expenses-tab .expenses-fit-table { width:100% !important; min-width:0 !important; table-layout:fixed !important; border-collapse:collapse; }
+.mizan-expenses-tab .expenses-fit-table th,.mizan-expenses-tab .expenses-fit-table td { box-sizing:border-box; padding:5px 3px !important; font-size:clamp(12px,1.05vw,15px) !important; line-height:1.35; white-space:normal !important; overflow-wrap:anywhere; word-break:normal; }
+.mizan-expenses-tab .expenses-fit-table .numeric-cell { font-size:clamp(12px,1vw,14px) !important; white-space:nowrap !important; overflow-wrap:normal; }
+.mizan-expenses-tab .expenses-main-table col.expense-name { width:31%; }
+.mizan-expenses-tab .expenses-main-table col.expense-code { width:5%; }
+.mizan-expenses-tab .expenses-main-table col.expense-value { width:8.166%; }
+.mizan-expenses-tab .expenses-summary-table col.summary-name { width:30%; }
+.mizan-expenses-tab .expenses-summary-table col.summary-value { width:10%; }
+.mizan-expenses-tab .expenses-month-table col.month-name { width:26%; }
+.mizan-expenses-tab .expenses-month-table col.month-value { width:5%; }
+.mizan-expenses-tab .expenses-month-table col.month-total { width:14%; }
+.mizan-expenses-tab .expenses-subtabs button { min-height:38px; padding:8px 12px; font-size:13px; }
+@media (max-width:640px) {
+ .mizan-expenses-tab .expenses-fit-table th,.mizan-expenses-tab .expenses-fit-table td { padding:4px 1px !important; font-size:11px !important; line-height:1.3; }
+ .mizan-expenses-tab .expenses-fit-table .numeric-cell { font-size:11px !important; }
+ .mizan-expenses-tab .expenses-main-table col.expense-name { width:28%; }
+ .mizan-expenses-tab .expenses-main-table col.expense-code { width:5.5%; }
+ .mizan-expenses-tab .expenses-main-table col.expense-value { width:8%; }
+ .mizan-expenses-tab .expenses-month-table th,.mizan-expenses-tab .expenses-month-table td { font-size:10px !important; padding:3px 0 !important; }
+ .mizan-expenses-tab .expenses-month-table td:first-child { font-size:11px !important; }
+ .mizan-expenses-tab .expenses-subtabs button { min-height:40px; padding:8px 11px; font-size:13px; }
+}
+`;
+
 // ===== خلية رأس موحدة =====
 const TH = ({
   children,
@@ -435,8 +461,8 @@ export default function ExpensesTab() {
         <div className="bg-sky-800 text-white text-center py-2 font-bold text-sm tracking-wide">
           إجمالي الاستخدامات — ملخص حسب الأبواب
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-max table-auto border-collapse text-sm sm:text-base">
+        <div className="overflow-visible">
+          <table className="expenses-fit-table expenses-summary-table w-full border-collapse text-sm sm:text-base">\n            <colgroup><col className="summary-name" />{Array.from({ length: 7 }, (_, i) => <col key={i} className="summary-value" />)}</colgroup>
             <thead className="font-bold text-sm">
               <tr>
                 <TH rowSpan={2} cls="bg-slate-200 text-slate-800 text-center w-1/4">
@@ -560,8 +586,8 @@ export default function ExpensesTab() {
     return (
       <div className="space-y-0" dir="rtl">
         <div className="w-full min-w-auto overflow-hidden rounded-lg border border-black bg-white shadow-sm text-center">
-          <div className="overflow-x-auto">
-            <table className="w-auto min-w-auto table-auto border-collapse text-xs sm:text-base">
+          <div className="overflow-visible">
+            <table className="expenses-fit-table expenses-main-table w-full border-collapse text-sm">\n              <colgroup><col className="expense-name" />{Array.from({ length: 4 }, (_, i) => <col key={i} className="expense-code" />)}{Array.from({ length: 6 }, (_, i) => <col key={i} className="expense-value" />)}</colgroup>
               <thead className="sticky top-0 z-10 font-bold text-sm">
                 <tr>
                   {/* تغيير تنسيق الرأس ليكون متوسط النص بدلاً من المحاذاة لليمين فقط */}
@@ -708,7 +734,7 @@ export default function ExpensesTab() {
             <p className="text-xs opacity-90">ملخص جميع الأشهر للعام {year}م</p>
           </div>
           <div className="overflow-auto max-h-[65vh]">
-            <table className="w-full min-w-auto table-auto border-collapse text-sm sm:text-base">
+            <table className="expenses-fit-table expenses-month-table w-full border-collapse text-sm">
               <thead className="font-bold text-xs sticky top-0 z-20">
                 <tr>
                   <TH cls="bg-slate-200 text-slate-800 text-center w-1/4">البيان</TH>
@@ -743,7 +769,7 @@ export default function ExpensesTab() {
             <p className="text-xs opacity-80">المبالغ بالريال — الشهر الجاري فقط</p>
           </div>
           <div className="overflow-auto">
-            <table className="w-full min-w-auto table-auto border-collapse text-sm sm:text-base">
+            <table className="expenses-fit-table expenses-month-table w-full border-collapse text-sm">
               <thead className="font-bold text-xs sticky top-0 z-10">
                 <tr>
                   <TH cls="bg-slate-200 text-slate-800 text-center w-1/4">البيان</TH>
@@ -815,10 +841,10 @@ export default function ExpensesTab() {
   ];
   
   return (
-    <div className="mizan-expenses-tab sheet-tabs-ui space-y-3" dir="rtl">
+    <div className="mizan-expenses-tab sheet-tabs-ui space-y-3" dir="rtl">\n      <style>{EXPENSES_TABLE_CSS}</style>
       {/* شريط التبويبات + أزرار */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="bg-slate-100 p-1.5 rounded-xl border border-slate-200 overflow-x-auto flex-1 min-w-0">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+        <div className="expenses-subtabs bg-slate-100 p-1.5 rounded-xl border border-slate-200 overflow-x-auto flex-1 min-w-0">
           <div className="flex gap-1 w-max min-w-full">
             {subTabs.map((t) => (
               <button
@@ -861,36 +887,41 @@ export default function ExpensesTab() {
   #expenses-report .border-2 { border-width: 2px; }
                 #expenses-report .border-black, #expenses-report .border { border-color: #000 !important; }
                 #expenses-report .shadow, #expenses-report .shadow-sm, #expenses-report .shadow-md { box-shadow: none !important; }
-                #expenses-report .bg-gradient-to-r { background: linear-gradient(90deg, #0f766e, #047857) !important; color: #fff !important; padding: 9px !important; text-align: center; }
-                #expenses-report .bg-sky-800 { background: #115e59 !important; color: #fff !important; padding: 8px !important; text-align: center; }
-                #expenses-report .bg-sky-700 { background: #0f766e !important; color: #fff !important; }
-                #expenses-report .bg-sky-100 { background: #fef3c7 !important; color: #78350f !important; }
-                #expenses-report .bg-sky-50 { background: #f0f9ff !important; color: #1e293b !important; }
-                #expenses-report .bg-slate-50 { background: #f8fafc !important; color: #000 !important; }
-                #expenses-report .bg-white { background: #fff !important; color: #000 !important; }
-                #expenses-report .bg-slate-200 { background: #e2e8f0 !important; color: #000 !important; }
-                #expenses-report .bg-amber-300 { background: #fcd34d !important; color: #78350f !important; }
-                #expenses-report .bg-sky-50 { background: #fffbeb !important; color: #000 !important; }
-                #expenses-report .bg-sky-300 { background: #7dd3fc !important; color: #0c4a6e !important; }
-                #expenses-report .bg-emerald-200 { background: #a7f3d0 !important; color: #064e3b !important; }
-                #expenses-report .bg-emerald-50 { background: #ecfdf5 !important; color: #000 !important; }
-                #expenses-report .bab-1 { background-color: #a7f3d0 !important; color: #064e3b !important; }
-                #expenses-report .bab-2 { background-color: #bfdbfe !important; color: #1e3a8a !important; }
-                #expenses-report .bab-3 { background-color: #f5d0fe !important; color: #701a75 !important; }
-                #expenses-report .bab-4 { background-color: #fed7aa !important; color: #7c2d12 !important; }
-                #expenses-report .bab-5 { background-color: #fecdd3 !important; color: #881337 !important; }
-                #expenses-report .bab-default { background-color: #d1fae5 !important; color: #064e3b !important; }
-                #expenses-report table { width:100%; min-width: auto;table-layout: auto; border-collapse: collapse; font-size: 16px; }
-                #expenses-report th, #expenses-report td {
-                width:100%; 
-                min-width:auto; 
-                border: 1px solid #000 !important; padding: 2px 3px !important; text-align: center !important; vertical-align: middle !important; white-space: normal !important; overflow: visible !important; overflow-wrap: break-word !important; word-break: normal !important; line-height: 1.2; color: #000 !important; font-weight: 700 !important; }
-                #expenses-report thead th { font-size: 13px; font-weight: 900 !important; }
-                #expenses-report tbody td { font-size: 16px; }
-                #expenses-report .numeric-cell, #expenses-report .date-cell, #expenses-report .font-bold, #expenses-report input[type="number"], #expenses-report input[type="date"] { width: 1% !important; min-width: 0 !important; white-space: nowrap !important; overflow: visible !important; overflow-wrap: normal !important; word-break: keep-all !important; font-family: Cairo, sans-serif !important; font-size: clamp(8px, 1vw, 11px) !important; font-variant-numeric: tabular-nums; direction: ltr; }
+                #expenses-report .bg-gradient-to-r { background:linear-gradient(90deg,#123b52,#1f5f7a,#2e6b8a) !important; color:#fff !important; padding:9px !important; text-align:center; }
+                #expenses-report .bg-sky-800 { background:#075985 !important; color:#fff !important; padding:8px !important; text-align:center; }
+                #expenses-report .bg-sky-700 { background:#0369a1 !important; color:#fff !important; }
+                #expenses-report .bg-sky-100 { background:#e0f2fe !important; color:#78350f !important; }
+                #expenses-report .bg-sky-50 { background:#f0f9ff !important; }
+                #expenses-report .bg-slate-50 { background:#f8fafc !important; }
+                #expenses-report .bg-white { background:#fff !important; }
+                #expenses-report .bg-slate-200 { background:#e2e8f0 !important; }
+                #expenses-report .bg-slate-100 { background:#f1f5f9 !important; }
+                #expenses-report .bg-amber-300 { background:#fcd34d !important; color:#78350f !important; }
+                #expenses-report .bg-sky-300 { background:#7dd3fc !important; color:#0c4a6e !important; }
+                #expenses-report .bg-emerald-200 { background:#a7f3d0 !important; color:#064e3b !important; }
+                #expenses-report .bg-emerald-50 { background:#ecfdf5 !important; }
+                #expenses-report .bg-emerald-100 { background:#d1fae5 !important; color:#064e3b !important; }
+                #expenses-report .bab-1 { background-color:#a7f3d0 !important; color:#064e3b !important; }
+                #expenses-report .bab-2 { background-color:#bfdbfe !important; color:#1e3a8a !important; }
+                #expenses-report .bab-3 { background-color:#f5d0fe !important; color:#701a75 !important; }
+                #expenses-report .bab-4 { background-color:#fed7aa !important; color:#7c2d12 !important; }
+                #expenses-report .bab-5 { background-color:#fecdd3 !important; color:#881337 !important; }
+                #expenses-report .bab-default { background-color:#d1fae5 !important; color:#064e3b !important; }
+                #expenses-report .text-white { color:#fff !important; }
+                #expenses-report .text-amber-900 { color:#78350f !important; }
+                #expenses-report .text-sky-900 { color:#0c4a6e !important; }
+                #expenses-report .text-emerald-900 { color:#064e3b !important; }
+                #expenses-report .text-slate-800 { color:#1e293b !important; }
+                #expenses-report .text-slate-700 { color:#334155 !important; }
+                #expenses-report .text-slate-600 { color:#475569 !important; }
+                #expenses-report table { width:100% !important; min-width:0 !important; table-layout:fixed !important; border-collapse:collapse; font-size:14px; }
+                #expenses-report th,#expenses-report td { border:1px solid #000 !important; padding:4px 3px !important; text-align:center !important; vertical-align:middle !important; white-space:normal !important; overflow:visible !important; overflow-wrap:anywhere !important; word-break:normal !important; line-height:1.3; font-weight:700 !important; }
+                #expenses-report thead th { font-size:14px !important; font-weight:900 !important; }
+                #expenses-report tbody td { font-size:14px !important; }
+                #expenses-report .numeric-cell,#expenses-report .date-cell,#expenses-report .font-bold,#expenses-report input[type="number"],#expenses-report input[type="date"] { min-width:0 !important; white-space:nowrap !important; overflow:visible !important; overflow-wrap:normal !important; word-break:keep-all !important; font-family:Cairo,sans-serif !important; font-size:13px !important; font-variant-numeric:tabular-nums; direction:ltr; }
                 #expenses-report input { width: 100% !important; min-width: 0 !important; border: 0; background: transparent; color: #000; font: inherit; text-align: center; }
                 #expenses-report .text-white { color: #fff !important; }
-                @media print {
+                ${EXPENSES_TABLE_CSS}\n                @media print {
                   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                   body { background: #fff; }
                   .print-page { min-height: auto; width: 100%;min-width:auto; padding: 0; border: 0; }
