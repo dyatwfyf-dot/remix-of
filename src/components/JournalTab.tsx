@@ -334,7 +334,7 @@ export default function JournalTab() {
     const debitTotalCents = debitRemaining.reduce((sum, amount) => sum + amount, 0);
     const creditTotalCents = creditRemaining.reduce((sum, amount) => sum + amount, 0);
 
-    if (!debitLines.length || !creditLines.length || debitTotalCents !== creditTotalCents) {
+    if (!debitLines.length || !creditLines.length || debitTotalCents <= 0 || debitTotalCents !== creditTotalCents) {
       toast.error("تعذر ترحيل القيد: يجب أن تتساوى مبالغ المدين والدائن بعد التقريب إلى أصغر وحدة نقدية");
       return;
     }
@@ -372,9 +372,10 @@ export default function JournalTab() {
         debitLeft -= allocatedCents;
         creditRemaining[creditIndex] -= allocatedCents;
       }
+      debitRemaining[debitIndex] = debitLeft;
     });
 
-    if (debitRemaining.some((amount, index) => amount > 0) || creditRemaining.some((amount) => amount > 0)) {
+    if (debitRemaining.some((amount) => amount > 0) || creditRemaining.some((amount) => amount > 0)) {
       toast.error("تعذر توزيع القيد المركب بالكامل؛ لم يتم حفظ أي تغيير");
       return;
     }
