@@ -50,7 +50,7 @@ const parseLevel = (value: unknown): number | null => {
 
 const nextStatus = (current: string | number | undefined, proposed: string): string | number => {
   // لا نلغي مرحلة سبق تسجيلها كمكتملة عند تعديل المستوى إلى مستوى أدنى.
-  if (normalize(current) === "تم") return current;
+  if (normalize(current) === "تم") return "تم";
   return proposed;
 };
 
