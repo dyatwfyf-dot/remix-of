@@ -24,6 +24,7 @@ import {
   Sparkles,
   Layers,
   TrendingUp,
+  AlertTriangle,
 } from "lucide-react";
 
 type StatementGroup = { title: string; accounts: string[] };
@@ -242,7 +243,7 @@ export default function MonthlyStatementTab() {
   const { startMonth, endMonth } = getPeriodRange({ mode, year, month, quarter, halfYear });
 
   // مصدر موحد للمجاميع: الشاشة وPDF وExcel تعتمد نفس الترحيل والمطابقة
-  const { data, matchedEntriesCount, activeMonths } = useMemo(() => {
+  const { data, matchedEntriesCount, activeMonths, unmatchedEntries } = useMemo(() => {
     const statement = buildMonthlyStatementRows(journal, year, startMonth, endMonth);
     const map = Object.fromEntries(
       Object.entries(statement.map).map(([key, row]) => [
@@ -270,6 +271,7 @@ export default function MonthlyStatementTab() {
       data: map,
       matchedEntriesCount: matched,
       activeMonths: Array.from(active).sort((a, b) => a - b),
+      unmatchedEntries: statement.unmatchedEntries,
     };
   }, [journal, year, startMonth, endMonth]);
 
@@ -449,6 +451,23 @@ export default function MonthlyStatementTab() {
             </span>
           </div>
         </div>
+
+        {unmatchedEntries.length > 0 && (
+          <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 p-3 text-amber-950">
+            <div className="flex items-center gap-2 text-sm font-black">
+              <AlertTriangle className="h-4 w-4 shrink-0 text-amber-700" />
+              <span>
+                يوجد {unmatchedEntries.length} حركة لم تُرحّل لعدم تطابق اسم الحساب؛ تم إيقاف ترحيلها بدلاً من إضافتها إلى حساب غير صحيح.
+              </span>
+            </div>
+            <div className="mt-1 text-xs leading-6">
+              {Array.from(new Set(unmatchedEntries.map((entry) => `${entry.side}: ${entry.account}`)))
+                .slice(0, 6)
+                .join("، ")}
+              {new Set(unmatchedEntries.map((entry) => `${entry.side}: ${entry.account}`)).size > 6 ? "، ..." : ""}
+            </div>
+          </div>
+        )}
 
         {/* ══ أشرطة اختيار الأشهر النشطة بأزرار زاهية ══ */}
         {activeMonths.length > 0 && (

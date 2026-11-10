@@ -324,35 +324,64 @@ export default function JournalTab() {
       return;
     }
 
-    const debitLines = lines.filter((l) => l.type === "debit");
-    const creditLines = lines.filter((l) => l.type === "credit");
+    const debitLines = lines.filter((l) => l.type === "debit" && Number(l.amount) > 0);
+    const creditLines = lines.filter((l) => l.type === "credit" && Number(l.amount) > 0);
 
-    if (editingId) {
-      deleteJournal(editingId);
+    // توزيع القيد المركب بوحدات العملة الصغرى حتى لا يتكرر كامل مبلغ المدين
+    // مع كل حساب دائن، مع الحفاظ على إجمالي كل حساب على حدة.
+    const debitRemaining = debitLines.map((line) => Math.round((Number(line.amount) || 0) * 100));
+    const creditRemaining = creditLines.map((line) => Math.round((Number(line.amount) || 0) * 100));
+    const debitTotalCents = debitRemaining.reduce((sum, amount) => sum + amount, 0);
+    const creditTotalCents = creditRemaining.reduce((sum, amount) => sum + amount, 0);
+
+    if (!debitLines.length || !creditLines.length || debitTotalCents <= 0 || debitTotalCents !== creditTotalCents) {
+      toast.error("تعذر ترحيل القيد: يجب أن تتساوى مبالغ المدين والدائن بعد التقريب إلى أصغر وحدة نقدية");
+      return;
     }
 
-    debitLines.forEach((dl) => {
-      creditLines.forEach((cl) => {
-        const ratio = (Number(cl.amount) || 0) / totalCredit;
+    const rowsToSave: Omit<Journal, "id">[] = [];
+    let creditIndex = 0;
+    debitLines.forEach((debitLine, debitIndex) => {
+      let debitLeft = debitRemaining[debitIndex];
+      while (debitLeft > 0 && creditIndex < creditLines.length) {
+        while (creditIndex < creditLines.length && creditRemaining[creditIndex] <= 0) {
+          creditIndex += 1;
+        }
+        if (creditIndex >= creditLines.length) break;
 
-        const combinedDescription = [description, dl.description, cl.description]
+        const allocatedCents = Math.min(debitLeft, creditRemaining[creditIndex]);
+        if (allocatedCents <= 0) break;
+        const creditLine = creditLines[creditIndex];
+        const combinedDescription = [description, debitLine.description, creditLine.description]
           .filter((desc) => desc && desc.trim() !== "")
           .join(" - ");
+        const allocatedAmount = allocatedCents / 100;
 
-        const payload: Omit<Journal, "id"> = {
+        rowsToSave.push({
           date,
           formNo,
           settlement,
           description: combinedDescription,
-          account: dl.account,
-          debitAccount: dl.account,
-          creditAccount: cl.account,
-          debit: Number(dl.amount) || 0,
-          credit: Math.round((Number(dl.amount) || 0) * ratio),
-        };
-        addJournal(payload);
-      });
+          account: debitLine.account,
+          debitAccount: debitLine.account,
+          creditAccount: creditLine.account,
+          debit: allocatedAmount,
+          credit: allocatedAmount,
+        });
+
+        debitLeft -= allocatedCents;
+        creditRemaining[creditIndex] -= allocatedCents;
+      }
+      debitRemaining[debitIndex] = debitLeft;
     });
+
+    if (debitRemaining.some((amount) => amount > 0) || creditRemaining.some((amount) => amount > 0)) {
+      toast.error("تعذر توزيع القيد المركب بالكامل؛ لم يتم حفظ أي تغيير");
+      return;
+    }
+
+    if (editingId) deleteJournal(editingId);
+    rowsToSave.forEach((payload) => addJournal(payload));
 
     toast.success(editingId ? "تم تحديث القيد المركب بنجاح" : "تم حفظ القيد المركب بنجاح");
     resetForm();

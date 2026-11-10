@@ -104,7 +104,7 @@ export const normForMatch = (s: string) => {
     .trim();
 };
 
-const STOP_WORDS_FOR_MATCH = new Set(["حساب", "حسابات", "ح", "محلية", "محليه", "عامة", "عامه"]);
+const STOP_WORDS_FOR_MATCH = new Set(["حساب", "حسابات", "ح"]);
 
 export const tokensForMatch = (s: string) =>
   normForMatch(s)
@@ -173,10 +173,17 @@ export const CHAPTER_TO_STATEMENT_ACCOUNT: Record<string, string> = {
   [normForMatch("شراء اصول")]: "حساب اكتساب الأصول غير المالية",
 
   [normForMatch("ح/ النقدية")]: "حساب النقدية",
+  [normForMatch("ح/ النقدية للصندوق")]: "حساب النقدية",
   [normForMatch("النقدية")]: "حساب النقدية",
-  [normForMatch("حساب البنك")]: "حساب البنك موارد",
   [normForMatch("البنك موارد")]: "حساب البنك موارد",
+  [normForMatch("بنك موارد")]: "حساب البنك موارد",
+  [normForMatch("البنك موارد محلية")]: "حساب البنك موارد محلية",
+  [normForMatch("بنك موارد محلية")]: "حساب البنك موارد محلية",
   [normForMatch("البنك استخدامات")]: "حساب البنك استخدامات",
+  [normForMatch("بنك استخدامات")]: "حساب البنك استخدامات",
+  [normForMatch("حساب البنك اكتساب اصول غير مالية")]: "حساب البنك اكتساب أصول غير مالية محلية",
+  [normForMatch("حساب النفقات المقدمة عن سلع وخدمات")]: "حساب النفقات المقدمة عن سلع وخدمات وممتلكات",
+  [normForMatch("حساب دائنون التزمات قائمة")]: "حساب دائنون التزامات قائمة",
 };
 
 export function matchStatementAccount(raw: string): string | null {
@@ -190,20 +197,28 @@ export function matchStatementAccount(raw: string): string | null {
   const exact = ALL_STATEMENT_NORM.find((a) => a.norm === n);
   if (exact) return exact.name;
 
-  const contains = ALL_STATEMENT_NORM.find((a) => a.norm.includes(n) || n.includes(a.norm));
-  if (contains) return contains.name;
+  // لا نستخدم أول نتيجة جزئية؛ فقد تتشابه أسماء حسابات متعددة (مثل حسابات البنك).
+  const partialMatches = ALL_STATEMENT_NORM.filter((a) => n.includes(a.norm));
+  if (partialMatches.length) {
+    const longestLength = Math.max(...partialMatches.map((a) => a.norm.length));
+    const longest = partialMatches.filter((a) => a.norm.length === longestLength);
+    if (longest.length === 1) return longest[0].name;
+  }
 
+  // المطابقة التقريبية لا تعتمد إلا إذا كانت النتيجة فريدة ومرتفعة الثقة.
   const rawToks = tokensForMatch(raw);
   if (!rawToks.length) return null;
-  let best: { name: string; score: number } | null = null;
-  for (const a of ALL_STATEMENT_NORM) {
-    if (!a.toks.length) continue;
-    const common = a.toks.filter((t) => rawToks.includes(t)).length;
-    if (!common) continue;
-    const score = common / Math.max(a.toks.length, rawToks.length);
-    if (!best || score > best.score) best = { name: a.name, score };
-  }
-  return best && best.score >= 0.6 ? best.name : null;
+  const scored = ALL_STATEMENT_NORM
+    .filter((a) => a.toks.length > 0)
+    .map((a) => {
+      const common = a.toks.filter((t) => rawToks.includes(t)).length;
+      return { name: a.name, score: common / Math.max(a.toks.length, rawToks.length) };
+    })
+    .filter((a) => a.score >= 0.85)
+    .sort((a, b) => b.score - a.score);
+  if (!scored.length) return null;
+  if (scored.length > 1 && scored[0].score === scored[1].score) return null;
+  return scored[0].name;
 }
 
 function buildJournalSheet(journal: Journal[]): XLSX.WorkSheet {
@@ -1313,36 +1328,65 @@ export function buildMonthlyStatementRows(
   endMonth: number,
 ) {
   const map: Record<string, { prevD: number; prevC: number; curD: number; curC: number }> = {};
+  const unmatchedEntries: Array<{
+    id: string;
+    date: string;
+    side: "مدين" | "دائن";
+    account: string;
+    amount: number;
+  }> = [];
   STATEMENT_GROUPS.forEach((g) =>
     g.accounts.forEach((a) => (map[normName(a)] = { prevD: 0, prevC: 0, curD: 0, curC: 0 })),
   );
+
   journal.forEach((j) => {
     const parsedDate = parseJournalDateForReport(j.date);
     if (!parsedDate || parsedDate.year !== year) return;
     const m = parsedDate.month;
-    if (m > endMonth) return;
+    if (m < 1 || m > 12 || m > endMonth) return;
     const isCurrent = m >= startMonth && m <= endMonth;
 
-    const debitRaw = j.debitAccount || j.debitCol || j.account || "";
-    const creditRaw = j.creditAccount || j.creditCol || (j.credit ? j.account : "") || "";
-
+    const debitRaw = j.debitAccount || j.account || j.debitCol || "";
+    const creditRaw = j.creditAccount || (j.credit ? j.account : "") || j.creditCol || "";
+    const debitAmount = Number(j.debit) || 0;
+    const creditAmount = Number(j.credit) || 0;
     const dMatchedName = matchStatementAccount(debitRaw);
     const cMatchedName = matchStatementAccount(creditRaw);
+    const dKey = dMatchedName ? normName(dMatchedName) : "";
+    const cKey = cMatchedName ? normName(cMatchedName) : "";
 
-    const dKey = dMatchedName ? normName(dMatchedName) : normName(debitRaw || "");
-    const cKey = cMatchedName ? normName(cMatchedName) : normName(creditRaw || "");
-
-    if (dKey && map[dKey]) {
-      if (isCurrent) map[dKey].curD += +j.debit || 0;
-      else map[dKey].prevD += +j.debit || 0;
+    if (debitAmount !== 0) {
+      if (dKey && map[dKey]) {
+        if (isCurrent) map[dKey].curD += debitAmount;
+        else map[dKey].prevD += debitAmount;
+      } else {
+        unmatchedEntries.push({
+          id: j.id,
+          date: String(j.date || ""),
+          side: "مدين",
+          account: String(debitRaw || "اسم الحساب غير محدد"),
+          amount: debitAmount,
+        });
+      }
     }
-    if (cKey && map[cKey]) {
-      if (isCurrent) map[cKey].curC += +j.credit || 0;
-      else map[cKey].prevC += +j.credit || 0;
+    if (creditAmount !== 0) {
+      if (cKey && map[cKey]) {
+        if (isCurrent) map[cKey].curC += creditAmount;
+        else map[cKey].prevC += creditAmount;
+      } else {
+        unmatchedEntries.push({
+          id: j.id,
+          date: String(j.date || ""),
+          side: "دائن",
+          account: String(creditRaw || "اسم الحساب غير محدد"),
+          amount: creditAmount,
+        });
+      }
     }
   });
   return {
     map,
+    unmatchedEntries,
     groups: STATEMENT_GROUPS,
     title: STATEMENT_TITLE,
     office: STATEMENT_OFFICE,
