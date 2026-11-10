@@ -849,9 +849,9 @@ export default function ExpensesTab() {
   return (
     <div className="mizan-expenses-tab sheet-tabs-ui space-y-3" dir="rtl">
       <style>{EXPENSES_TABLE_CSS}</style>
-      {/* شريط التبويبات + أزرار */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-        <div className="expenses-subtabs bg-slate-100 p-1.5 rounded-xl border border-slate-200 overflow-x-auto flex-1 min-w-0">
+      {/* فصل التنقل بين الفترات عن إجراءات الطباعة والتصدير والمسح */}
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+        <div className="expenses-subtabs min-w-0 flex-1 overflow-x-auto rounded-xl border border-slate-200 bg-slate-100 p-1.5">
           <div className="flex gap-1 w-max min-w-full">
             {subTabs.map((t) => (
               <button
@@ -871,9 +871,15 @@ export default function ExpensesTab() {
         <div className="web-only-actions sm:w-auto">
           <WebActionMenu label="إجراءات المصروفات" actions={expenseWebActions} />
         </div>
-        <div className="apk-only-actions flex gap-2">
+        <div
+          className="apk-only-actions w-full min-w-0 items-center gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-sm lg:w-auto lg:shrink-0"
+          role="group"
+          aria-label="إجراءات المصروفات"
+        >
+          <span className="shrink-0 px-1 text-xs font-black text-slate-600">إجراءات</span>
           {/* زر الطباعة المحدّث مع دعم ألوان الأبواب والاحتواء التلقائي */}
           <button
+            type="button"
             id="expenses-print-action"
             onClick={() => {
               const el = document.getElementById("expenses-view-content");
@@ -967,12 +973,12 @@ export default function ExpensesTab() {
               });
               if (!opened) toast.error("تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة");
             }}
-            className="px-3 py-1.5 bg-white text-[#10528e] border border-[#10528e]/30 rounded-lg text-xs font-bold shadow-sm hover:bg-blue-50"
+            className="flex min-h-10 min-w-0 flex-1 items-center justify-center gap-1 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-extrabold text-sky-900 shadow-sm transition-colors hover:bg-sky-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-600 sm:flex-none"
           >
             🖨️ طباعة
           </button>
-          {/* ... باقي الأزرار دون تغيير ... */}
           <button
+            type="button"
             id="expenses-excel-action"
             onClick={async () => {
               const el = document.getElementById("expenses-view-content");
@@ -1061,11 +1067,12 @@ export default function ExpensesTab() {
                 toast.error("تعذّر تصدير ملف Excel");
               }
             }}
-            className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700"
+            className="flex min-h-10 min-w-0 flex-1 items-center justify-center gap-1 rounded-lg border border-emerald-700 bg-emerald-700 px-3 py-2 text-xs font-extrabold text-white shadow-sm transition-colors hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 sm:flex-none"
           >
             📊 Excel
           </button>
           <button
+            type="button"
             id="expenses-clear-action"
             onClick={() => {
               if (!confirm("هل أنت متأكد من مسح جميع بيانات المصروفات؟")) return;
@@ -1073,7 +1080,7 @@ export default function ExpensesTab() {
               localStorage.removeItem(STORAGE_KEY);
               toast.success("تم مسح البيانات");
             }}
-            className="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-rose-700"
+            className="flex min-h-10 min-w-0 flex-1 items-center justify-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-800 shadow-sm transition-colors hover:bg-rose-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 sm:flex-none"
           >
             🗑️ مسح
           </button>
