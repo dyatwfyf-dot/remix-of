@@ -332,6 +332,30 @@ font-size: 13px !important; white-space:nowrap !important;
 
 `;
 
+const custodyPortraitPrintCss = `
+  @page { size:A4 portrait; margin:5mm; }
+  #tableContainer .reports-print-table-shell { width:100%!important; min-width:0!important; max-width:100%!important; overflow:visible!important; }
+  #tableContainer table.reports-custody-print-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:fixed!important; border-collapse:collapse!important; }
+  #tableContainer table.reports-custody-print-table th,
+  #tableContainer table.reports-custody-print-table td { box-sizing:border-box!important; min-width:0!important; max-width:none!important; padding:0 1px!important; text-align:center!important; vertical-align:middle!important; white-space:nowrap!important; word-break:keep-all!important; overflow:hidden!important; text-overflow:clip!important; font-size:11px!important; line-height:1.2!important; }
+  #tableContainer table.reports-custody-print-table th[data-col-key="idx"],
+  #tableContainer table.reports-custody-print-table td[data-col-key="idx"] { width:5%!important; }
+  #tableContainer table.reports-custody-print-table th[data-col-key="date"],
+  #tableContainer table.reports-custody-print-table td[data-col-key="date"] { width:13%!important; }
+  #tableContainer table.reports-custody-print-table th[data-col-key="description"],
+  #tableContainer table.reports-custody-print-table td[data-col-key="description"] { width:29%!important; font-size:9px!important; }
+  #tableContainer table.reports-custody-print-table th[data-col-key="settlementNo"],
+  #tableContainer table.reports-custody-print-table td[data-col-key="settlementNo"] { width:16%!important; }
+  #tableContainer table.reports-custody-print-table th[data-col-key="notes"],
+  #tableContainer table.reports-custody-print-table td[data-col-key="notes"] { width:25%!important; font-size:9px!important; }
+  #tableContainer table.reports-custody-print-table th[data-col-key="amount"],
+  #tableContainer table.reports-custody-print-table td[data-col-key="amount"] { width:12%!important; }
+  #tableContainer table.reports-custody-print-table thead tr.reports-custody-title-row > th { padding:6px 2px 2px!important; font-size:16px!important; white-space:normal!important; }
+  #tableContainer table.reports-custody-print-table thead tr.reports-custody-date-row > th { padding:2px!important; font-size:10px!important; white-space:normal!important; }
+  #tableContainer table.reports-custody-print-table thead tr.reports-column-header-row > th { padding:2px 1px!important; font-size:11px!important; white-space:normal!important; }
+  #tableContainer table.reports-custody-print-table tbody > tr > td { height:7mm!important; }
+`;
+
 
 
 
@@ -346,6 +370,7 @@ const buildReportsScreenPrintHtml = (
  const sourceTable = document.getElementById("reports-table") as HTMLTableElement | null;
  if (!sourceTable) throw new Error("تعذر العثور على جدول التقرير الحالي");
  const table = sourceTable.cloneNode(true) as HTMLTableElement;
+ const isCustodyReport = source === "youssefLoan" || source === "tawfiqCustody";
  const actionHeader = Array.from(table.querySelectorAll < HTMLTableRowElement > ("thead tr"))
   .find((row) => row.querySelector(':scope > [data-col-key="actions"]'));
  const originalColumnCount: number = actionHeader ?
@@ -395,14 +420,23 @@ const buildReportsScreenPrintHtml = (
      printCell.classList.contains("reports-numeric-cell") ||
      printCell.classList.contains("reports-no-wrap-cell") ||
      printCell.dataset.colKey === "idx";
-    if (isTextCell) {
+    if (isTextCell && !isCustodyReport) {
      printCell.style.setProperty("white-space", "normal", "important");
      printCell.style.setProperty("word-break", "normal", "important");
      printCell.style.setProperty("overflow-wrap", "anywhere", "important");
-    } else if (isNumericCell) {
+    } else if (isNumericCell || isCustodyReport) {
      printCell.style.setProperty("white-space", "nowrap", "important");
      printCell.style.setProperty("word-break", "keep-all", "important");
      printCell.style.setProperty("overflow-wrap", "normal", "important");
+    }
+    if (isCustodyReport && printCell.closest("tbody") && ["description", "notes"].includes(printCell.dataset.colKey || "")) {
+     const control = printCell.querySelector("input, textarea") as HTMLInputElement | HTMLTextAreaElement | null;
+     const value = control ? control.value.trim() : (printCell.textContent || "").trim();
+     if (value) {
+      const availableWidthPx = ((printCell.dataset.colKey === "description" ? 58 : 50) * 96) / 25.4 - 4;
+      const fittedFontSize = Math.max(6, Math.min(9, availableWidthPx / (value.length * 0.55)));
+      printCell.style.setProperty("font-size", `${fittedFontSize.toFixed(1)}px`, "important");
+     }
     }
     printCell.style.setProperty("-webkit-print-color-adjust", "exact", "important");
     printCell.style.setProperty("print-color-adjust", "exact", "important");
@@ -474,15 +508,15 @@ const buildReportsScreenPrintHtml = (
  table.querySelectorAll("input, textarea, select").forEach((control) => {
   let value = "";
   if (control instanceof HTMLSelectElement) value = control.selectedOptions[0]?.textContent?.trim() || "";
-  else if (control instanceof HTMLInputElement) value = control.value || control.placeholder || "";
-  else if (control instanceof HTMLTextAreaElement) value = control.value || control.placeholder || "";
+  else if (control instanceof HTMLInputElement) value = control.value || (isCustodyReport ? "" : control.placeholder || "");
+  else if (control instanceof HTMLTextAreaElement) value = control.value || (isCustodyReport ? "" : control.placeholder || "");
   const printableValue = document.createElement("span");
   printableValue.className = "reports-print-control-value";
   printableValue.textContent = value;
   control.replaceWith(printableValue);
  });
  
- const isCustodyReport = source === "youssefLoan" || source === "tawfiqCustody";
+ if (isCustodyReport) table.classList.add("reports-custody-print-table");
  if (!isCustodyReport) {
   const dateCell = table.querySelector < HTMLTableCellElement > ("thead tr.reports-custody-date-row th");
   if (dateCell) {
@@ -1527,9 +1561,11 @@ export default function ReportsTab() {
   setPrintSettingsOpen(true);
  };
  const printReportWithSettings = (settings: InstallmentsPrintSettings) => {
-  const printOrientation = source === "traineeFeeStatus" ? "landscape" : settings.orientation;
-  const marginMm = settings.margin === "narrow" ? 2 : settings.margin === "wide" ? 10 : 6;
-  const pageWidthMm = settings.pageSize === "A3"
+  const isCustodyReport = source === "youssefLoan" || source === "tawfiqCustody";
+  const printOrientation = isCustodyReport ? "portrait" : source === "traineeFeeStatus" ? "landscape" : settings.orientation;
+  const printPageSize = isCustodyReport ? "A4" : settings.pageSize;
+  const marginMm = isCustodyReport ? 5 : settings.margin === "narrow" ? 2 : settings.margin === "wide" ? 10 : 6;
+  const pageWidthMm = printPageSize === "A3"
    ? (printOrientation === "landscape" ? 420 : 297)
    : (printOrientation === "landscape" ? 297 : 210);
   const visibleColumnCount = Math.max(1,
@@ -1542,6 +1578,8 @@ export default function ReportsTab() {
    ? Math.max(12, Math.min(14, configuredFontSize + 2))
    : source === "trainee"
     ? Math.max(14, Math.min(16, configuredFontSize + 3))
+    : isCustodyReport
+     ? Math.max(9, Math.min(11, configuredFontSize - 2))
    : configuredFontSize;
   const tableHtml = buildReportsScreenPrintHtml(source, settings.showHeader ? reportDateLabel : "", reportRecordCount, settings);
   const finalCss = `
@@ -1553,6 +1591,7 @@ export default function ReportsTab() {
    #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td { min-width:0!important; max-width:100%!important; overflow-wrap:anywhere!important; }
    ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:fixed!important; } #tableContainer table.reports-fee-status-table th, #tableContainer table.reports-fee-status-table td { font-size:${fontSizePx}px!important; color:#111111!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; padding-left:0!important; padding-right:0!important; }` : ""}
    ${source === "trainee" ? `#tableContainer table.reports-trainee-payment-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:auto!important; } #tableContainer table.reports-trainee-payment-table thead tr.reports-column-header-row th { font-size:${fontSizePx}px!important; white-space:normal!important; overflow-wrap:anywhere!important; } #tableContainer table.reports-trainee-payment-table tbody tr > td { font-size:${fontSizePx}px!important; white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important; } #tableContainer table.reports-trainee-payment-table tbody td.reports-numeric-cell { white-space:nowrap!important; overflow-wrap:normal!important; }` : ""}
+   ${isCustodyReport ? custodyPortraitPrintCss : ""}
    #tableContainer table.reports-data-table tr.signature-block-row, #tableContainer table.reports-data-table tr.signature-block-row td { page-break-inside:avoid!important; break-inside:avoid!important; }
   `;
   const opened = openBrowserPrintPreview({
@@ -1562,7 +1601,7 @@ export default function ReportsTab() {
    contentCss: reportDocumentCss,
    finalCss: `${reportsTabPrintCss}\n${finalCss}`,
    defaultOrientation: printOrientation,
-   defaultPageSize: settings.pageSize,
+   defaultPageSize: printPageSize,
    defaultMarginMm: marginMm,
   });
   if (!opened) toast.error("تم منع فتح نافذة المعاينة، يرجى السماح بالنوافذ المنبثقة في كروم");
@@ -1803,10 +1842,11 @@ export default function ReportsTab() {
             columns={sourceConfig.columns}
             printColumns={sourceConfig.columns}
             numericKeys={numericKeys}
-            pdfFinalCss={reportsTabPrintCss}
+            pdfFinalCss={`${reportsTabPrintCss}\n${isLoanOrCustody ? custodyPortraitPrintCss : ""}`}
             renderPrintTableHtml={(reportDateLabel) => buildReportsScreenPrintHtml(source, reportDateLabel, reportRecordCount)}
             onPrintRequest={openReportsPrintSettings}
             pdfOrientation={source === "traineeFeeStatus" ? "landscape" : "portrait"}
+            pdfMarginMm={isLoanOrCustody ? 5 : undefined}
             includeTotalRow={!isLoanOrCustody && source !== "traineeFeeStatus"}
             printTableClassName={source === "trainee" ? "reports-trainee-payment-table" : ""}
             excelCellFontSize={source === "trainee" ? 12 : undefined}
