@@ -555,16 +555,16 @@ export default function TraineeFinancialDataTab() {
         style={{ maxHeight: "calc(100dvh - 280px)" }}
       >
         <table
-          className="w-max min-w-full table-auto border-collapse text-center text-xs"
+          className="w-max min-w-full table-auto border-collapse text-center text-sm text-black"
           dir="rtl"
-          style={{ width: "max-content", minWidth: "100%" }}
+          style={{ width: "max-content", minWidth: "100%", tableLayout: "auto" }}
         >
           <thead className="sticky top-0 z-10 bg-[#126c8e] text-white">
             <tr>
               {columns.map((header) => (
                 <th
                   key={header}
-                  className="whitespace-nowrap border border-slate-500 px-0 py-2 font-extrabold"
+                  className="min-w-[100px] max-w-[240px] border border-slate-500 bg-[#126c8e] px-2 py-2 text-[15px] font-black leading-6 text-white"
                 >
                   <button
                     type="button"
@@ -575,7 +575,7 @@ export default function TraineeFinancialDataTab() {
                           : { key: header, desc: false },
                       )
                     }
-                    className="whitespace-nowrap"
+                    className="whitespace-normal break-words"
                   >
                     {header}
                     {sort?.key === header ? (sort.desc ? " ↓" : " ↑") : " ↕"}
@@ -592,7 +592,7 @@ export default function TraineeFinancialDataTab() {
                   )}
                 </th>
               ))}
-              <th className="whitespace-nowrap border border-slate-500 bg-[#126c8e] px-2 py-2">
+              <th className="min-w-[100px] max-w-[220px] border border-slate-500 bg-[#126c8e] px-2 py-2 text-[15px] font-black leading-6 text-white">
                 إجراءات
               </th>
             </tr>
@@ -606,12 +606,12 @@ export default function TraineeFinancialDataTab() {
                 {columns.map((header) => (
                   <td
                     key={header}
-                    className="whitespace-nowrap border border-slate-300 px-0 py-1 font-medium text-black"
+                    className="max-w-[280px] border border-slate-300 px-2 py-1.5 text-[14px] font-bold leading-6 text-black [overflow-wrap:anywhere]"
                   >
                     {formatValue(row[header], header)}
                   </td>
                 ))}
-                <td className="whitespace-nowrap border border-slate-300 bg-white px-1 py-1">
+                <td className="min-w-[170px] border border-slate-300 bg-white px-1 py-1 text-black">
                   <button
                     type="button"
                     title="تحرير الصف"
@@ -644,12 +644,12 @@ export default function TraineeFinancialDataTab() {
             <tr>
               <td
                 colSpan={6}
-                className="whitespace-nowrap border border-slate-500 px-1 py-2 text-right"
+                className="border border-slate-500 px-2 py-2 text-right text-[14px] font-black text-black"
               >
                 الإجمالي العام ({records.length} متدربًا)
               </td>
               {HEADERS.slice(6).map((header) => (
-                <td key={header} className="whitespace-nowrap border border-slate-500 px-1 py-2">
+                <td key={header} className="max-w-[280px] border border-slate-500 px-2 py-2 text-[14px] font-black text-black [overflow-wrap:anywhere]">
                   {totals[header] !== undefined
                     ? Number(totals[header]).toLocaleString("en-US")
                     : ""}
