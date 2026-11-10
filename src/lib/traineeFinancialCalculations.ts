@@ -48,7 +48,7 @@ const parseLevel = (value: unknown): number | null => {
   return known.length ? Math.max(...known) : null;
 };
 
-const nextStatus = (current: unknown, proposed: string) => {
+const nextStatus = (current: string | number | undefined, proposed: string): string | number => {
   // لا نلغي مرحلة سبق تسجيلها كمكتملة عند تعديل المستوى إلى مستوى أدنى.
   if (normalize(current) === "تم") return current;
   return proposed;
