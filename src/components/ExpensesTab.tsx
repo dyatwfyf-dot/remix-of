@@ -313,18 +313,18 @@ const EXPENSES_TABLE_CSS = `
 .mizan-expenses-tab .expenses-main-table col.expense-code { width:5%; }
 .mizan-expenses-tab .expenses-main-table col.expense-value { width:8.166%; }
 .mizan-expenses-tab .expenses-summary-table col.summary-name { width:30%; }
-.mizan-expenses-tab .expenses-summary-table col.summary-value { width:10%; }
+.mizan-expenses-tab .expenses-summary-table col.summary-value { width:11.666%; }
 .mizan-expenses-tab .expenses-month-table col.month-name { width:26%; }
 .mizan-expenses-tab .expenses-month-table col.month-value { width:5%; }
 .mizan-expenses-tab .expenses-month-table col.month-total { width:14%; }
 .mizan-expenses-tab .expenses-subtabs button { min-height:38px; padding:8px 12px; font-size:13px; }
 @media (max-width:640px) {
- .mizan-expenses-tab .expenses-fit-table th,.mizan-expenses-tab .expenses-fit-table td { padding:4px 1px !important; font-size:11px !important; line-height:1.3; }
- .mizan-expenses-tab .expenses-fit-table .numeric-cell { font-size:11px !important; }
+ .mizan-expenses-tab .expenses-fit-table th,.mizan-expenses-tab .expenses-fit-table td { padding:4px 1px !important; font-size:12px !important; line-height:1.3; }
+ .mizan-expenses-tab .expenses-fit-table .numeric-cell { font-size:12px !important; }
  .mizan-expenses-tab .expenses-main-table col.expense-name { width:28%; }
  .mizan-expenses-tab .expenses-main-table col.expense-code { width:5.5%; }
  .mizan-expenses-tab .expenses-main-table col.expense-value { width:8%; }
- .mizan-expenses-tab .expenses-month-table th,.mizan-expenses-tab .expenses-month-table td { font-size:10px !important; padding:3px 0 !important; }
+ .mizan-expenses-tab .expenses-month-table th,.mizan-expenses-tab .expenses-month-table td { font-size:10.5px !important; padding:3px 0 !important; }
  .mizan-expenses-tab .expenses-month-table td:first-child { font-size:11px !important; }
  .mizan-expenses-tab .expenses-subtabs button { min-height:40px; padding:8px 11px; font-size:13px; }
 }
@@ -619,7 +619,7 @@ export default function ExpensesTab() {
                   return (
                     <tr key={idx} className={rowClass(r)}>
                       {/* تفعيل التفاف النص (break-words whitespace-normal) والتوسيط (text-center align-middle) */}
-<td className="border border-black text-center align-middle numeric-cell whitespace-nowrap px-2 py-1 text-[14px] sm:text-sm">
+<td className="border border-black text-center align-middle whitespace-normal break-words px-2 py-1 text-sm sm:text-base">
                         {r.n}
                       </td>
                       <TD>{r.b || ""}</TD>
