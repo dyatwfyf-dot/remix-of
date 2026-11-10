@@ -42,6 +42,34 @@ const normalize = (value: unknown) =>
   String(value ?? "")
     .trim()
     .replace(/\s+/g, " ");
+
+const normalizeAcademicStatus = (value: unknown) =>
+  String(value ?? "")
+    .trim()
+    .replace(/[ًٌٍَُِّْـ]/g, "")
+    .replace(/[إأآ]/g, "ا")
+    .replace(/ى/g, "ي")
+    .replace(/ة/g, "ه")
+    .replace(/\s+/g, " ")
+    .toLocaleLowerCase("ar");
+
+const getAcademicStatusRowClass = (value: unknown) => {
+  const status = normalizeAcademicStatus(value);
+  if (!status) return "";
+  if (["منسحب", "منسحبه", "انسحب", "انسحبت"].includes(status))
+    return "bg-red-200 [&>td]:!bg-red-200";
+  if (["مفصول", "مفصوله", "فصل"].includes(status))
+    return "bg-yellow-200 [&>td]:!bg-yellow-200";
+  if (["متخرج", "متخرجه", "خريج", "خريجه"].includes(status))
+    return "bg-green-200 [&>td]:!bg-green-200";
+  if (["موقوف", "موقوفه"].includes(status))
+    return "bg-orange-200 [&>td]:!bg-orange-200";
+  if (["مؤجل", "مؤجله"].includes(status))
+    return "bg-sky-100 [&>td]:!bg-sky-100";
+  if (["مستمر", "مستمرة", "منتظم", "منتظمة", "على راس العمل"].includes(status))
+    return "bg-emerald-50 [&>td]:!bg-emerald-50";
+  return "";
+};
 const formatValue = (value: unknown, header: string) =>
   CURRENCY_COLUMNS.has(header) && typeof value === "number"
     ? value.toLocaleString("en-US")
@@ -569,6 +597,15 @@ export default function TraineeFinancialDataTab() {
         </section>
       )}
 
+      <div className="mb-2 flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700">
+        <span>ألوان الحالة الأكاديمية:</span>
+        <span className="rounded px-2 py-1 bg-red-200">منسحب</span>
+        <span className="rounded px-2 py-1 bg-yellow-200">مفصول</span>
+        <span className="rounded px-2 py-1 bg-green-200">متخرج / متخرجة</span>
+        <span className="rounded px-2 py-1 bg-orange-200">موقوف</span>
+        <span className="rounded px-2 py-1 bg-sky-100">مؤجل</span>
+        <span className="rounded px-2 py-1 bg-emerald-50">مستمر / منتظم</span>
+      </div>
       <div
         className="overflow-auto rounded-xl border border-slate-400 bg-white shadow-sm"
         style={{ maxHeight: "calc(100dvh - 280px)" }}
@@ -620,7 +657,7 @@ export default function TraineeFinancialDataTab() {
             {visibleRows.map(({ row, index }) => (
               <tr
                 key={`${index}-${String(row[HEADERS[2]] ?? "")}`}
-                className={index % 2 ? "bg-slate-50" : "bg-white"}
+                className={getAcademicStatusRowClass(row["الحالة الأكاديمية"]) || (index % 2 ? "bg-slate-50" : "bg-white")}
               >
                 {columns.map((header) => (
                   <td
