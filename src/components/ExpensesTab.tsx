@@ -957,7 +957,7 @@ export default function ExpensesTab() {
                 reportDateLabel,
                 tableHtml: parsed.body.innerHTML,
                 contentCss: Array.from(parsed.querySelectorAll("style")).map((style) => style.textContent || "").join("\n"),
-                defaultOrientation: "portrait",
+                defaultOrientation: view === "year" ? "landscape" : "portrait",
                 defaultPageSize: "A4",
                 defaultMarginMm: 3,
               });
