@@ -56,17 +56,17 @@ const normalizeAcademicStatus = (value: unknown) =>
 const getAcademicStatusRowClass = (value: unknown) => {
   const status = normalizeAcademicStatus(value);
   if (!status) return "";
-  if (["منسحب", "منسحبه", "انسحب", "انسحبت"].includes(status))
+  if (["منسحب", "منسحبه", "انسحب", "انسحبت", "منقطع", "منقطعه", "مستقيل", "مستقيله"].includes(status))
     return "bg-red-200 [&>td]:!bg-red-200";
-  if (["مفصول", "مفصوله", "فصل"].includes(status))
+  if (["مفصول", "مفصوله", "فصل", "راسب", "راسبه"].includes(status))
     return "bg-yellow-200 [&>td]:!bg-yellow-200";
   if (["متخرج", "متخرجه", "خريج", "خريجه"].includes(status))
     return "bg-green-200 [&>td]:!bg-green-200";
-  if (["موقوف", "موقوفه"].includes(status))
+  if (["موقوف", "موقوفه", "معتذر", "معتذره"].includes(status))
     return "bg-orange-200 [&>td]:!bg-orange-200";
   if (["مؤجل", "مؤجله"].includes(status))
     return "bg-sky-100 [&>td]:!bg-sky-100";
-  if (["مستمر", "مستمرة", "منتظم", "منتظمة", "على راس العمل"].includes(status))
+  if (["مستمر", "مستمره", "منتظم", "منتظمه", "على راس العمل"].includes(status))
     return "bg-emerald-50 [&>td]:!bg-emerald-50";
   return "";
 };
