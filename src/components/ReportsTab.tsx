@@ -312,8 +312,11 @@ font-size: 13px !important; white-space:nowrap !important;
   #tableContainer table.reports-data-table tr.signature-block-row,
   #tableContainer table.reports-data-table tr.signature-block-row > td { background:#fff !important; color:#000 !important; page-break-inside:avoid !important; break-inside:avoid !important; }
   #tableContainer table.reports-data-table tr.signature-block-row > td { padding:5px 8px !important; border:0 !important; }
-  #tableContainer .signature-block-grid { display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:2mm 3mm !important; width:100% !important; direction:rtl !important; align-items:end !important; }
-  #tableContainer .signature-block-grid .reports-print-control-value { display:block !important; min-height:7mm !important; padding:2px 4px !important; border-bottom:1px dotted #000 !important; color:#000 !important; text-align:center !important; font-size:8.5pt !important; font-weight:800 !important; }
+  #tableContainer .signature-block-grid { display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:4mm 4mm !important; width:100% !important; direction:rtl !important; align-items:start !important; }
+  #tableContainer .signature-person { display:flex !important; flex-direction:column !important; align-items:center !important; min-width:0 !important; gap:2.5mm !important; }
+  #tableContainer .signature-person .signature-dept-field { display:block !important; width:100% !important; min-height:6mm !important; padding:1px 2px !important; border:0 !important; color:#000 !important; text-align:center !important; font-size:9.5pt !important; line-height:1.5 !important; font-weight:900 !important; }
+  #tableContainer .signature-person .signature-name-field { display:block !important; width:100% !important; min-height:6mm !important; padding:1px 2px !important; border:0 !important; color:#000 !important; text-align:center !important; font-size:10pt !important; line-height:1.5 !important; font-weight:800 !important; }
+  #tableContainer .signature-person .signature-dotted-line { display:block !important; width:72% !important; height:2mm !important; margin:0 auto !important; background-image:radial-gradient(circle,#222 0.45px,transparent 0.65px) !important; background-size:3px 2px !important; background-repeat:repeat-x !important; background-position:center bottom !important; }
   #tableContainer .reports-print-control-value { color:inherit !important; white-space:normal !important; overflow-wrap:anywhere !important; }
   @media print {
     #tableContainer, #tableContainer .reports-print-table-shell { width:100% !important; max-width:100% !important; overflow:visible !important; }
@@ -512,6 +515,8 @@ const buildReportsScreenPrintHtml = (
   else if (control instanceof HTMLTextAreaElement) value = control.value || (isCustodyReport ? "" : control.placeholder || "");
   const printableValue = document.createElement("span");
   printableValue.className = "reports-print-control-value";
+  const printClass = control.getAttribute("data-print-class");
+  if (printClass) printableValue.classList.add(printClass);
   printableValue.textContent = value;
   control.replaceWith(printableValue);
  });
@@ -2018,55 +2023,22 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                         </tr>
                         <tr className="bg-white signature-block-row" style={{ border: 0, outline: 0, boxShadow: "none" }}>
                           <td colSpan={colCount} className="border-0 bg-white px-0 py-1" style={{ border: 0, outline: 0, boxShadow: "none" }}>
-                            <div className="signature-block-grid mx-auto grid w-full max-w-5xl grid-cols-3 gap-x-3 gap-y-1">
-                              <input
-                                type="text"
-                                value={signaturesMeta.sig1Dept}
-                                onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig1Dept: e.target.value }))}
-                                className="w-full min-w-0 rounded border border-slate-200 bg-white px-1.5 py-2 text-center text-[11px] font-black text-slate-900 outline-none focus:border-sky-600 sm:text-xs"
-                                placeholder="الإدارة المالية"
-                                title="الشؤون المالية"
-                              />
-                              <input
-                                type="text"
-                                value={signaturesMeta.sig2Dept}
-                                onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig2Dept: e.target.value }))}
-                                className="w-full min-w-0 rounded border border-slate-200 bg-white px-1.5 py-2 text-center text-[11px] font-black text-slate-900 outline-none focus:border-sky-600 sm:text-xs"
-                                placeholder="نائب رئيس المجلس"
-                                title="نائب رئيس المجلس"
-                              />
-                              <input
-                                type="text"
-                                value={signaturesMeta.sig3Dept}
-                                onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig3Dept: e.target.value }))}
-                                className="w-full min-w-0 rounded border border-slate-200 bg-white px-1.5 py-2 text-center text-[11px] font-black text-slate-900 outline-none focus:border-sky-600 sm:text-xs"
-                                placeholder="رئيس المجلس"
-                                title="رئيس المجلس اليمني للاختصاصات الطبية"
-                              />
-                              <input
-                                type="text"
-                                value={signaturesMeta.sig1Name}
-                                onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig1Name: e.target.value }))}
-                                className="w-full min-w-0 rounded border border-slate-200 bg-white px-1.5 py-2 text-center text-[11px] font-bold text-slate-900 outline-none focus:border-sky-600 sm:text-xs"
-                                placeholder="اسم المدير"
-                                title="اسم مدير الشؤون المالية"
-                              />
-                              <input
-                                type="text"
-                                value={signaturesMeta.sig2Name}
-                                onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig2Name: e.target.value }))}
-                                className="w-full min-w-0 rounded border border-slate-200 bg-white px-1.5 py-2 text-center text-[11px] font-bold text-slate-900 outline-none focus:border-sky-600 sm:text-xs"
-                                placeholder="اسم المدير"
-                                title="اسم نائب رئيس المجلس"
-                              />
-                              <input
-                                type="text"
-                                value={signaturesMeta.sig3Name}
-                                onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig3Name: e.target.value }))}
-                                className="w-full min-w-0 rounded border border-slate-200 bg-white px-1.5 py-2 text-center text-[11px] font-bold text-slate-900 outline-none focus:border-sky-600 sm:text-xs"
-                                placeholder="اسم المدير"
-                                title="اسم رئيس المجلس"
-                              />
+                            <div className="signature-block-grid mx-auto grid w-full max-w-5xl grid-cols-3">
+                              <div className="signature-person">
+                                <input type="text" value={signaturesMeta.sig1Dept} onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig1Dept: e.target.value }))} data-print-class="signature-dept-field" className="signature-dept-field" placeholder="الإدارة المالية" title="الشؤون المالية" />
+                                <input type="text" value={signaturesMeta.sig1Name} onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig1Name: e.target.value }))} data-print-class="signature-name-field" className="signature-name-field" placeholder="اسم المدير" title="اسم مدير الشؤون المالية" />
+                                <span className="signature-dotted-line" aria-label="سطر التوقيع" />
+                              </div>
+                              <div className="signature-person">
+                                <input type="text" value={signaturesMeta.sig2Dept} onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig2Dept: e.target.value }))} data-print-class="signature-dept-field" className="signature-dept-field" placeholder="نائب رئيس المجلس" title="نائب رئيس المجلس" />
+                                <input type="text" value={signaturesMeta.sig2Name} onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig2Name: e.target.value }))} data-print-class="signature-name-field" className="signature-name-field" placeholder="اسم المدير" title="اسم نائب رئيس المجلس" />
+                                <span className="signature-dotted-line" aria-label="سطر التوقيع" />
+                              </div>
+                              <div className="signature-person">
+                                <input type="text" value={signaturesMeta.sig3Dept} onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig3Dept: e.target.value }))} data-print-class="signature-dept-field" className="signature-dept-field" placeholder="رئيس المجلس" title="رئيس المجلس اليمني للاختصاصات الطبية" />
+                                <input type="text" value={signaturesMeta.sig3Name} onChange={(e) => setSignaturesMeta((prev: SignaturesMeta) => ({ ...prev, sig3Name: e.target.value }))} data-print-class="signature-name-field" className="signature-name-field" placeholder="اسم المدير" title="اسم رئيس المجلس" />
+                                <span className="signature-dotted-line" aria-label="سطر التوقيع" />
+                              </div>
                             </div>
                           </td>
                         </tr>
