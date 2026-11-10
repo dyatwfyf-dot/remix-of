@@ -144,6 +144,78 @@ function htmlTableToMatrix(table: HTMLTableElement): string[][] {
   );
 }
 
+function cssColorToArgb(value: string): string | null {
+  const rgb = value.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\s*\)/i);
+  if (rgb && Number(rgb[4] ?? 1) > 0) {
+    return `FF${rgb.slice(1, 4).map((part) => Number(part).toString(16).padStart(2, "0")).join("").toUpperCase()}`;
+  }
+  const hex = value.match(/^#([\da-f]{6})$/i);
+  return hex ? `FF${hex[1].toUpperCase()}` : null;
+}
+
+function applyHtmlTableStylesToWorksheet(
+  worksheet: any,
+  table: HTMLTableElement,
+  startRow: number,
+) {
+  const cells: Array<Array<HTMLTableCellElement | undefined>> = [];
+  Array.from(table.rows).forEach((row, rowIndex) => {
+    if (!cells[rowIndex]) cells[rowIndex] = [];
+    let columnIndex = 0;
+    Array.from(row.cells).forEach((cell) => {
+      while (cells[rowIndex][columnIndex]) columnIndex += 1;
+      const rowSpan = Math.max(1, cell.rowSpan || 1);
+      const colSpan = Math.max(1, cell.colSpan || 1);
+      for (let rowOffset = 0; rowOffset < rowSpan; rowOffset += 1) {
+        const targetRow = rowIndex + rowOffset;
+        if (!cells[targetRow]) cells[targetRow] = [];
+        for (let colOffset = 0; colOffset < colSpan; colOffset += 1) {
+          cells[targetRow][columnIndex + colOffset] = cell;
+        }
+      }
+      columnIndex += colSpan;
+    });
+  });
+
+  cells.forEach((row, rowIndex) => {
+    let estimatedLines = 1;
+    row.forEach((sourceCell, columnIndex) => {
+      if (!sourceCell) return;
+      const target = worksheet.getCell(startRow + rowIndex, columnIndex + 1);
+      const style = window.getComputedStyle(sourceCell);
+      const rowBackground = sourceCell.parentElement
+        ? window.getComputedStyle(sourceCell.parentElement).backgroundColor
+        : "transparent";
+      const fill = cssColorToArgb(style.backgroundColor) || cssColorToArgb(rowBackground);
+      const fontColor = cssColorToArgb(style.color);
+      if (fill) {
+        target.fill = { type: "pattern", pattern: "solid", fgColor: { argb: fill } };
+      }
+      target.font = {
+        ...(target.font || {}),
+        color: fontColor ? { argb: fontColor } : target.font?.color,
+        bold: Number.parseInt(style.fontWeight, 10) >= 600 || target.font?.bold,
+      };
+      target.alignment = {
+        ...(target.alignment || {}),
+        vertical: "middle",
+        wrapText: true,
+        shrinkToFit: false,
+      };
+      const spanWidth = Array.from({ length: Math.max(1, sourceCell.colSpan) }, (_, offset) =>
+        worksheet.getColumn(columnIndex + offset + 1).width || 12,
+      ).reduce((sum, width) => sum + width, 0);
+      const textLines = (sourceCell.textContent || "").split(/\r?\n/).reduce(
+        (sum, line) => sum + Math.max(1, Math.ceil(line.trim().length / Math.max(8, spanWidth - 2))),
+        0,
+      );
+      estimatedLines = Math.max(estimatedLines, textLines);
+    });
+    const targetRow = worksheet.getRow(startRow + rowIndex);
+    targetRow.height = Math.max(targetRow.height || 0, Math.min(120, estimatedLines * 18 + 6));
+  });
+}
+
 // ===== حساب التجميعات =====
 function computeAggregates(values: Cell[]): Cell[] {
   const rows = schema.rows;
@@ -306,6 +378,7 @@ const TOT_C = "bg-emerald-50";
 
 // تنسيق موحّد لعرض جداول المصروفات على كامل عرض الشاشة مع الحفاظ على لوحة الألوان الحالية.
 const EXPENSES_TABLE_CSS = `
+.mizan-expenses-tab .expenses-horizontal-scroll { display:block; max-width:100%; min-width:0; overflow-x:auto !important; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; touch-action:pan-x pan-y; }
 .mizan-expenses-tab .expenses-fit-table { width:100% !important; min-width:0 !important; table-layout:fixed !important; border-collapse:collapse; }
 .mizan-expenses-tab .expenses-fit-table th,.mizan-expenses-tab .expenses-fit-table td { box-sizing:border-box; padding:5px 3px !important; font-size:clamp(12px,1.05vw,15px) !important; line-height:1.35; white-space:normal !important; overflow-wrap:anywhere; word-break:normal; }
 .mizan-expenses-tab .expenses-fit-table .numeric-cell { font-size:clamp(12px,1vw,14px) !important; white-space:nowrap !important; overflow-wrap:normal; }
@@ -320,6 +393,9 @@ const EXPENSES_TABLE_CSS = `
 .mizan-expenses-tab .expenses-year-table { min-width:900px !important; }
 .mizan-expenses-tab .expenses-subtabs button { min-height:38px; padding:8px 12px; font-size:13px; }
 @media (max-width:640px) {
+ .mizan-expenses-tab .expenses-main-table { min-width:1050px !important; }
+ .mizan-expenses-tab .expenses-summary-table { min-width:760px !important; }
+ .mizan-expenses-tab .expenses-year-table { min-width:1250px !important; }
  .mizan-expenses-tab .expenses-fit-table th,.mizan-expenses-tab .expenses-fit-table td { padding:4px 1px !important; font-size:12px !important; line-height:1.3; }
  .mizan-expenses-tab .expenses-fit-table .numeric-cell { font-size:12px !important; }
  .mizan-expenses-tab .expenses-main-table col.expense-name { width:28%; }
@@ -463,7 +539,7 @@ export default function ExpensesTab() {
         <div className="bg-sky-800 text-white text-center py-2 font-bold text-sm tracking-wide">
           إجمالي الاستخدامات — ملخص حسب الأبواب
         </div>
-        <div className="overflow-visible">
+        <div className="expenses-horizontal-scroll max-w-full overflow-x-auto overscroll-x-contain">
           <table className="expenses-fit-table expenses-summary-table w-full border-collapse text-sm sm:text-base">
             <colgroup><col className="summary-name" />{Array.from({ length: 6 }, (_, i) => <col key={i} className="summary-value" />)}</colgroup>
             <thead className="font-bold text-sm">
@@ -589,7 +665,7 @@ export default function ExpensesTab() {
     return (
       <div className="space-y-0" dir="rtl">
         <div className="w-full min-w-auto overflow-hidden rounded-lg border border-black bg-white shadow-sm text-center">
-          <div className="overflow-visible">
+          <div className="expenses-horizontal-scroll max-w-full overflow-x-auto overscroll-x-contain">
             <table className="expenses-fit-table expenses-main-table w-full border-collapse text-sm">
               <colgroup><col className="expense-name" />{Array.from({ length: 4 }, (_, i) => <col key={i} className="expense-code" />)}{Array.from({ length: 6 }, (_, i) => <col key={i} className="expense-value" />)}</colgroup>
               <thead className="sticky top-0 z-10 font-bold text-sm">
@@ -737,7 +813,7 @@ export default function ExpensesTab() {
             <h3 className="text-base sm:text-lg font-bold">كشف حساب السنة</h3>
             <p className="text-xs opacity-90">ملخص جميع الأشهر للعام {year}م</p>
           </div>
-          <div className="overflow-auto max-h-[65vh]">
+          <div className="expenses-horizontal-scroll max-w-full max-h-[65vh] overflow-auto overscroll-x-contain">
             <table className="expenses-fit-table expenses-month-table expenses-year-table w-full border-collapse text-sm">
               <colgroup><col className="month-name" />{Array.from({ length: 12 }, (_, i) => <col key={i} className="month-value" />)}<col className="month-total" /></colgroup>
               <thead className="font-bold text-xs sticky top-0 z-20">
@@ -773,7 +849,7 @@ export default function ExpensesTab() {
             <h3 className="text-base font-bold">ملخص إجمالي الاستخدامات حسب الأبواب — شهرياً</h3>
             <p className="text-xs opacity-80">المبالغ بالريال — الشهر الجاري فقط</p>
           </div>
-          <div className="overflow-auto">
+          <div className="expenses-horizontal-scroll max-w-full overflow-auto overscroll-x-contain">
             <table className="expenses-fit-table expenses-month-table expenses-year-table w-full border-collapse text-sm">
               <colgroup><col className="month-name" />{Array.from({ length: 12 }, (_, i) => <col key={i} className="month-value" />)}<col className="month-total" /></colgroup>
               <thead className="font-bold text-xs sticky top-0 z-10">
@@ -931,7 +1007,7 @@ export default function ExpensesTab() {
                 #expenses-report th,#expenses-report td { border:1px solid #000 !important; padding:4px 3px !important; text-align:center !important; vertical-align:middle !important; white-space:normal !important; overflow:visible !important; overflow-wrap:anywhere !important; word-break:normal !important; line-height:1.3; font-weight:700 !important; }
                 #expenses-report thead th { font-size:14px !important; font-weight:900 !important; }
                 #expenses-report tbody td { font-size:14px !important; }
-                #expenses-report .numeric-cell,#expenses-report .date-cell,#expenses-report .font-bold,#expenses-report input[type="number"],#expenses-report input[type="date"] { min-width:0 !important; white-space:nowrap !important; overflow:visible !important; overflow-wrap:normal !important; word-break:keep-all !important; font-family:Cairo,sans-serif !important; font-size:13px !important; font-variant-numeric:tabular-nums; direction:ltr; }
+                #expenses-report .numeric-cell,#expenses-report .date-cell,#expenses-report input[type="number"],#expenses-report input[type="date"] { min-width:0 !important; white-space:nowrap !important; overflow:visible !important; overflow-wrap:normal !important; word-break:keep-all !important; font-family:Cairo,sans-serif !important; font-size:13px !important; font-variant-numeric:tabular-nums; direction:ltr; }
                 #expenses-report input { width: 100% !important; min-width: 0 !important; border: 0; background: transparent; color: #000; font: inherit; text-align: center; }
                 #expenses-report .text-white { color: #fff !important; }
                 ${EXPENSES_TABLE_CSS}
@@ -956,7 +1032,7 @@ export default function ExpensesTab() {
                   #expenses-report thead { display: table-header-group; }
                   #expenses-report tr { page-break-inside: avoid; }
                   #expenses-report th, #expenses-report td { white-space: normal !important; }
-                  #expenses-report .numeric-cell, #expenses-report .date-cell, #expenses-report .font-bold { white-space: nowrap !important; }
+                  #expenses-report .numeric-cell, #expenses-report .date-cell { white-space: nowrap !important; }
                 }
                 </style></head><body><div class="print-page">${reportLetterheadHtml()}<div id="expenses-report">${el.innerHTML}</div></div>
                 <script>window.onload=()=>setTimeout(()=>window.print(),300)</script></body></html>`;
@@ -1018,6 +1094,7 @@ export default function ExpensesTab() {
 
                 let nextRow = dataStartRow;
                 let firstHeaderRow = dataStartRow;
+                const styledTableRanges: Array<{ table: HTMLTableElement; startRow: number }> = [];
                 tableMatrices.forEach((matrix, tableIndex) => {
                   if (tableIndex > 0) nextRow += 1;
                   const sectionRow = worksheet.getRow(nextRow);
@@ -1052,6 +1129,7 @@ export default function ExpensesTab() {
                   const headerRow = nextRow + 1;
                   if (tableIndex === 0) firstHeaderRow = headerRow;
                   appendRows(worksheet, matrix, headerRow);
+                  styledTableRanges.push({ table: tables[tableIndex], startRow: headerRow });
                   nextRow = headerRow + matrix.length;
                 });
 
@@ -1060,6 +1138,9 @@ export default function ExpensesTab() {
                   palette: getExcelPalette("المصروفات"),
                   maxColumnWidth: 32,
                 });
+                styledTableRanges.forEach(({ table, startRow }) =>
+                  applyHtmlTableStylesToWorksheet(worksheet, table, startRow),
+                );
                 await downloadWorkbook(workbook, `المصروفات-${view}-${year}-${reportDate}.xlsx`);
                 toast.success("تم التصدير");
               } catch (error) {
