@@ -1330,6 +1330,9 @@ export default function ReportsTab() {
    const traineeRows = selectedTraineeFeeStatus === "all"
     ? allTraineeRows
     : allTraineeRows.filter((row) => row.statusKey === selectedTraineeFeeStatus);
+   const visibleSummaryRows = selectedTraineeFeeStatus === "all"
+    ? summaryRows
+    : summaryRows.filter((row) => row.statusKey === selectedTraineeFeeStatus);
    const sortedTraineeRows = [...traineeRows].sort((a, b) => {
     const aValue = a[activeSortCol];
     const bValue = b[activeSortCol];
@@ -1346,7 +1349,7 @@ export default function ReportsTab() {
     return activeSortDir === "asc" ? comparison : -comparison;
    });
    return [
-    ...summaryRows.map((summary) => ({
+    ...visibleSummaryRows.map((summary) => ({
      ...summary,
      statusSummaryCount: allTraineeRows.filter((row) => row.statusKey === summary.statusKey).length,
     })),
@@ -1472,7 +1475,7 @@ export default function ReportsTab() {
   source === "feeTotals" ?
   `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}` :
   source === "traineeFeeStatus" ?
-  "تقرير حالة سداد رسوم القيد والتسجيل والأقساط والامتحانات منذ 2022" :
+  `تقرير حالة سداد رسوم القيد والتسجيل والأقساط والامتحانات منذ 2022 — ${selectedTraineeFeeStatus === "all" ? "كل الحالات" : String(traineeFeeStatusRows.find((row) => row.summaryLevel === "status-summary" && row.statusKey === selectedTraineeFeeStatus)?.statusSummaryLabel || "الحالة المختارة")}` :
   source === "youssefLoan" || source === "tawfiqCustody" ?
   `مسير إخلاء - عهدة - ${source === "youssefLoan" ? "د/ يوسف" : "توفيق الداعي"}\n${custodyDateRange}` :
   `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
@@ -1543,7 +1546,7 @@ export default function ReportsTab() {
    #tableContainer table.reports-data-table tbody { display:table-row-group!important; }
    #tableContainer table.reports-data-table tr, #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td, #tableContainer table.reports-data-table .pdf-cell-text { page-break-inside:avoid!important; break-inside:avoid!important; font-size:${fontSizePx}px!important; }
    #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td { min-width:0!important; max-width:100%!important; overflow-wrap:anywhere!important; }
-   ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table th, #tableContainer table.reports-fee-status-table td { font-size:${fontSizePx}px!important; color:#111111!important; white-space:nowrap!important; word-break:keep-all!important; overflow-wrap:normal!important; padding-left:0!important; padding-right:0!important; }` : ""}
+   ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:fixed!important; } #tableContainer table.reports-fee-status-table th, #tableContainer table.reports-fee-status-table td { font-size:${fontSizePx}px!important; color:#111111!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; padding-left:0!important; padding-right:0!important; }` : ""}
    #tableContainer table.reports-data-table tr.signature-block-row, #tableContainer table.reports-data-table tr.signature-block-row td { page-break-inside:avoid!important; break-inside:avoid!important; }
   `;
   const opened = openBrowserPrintPreview({
@@ -1600,6 +1603,24 @@ export default function ReportsTab() {
                 ))}
               </select>
             </label>
+
+            {source === "traineeFeeStatus" && (
+              <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
+                حالة السداد
+                <select
+                  value={selectedTraineeFeeStatus}
+                  onChange={(event) => setSelectedTraineeFeeStatus(event.target.value)}
+                  aria-label="تصفية تقرير المتدربين حسب حالة السداد"
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
+                >
+                  <option value="all">كل الحالات</option>
+                  <option value="registration-only">سدد القيد والتسجيل/الأقساط ولم يسدد رسوم الامتحانات</option>
+                  <option value="exam-only">سدد رسوم الامتحانات ولم يسدد القيد والتسجيل/الأقساط</option>
+                  <option value="neither">لم يسدد القيد والتسجيل/الأقساط ولا رسوم الامتحانات</option>
+                  <option value="both">سدد القيد والتسجيل/الأقساط ورسوم الامتحانات معاً</option>
+                </select>
+              </label>
+            )}
 
             {source !== "youssefLoan" && source !== "tawfiqCustody" && source !== "trainee" && source !== "feeTotals" && source !== "traineeFeeStatus" && (
               <>

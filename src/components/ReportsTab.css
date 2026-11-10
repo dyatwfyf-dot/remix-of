@@ -120,9 +120,9 @@
 }
 
 .reports-table-scroll table.reports-fee-status-table {
-  width: max-content;
-  min-width: 100%;
-  table-layout: auto;
+  width: 100%;
+  min-width: 1120px;
+  table-layout: fixed;
 }
 .reports-table-scroll .reports-fee-status-table thead th,
 .reports-table-scroll .reports-fee-status-table tbody td {
@@ -131,12 +131,26 @@
   font-size: 15px !important;
   font-weight: 850 !important;
   color: #111111 !important;
-  white-space: nowrap !important;
-  word-break: keep-all !important;
-  overflow-wrap: normal !important;
+  white-space: normal !important;
+  word-break: normal !important;
+  overflow-wrap: anywhere !important;
 }
 .reports-table-scroll .reports-fee-status-table thead th {
   font-size: 14px !important;
+}
+.reports-table-scroll .reports-fee-status-table thead th > div {
+  display: flex;
+  flex-wrap: wrap;
+  white-space: normal !important;
+}
+.reports-table-scroll .reports-fee-status-table thead th > div > span {
+  min-width: 0;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+}
+.reports-table-scroll .reports-fee-status-table tbody td.reports-text-cell {
+  min-width: 0 !important;
+  max-width: none !important;
 }
 
 .reports-table-scroll .reports-data-table thead th {
@@ -352,9 +366,14 @@
     padding-right: 0 !important;
     font-size: 12px !important;
     color: #111111 !important;
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-    overflow-wrap: normal !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+  .reports-table-scroll table.reports-fee-status-table {
+    min-width: 0 !important;
+    width: 100% !important;
+    table-layout: fixed !important;
   }
 }
 
