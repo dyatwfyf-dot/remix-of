@@ -253,6 +253,9 @@ font-Family: Cairo !important;
   font-size: 14px !important; font-weight:1000 !important; line-height:1.35 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-data-table thead { display:table-header-group !important; }
   #tableContainer table.reports-data-table thead tr.reports-column-header-row > th { background:linear-gradient(180deg,#fff4a3 0%,#ffd700 48%,#d99b00 100%) !important; background-color:#ffd700 !important; color:#000 !important; border-color:#000 !important; font-size: 12px !important; white-space:nowrap !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  #tableContainer table.reports-trainee-payment-table thead tr.reports-column-header-row > th { font-size:14px!important; white-space:normal!important; overflow-wrap:anywhere!important; }
+  #tableContainer table.reports-trainee-payment-table tbody tr > td { font-size:14px!important; white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important; }
+  #tableContainer table.reports-trainee-payment-table tbody td.reports-numeric-cell { white-space:nowrap!important; overflow-wrap:normal!important; }
   #tableContainer table.reports-data-table thead tr.reports-custody-title-row > th,
   #tableContainer table.reports-data-table thead tr.reports-custody-date-row > th { position:static !important; min-width:0 !important; max-width:none !important; background:#fff !important; background-color:#fff !important; color:#17324d !important; border:1px solid #000 !important;
   font-weight:900 !important;
@@ -1537,6 +1540,8 @@ export default function ReportsTab() {
    : Math.max(7, Math.min(13, (pageWidthMm - marginMm * 2) / (visibleColumnCount * 2.35)));
   const fontSizePx = source === "traineeFeeStatus"
    ? Math.max(12, Math.min(14, configuredFontSize + 2))
+   : source === "trainee"
+    ? Math.max(14, Math.min(16, configuredFontSize + 3))
    : configuredFontSize;
   const tableHtml = buildReportsScreenPrintHtml(source, settings.showHeader ? reportDateLabel : "", reportRecordCount, settings);
   const finalCss = `
@@ -1547,6 +1552,7 @@ export default function ReportsTab() {
    #tableContainer table.reports-data-table tr, #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td, #tableContainer table.reports-data-table .pdf-cell-text { page-break-inside:avoid!important; break-inside:avoid!important; font-size:${fontSizePx}px!important; }
    #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td { min-width:0!important; max-width:100%!important; overflow-wrap:anywhere!important; }
    ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:fixed!important; } #tableContainer table.reports-fee-status-table th, #tableContainer table.reports-fee-status-table td { font-size:${fontSizePx}px!important; color:#111111!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; padding-left:0!important; padding-right:0!important; }` : ""}
+   ${source === "trainee" ? `#tableContainer table.reports-trainee-payment-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:auto!important; } #tableContainer table.reports-trainee-payment-table thead tr.reports-column-header-row th { font-size:${fontSizePx}px!important; white-space:normal!important; overflow-wrap:anywhere!important; } #tableContainer table.reports-trainee-payment-table tbody tr > td { font-size:${fontSizePx}px!important; white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important; } #tableContainer table.reports-trainee-payment-table tbody td.reports-numeric-cell { white-space:nowrap!important; overflow-wrap:normal!important; }` : ""}
    #tableContainer table.reports-data-table tr.signature-block-row, #tableContainer table.reports-data-table tr.signature-block-row td { page-break-inside:avoid!important; break-inside:avoid!important; }
   `;
   const opened = openBrowserPrintPreview({
@@ -1803,6 +1809,7 @@ export default function ReportsTab() {
             pdfOrientation={source === "traineeFeeStatus" ? "landscape" : "portrait"}
             includeTotalRow={!isLoanOrCustody && source !== "traineeFeeStatus"}
             printTableClassName={source === "trainee" ? "reports-trainee-payment-table" : ""}
+            excelCellFontSize={source === "trainee" ? 12 : undefined}
           />
         </div>
 

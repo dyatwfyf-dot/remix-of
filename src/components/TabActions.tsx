@@ -57,6 +57,8 @@ type Props = {
   renderPrintTableHtml?: (reportDateLabel: string) => string;
   includeTotalRow?: boolean;
   printTableClassName?: string;
+  /** Optional larger body font for reports that need more readable Excel exports. */
+  excelCellFontSize?: number;
   onPrintRequest?: () => void;
   additionalWebActions ? : WebActionItem[];
   webClassName ? : string;
@@ -80,6 +82,7 @@ export default function TabActions({
   renderPrintTableHtml,
   includeTotalRow = true,
   printTableClassName = "",
+  excelCellFontSize,
   onPrintRequest,
   additionalWebActions = [],
   webClassName = "",
@@ -222,6 +225,28 @@ export default function TabActions({
         totalRows: [dataStartRow + dataRows.length + 1],
         palette: getExcelPalette(title),
       });
+      if (excelCellFontSize) {
+        worksheet.eachRow({ includeEmpty: true }, (row: any, rowNumber: number) => {
+          if (rowNumber < dataStartRow) return;
+          let estimatedLines = rowNumber === dataStartRow ? 2 : 1;
+          row.eachCell({ includeEmpty: true }, (cell: any) => {
+            cell.font = { ...(cell.font || {}), name: "Arial", size: excelCellFontSize };
+            cell.alignment = {
+              ...(cell.alignment || {}),
+              vertical: "middle",
+              wrapText: true,
+              shrinkToFit: false,
+            };
+            const columnWidth = worksheet.getColumn(cell.col).width || 12;
+            const cellText = String(cell.value ?? "");
+            const wrappedLines = cellText
+              .split(/\r?\n/)
+              .reduce((sum: number, line: string) => sum + Math.max(1, Math.ceil(line.length / Math.max(8, columnWidth - 2))), 0);
+            estimatedLines = Math.max(estimatedLines, wrappedLines);
+          });
+          row.height = Math.max(row.height || 0, estimatedLines * 18 + 8);
+        });
+      }
       await downloadWorkbook(workbook, `${fileName}-${reportDate}.xlsx`);
       toast.success("تم تصدير الملف بنجاح");
     } catch (error) {
