@@ -104,7 +104,7 @@ export const normForMatch = (s: string) => {
     .trim();
 };
 
-const STOP_WORDS_FOR_MATCH = new Set(["حساب", "حسابات", "ح", "محلية", "محليه", "عامة", "عامه"]);
+const STOP_WORDS_FOR_MATCH = new Set(["حساب", "حسابات", "ح"]);
 
 export const tokensForMatch = (s: string) =>
   normForMatch(s)
@@ -174,7 +174,6 @@ export const CHAPTER_TO_STATEMENT_ACCOUNT: Record<string, string> = {
 
   [normForMatch("ح/ النقدية")]: "حساب النقدية",
   [normForMatch("النقدية")]: "حساب النقدية",
-  [normForMatch("حساب البنك")]: "حساب البنك موارد",
   [normForMatch("البنك موارد")]: "حساب البنك موارد",
   [normForMatch("البنك استخدامات")]: "حساب البنك استخدامات",
 };
@@ -191,9 +190,7 @@ export function matchStatementAccount(raw: string): string | null {
   if (exact) return exact.name;
 
   // لا نستخدم أول نتيجة جزئية؛ فقد تتشابه أسماء حسابات متعددة (مثل حسابات البنك).
-  const partialMatches = ALL_STATEMENT_NORM.filter(
-    (a) => a.norm.includes(n) || n.includes(a.norm),
-  );
+  const partialMatches = ALL_STATEMENT_NORM.filter((a) => n.includes(a.norm));
   if (partialMatches.length) {
     const longestLength = Math.max(...partialMatches.map((a) => a.norm.length));
     const longest = partialMatches.filter((a) => a.norm.length === longestLength);
