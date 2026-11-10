@@ -338,25 +338,17 @@ font-size: 13px !important; white-space:nowrap !important;
 const custodyPortraitPrintCss = `
   @page { size:A4 portrait; margin:5mm; }
   #tableContainer .reports-print-table-shell { width:100%!important; min-width:0!important; max-width:100%!important; overflow:visible!important; }
-  #tableContainer table.reports-custody-print-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:fixed!important; border-collapse:collapse!important; }
+  #tableContainer table.reports-custody-print-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:auto!important; border-collapse:collapse!important; }
   #tableContainer table.reports-custody-print-table th,
-  #tableContainer table.reports-custody-print-table td { box-sizing:border-box!important; min-width:0!important; max-width:none!important; padding:0 1px!important; text-align:center!important; vertical-align:middle!important; white-space:nowrap!important; word-break:keep-all!important; overflow:hidden!important; text-overflow:clip!important; font-size:11px!important; line-height:1.2!important; }
+  #tableContainer table.reports-custody-print-table td { box-sizing:border-box!important; min-width:0!important; max-width:none!important; padding:3px 3px!important; text-align:center!important; vertical-align:middle!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; overflow:visible!important; text-overflow:clip!important; font-size:13px!important; line-height:1.4!important; }
   #tableContainer table.reports-custody-print-table th[data-col-key="idx"],
-  #tableContainer table.reports-custody-print-table td[data-col-key="idx"] { width:5%!important; }
-  #tableContainer table.reports-custody-print-table th[data-col-key="date"],
-  #tableContainer table.reports-custody-print-table td[data-col-key="date"] { width:13%!important; }
-  #tableContainer table.reports-custody-print-table th[data-col-key="description"],
-  #tableContainer table.reports-custody-print-table td[data-col-key="description"] { width:29%!important; font-size:9px!important; }
-  #tableContainer table.reports-custody-print-table th[data-col-key="settlementNo"],
-  #tableContainer table.reports-custody-print-table td[data-col-key="settlementNo"] { width:16%!important; }
-  #tableContainer table.reports-custody-print-table th[data-col-key="notes"],
-  #tableContainer table.reports-custody-print-table td[data-col-key="notes"] { width:25%!important; font-size:9px!important; }
-  #tableContainer table.reports-custody-print-table th[data-col-key="amount"],
-  #tableContainer table.reports-custody-print-table td[data-col-key="amount"] { width:12%!important; }
-  #tableContainer table.reports-custody-print-table thead tr.reports-custody-title-row > th { padding:6px 2px 2px!important; font-size:16px!important; white-space:normal!important; }
-  #tableContainer table.reports-custody-print-table thead tr.reports-custody-date-row > th { padding:2px!important; font-size:10px!important; white-space:normal!important; }
-  #tableContainer table.reports-custody-print-table thead tr.reports-column-header-row > th { padding:2px 1px!important; font-size:11px!important; white-space:normal!important; }
-  #tableContainer table.reports-custody-print-table tbody > tr > td { height:7mm!important; }
+  #tableContainer table.reports-custody-print-table td[data-col-key="idx"],
+  #tableContainer table.reports-custody-print-table td.reports-numeric-cell,
+  #tableContainer table.reports-custody-print-table td.rc-num { white-space:nowrap!important; word-break:keep-all!important; overflow-wrap:normal!important; }
+  #tableContainer table.reports-custody-print-table thead tr.reports-custody-title-row > th { padding:7px 4px 3px!important; font-size:17px!important; white-space:normal!important; }
+  #tableContainer table.reports-custody-print-table thead tr.reports-custody-date-row > th { padding:3px 4px 7px!important; font-size:13px!important; white-space:normal!important; }
+  #tableContainer table.reports-custody-print-table thead tr.reports-column-header-row > th { padding:4px 3px!important; font-size:13px!important; white-space:normal!important; overflow-wrap:anywhere!important; }
+  #tableContainer table.reports-custody-print-table tbody > tr > td { height:auto!important; min-height:8mm!important; }
 `;
 
 
@@ -423,23 +415,20 @@ const buildReportsScreenPrintHtml = (
      printCell.classList.contains("reports-numeric-cell") ||
      printCell.classList.contains("reports-no-wrap-cell") ||
      printCell.dataset.colKey === "idx";
-    if (isTextCell && !isCustodyReport) {
+    if (isCustodyReport && !isNumericCell) {
+     // Allow text to wrap naturally instead of shrinking or clipping it.
      printCell.style.setProperty("white-space", "normal", "important");
      printCell.style.setProperty("word-break", "normal", "important");
      printCell.style.setProperty("overflow-wrap", "anywhere", "important");
-    } else if (isNumericCell || isCustodyReport) {
+     printCell.style.setProperty("overflow", "visible", "important");
+    } else if (isTextCell) {
+     printCell.style.setProperty("white-space", "normal", "important");
+     printCell.style.setProperty("word-break", "normal", "important");
+     printCell.style.setProperty("overflow-wrap", "anywhere", "important");
+    } else if (isNumericCell) {
      printCell.style.setProperty("white-space", "nowrap", "important");
      printCell.style.setProperty("word-break", "keep-all", "important");
      printCell.style.setProperty("overflow-wrap", "normal", "important");
-    }
-    if (isCustodyReport && printCell.closest("tbody") && ["description", "notes"].includes(printCell.dataset.colKey || "")) {
-     const control = printCell.querySelector("input, textarea") as HTMLInputElement | HTMLTextAreaElement | null;
-     const value = control ? control.value.trim() : (printCell.textContent || "").trim();
-     if (value) {
-      const availableWidthPx = ((printCell.dataset.colKey === "description" ? 58 : 50) * 96) / 25.4 - 4;
-      const fittedFontSize = Math.max(6, Math.min(9, availableWidthPx / (value.length * 0.55)));
-      printCell.style.setProperty("font-size", `${fittedFontSize.toFixed(1)}px`, "important");
-     }
     }
     printCell.style.setProperty("-webkit-print-color-adjust", "exact", "important");
     printCell.style.setProperty("print-color-adjust", "exact", "important");
@@ -1584,7 +1573,7 @@ export default function ReportsTab() {
    : source === "trainee"
     ? Math.max(14, Math.min(16, configuredFontSize + 3))
     : isCustodyReport
-     ? Math.max(9, Math.min(11, configuredFontSize - 2))
+     ? Math.max(12, Math.min(14, configuredFontSize + 3))
    : configuredFontSize;
   const tableHtml = buildReportsScreenPrintHtml(source, settings.showHeader ? reportDateLabel : "", reportRecordCount, settings);
   const finalCss = `
