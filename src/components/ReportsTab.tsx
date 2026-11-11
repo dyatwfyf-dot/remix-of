@@ -1099,9 +1099,13 @@ export default function ReportsTab() {
    });
   });
 
+  // وجود سجل واحد على الأقل في حوافظ التوريد يُحدد ما إذا كان للمتدرب أي بيانات هناك.
+  // المتدرب الذي لا يملك أي سجل مطابق بالاسم يُصنف دائماً ضمن غير المسدد للرسومين.
+  const traineesWithHafizaRecords = new Set<string>();
   const paymentsByTrainee = new Map<string, PaymentSummary>();
   (hafiza || []).forEach((record) => {
    const key = traineeNameKey(record.name);
+   if (key) traineesWithHafizaRecords.add(key);
    const date = normalizeDate(record.notifyDate || record.date);
    const notifyAmount = amountValue(record.notifyAmount);
    const hafizaAmount = amountValue(record.hafizaAmount);
@@ -1157,8 +1161,10 @@ export default function ReportsTab() {
     registrationAwaitingNotice: false,
     examAwaitingNotice: false,
    };
-   const hasRegistrationPayment = payment.registrationPaid > 0;
-   const hasExamPayment = payment.examPaid > 0;
+   const hasAnyHafizaRecord = traineesWithHafizaRecords.has(key);
+   // لا يُعتد بأي بيانات أخرى خارج حوافظ التوريد: غياب سجل المتدرب فيها يعني عدم سداد الرسمين.
+   const hasRegistrationPayment = hasAnyHafizaRecord && payment.registrationPaid > 0;
+   const hasExamPayment = hasAnyHafizaRecord && payment.examPaid > 0;
    const statusKey = hasRegistrationPayment
     ? hasExamPayment ? "both" : "registration-only"
     : hasExamPayment ? "exam-only" : "neither";
