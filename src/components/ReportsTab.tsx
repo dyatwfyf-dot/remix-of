@@ -1666,7 +1666,7 @@ export default function ReportsTab() {
                   className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
                 >
                   <option value="all">كل الحالات</option>
-                  <option value="registration-only">سدد القيد والتسجيل/الأقساط ولم يسدد رسوم الامتحانات</option>
+                  <option value="registration-only">سدد رسوم القيد والتسجيل ولم يسدد رسوم الامتحانات</option>
                   <option value="exam-only">سدد رسوم الامتحانات ولم يسدد رسوم القيد والتسجيل</option>
                   <option value="neither">لم يسدد رسوم القيد والتسجيل ولا رسوم الامتحانات</option>
                   <option value="both">سدد رسوم القيد والتسجيل ورسوم الامتحانات معاً</option>
