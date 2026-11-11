@@ -1092,28 +1092,23 @@ export default function ReportsTab() {
    examAwaitingNotice: boolean;
   };
 
-  // تبويب حوافظ التوريد هو المصدر الوحيد لأسماء المتدربين وبياناتهم في هذا التقرير.
-  // تُجمع الدفعة والتخصص من سجلات الاسم نفسه، وتُحتسب المدفوعات منذ 2022 فقط.
+  // بيانات المتدربين هي المصدر الوحيد لأسماء المتدربين والدفعة والتخصص في التقرير.
+  // تُستخدم حوافظ التوريد لمطابقة مبالغ السداد فقط، مع الإبقاء على شروط احتسابها كما هي.
   const hafizaTrainees = new Map<string, HafizaTraineeSummary>();
-   const addTrainee = (nameValue: unknown, batchValue?: unknown, specialtyValue?: unknown) => {
-    const trainee = String(nameValue || "").trim();
-    const key = normalizeTraineeReportName(trainee);
-    if (!key) return;
-    let item = hafizaTrainees.get(key);
-    if (!item) {
-     item = { trainee, batches: new Set<string>(), specialties: new Set<string>() };
-     hafizaTrainees.set(key, item);
-    }
-    const batch = String(batchValue ?? "").trim();
-    const specialty = String(specialtyValue ?? "").trim();
-    if (batch) item.batches.add(batch);
-    if (specialty) item.specialties.add(specialty);
-   };
-   // بيانات المتدربين هي المصدر الأساسي للأسماء، وتضاف أسماء الحوافظ غير المسجلة فيها كاحتياط.
-   (trainees || []).forEach((record) => addTrainee(record.name, record.batch, record.specialty));
-   (hafiza || []).forEach((record) => addTrainee(record.name, record.batch, record.specialty));
+  (trainees || []).forEach((record) => {
+   const trainee = String(record.name || "").trim();
+   const key = normalizeTraineeReportName(trainee);
+   if (!key) return;
+   const existing = hafizaTrainees.get(key);
+   if (existing) return;
+   hafizaTrainees.set(key, {
+    trainee,
+    batches: new Set<string>(String(record.batch ?? "").trim() ? [String(record.batch).trim()] : []),
+    specialties: new Set<string>(String(record.specialty ?? "").trim() ? [String(record.specialty).trim()] : []),
+   });
+  });
 
-   const paymentsByTrainee = new Map<string, PaymentSummary>();
+  const paymentsByTrainee = new Map<string, PaymentSummary>();
   (hafiza || []).forEach((record) => {
    const key = normalizeTraineeReportName(record.name);
    const date = normalizeDate(record.notifyDate || record.date);
