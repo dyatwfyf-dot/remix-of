@@ -1136,8 +1136,8 @@ export default function ReportsTab() {
    const date = normalizeDate(record.notifyDate || record.date);
    const amount = amountValue(record.notifyAmount);
    if (!key || !date || date.getFullYear() < 2022 || amount <= 0) return;
-   // تُعامل رسوم القسط/الدراسة مع رسوم القيد والتسجيل ضمن جانب الرسوم غير الامتحانية.
-   const isRegistration = isNewTraineeRegistrationDescription(record.description) || isTuitionFeeDescription(record.description);
+   // هذا التقرير خاص برسوم القيد والتسجيل ورسوم الامتحانات فقط؛ تُستبعد الأقساط الدراسية تماماً.
+   const isRegistration = isNewTraineeRegistrationDescription(record.description);
    const isExam = isExamFeeDescription(record.description);
    if (!isRegistration && !isExam) return;
 
@@ -1159,10 +1159,10 @@ export default function ReportsTab() {
   });
 
   const statusDefinitions = [
-   { key: "registration-only", label: "سدد القيد والتسجيل/الأقساط ولم يسدد رسوم الامتحانات", tone: "#FEF3C7" },
-   { key: "exam-only", label: "سدد رسوم الامتحانات ولم يسدد القيد والتسجيل/الأقساط", tone: "#E0E7FF" },
-   { key: "neither", label: "لم يسدد القيد والتسجيل/الأقساط ولا رسوم الامتحانات", tone: "#FEE2E2" },
-   { key: "both", label: "سدد القيد والتسجيل/الأقساط ورسوم الامتحانات معاً", tone: "#DCFCE7" },
+   { key: "registration-only", label: "سدد رسوم القيد والتسجيل ولم يسدد رسوم الامتحانات", tone: "#FEF3C7" },
+   { key: "exam-only", label: "سدد رسوم الامتحانات ولم يسدد رسوم القيد والتسجيل", tone: "#E0E7FF" },
+   { key: "neither", label: "لم يسدد رسوم القيد والتسجيل ولا رسوم الامتحانات", tone: "#FEE2E2" },
+   { key: "both", label: "سدد رسوم القيد والتسجيل ورسوم الامتحانات معاً", tone: "#DCFCE7" },
   ];
 
   const feeStatus = (paid: number, due: number) => {
@@ -1252,14 +1252,14 @@ export default function ReportsTab() {
   }
   if (source === "traineeFeeStatus") {
    return {
-    title: "تقرير حالة سداد رسوم القيد والتسجيل والأقساط والامتحانات منذ 2022",
+    title: "تقرير حالة سداد رسوم القيد والتسجيل والامتحانات منذ 2022",
     columns: [
      { key: "trainee", label: "اسم المتدرب" },
      { key: "batch", label: "الدفعة" },
      { key: "specialty", label: "التخصص" },
-     { key: "registrationDue", label: "المستحق للقيد والتسجيل والأقساط" },
-     { key: "registrationPaid", label: "المسدد للقيد والتسجيل والأقساط" },
-     { key: "registrationStatus", label: "حالة سداد القيد والتسجيل والأقساط" },
+     { key: "registrationDue", label: "المستحق لرسوم القيد والتسجيل" },
+     { key: "registrationPaid", label: "المسدد لرسوم القيد والتسجيل" },
+     { key: "registrationStatus", label: "حالة سداد رسوم القيد والتسجيل" },
      { key: "examDue", label: "المستحق للامتحانات" },
      { key: "examPaid", label: "المسدد للامتحانات" },
      { key: "examStatus", label: "حالة سداد الامتحانات" },
@@ -1894,7 +1894,6 @@ export default function ReportsTab() {
                       key={col.key}
                       data-col-key={col.key}
                       onClick={() => {
-                        if (source === "traineeFeeStatus") return;
                         if (source === "trainee") {
                           setTraineeHasUserSorted(true);
                           if (traineeSortColumn === col.key) {
