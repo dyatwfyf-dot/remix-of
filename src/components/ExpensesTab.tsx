@@ -378,7 +378,7 @@ const TOT_C = "bg-emerald-50";
 
 // تنسيق موحّد لعرض جداول المصروفات على كامل عرض الشاشة مع الحفاظ على لوحة الألوان الحالية.
 const EXPENSES_TABLE_CSS = `
-.mizan-expenses-tab .expenses-horizontal-scroll { display:block; max-width:100%; min-width:0; overflow-x:auto !important; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; touch-action:pan-x pan-y; }
+.mizan-expenses-tab .expenses-horizontal-scroll { display:block; max-width:100%; min-width:0; overflow-x:auto !important; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; touch-action:pan-x pan-y pinch-zoom; }
 .mizan-expenses-tab .expenses-fit-table { width:100% !important; min-width:0 !important; table-layout:fixed !important; border-collapse:collapse; }
 .mizan-expenses-tab .expenses-fit-table th,.mizan-expenses-tab .expenses-fit-table td { box-sizing:border-box; padding:5px 3px !important; font-size:clamp(12px,1.05vw,15px) !important; line-height:1.35; white-space:normal !important; overflow-wrap:anywhere; word-break:normal; }
 .mizan-expenses-tab .expenses-fit-table .numeric-cell { font-size:clamp(12px,1vw,14px) !important; white-space:nowrap !important; overflow-wrap:normal; }
