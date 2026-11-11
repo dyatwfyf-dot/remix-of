@@ -1088,6 +1088,8 @@ export default function ReportsTab() {
    examPaid: number;
    registrationLastDate: Date | null;
    examLastDate: Date | null;
+   registrationAwaitingNotice: boolean;
+   examAwaitingNotice: boolean;
   };
 
   // تبويب حوافظ التوريد هو المصدر الوحيد لأسماء المتدربين وبياناتهم في هذا التقرير.
@@ -1112,7 +1114,11 @@ export default function ReportsTab() {
   (hafiza || []).forEach((record) => {
    const key = normalizeTraineeReportName(record.name);
    const date = normalizeDate(record.notifyDate || record.date);
-   const amount = amountValue(record.notifyAmount);
+   const notifyAmount = amountValue(record.notifyAmount);
+   const hafizaAmount = amountValue(record.hafizaAmount);
+   const hasHafizaReceipt = Boolean(String(record.hafizaNo || "").trim()) && hafizaAmount > 0;
+   // إذا لم يُسجل مبلغ التوريد البنكي، يُحتسب مبلغ الحافظة كسداد مؤكد مع تمييزه بأنه لم يورد للبنك.
+   const amount = notifyAmount > 0 ? notifyAmount : hasHafizaReceipt ? hafizaAmount : 0;
    if (!key || !date || date.getFullYear() < 2022 || amount <= 0) return;
 
    // تُستبعد الأقساط الدراسية وأي رسوم أخرى؛ المطلوب القيد والتسجيل والامتحانات فقط.
@@ -1120,18 +1126,23 @@ export default function ReportsTab() {
    const isExam = isExamFeeDescription(record.description);
    if (!isRegistration && !isExam) return;
 
+   const awaitingNoticeNumber = hasHafizaReceipt && !String(record.notifyNo || "").trim();
    const payment = paymentsByTrainee.get(key) || {
     registrationPaid: 0,
     examPaid: 0,
     registrationLastDate: null,
     examLastDate: null,
+    registrationAwaitingNotice: false,
+    examAwaitingNotice: false,
    };
    if (isRegistration) {
     payment.registrationPaid += amount;
+    payment.registrationAwaitingNotice ||= awaitingNoticeNumber;
     if (!payment.registrationLastDate || date > payment.registrationLastDate) payment.registrationLastDate = date;
    }
    if (isExam) {
     payment.examPaid += amount;
+    payment.examAwaitingNotice ||= awaitingNoticeNumber;
     if (!payment.examLastDate || date > payment.examLastDate) payment.examLastDate = date;
    }
    paymentsByTrainee.set(key, payment);
@@ -1154,6 +1165,8 @@ export default function ReportsTab() {
     examPaid: 0,
     registrationLastDate: null,
     examLastDate: null,
+    registrationAwaitingNotice: false,
+    examAwaitingNotice: false,
    };
    const hasRegistrationPayment = payment.registrationPaid > 0;
    const hasExamPayment = payment.examPaid > 0;
@@ -1167,11 +1180,16 @@ export default function ReportsTab() {
     batch: Array.from(traineeData.batches).join("، ") || "—",
     specialty: Array.from(traineeData.specialties).join("، ") || "—",
     registrationPaid: payment.registrationPaid,
-    registrationStatus: paidStatus(payment.registrationPaid),
+    registrationStatus: payment.registrationAwaitingNotice ? "مسدد - لم يورد إلى البنك" : paidStatus(payment.registrationPaid),
     examPaid: payment.examPaid,
-    examStatus: paidStatus(payment.examPaid),
+    examStatus: payment.examAwaitingNotice ? "مسدد - لم يورد إلى البنك" : paidStatus(payment.examPaid),
     registrationLastDate: formatStatusDate(payment.registrationLastDate),
     examLastDate: formatStatusDate(payment.examLastDate),
+    bankPending: payment.registrationAwaitingNotice || payment.examAwaitingNotice,
+    bankPendingNote: [
+     payment.registrationAwaitingNotice ? "رسوم القيد والتسجيل: مسدد بموجب الحافظة ولم يورد إلى البنك (بانتظار رقم الإشعار)" : "",
+     payment.examAwaitingNotice ? "رسوم الامتحانات: مسدد بموجب الحافظة ولم يورد إلى البنك (بانتظار رقم الإشعار)" : "",
+    ].filter(Boolean).join("؛ ") || "—",
     overallStatus: status.label,
     statusGroup: status.label,
     statusKey,
@@ -1232,6 +1250,7 @@ export default function ReportsTab() {
      { key: "examPaid", label: "المسدد لرسوم الامتحانات" },
      { key: "examStatus", label: "حالة سداد الامتحانات" },
      { key: "overallStatus", label: "حالة السداد الإجمالية" },
+     { key: "bankPendingNote", label: "ملاحظة التوريد البنكي" },
      { key: "registrationLastDate", label: "آخر تاريخ لسداد القيد والتسجيل" },
      { key: "examLastDate", label: "آخر تاريخ لسداد الامتحانات" },
     ],
@@ -1952,6 +1971,7 @@ color: "#ffffff",
  let rowStyle = "";
  if (isOpening) rowStyle = "reports-opening-row bg-[#FBFEFF] font-bold text-black";
 else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
+                    else if (source === "traineeFeeStatus" && row.bankPending) rowStyle = "reports-bank-pending-row bg-amber-100 font-bold text-amber-950";
                     else if (isTraineeDetail) rowStyle = "reports-detail-row bg-white font-bold text-black";
                     else if (row.summaryLevel === "trainee-name-total") rowStyle = "reports-trainee-total-row bg-[#2C666E] font-bold text-white";
                     else if (row.summaryLevel === "fee") {
@@ -2076,7 +2096,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                             : undefined
                         }
                       >
-                        <td data-col-key="idx" className="border border-black px-2 py-2 font-bold" style={isTotal ? totalCellStyle : traineeRowCellStyle}>
+                        <td data-col-key="idx" className="border border-black px-2 py-2 font-bold" style={isTotal ? totalCellStyle : source === "traineeFeeStatus" && row.bankPending ? { backgroundColor: "#FEF3C7", color: "#78350F", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" } : traineeRowCellStyle}>
                           {isOpening ? "—" : isTotal ? "★" : source === "traineeFeeStatus" ? index - 3 : index + 1}
                         </td>
 
@@ -2133,7 +2153,9 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                               style={
                                 isTotal
                                   ? totalCellStyle
-                                  : isTraineeTypedRow
+                                  : source === "traineeFeeStatus" && row.bankPending
+                                    ? { backgroundColor: "#FEF3C7", color: "#78350F", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }
+                                    : isTraineeTypedRow
                                     ? traineeRowCellStyle
                                     : isNumeric
                                       ? {
