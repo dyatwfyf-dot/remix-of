@@ -1095,22 +1095,25 @@ export default function ReportsTab() {
   // تبويب حوافظ التوريد هو المصدر الوحيد لأسماء المتدربين وبياناتهم في هذا التقرير.
   // تُجمع الدفعة والتخصص من سجلات الاسم نفسه، وتُحتسب المدفوعات منذ 2022 فقط.
   const hafizaTrainees = new Map<string, HafizaTraineeSummary>();
-  (hafiza || []).forEach((record) => {
-   const trainee = String(record.name || "").trim();
-   const key = normalizeTraineeReportName(trainee);
-   if (!key) return;
-   let item = hafizaTrainees.get(key);
-   if (!item) {
-    item = { trainee, batches: new Set<string>(), specialties: new Set<string>() };
-    hafizaTrainees.set(key, item);
-   }
-   const batch = String(record.batch ?? "").trim();
-   const specialty = String(record.specialty ?? "").trim();
-   if (batch) item.batches.add(batch);
-   if (specialty) item.specialties.add(specialty);
-  });
+   const addTrainee = (nameValue: unknown, batchValue?: unknown, specialtyValue?: unknown) => {
+    const trainee = String(nameValue || "").trim();
+    const key = normalizeTraineeReportName(trainee);
+    if (!key) return;
+    let item = hafizaTrainees.get(key);
+    if (!item) {
+     item = { trainee, batches: new Set<string>(), specialties: new Set<string>() };
+     hafizaTrainees.set(key, item);
+    }
+    const batch = String(batchValue ?? "").trim();
+    const specialty = String(specialtyValue ?? "").trim();
+    if (batch) item.batches.add(batch);
+    if (specialty) item.specialties.add(specialty);
+   };
+   // بيانات المتدربين هي المصدر الأساسي للأسماء، وتضاف أسماء الحوافظ غير المسجلة فيها كاحتياط.
+   (trainees || []).forEach((record) => addTrainee(record.name, record.batch, record.specialty));
+   (hafiza || []).forEach((record) => addTrainee(record.name, record.batch, record.specialty));
 
-  const paymentsByTrainee = new Map<string, PaymentSummary>();
+   const paymentsByTrainee = new Map<string, PaymentSummary>();
   (hafiza || []).forEach((record) => {
    const key = normalizeTraineeReportName(record.name);
    const date = normalizeDate(record.notifyDate || record.date);
@@ -1209,7 +1212,7 @@ export default function ReportsTab() {
    statusKey: status.key,
   }));
   return [...summaryRows, ...detailRows];
- }, [hafiza]);
+ }, [hafiza, trainees]);
  const sourceConfig = useMemo < { title: string;columns: TabCol[] } > (() => {
   if (source === "youssefLoan") {
    return {
@@ -1516,7 +1519,7 @@ export default function ReportsTab() {
   source === "feeTotals" ?
   `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}` :
   source === "traineeFeeStatus" ?
-  `تقرير حالة سداد رسوم القيد والتسجيل والأقساط والامتحانات منذ 2022 — ${selectedTraineeFeeStatus === "all" ? "كل الحالات" : String(traineeFeeStatusRows.find((row) => row.summaryLevel === "status-summary" && row.statusKey === selectedTraineeFeeStatus)?.statusSummaryLabel || "الحالة المختارة")}` :
+  `تقرير حالة سداد رسوم القيد والتسجيل والامتحانات منذ 2022 — ${selectedTraineeFeeStatus === "all" ? "كل الحالات" : String(traineeFeeStatusRows.find((row) => row.summaryLevel === "status-summary" && row.statusKey === selectedTraineeFeeStatus)?.statusSummaryLabel || "الحالة المختارة")}` :
   source === "youssefLoan" || source === "tawfiqCustody" ?
   `مسير إخلاء - عهدة - ${source === "youssefLoan" ? "د/ يوسف" : "توفيق الداعي"}\n${custodyDateRange}` :
   `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
@@ -1664,9 +1667,9 @@ export default function ReportsTab() {
                 >
                   <option value="all">كل الحالات</option>
                   <option value="registration-only">سدد القيد والتسجيل/الأقساط ولم يسدد رسوم الامتحانات</option>
-                  <option value="exam-only">سدد رسوم الامتحانات ولم يسدد القيد والتسجيل/الأقساط</option>
-                  <option value="neither">لم يسدد القيد والتسجيل/الأقساط ولا رسوم الامتحانات</option>
-                  <option value="both">سدد القيد والتسجيل/الأقساط ورسوم الامتحانات معاً</option>
+                  <option value="exam-only">سدد رسوم الامتحانات ولم يسدد رسوم القيد والتسجيل</option>
+                  <option value="neither">لم يسدد رسوم القيد والتسجيل ولا رسوم الامتحانات</option>
+                  <option value="both">سدد رسوم القيد والتسجيل ورسوم الامتحانات معاً</option>
                 </select>
               </label>
             )}
