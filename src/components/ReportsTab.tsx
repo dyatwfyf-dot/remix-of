@@ -12,8 +12,9 @@ import {
  UserRound,
  Wallet,
 } from "lucide-react";
-import { useStore, type Account } from "@/lib/store";
+import { useStore, type Account, type TraineeFinancialRecord } from "@/lib/store";
 import { isRegistrationFeeDescription } from "@/lib/feeClassification";
+import { normalizeTraineeReportName, traineeNameTokenSignature } from "@/lib/traineeNameMatching";
 import { useFiscalYear } from "@/lib/fiscalYear";
 import TabActions, { type TabCol } from "./TabActions";
 import PrintSettingsModal, { type InstallmentsPrintSettings } from "./PrintSettingsModal";
@@ -204,28 +205,16 @@ const isTuitionFeeDescription = (value: unknown) => {
  return /(رسوم\s*(?:ال)?(?:دراس|دراسه|دراسي)|(?:قسط|اقساط)\s*(?:ال)?(?:دراس|دراسه|دراسي)|تسجيل|قيد)/.test(text);
 };
 const canonicalFeeCategory = (value: unknown) => {
- const text = normalizeFeeDescription(value);
- if (!text) return "رسوم أخرى";
- if (isExamFeeDescription(text)) return "رسوم الامتحانات";
- if (isNewTraineeRegistrationDescription(text)) return "رسوم القيد والتسجيل";
- if (isTuitionFeeDescription(text)) return "الأقساط الدراسية السنوية";
- return String(value).trim() || "رسوم أخرى";
+	 const text = normalizeFeeDescription(value);
+	 if (!text) return "رسوم أخرى";
+	 if (isExamFeeDescription(text)) return "رسوم الامتحانات";
+	 if (isNewTraineeRegistrationDescription(text)) return "رسوم القيد والتسجيل";
+	 if (isTuitionFeeDescription(text)) return "الأقساط الدراسية السنوية";
+	 return String(value).trim() || "رسوم أخرى";
 };
 
-// توحيد الاسم للمطابقة بين بيانات المتدربين وحوافظ التوريد:
- // تجاهل اختلافات الهمزة والتشكيل والتطويل والمسافات وعلامات الترقيم،
- // مع مقارنة تسلسل الأحرف نفسه دون اشتراط عدد أجزاء الاسم.
-const normalizeTraineeReportName = (value: unknown): string =>
- String(value || "")
- .normalize("NFKC")
- .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g, "")
- .replace(/[إأآٱ]/g, "ا")
- .replace(/ى/g, "ي")
- .replace(/\u0640/g, "")
- .replace(/[^\p{L}\p{N}]/gu, "");
-
 const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "other" => {
- const text = String(description || "").trim();
+	 const text = String(description || "").trim();
  if (!text) return "other";
  if (/(عهدة\s*الداعي|توفيق\s*الداعي)/.test(text)) return "tawfiq";
  if (/(عهدة\s*د\s*\/?\s*يوسف|العهدة|عهدة)/.test(text)) return "youssef";
@@ -1096,13 +1085,51 @@ export default function ReportsTab() {
    examLastDate: Date | null;
   };
 
+  const traineeNameHeaders = [
+   "اسم المتدرب حسب الشهادة",
+   "اسم المتدرب",
+   "اسم الطالب",
+   "الاسم الكامل",
+   "الاسم",
+   "trainee name",
+   "student name",
+  ].map(normalizeTraineeReportName);
+  const getTraineeCardName = (record: TraineeFinancialRecord) => {
+   const fields = new Map(
+    Object.entries(record).map(([header, value]) => [normalizeTraineeReportName(header), value]),
+   );
+   for (const header of traineeNameHeaders) {
+    const value = fields.get(header);
+    if (String(value ?? "").trim()) return String(value).trim();
+   }
+   return "";
+  };
+  const getReceiptTraineeName = (record: (typeof hafiza)[number]) => {
+   const legacyFields = record as unknown as Record<string, unknown>;
+   return String(
+    record.name ||
+    legacyFields.traineeName ||
+    legacyFields.trainee ||
+    legacyFields["اسم المتدرب"] ||
+    legacyFields["اسم الطالب"] ||
+    "",
+   ).trim();
+  };
+
   // بطاقة بيانات المتدرب هي المرجع الأساسي لقائمة الأسماء والدفعة والمستوى والتخصص والرسوم المستحقة.
   // تُجمع الحركات المسددة من حوافظ التوريد فقط منذ 2022، بحسب مبلغ التوريد الموجب والبيان.
   const cardTrainees = new Map<string, TraineeCardSummary>();
+  const cardNameSignatures = new Map<string, Set<string>>();
   (traineeFinancialRecords || []).forEach((record) => {
-   const trainee = String(record["اسم المتدرب حسب الشهادة"] || "").trim();
+   const trainee = getTraineeCardName(record);
    const key = normalizeTraineeReportName(trainee);
    if (!key) return;
+   const signature = traineeNameTokenSignature(trainee);
+   if (signature) {
+    const matchingKeys = cardNameSignatures.get(signature) || new Set<string>();
+    matchingKeys.add(key);
+    cardNameSignatures.set(signature, matchingKeys);
+   }
    let item = cardTrainees.get(key);
    if (!item) {
     item = {
@@ -1132,7 +1159,15 @@ export default function ReportsTab() {
 
   const paymentsByTrainee = new Map<string, PaymentSummary>();
   (hafiza || []).forEach((record) => {
-   const key = normalizeTraineeReportName(record.name);
+   const receiptName = getReceiptTraineeName(record);
+   let key = normalizeTraineeReportName(receiptName);
+   if (!key) return;
+   if (!cardTrainees.has(key)) {
+    const candidates = cardNameSignatures.get(traineeNameTokenSignature(receiptName));
+    // عند اختلاف ترتيب أجزاء الاسم، نربط الإيصال فقط إذا كان له متدرب واحد غير ملتبس.
+    if (!candidates || candidates.size !== 1) return;
+    key = candidates.values().next().value as string;
+   }
    const date = normalizeDate(record.notifyDate || record.date);
    const amount = amountValue(record.notifyAmount);
    if (!key || !date || date.getFullYear() < 2022 || amount <= 0) return;
