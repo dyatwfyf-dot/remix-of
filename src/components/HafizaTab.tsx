@@ -432,7 +432,11 @@ className="mt-0 px-1.5 py-0.5 rounded-md text-[10px] w-8 text-center bg-white bo
 </TableRow>
 ) : (
 filtered.map((row, idx) => (
-<TableRow key={row.id} className="border-b border-black-100 hover:bg-amber-50/40 transition-colors">
+<TableRow
+  key={row.id}
+  title={Boolean(String(row.hafizaNo || "").trim()) && Number(row.hafizaAmount) > 0 && !String(row.notifyNo || "").trim() ? "مسدد بموجب الحافظة ولم يورد إلى البنك بعد؛ أدخل رقم الإشعار لإزالة التنبيه" : undefined}
+  className={`border-b border-black-100 transition-colors ${Boolean(String(row.hafizaNo || "").trim()) && Number(row.hafizaAmount) > 0 && !String(row.notifyNo || "").trim() ? "bg-amber-100 hover:bg-amber-200" : "hover:bg-amber-50/40"}`}
+>
 
 <TableCell className="text-center text-xs font-mono text-slate-500">{idx + 1}</TableCell>
                       {COLS.map((c) => {

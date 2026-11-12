@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { useStore, type Account, type TraineeFinancialRecord } from "@/lib/store";
 import { isRegistrationFeeDescription } from "@/lib/feeClassification";
-import { normalizeTraineeReportName, traineeNameTokenSignature } from "@/lib/traineeNameMatching";
 import { useFiscalYear } from "@/lib/fiscalYear";
 import TabActions, { type TabCol } from "./TabActions";
 import PrintSettingsModal, { type InstallmentsPrintSettings } from "./PrintSettingsModal";
@@ -205,16 +204,37 @@ const isTuitionFeeDescription = (value: unknown) => {
  return /(رسوم\s*(?:ال)?(?:دراس|دراسه|دراسي)|(?:قسط|اقساط)\s*(?:ال)?(?:دراس|دراسه|دراسي)|تسجيل|قيد)/.test(text);
 };
 const canonicalFeeCategory = (value: unknown) => {
-	 const text = normalizeFeeDescription(value);
-	 if (!text) return "رسوم أخرى";
-	 if (isExamFeeDescription(text)) return "رسوم الامتحانات";
-	 if (isNewTraineeRegistrationDescription(text)) return "رسوم القيد والتسجيل";
-	 if (isTuitionFeeDescription(text)) return "الأقساط الدراسية السنوية";
-	 return String(value).trim() || "رسوم أخرى";
+ const text = normalizeFeeDescription(value);
+ if (!text) return "رسوم أخرى";
+ if (isExamFeeDescription(text)) return "رسوم الامتحانات";
+ if (isNewTraineeRegistrationDescription(text)) return "رسوم القيد والتسجيل";
+ if (isTuitionFeeDescription(text)) return "الأقساط الدراسية السنوية";
+ return String(value).trim() || "رسوم أخرى";
 };
 
+const normalizeTraineeNameText = (value: unknown): string =>
+ String(value ?? "")
+  .normalize("NFKC")
+  .toLocaleLowerCase("ar")
+  .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g, "")
+  .replace(/[إأآٱ]/g, "ا")
+  .replace(/[ىیۍ]/g, "ي")
+  .replace(/ک/g, "ك")
+  .replace(/ة/g, "ه")
+  .replace(/ؤ/g, "و")
+  .replace(/ئ/g, "ي")
+  .replace(/[\u0640\u200B-\u200F\uFEFF]/g, "");
+const traineeNameKey = (value: unknown): string =>
+ normalizeTraineeNameText(value).replace(/[^\p{L}\p{N}]/gu, "");
+const traineeNameTokenKey = (value: unknown): string =>
+ normalizeTraineeNameText(value)
+  .split(/[^\p{L}\p{N}]+/gu)
+  .filter(Boolean)
+  .sort((a, b) => a.localeCompare(b, "ar"))
+  .join("|");
+
 const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "other" => {
-	 const text = String(description || "").trim();
+ const text = String(description || "").trim();
  if (!text) return "other";
  if (/(عهدة\s*الداعي|توفيق\s*الداعي)/.test(text)) return "tawfiq";
  if (/(عهدة\s*د\s*\/?\s*يوسف|العهدة|عهدة)/.test(text)) return "youssef";
@@ -1068,176 +1088,153 @@ export default function ReportsTab() {
  }, [hafiza, selectedTrainee]);
  
  const traineeFeeStatusRows = useMemo < ReportRow[] > (() => {
-  type TraineeCardSummary = {
+  type HafizaTraineeSummary = {
    trainee: string;
-   registryNumbers: Set<string>;
    batches: Set<string>;
-   levels: Set<string>;
    specialties: Set<string>;
-   registrationDue: number;
-   examDue: number;
-   cardRecordCount: number;
   };
   type PaymentSummary = {
    registrationPaid: number;
    examPaid: number;
    registrationLastDate: Date | null;
    examLastDate: Date | null;
+   registrationAwaitingNotice: boolean;
+   examAwaitingNotice: boolean;
   };
 
-  const traineeNameHeaders = [
-   "اسم المتدرب حسب الشهادة",
-   "اسم المتدرب",
-   "اسم الطالب",
-   "الاسم الكامل",
-   "الاسم",
-   "trainee name",
-   "student name",
-  ].map(normalizeTraineeReportName);
-  const getTraineeCardName = (record: TraineeFinancialRecord) => {
-   const fields = new Map(
-    Object.entries(record).map(([header, value]) => [normalizeTraineeReportName(header), value]),
-   );
-   for (const header of traineeNameHeaders) {
-    const value = fields.get(header);
-    if (String(value ?? "").trim()) return String(value).trim();
-   }
-   return "";
-  };
-  const getReceiptTraineeName = (record: (typeof hafiza)[number]) => {
-   const legacyFields = record as unknown as Record<string, unknown>;
-   return String(
-    record.name ||
-    legacyFields.traineeName ||
-    legacyFields.trainee ||
-    legacyFields["اسم المتدرب"] ||
-    legacyFields["اسم الطالب"] ||
-    "",
-   ).trim();
-  };
-
-  // بطاقة بيانات المتدرب هي المرجع الأساسي لقائمة الأسماء والدفعة والمستوى والتخصص والرسوم المستحقة.
-  // تُجمع الحركات المسددة من حوافظ التوريد فقط منذ 2022، بحسب مبلغ التوريد الموجب والبيان.
-  const cardTrainees = new Map<string, TraineeCardSummary>();
-  const cardNameSignatures = new Map<string, Set<string>>();
-  (traineeFinancialRecords || []).forEach((record) => {
-   const trainee = getTraineeCardName(record);
-   const key = normalizeTraineeReportName(trainee);
+  // بطاقة بيانات المتدرب هي المصدر الأساسي لأسماء التقرير وبياناته الأكاديمية.
+  const hafizaTrainees = new Map<string, HafizaTraineeSummary>();
+  const traineeNameSignatures = new Map<string, Set<string>>();
+  const financialNameHeaders = ["اسم المتدرب حسب الشهادة", "اسم المتدرب", "اسم الطالب", "الاسم الكامل", "الاسم"]
+   .map(traineeNameKey);
+  const financialRoster: { name: string; batch: string; specialty: string }[] =
+   (traineeFinancialRecords || []).flatMap((record: TraineeFinancialRecord) => {
+    const fields = new Map(Object.entries(record).map(([header, value]) => [traineeNameKey(header), value]));
+    const name = financialNameHeaders.map((header) => fields.get(header)).find((value) => String(value ?? "").trim());
+    if (!name) return [];
+    return [{
+     name: String(name).trim(),
+     batch: String(fields.get(traineeNameKey("رقم الدفعة")) ?? "").trim(),
+     specialty: String(fields.get(traineeNameKey("المساق الطبي")) ?? "").trim(),
+    }];
+   });
+  // التوافق مع النسخ التي لم تستورد بعد بيانات المتدربين المالية.
+  const roster = financialRoster.length ? financialRoster : trainees || [];
+  roster.forEach((record) => {
+   const trainee = String(record.name || "").trim();
+   const key = traineeNameKey(trainee);
    if (!key) return;
-   const signature = traineeNameTokenSignature(trainee);
+   const existing = hafizaTrainees.get(key) || {
+    trainee,
+    batches: new Set<string>(),
+    specialties: new Set<string>(),
+   };
+   if (String(record.batch ?? "").trim()) existing.batches.add(String(record.batch).trim());
+   if (String(record.specialty ?? "").trim()) existing.specialties.add(String(record.specialty).trim());
+   hafizaTrainees.set(key, existing);
+   const signature = traineeNameTokenKey(trainee);
    if (signature) {
-    const matchingKeys = cardNameSignatures.get(signature) || new Set<string>();
+    const matchingKeys = traineeNameSignatures.get(signature) || new Set<string>();
     matchingKeys.add(key);
-    cardNameSignatures.set(signature, matchingKeys);
+    traineeNameSignatures.set(signature, matchingKeys);
    }
-   let item = cardTrainees.get(key);
-   if (!item) {
-    item = {
-     trainee,
-     registryNumbers: new Set<string>(),
-     batches: new Set<string>(),
-     levels: new Set<string>(),
-     specialties: new Set<string>(),
-     registrationDue: 0,
-     examDue: 0,
-     cardRecordCount: 0,
-    };
-    cardTrainees.set(key, item);
-   }
-   const registry = String(record["رقم السجل"] ?? "").trim();
-   const batch = String(record["رقم الدفعة"] ?? "").trim();
-   const level = String(record["المستوى الحالي"] ?? "").trim();
-   const specialty = String(record["المساق الطبي"] ?? "").trim();
-   item.cardRecordCount += 1;
-   if (registry) item.registryNumbers.add(registry);
-   if (batch) item.batches.add(batch);
-   if (level) item.levels.add(level);
-   if (specialty) item.specialties.add(specialty);
-   item.registrationDue = Math.max(item.registrationDue, amountValue(record["رسوم القيد والتسجيل"]));
-   item.examDue = Math.max(item.examDue, amountValue(record["إجمالي رسوم الامتحانات"]));
   });
 
+  // وجود سجل واحد على الأقل في حوافظ التوريد يُحدد ما إذا كان للمتدرب أي بيانات هناك.
+  // المتدرب الذي لا يملك أي سجل مطابق بالاسم يُصنف دائماً ضمن غير المسدد للرسومين.
+  const traineesWithHafizaRecords = new Set<string>();
   const paymentsByTrainee = new Map<string, PaymentSummary>();
   (hafiza || []).forEach((record) => {
-   const receiptName = getReceiptTraineeName(record);
-   let key = normalizeTraineeReportName(receiptName);
+   const receiptName = record.name;
+   let key = traineeNameKey(receiptName);
    if (!key) return;
-   if (!cardTrainees.has(key)) {
-    const candidates = cardNameSignatures.get(traineeNameTokenSignature(receiptName));
-    // عند اختلاف ترتيب أجزاء الاسم، نربط الإيصال فقط إذا كان له متدرب واحد غير ملتبس.
+   if (!hafizaTrainees.has(key)) {
+    const candidates = traineeNameSignatures.get(traineeNameTokenKey(receiptName));
+    // اختلاف ترتيب الاسم مقبول فقط حين ينتج مرشح واحد؛ نتجنب إسناد السداد إلى اسم ملتبس.
     if (!candidates || candidates.size !== 1) return;
     key = candidates.values().next().value as string;
    }
+   traineesWithHafizaRecords.add(key);
    const date = normalizeDate(record.notifyDate || record.date);
-   const amount = amountValue(record.notifyAmount);
+   const notifyAmount = amountValue(record.notifyAmount);
+   const hafizaAmount = amountValue(record.hafizaAmount);
+   const hasHafizaReceipt = Boolean(String(record.hafizaNo || "").trim()) && hafizaAmount > 0;
+   // إذا لم يُسجل مبلغ التوريد البنكي، يُحتسب مبلغ الحافظة كسداد مؤكد مع تمييزه بأنه لم يورد للبنك.
+   const amount = notifyAmount > 0 ? notifyAmount : hasHafizaReceipt ? hafizaAmount : 0;
    if (!key || !date || date.getFullYear() < 2022 || amount <= 0) return;
-   // تُعامل رسوم القسط/الدراسة مع رسوم القيد والتسجيل ضمن جانب الرسوم غير الامتحانية.
-   const isRegistration = isNewTraineeRegistrationDescription(record.description) || isTuitionFeeDescription(record.description);
+
+   // تُستبعد الأقساط الدراسية وأي رسوم أخرى؛ المطلوب القيد والتسجيل والامتحانات فقط.
+   const isRegistration = isNewTraineeRegistrationDescription(record.description);
    const isExam = isExamFeeDescription(record.description);
    if (!isRegistration && !isExam) return;
 
+   const awaitingNoticeNumber = hasHafizaReceipt && !String(record.notifyNo || "").trim();
    const payment = paymentsByTrainee.get(key) || {
     registrationPaid: 0,
     examPaid: 0,
     registrationLastDate: null,
     examLastDate: null,
+    registrationAwaitingNotice: false,
+    examAwaitingNotice: false,
    };
    if (isRegistration) {
     payment.registrationPaid += amount;
+    payment.registrationAwaitingNotice ||= awaitingNoticeNumber;
     if (!payment.registrationLastDate || date > payment.registrationLastDate) payment.registrationLastDate = date;
    }
    if (isExam) {
     payment.examPaid += amount;
+    payment.examAwaitingNotice ||= awaitingNoticeNumber;
     if (!payment.examLastDate || date > payment.examLastDate) payment.examLastDate = date;
    }
    paymentsByTrainee.set(key, payment);
   });
 
   const statusDefinitions = [
-   { key: "registration-only", label: "سدد القيد والتسجيل/الأقساط ولم يسدد رسوم الامتحانات", tone: "#FEF3C7" },
-   { key: "exam-only", label: "سدد رسوم الامتحانات ولم يسدد القيد والتسجيل/الأقساط", tone: "#E0E7FF" },
-   { key: "neither", label: "لم يسدد القيد والتسجيل/الأقساط ولا رسوم الامتحانات", tone: "#FEE2E2" },
-   { key: "both", label: "سدد القيد والتسجيل/الأقساط ورسوم الامتحانات معاً", tone: "#DCFCE7" },
+   { key: "registration-only", label: "سدد رسوم القيد والتسجيل ولم يسدد رسوم الامتحانات", tone: "#FEF3C7" },
+   { key: "exam-only", label: "سدد رسوم الامتحانات ولم يسدد رسوم القيد والتسجيل", tone: "#E0E7FF" },
+   { key: "neither", label: "لم يسدد رسوم القيد والتسجيل ولا رسوم الامتحانات", tone: "#FEE2E2" },
+   { key: "both", label: "سدد رسوم القيد والتسجيل ورسوم الامتحانات معاً", tone: "#DCFCE7" },
   ];
 
-  const feeStatus = (paid: number, due: number) => {
-   if (paid <= 0) return due > 0 ? "غير مسدد" : "غير محدد في البطاقة";
-   if (due > 0 && paid < due) return "مسدد جزئياً";
-   return due > 0 ? "مسدد بالكامل" : "مسدد (المستحق غير محدد)";
-  };
+  const paidStatus = (paid: number) => paid > 0 ? "مسدد" : "غير مسدد";
   const formatStatusDate = (date: Date | null) =>
    date ? date.toLocaleDateString("ar-YE") : "—";
 
-  const detailRows: ReportRow[] = Array.from(cardTrainees.entries()).map(([key, card]) => {
+  const detailRows: ReportRow[] = Array.from(hafizaTrainees.entries()).map(([key, traineeData]) => {
    const payment = paymentsByTrainee.get(key) || {
     registrationPaid: 0,
     examPaid: 0,
     registrationLastDate: null,
     examLastDate: null,
+    registrationAwaitingNotice: false,
+    examAwaitingNotice: false,
    };
-   const hasRegistrationPayment = payment.registrationPaid > 0;
-   const hasExamPayment = payment.examPaid > 0;
+   const hasAnyHafizaRecord = traineesWithHafizaRecords.has(key);
+   // لا يُعتد بأي بيانات أخرى خارج حوافظ التوريد: غياب سجل المتدرب فيها يعني عدم سداد الرسمين.
+   const hasRegistrationPayment = hasAnyHafizaRecord && payment.registrationPaid > 0;
+   const hasExamPayment = hasAnyHafizaRecord && payment.examPaid > 0;
    const statusKey = hasRegistrationPayment
     ? hasExamPayment ? "both" : "registration-only"
     : hasExamPayment ? "exam-only" : "neither";
    const status = statusDefinitions.find((item) => item.key === statusKey)!;
    return {
     id: `trainee-fee-status-${key}`,
-    trainee: card.trainee,
-    registryNo: Array.from(card.registryNumbers).join("، ") || "—",
-    batch: Array.from(card.batches).join("، ") || "—",
-    level: Array.from(card.levels).join("، ") || "—",
-    specialty: Array.from(card.specialties).join("، ") || "—",
-    registrationDue: card.registrationDue,
+    trainee: traineeData.trainee,
+    batch: Array.from(traineeData.batches).join("، ") || "—",
+    specialty: Array.from(traineeData.specialties).join("، ") || "—",
     registrationPaid: payment.registrationPaid,
-    registrationStatus: feeStatus(payment.registrationPaid, card.registrationDue),
-    examDue: card.examDue,
+    registrationStatus: payment.registrationAwaitingNotice ? "مسدد - لم يورد إلى البنك" : paidStatus(payment.registrationPaid),
     examPaid: payment.examPaid,
-    examStatus: feeStatus(payment.examPaid, card.examDue),
+    examStatus: payment.examAwaitingNotice ? "مسدد - لم يورد إلى البنك" : paidStatus(payment.examPaid),
     registrationLastDate: formatStatusDate(payment.registrationLastDate),
     examLastDate: formatStatusDate(payment.examLastDate),
+    bankPending: payment.registrationAwaitingNotice || payment.examAwaitingNotice,
+    bankPendingNote: [
+     payment.registrationAwaitingNotice ? "رسوم القيد والتسجيل: مسدد بموجب الحافظة ولم يورد إلى البنك (بانتظار رقم الإشعار)" : "",
+     payment.examAwaitingNotice ? "رسوم الامتحانات: مسدد بموجب الحافظة ولم يورد إلى البنك (بانتظار رقم الإشعار)" : "",
+    ].filter(Boolean).join("؛ ") || "—",
     overallStatus: status.label,
-    cardNote: card.cardRecordCount > 1 ? `تم جمع ${card.cardRecordCount} سجلات بطاقة بالاسم نفسه` : "—",
     statusGroup: status.label,
     statusKey,
    };
@@ -1256,7 +1253,7 @@ export default function ReportsTab() {
    statusKey: status.key,
   }));
   return [...summaryRows, ...detailRows];
- }, [hafiza, traineeFinancialRecords]);
+ }, [hafiza, trainees, traineeFinancialRecords]);
  const sourceConfig = useMemo < { title: string;columns: TabCol[] } > (() => {
   if (source === "youssefLoan") {
    return {
@@ -1287,17 +1284,19 @@ export default function ReportsTab() {
   }
   if (source === "traineeFeeStatus") {
    return {
-    title: "تقرير حالة سداد رسوم القيد والتسجيل والأقساط والامتحانات منذ 2022",
+    title: "تقرير حالة سداد رسوم القيد والتسجيل والامتحانات منذ 2022",
     columns: [
      { key: "trainee", label: "اسم المتدرب" },
      { key: "batch", label: "الدفعة" },
      { key: "specialty", label: "التخصص" },
-     { key: "registrationDue", label: "المستحق للقيد والتسجيل والأقساط" },
-     { key: "registrationPaid", label: "المسدد للقيد والتسجيل والأقساط" },
-     { key: "registrationStatus", label: "حالة سداد القيد والتسجيل والأقساط" },
-     { key: "examDue", label: "المستحق للامتحانات" },
-     { key: "examPaid", label: "المسدد للامتحانات" },
+     { key: "registrationPaid", label: "المسدد لرسوم القيد والتسجيل" },
+     { key: "registrationStatus", label: "حالة سداد رسوم القيد والتسجيل" },
+     { key: "examPaid", label: "المسدد لرسوم الامتحانات" },
      { key: "examStatus", label: "حالة سداد الامتحانات" },
+     { key: "overallStatus", label: "حالة السداد الإجمالية" },
+     { key: "bankPendingNote", label: "ملاحظة التوريد البنكي" },
+     { key: "registrationLastDate", label: "آخر تاريخ لسداد القيد والتسجيل" },
+     { key: "examLastDate", label: "آخر تاريخ لسداد الامتحانات" },
     ],
    };
   }
@@ -1561,7 +1560,7 @@ export default function ReportsTab() {
   source === "feeTotals" ?
   `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}` :
   source === "traineeFeeStatus" ?
-  `تقرير حالة سداد رسوم القيد والتسجيل والأقساط والامتحانات منذ 2022 — ${selectedTraineeFeeStatus === "all" ? "كل الحالات" : String(traineeFeeStatusRows.find((row) => row.summaryLevel === "status-summary" && row.statusKey === selectedTraineeFeeStatus)?.statusSummaryLabel || "الحالة المختارة")}` :
+  `تقرير حالة سداد رسوم القيد والتسجيل والامتحانات منذ 2022 — ${selectedTraineeFeeStatus === "all" ? "كل الحالات" : String(traineeFeeStatusRows.find((row) => row.summaryLevel === "status-summary" && row.statusKey === selectedTraineeFeeStatus)?.statusSummaryLabel || "الحالة المختارة")}` :
   source === "youssefLoan" || source === "tawfiqCustody" ?
   `مسير إخلاء - عهدة - ${source === "youssefLoan" ? "د/ يوسف" : "توفيق الداعي"}\n${custodyDateRange}` :
   `${sourceConfig.title} — ${periodLabel(period, month, year)}`;
@@ -1708,10 +1707,10 @@ export default function ReportsTab() {
                   className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
                 >
                   <option value="all">كل الحالات</option>
-                  <option value="registration-only">سدد القيد والتسجيل/الأقساط ولم يسدد رسوم الامتحانات</option>
-                  <option value="exam-only">سدد رسوم الامتحانات ولم يسدد القيد والتسجيل/الأقساط</option>
-                  <option value="neither">لم يسدد القيد والتسجيل/الأقساط ولا رسوم الامتحانات</option>
-                  <option value="both">سدد القيد والتسجيل/الأقساط ورسوم الامتحانات معاً</option>
+                  <option value="registration-only">سدد رسوم القيد والتسجيل ولم يسدد رسوم الامتحانات</option>
+                  <option value="exam-only">سدد رسوم الامتحانات ولم يسدد رسوم القيد والتسجيل</option>
+                  <option value="neither">لم يسدد رسوم القيد والتسجيل ولا رسوم الامتحانات</option>
+                  <option value="both">سدد رسوم القيد والتسجيل ورسوم الامتحانات معاً</option>
                 </select>
               </label>
             )}
@@ -1929,7 +1928,6 @@ export default function ReportsTab() {
                       key={col.key}
                       data-col-key={col.key}
                       onClick={() => {
-                        if (source === "traineeFeeStatus") return;
                         if (source === "trainee") {
                           setTraineeHasUserSorted(true);
                           if (traineeSortColumn === col.key) {
@@ -2017,6 +2015,7 @@ color: "#ffffff",
  let rowStyle = "";
  if (isOpening) rowStyle = "reports-opening-row bg-[#FBFEFF] font-bold text-black";
 else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
+                    else if (source === "traineeFeeStatus" && row.bankPending) rowStyle = "reports-bank-pending-row bg-amber-100 font-bold text-amber-950";
                     else if (isTraineeDetail) rowStyle = "reports-detail-row bg-white font-bold text-black";
                     else if (row.summaryLevel === "trainee-name-total") rowStyle = "reports-trainee-total-row bg-[#2C666E] font-bold text-white";
                     else if (row.summaryLevel === "fee") {
@@ -2141,7 +2140,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                             : undefined
                         }
                       >
-                        <td data-col-key="idx" className="border border-black px-2 py-2 font-bold" style={isTotal ? totalCellStyle : traineeRowCellStyle}>
+                        <td data-col-key="idx" className="border border-black px-2 py-2 font-bold" style={isTotal ? totalCellStyle : source === "traineeFeeStatus" && row.bankPending ? { backgroundColor: "#FEF3C7", color: "#78350F", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" } : traineeRowCellStyle}>
                           {isOpening ? "—" : isTotal ? "★" : source === "traineeFeeStatus" ? index - 3 : index + 1}
                         </td>
 
@@ -2198,7 +2197,9 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                               style={
                                 isTotal
                                   ? totalCellStyle
-                                  : isTraineeTypedRow
+                                  : source === "traineeFeeStatus" && row.bankPending
+                                    ? { backgroundColor: "#FEF3C7", color: "#78350F", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }
+                                    : isTraineeTypedRow
                                     ? traineeRowCellStyle
                                     : isNumeric
                                       ? {
