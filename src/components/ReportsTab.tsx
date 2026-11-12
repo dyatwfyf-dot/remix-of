@@ -1716,15 +1716,17 @@ export default function ReportsTab() {
   const title = `مطالبة مالية بسداد الرسوم - ${traineeName}`;
   const tableHtml = `<article class="fee-demand-letter" dir="rtl" style="text-align: center; font-size: 18px; line-height: 2.2; font-family: cairo;">
    <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 25px;">مطالبة مالية بسداد الرسوم</h1>
-   <p class="letter-date" style="text-align: left; font-size: 16px;">التاريخ: ${escapeHtml(reportDateLabel)}</p>
-   <p class="salutation" style="margin: 25px 0; font-size: 19px; text-align: center;">الأخ الدكتور/ <strong>${escapeHtml(traineeName)}</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp
-   ;&nbsp;&nbsp;&nbsp;&nbsp
-   ;المحترم،</p>
+   <p class="letter-date" style="text-align: right; font-size: 16px;">التاريخ: ${escapeHtml(reportDateLabel)}</p>
+   <p class="salutation" style="margin: 25px 0; font-size: 20px; text-align: center;">الأخ الدكتور/ <strong>${escapeHtml(traineeName)}</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp
+   ;&nbsp;&nbsp;&nbsp;&nbsp;
+   المحترم</p>
    <p style="margin: 15px 0; text-align: center;">تحية طيبة وبعد،</p>
-   <p style="margin: 15px 0;text-align: center;"><strong>الموضوع: مطالبة بسداد رسوم الامتحان الكتابي الأول ورسوم القيد والتسجيل</strong></p>
+   <p style="margin: 15px 0;text-align: center;text-decoration: underline; font-weight: bold; color: #000;">
+     <strong>الموضوع: مطالبة بسداد رسوم الامتحان الكتابي الأول ورسوم القيد والتسجيل</strong>
+     </p>
    <p style="margin: 15px 0; text-align: center;font-size: 18px">بالإشارة إلى الموضوع أعلاه، ومن خلال مراجعة السجلات المالية، نرجو منكم المبادرة إلى سداد الرسوم المستحقة عليكم، والتي تشمل رسوم الامتحان الكتابي الأول وقدرها
    (30,000) ورسوم القيد والتسجيل وقدرها (10,000)، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
-   <p style="margin: 15px 0;text-align: center">نأمل سرعة تسوية المستحقات. وفي حال عدم السداد، ستُتخذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
+   <p style="margin: 15px 0;text-align: center;font-weight: bold; color: #000;">نأمل سرعة تسوية المستحقات. وفي حال عدم السداد، ستُتخذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
    <p class="thanks" style="margin: 30px 0;text-align: center">شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير.</p>
    <div class="letter-signatures" style="display: flex; justify-content: space-between; margin-top: 60px; text-align: center; font-size: 16px;">
     <div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">الصندوق</label><strong style="display: block; margin-bottom: 15px;">${escapeHtml(feeDemandSignatures.department)}</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>
