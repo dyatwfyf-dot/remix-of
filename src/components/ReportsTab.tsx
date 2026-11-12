@@ -2,15 +2,18 @@ import "./ReportsTab.css";
 import React, { useEffect, useMemo, useState } from "react";
 import {
  BarChart3,
+ ClipboardList,
  CalendarDays,
  ChevronDown,
  ChevronUp,
  DollarSign,
  FileText,
+ Printer,
  Trash2,
  TrendingUp,
  UserRound,
  Wallet,
+ X,
 } from "lucide-react";
 import { useStore, type Account, type TraineeFinancialRecord } from "@/lib/store";
 import { isRegistrationFeeDescription } from "@/lib/feeClassification";
@@ -576,6 +579,14 @@ export default function ReportsTab() {
  const [selectedFee, setSelectedFee] = useState < string > ("all");
  const [selectedBatch, setSelectedBatch] = useState("");
  const [selectedTraineeFeeStatus, setSelectedTraineeFeeStatus] = useState<string>("all");
+ const [feeDemandTrainee, setFeeDemandTrainee] = useState<ReportRow | null>(null);
+ const [feeDemandSignatures, setFeeDemandSignatures] = useState<{ department: string; director: string; signer: string }>(() => {
+  try {
+   const saved = localStorage.getItem("reports-fee-demand-signatures-v1");
+   if (saved) return { department: "الشؤون المالية", director: "", signer: "", ...JSON.parse(saved) };
+  } catch {}
+  return { department: "الشؤون المالية", director: "", signer: "" };
+ });
  const [traineeGrouping, setTraineeGrouping] = useState < TraineeGrouping > ("month");
  const [traineeDisplayMode, setTraineeDisplayMode] = useState < TraineeDisplayMode > ("both");
  
@@ -632,6 +643,12 @@ export default function ReportsTab() {
    console.error("تعذر حفظ الصفوف المحذوفة من تقرير السداد محلياً:", error);
   }
  }, [deletedFeeStatusRows]);
+
+ useEffect(() => {
+  try {
+   localStorage.setItem("reports-fee-demand-signatures-v1", JSON.stringify(feeDemandSignatures));
+  } catch {}
+ }, [feeDemandSignatures]);
 
  const [signaturesMeta, setSignaturesMeta] = useState < SignaturesMeta > (() => {
   try {
@@ -1689,6 +1706,55 @@ export default function ReportsTab() {
   });
   if (!opened) toast.error("تم منع فتح نافذة المعاينة، يرجى السماح بالنوافذ المنبثقة في كروم");
  };
+
+ const printFeeDemand = () => {
+  if (!feeDemandTrainee) return;
+  const escapeHtml = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
+   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  })[char] || char);
+  const traineeName = String(feeDemandTrainee.trainee || feeDemandTrainee.name || "").trim();
+  const title = `مطالبة مالية بسداد الرسوم - ${traineeName}`;
+  const tableHtml = `<article class="fee-demand-letter" dir="rtl">
+   <h1>مطالبة مالية بسداد الرسوم</h1>
+   <p class="letter-date">التاريخ: ${escapeHtml(reportDateLabel)}</p>
+   <p class="salutation">الأخ الدكتور/ <strong>${escapeHtml(traineeName)}</strong> المحترم،</p>
+   <p>تحية طيبة وبعد،</p>
+   <p><strong>الموضوع: مطالبة بسداد رسوم الامتحانات ورسوم القيد والتسجيل</strong></p>
+   <p>بالإشارة إلى سجلاتنا المالية، نرجو منكم المبادرة إلى سداد الرسوم المستحقة عليكم، وتشمل رسوم الامتحانات ورسوم القيد والتسجيل، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
+   <p>نأمل سرعة تسوية المستحقات. وفي حال عدم السداد، ستُتخذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
+   <p class="thanks">شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير.</p>
+   <div class="letter-signatures">
+    <div><label>الإدارة</label><strong>${escapeHtml(feeDemandSignatures.department)}</strong><span></span></div>
+    <div><label>المدير</label><strong>${escapeHtml(feeDemandSignatures.director)}</strong><span></span></div>
+    <div><label>التوقيع / الختم</label><strong>${escapeHtml(feeDemandSignatures.signer)}</strong><span></span></div>
+   </div>
+  </article>`;
+  const finalCss = `
+   @page { size:A4 portrait; margin:18mm; }
+   #tableContainer .fee-demand-letter { width:100%; min-height:245mm; margin:0 auto; color:#111; font-family:Cairo,Tahoma,Arial,sans-serif; font-size:16px; line-height:2; }
+   #tableContainer .fee-demand-letter h1 { margin:0 0 10mm; padding:0 0 4mm; border-bottom:2px solid #17324d; color:#17324d; text-align:center; font-size:22px; font-weight:900; }
+   #tableContainer .fee-demand-letter p { margin:0 0 5mm; text-align:justify; }
+   #tableContainer .fee-demand-letter .letter-date { text-align:left; }
+   #tableContainer .fee-demand-letter .salutation { margin-top:10mm; }
+   #tableContainer .fee-demand-letter .thanks { margin-top:8mm; }
+   #tableContainer .letter-signatures { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8mm; margin-top:22mm; text-align:center; }
+   #tableContainer .letter-signatures > div { display:flex; min-height:32mm; flex-direction:column; align-items:center; gap:3mm; }
+   #tableContainer .letter-signatures label { font-weight:800; }
+   #tableContainer .letter-signatures strong { min-height:8mm; }
+   #tableContainer .letter-signatures span { width:75%; height:8mm; margin-top:2mm; border-bottom:1px dotted #333; }
+  `;
+  const opened = openBrowserPrintPreview({
+   title,
+   reportDateLabel,
+   tableHtml,
+   contentCss: reportDocumentCss,
+   finalCss,
+   defaultOrientation: "portrait",
+   defaultPageSize: "A4",
+   defaultMarginMm: 18,
+  });
+  if (!opened) toast.error("تعذر فتح معاينة المطالبة، تحقق من السماح بالنوافذ المنبثقة");
+ };
  return (
   <div className="mizan-reports-tab min-h-screen bg-gradient-to-br from-slate-100 via-sky-50 to-indigo-50 p-2 sm:p-4" dir="rtl">
       <section className="mx-auto w-full max-w-[210mm] overflow-hidden rounded-3xl border border-sky-200 bg-white shadow-xl">
@@ -2257,13 +2323,26 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
 
                         <td data-col-key="actions" className="border border-black px-1 py-1 print:hidden" style={isTotal ? totalCellStyle : traineeRowCellStyle}>
                           {!isOpening && !isTotal && (
-                            <button
-                              onClick={() => deleteRow(row)}
-                              className="rounded p-1 text-rose-600 hover:bg-rose-50"
-                              title="إخفاء مؤقت"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
+                            <div className="flex min-w-[108px] flex-col items-center gap-1">
+                              {source === "traineeFeeStatus" && row.statusKey === "neither" && (
+                                <button
+                                  type="button"
+                                  onClick={() => setFeeDemandTrainee(row)}
+                                  className="inline-flex items-center justify-center gap-1 rounded-md bg-sky-700 px-2 py-1 text-[11px] font-bold text-white hover:bg-sky-800"
+                                  title="إنشاء مطالبة مالية لهذا المتدرب"
+                                >
+                                  <ClipboardList className="h-3.5 w-3.5" /> مطالبة
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => deleteRow(row)}
+                                className="rounded p-1 text-rose-600 hover:bg-rose-50"
+                                title="إخفاء مؤقت"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
                           )}
                         </td>
                       </tr>
@@ -2275,6 +2354,48 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
           </div>
         </div>
       </section>
+      {feeDemandTrainee && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setFeeDemandTrainee(null); }}>
+          <section className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-4 shadow-2xl sm:p-6" role="dialog" aria-modal="true" aria-labelledby="fee-demand-title" dir="rtl">
+            <div className="mb-4 flex items-center justify-between gap-3 border-b border-slate-200 pb-3">
+              <h2 id="fee-demand-title" className="text-lg font-black text-slate-900">مطالبة مالية للمتدرب</h2>
+              <button type="button" onClick={() => setFeeDemandTrainee(null)} className="rounded-lg p-2 text-slate-600 hover:bg-slate-100" aria-label="إغلاق"><X className="h-5 w-5" /></button>
+            </div>
+            <div className="space-y-3 text-sm leading-8 text-slate-900">
+              <p className="text-left">التاريخ: {reportDateLabel}</p>
+              <p>الأخ الدكتور/ <strong>{String(feeDemandTrainee.trainee || feeDemandTrainee.name || "")}</strong> المحترم،</p>
+              <p>تحية طيبة وبعد،</p>
+              <p><strong>الموضوع: مطالبة بسداد رسوم الامتحانات ورسوم القيد والتسجيل</strong></p>
+              <p>بالإشارة إلى سجلاتنا المالية، نرجو منكم المبادرة إلى سداد الرسوم المستحقة عليكم، وتشمل رسوم الامتحانات ورسوم القيد والتسجيل، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
+              <p>نأمل سرعة تسوية المستحقات. وفي حال عدم السداد، ستُتخذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
+              <p>شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير.</p>
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              {([
+                ["department", "الإدارة"],
+                ["director", "اسم المدير"],
+                ["signer", "المسؤول عن التوقيع / الختم"],
+              ] as const).map(([key, label]) => (
+                <label key={key} className="flex flex-col gap-1 text-xs font-bold text-slate-700">
+                  {label}
+                  <input
+                    type="text"
+                    value={feeDemandSignatures[key]}
+                    onChange={(event) => setFeeDemandSignatures((previous) => ({ ...previous, [key]: event.target.value }))}
+                    className="min-h-10 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-600"
+                    placeholder={`أدخل ${label}`}
+                  />
+                  <span className="mt-3 h-5 border-b border-dotted border-slate-500" />
+                </label>
+              ))}
+            </div>
+            <div className="mt-5 flex flex-wrap justify-end gap-2 border-t border-slate-200 pt-4">
+              <button type="button" onClick={() => setFeeDemandTrainee(null)} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50">إغلاق</button>
+              <button type="button" onClick={printFeeDemand} className="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 text-sm font-bold text-white hover:bg-sky-800"><Printer className="h-4 w-4" /> معاينة وطباعة المطالبة</button>
+            </div>
+          </section>
+        </div>
+      )}
       <PrintSettingsModal
         open={printSettingsOpen}
         year={fiscalYear}
