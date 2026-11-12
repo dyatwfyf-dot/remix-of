@@ -1719,16 +1719,17 @@ export default function ReportsTab() {
    <p class="letter-date">التاريخ: ${escapeHtml(reportDateLabel)}</p>
    <p class="salutation">الأخ الدكتور/ <strong>${escapeHtml(traineeName)}</strong> المحترم،</p>
    <p>تحية طيبة وبعد،</p>
-   <p><strong>الموضوع: مطالبة بسداد رسوم الامتحانات ورسوم القيد والتسجيل</strong></p>
-   <p>بالإشارة إلى سجلاتنا المالية، نرجو منكم المبادرة إلى سداد الرسوم المستحقة عليكم، وتشمل رسوم الامتحانات ورسوم القيد والتسجيل، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
+   <p><strong>الموضوع: مطالبة بسداد رسوم الامتحان الكتابي الأول ورسوم القيد والتسجيل</strong></p>
+   <p>بالإشارة إلى الموضوع أعلاه، ومن خلال مراجعة السجلات المالية، نرجو منكم المبادرة إلى سداد الرسوم المستحقة عليكم، والتي تشمل رسوم الامتحان الكتابي الأول وقدرها (30000) ورسوم القيد والتسجيل وقدرها (10000)، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
    <p>نأمل سرعة تسوية المستحقات. وفي حال عدم السداد، ستُتخذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
    <p class="thanks">شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير.</p>
    <div class="letter-signatures">
-    <div><label>الإدارة</label><strong>${escapeHtml(feeDemandSignatures.department)}</strong><span></span></div>
-    <div><label>المدير</label><strong>${escapeHtml(feeDemandSignatures.director)}</strong><span></span></div>
-    <div><label>التوقيع / الختم</label><strong>${escapeHtml(feeDemandSignatures.signer)}</strong><span></span></div>
+    <div><label>الصندوق</label><strong>${escapeHtml(feeDemandSignatures.department)}</strong><span></span></div>
+    <div><label>الشؤون المالية</label><strong>${escapeHtml(feeDemandSignatures.director)}</strong><span></span></div>
+    <div><label>رئيس المجلس اليمني للاختصاصات الطبية / فرع صعدة</label><strong>${escapeHtml(feeDemandSignatures.signer)}</strong><span></span></div>
    </div>
   </article>`;
+  
   const finalCss = `
    @page { size:A4 portrait; margin:18mm; }
    #tableContainer .fee-demand-letter { width:100%; min-height:245mm; margin:0 auto; color:#111; font-family:Cairo,Tahoma,Arial,sans-serif; font-size:16px; line-height:2; }
