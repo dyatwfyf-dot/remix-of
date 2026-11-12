@@ -906,48 +906,67 @@ export default function ReportsTab() {
   [revenue, year, selectedMonthSet, period]
  );
  
- const traineeOptions = useMemo(
-  () =>
-  Array.from(
-   new Set(
-    hafiza
-    .map((row) => String(row.name || "").trim())
-    .filter(Boolean)
-   )
-  ).sort((a, b) => a.localeCompare(b, "ar")),
-  [hafiza]
+ // قائمة الأسماء مصدرها تبويب بيانات المتدربين، مع استخدام الحوافظ لجلب سجلات الدفع المطابقة فقط.
+ const traineeRoster = useMemo(() => {
+  const financialNameHeaders = ["اسم المتدرب حسب الشهادة", "اسم المتدرب", "اسم الطالب", "الاسم الكامل", "الاسم"]
+   .map(traineeNameKey);
+  const financialRoster = (traineeFinancialRecords || []).flatMap((record: TraineeFinancialRecord) => {
+   const fields = new Map(Object.entries(record).map(([header, value]) => [traineeNameKey(header), value]));
+   const name = financialNameHeaders.map((header) => fields.get(header)).find((value) => String(value ?? "").trim());
+   if (!name) return [];
+   return [{
+    name: String(name).trim(),
+    batch: String(fields.get(traineeNameKey("رقم الدفعة")) ?? "").trim(),
+    specialty: String(fields.get(traineeNameKey("المساق الطبي")) ?? "").trim(),
+   }];
+  });
+  return financialRoster.length ? financialRoster : trainees || [];
+ }, [traineeFinancialRecords, trainees]);
+
+ const traineeRosterByName = useMemo(() => {
+  const roster = new Map<string, { name: string; batch: string; specialty: string }>();
+  traineeRoster.forEach((record) => {
+   const name = String(record.name || "").trim();
+   if (!name) return;
+   roster.set(name, { name, batch: String(record.batch || "").trim(), specialty: String(record.specialty || "").trim() });
+  });
+  return roster;
+ }, [traineeRoster]);
+
+ const matchedTraineeHafiza = useMemo(
+  () => hafiza.flatMap((row) => {
+   const name = String(row.name || "").trim();
+   const trainee = traineeRosterByName.get(name);
+   return trainee ? [{ row, trainee }] : [];
+  }),
+  [hafiza, traineeRosterByName]
  );
- 
+
+ const traineeOptions = useMemo(
+  () => Array.from(traineeRosterByName.keys()).sort((a, b) => a.localeCompare(b, "ar")),
+  [traineeRosterByName]
+ );
+
  const feeCategoryOptions = useMemo(
-  () =>
-  Array.from(
-   new Set(
-    [
-     ...hafiza.map((row) => canonicalFeeCategory(row.description)).filter(Boolean),
-     "رسوم القيد والتسجيل",
-    ]
-   )
-  ).sort((a, b) => a.localeCompare(b, "ar")),
-  [hafiza]
+  () => Array.from(new Set([
+   ...matchedTraineeHafiza.map(({ row }) => canonicalFeeCategory(row.description)).filter(Boolean),
+   "رسوم القيد والتسجيل",
+  ])).sort((a, b) => a.localeCompare(b, "ar")),
+  [matchedTraineeHafiza]
  );
 
  const batchOptions = useMemo(
-  () =>
-  Array.from(
-   new Set(
-    hafiza
-    .map((row) => String(row.batch || "").trim())
-    .filter(Boolean)
-   )
-  ).sort((a, b) => a.localeCompare(b, "ar", { numeric: true })),
-  [hafiza]
+  () => Array.from(new Set(matchedTraineeHafiza.map(({ row }) => String(row.batch || "").trim()).filter(Boolean)))
+   .sort((a, b) => a.localeCompare(b, "ar", { numeric: true })),
+  [matchedTraineeHafiza]
  );
  
  const traineeRows = useMemo < ReportRow[] > (() => {
-  const payments = hafiza.flatMap((row) => {
+  const payments = matchedTraineeHafiza.flatMap(({ row, trainee: rosterTrainee }) => {
    const date = normalizeDate(row.notifyDate);
-   const trainee = String(row.name || "").trim();
+   const trainee = rosterTrainee.name;
    const batch = String(row.batch || "").trim();
+   const specialty = String(row.specialty || "").trim();
    const category = canonicalFeeCategory(row.description);
    const amount = amountValue(row.notifyAmount);
    if (
@@ -972,6 +991,7 @@ export default function ReportsTab() {
     period: p,
     trainee,
     batch,
+    specialty,
     category,
     description: String(row.description || "رسوم أخرى").trim(),
     source: "حوافظ التوريد",
@@ -1107,7 +1127,7 @@ export default function ReportsTab() {
   }
   
   return result;
- }, [hafiza, selectedTrainee, selectedFee, selectedBatch, traineeGrouping, traineeDisplayMode]);
+ }, [matchedTraineeHafiza, selectedTrainee, selectedFee, selectedBatch, traineeGrouping, traineeDisplayMode]);
  
  const feeTotalsRows = useMemo < ReportRow[] > (() => {
   const totals = new Map < string,
@@ -1363,6 +1383,7 @@ export default function ReportsTab() {
     { key: "notifyDate", label: "تاريخ التوريد / الفترة" },
     { key: "trainee", label: "اسم المتدرب" },
      { key: "batch", label: "رقم الدفعة" },
+     { key: "specialty", label: "التخصص" },
      { key: "hafizaNo", label: "رقم الحافظة" },
      { key: "notifyNo", label: "رقم الإشعار" },
      { key: "description", label: "البيان الأصلي" },
