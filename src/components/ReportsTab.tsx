@@ -65,7 +65,7 @@ export interface ReportRow {
  notes ? : string;
  settlementNo ? : string;
  item ? : string;
- summaryLevel ? : "opening" | "total" | "fee" | "trainee-fee-total" | "trainee-name-total" | "period" | "signature" | "detail" | "status-summary";
+ summaryLevel ? : "opening" | "total" | "fee" | "trainee-fee-total" | "trainee-name-total" | "period" | "signature" | "detail" | "status-summary" | "unpaid";
  total ? : string;
  [key: string]: any;
 }
@@ -351,6 +351,45 @@ font-size: 13px !important; white-space:nowrap !important;
     #tableContainer table.reports-data-table td.reports-no-wrap-cell,
     #tableContainer table.reports-data-table td[data-col-key="idx"] { white-space:nowrap !important; word-break:keep-all !important; overflow-wrap:normal !important; }
   }
+
+  /* Auto-fit report content while keeping every column heading wrapped. */
+  #tableContainer table.reports-data-table { table-layout:auto!important; }
+  #tableContainer table.reports-data-table thead tr.reports-column-header-row > th {
+    white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important;
+    height:auto!important; max-height:none!important; vertical-align:middle!important;
+  }
+  #tableContainer table.reports-data-table .reports-header-label {
+    display:block!important; max-height:none!important; height:auto!important; overflow:visible!important;
+    text-overflow:clip!important; white-space:normal!important; overflow-wrap:anywhere!important;
+    word-break:normal!important; -webkit-line-clamp:unset!important; line-clamp:unset!important;
+  }
+  #tableContainer table.reports-data-table tbody > tr { height:auto!important; }
+  #tableContainer table.reports-data-table tbody > tr > td {
+    height:auto!important; max-height:none!important; vertical-align:middle!important;
+    white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important;
+  }
+  #tableContainer table.reports-data-table .reports-cell-content {
+    display:block!important; max-height:none!important; height:auto!important; overflow:visible!important;
+    text-overflow:clip!important; white-space:normal!important; overflow-wrap:anywhere!important;
+    word-break:normal!important; line-height:1.4!important;
+    -webkit-line-clamp:unset!important; line-clamp:unset!important;
+  }
+  #tableContainer table.reports-data-table td.reports-numeric-cell,
+  #tableContainer table.reports-data-table td.reports-no-wrap-cell,
+  #tableContainer table.reports-data-table td[data-col-key="idx"] {
+    white-space:nowrap!important; overflow-wrap:normal!important; word-break:keep-all!important;
+  }
+  #tableContainer table.reports-data-table thead tr.reports-column-header-row > th {
+    min-width:0!important; max-width:220px!important; font-size:14px!important;
+  }
+  #tableContainer table.reports-data-table tbody td {
+    font-size:15px!important; width:max-content!important; max-width:320px!important;
+  }
+  #tableContainer table.reports-data-table tbody td.reports-empty-cell {
+    width:1px!important; min-width:0!important; max-width:1px!important;
+    padding:1px 2px!important; font-size:15px!important;
+  }
+
 
 `;
 
@@ -2368,7 +2407,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                               data-col-key={col.key}
                               className={`border border-black px-2 py-2 font-bold ${
                                 col.key === "description" ? "reports-description-cell" : isNumeric ? "reports-numeric-cell font-mono" : isNoWrap ? "reports-no-wrap-cell" : "reports-text-cell"
-                              } bg-white text-slate-900`}
+                              } ${val === undefined || val === null || String(val) === "" ? "reports-empty-cell" : ""} bg-white text-slate-900`}
                               style={
                                 isTotal
                                   ? totalCellStyle
@@ -2385,10 +2424,10 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                                       : undefined
                               }
                             >
-                              {col.key === "description" ? (
-                                <div className="reports-cell-content whitespace-normal break-words leading-snug" title={String(val ?? "—")}>{val !== undefined && val !== null && String(val) !== "" ? String(val) : "—"}</div>
+                              {val === undefined || val === null || String(val) === "" ? "" : col.key === "description" ? (
+                                <div className="reports-cell-content whitespace-normal break-words leading-snug" title={String(val)}>{String(val)}</div>
                               ) : isNumeric ? formatCurrency(val) : (
-                                <span className="reports-cell-content" title={String(val ?? "—")}>{val !== undefined && val !== null && String(val) !== "" ? String(val) : "—"}</span>
+                                <span className="reports-cell-content" title={String(val)}>{String(val)}</span>
                               )}
                             </td>
                           );
