@@ -1813,7 +1813,7 @@ export default function ReportsTab() {
   const traineeName = String(feeDemandTrainee.trainee || feeDemandTrainee.name || "").trim();
   const outstandingFees = [
    { label: "رسوم القيد والتسجيل", amount: Math.max(0, amountValue(feeDemandTrainee.registrationDue) - amountValue(feeDemandTrainee.registrationPaid)) },
-   { label: "رسوم الامتحانات", amount: Math.max(0, amountValue(feeDemandTrainee.examDue) - amountValue(feeDemandTrainee.examPaid)) },
+   { label: "رسوم امتحان الكتابي الاول ", amount: Math.max(0, amountValue(feeDemandTrainee.examDue) - amountValue(feeDemandTrainee.examPaid)) },
   ].filter((fee) => fee.amount > 0);
   if (!outstandingFees.length) {
    toast.info("لا توجد رسوم مستحقة غير مسددة لهذا المتدرب");
@@ -1824,16 +1824,17 @@ export default function ReportsTab() {
   const tableHtml = `<article class="fee-demand-letter" dir="rtl" style="text-align: center; font-size: 18px; line-height: 2.2; font-family: cairo;">
    <h1 style="font-size: 20px; font-weight: bold; margin-bottom: 25px;">مطالبة مالية بسداد الرسوم</h1>
    <p class="letter-date" style="text-align: right; font-size: 16px;">التاريخ: ${escapeHtml(reportDateLabel)}</p>
-   <p class="salutation" style="margin: 18px 0; font-size: 20px; text-align: right;">الأخ الدكتور/ <strong>${escapeHtml(traineeName)}</strong>
+   <p class="salutation" style="margin: 18px 0; font-size: 20px; text-align: right;">الأخ-الدكتور// <strong>" "${escapeHtml(traineeName)}</strong>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-   المحترم
+                    المحتــرم
 </p>
    <p style="margin: 15px 0; text-align: center;">تحية طيبة وبعد،</p>
-   <p style="margin: 15px 0;text-align: center;text-decoration: underline; font-weight: bold; color: #000;"><strong>الموضوع: مطالبة بسداد ${escapeHtml(outstandingFeeText)}</strong></p>
+   <p style="margin: 15px 0;text-align: center;text-decoration: underline; font-weight: bold; color: red;"><strong>الموضوع: مطالبة بسداد ${escapeHtml(outstandingFeeText)}</strong></p>
    <p style="margin: 15px 0; text-align: center;font-size: 18px">بالإشارة إلى الموضوع أعلاه، نرجو منكم المبادرة إلى سداد الرسوم غير المسددة المبينة أعلاه، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
-   <p style="margin: 15px 0;text-align: center;font-weight: bold; color: #000;">نأمل منكم سرعة سداد المستحقات عليكم. وفي حال عدم السداد، ستُتخذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
-   <p class="thanks" style="margin: 30px 0;text-align: center">شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير.</p>
+   <p style="margin: 15px 0;text-align: center;font-weight: bold; color: #000;">نأمل منكم سرعة سداد المستحقات المالية التي عليكم.
+   وفي حال عدم السداد، سيتم اتخاذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
+   <p class="thanks" style="margin: 30px 0;text-align: center">شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير،،،،</p>
    <div class="letter-signatures" style="display: flex; justify-content: space-between; margin-top: 60px; text-align: center; font-size: 16px;">
     <div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">الصندوق</label><strong style="display: block; margin-bottom: 15px;">${escapeHtml(feeDemandSignatures.department)}</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>
     <div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">الشؤون المالية</label><strong style="display: block; margin-bottom: 15px;">${escapeHtml(feeDemandSignatures.director)}</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>
