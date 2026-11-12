@@ -1255,6 +1255,18 @@ export default function ReportsTab() {
    // لا يُعتد بأي بيانات أخرى خارج حوافظ التوريد: غياب سجل المتدرب فيها يعني عدم سداد الرسمين.
    const hasRegistrationPayment = hasAnyHafizaRecord && payment.registrationPaid > 0;
    const hasExamPayment = hasAnyHafizaRecord && payment.examPaid > 0;
+   const traineeFinancialRows = (traineeFinancialRecords || []).filter((record: TraineeFinancialRecord) => {
+    const fields = new Map(Object.entries(record).map(([header, value]) => [traineeNameKey(header), value]));
+    const recordName = financialNameHeaders.map((header) => fields.get(header)).find((value) => String(value ?? "").trim());
+    return recordName && traineeNameKey(recordName) === key;
+   });
+   const financialAmount = (fieldLabel: string) => traineeFinancialRows.reduce((sum, record) => {
+    const value = Object.entries(record).find(([header]) => traineeNameKey(header) === traineeNameKey(fieldLabel))?.[1];
+    const parsed = typeof value === "string" ? Number(value.replace(/[,،\s]/g, "")) : amountValue(value);
+    return sum + (Number.isFinite(parsed) ? parsed : 0);
+   }, 0);
+   const registrationDue = financialAmount("رسوم القيد والتسجيل");
+   const examDue = financialAmount("إجمالي رسوم الامتحانات");
    const statusKey = hasRegistrationPayment
     ? hasExamPayment ? "both" : "registration-only"
     : hasExamPayment ? "exam-only" : "neither";
@@ -1265,8 +1277,10 @@ export default function ReportsTab() {
     batch: Array.from(traineeData.batches).join("، ") || "—",
     specialty: Array.from(traineeData.specialties).join("، ") || "—",
     registrationPaid: payment.registrationPaid,
+    registrationDue,
     registrationStatus: payment.registrationAwaitingNotice ? "مسدد - لم يورد إلى البنك" : paidStatus(payment.registrationPaid),
     examPaid: payment.examPaid,
+    examDue,
     examStatus: payment.examAwaitingNotice ? "مسدد - لم يورد إلى البنك" : paidStatus(payment.examPaid),
     registrationLastDate: formatStatusDate(payment.registrationLastDate),
     examLastDate: formatStatusDate(payment.examLastDate),
@@ -1713,6 +1727,15 @@ export default function ReportsTab() {
    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
   })[char] || char);
   const traineeName = String(feeDemandTrainee.trainee || feeDemandTrainee.name || "").trim();
+  const outstandingFees = [
+   { label: "رسوم القيد والتسجيل", amount: Math.max(0, amountValue(feeDemandTrainee.registrationDue) - amountValue(feeDemandTrainee.registrationPaid)) },
+   { label: "رسوم الامتحانات", amount: Math.max(0, amountValue(feeDemandTrainee.examDue) - amountValue(feeDemandTrainee.examPaid)) },
+  ].filter((fee) => fee.amount > 0);
+  if (!outstandingFees.length) {
+   toast.info("لا توجد رسوم مستحقة غير مسددة لهذا المتدرب");
+   return;
+  }
+  const outstandingFeeText = outstandingFees.map((fee) => `${fee.label} (${fee.amount.toLocaleString("en-US")} ريال)`).join(" و");
   const title = `مطالبة مالية بسداد الرسوم - ${traineeName}`;
   const tableHtml = `<article class="fee-demand-letter" dir="rtl" style="text-align: center; font-size: 18px; line-height: 2.2; font-family: cairo;">
    <h1 style="font-size: 20px; font-weight: bold; margin-bottom: 25px;">مطالبة مالية بسداد الرسوم</h1>
@@ -1723,11 +1746,8 @@ export default function ReportsTab() {
    المحترم
 </p>
    <p style="margin: 15px 0; text-align: center;">تحية طيبة وبعد،</p>
-   <p style="margin: 15px 0;text-align: center;text-decoration: underline; font-weight: bold; color: #000;">
-     <strong>الموضوع: مطالبة بسداد رسوم الامتحان الكتابي الأول ورسوم القيد والتسجيل</strong>
-     </p>
-   <p style="margin: 15px 0; text-align: center;font-size: 18px">بالإشارة إلى الموضوع أعلاه، ومن خلال مراجعة السجلات المالية، لواحظ عدم سداد رسوم الامتحان الكتابي الاول ورسوم القسط والتسجيل،لذلك  نرجو منكم المبادرة إلى سداد الرسوم المستحقة عليكم، والتي تشمل رسوم الامتحان الكتابي الأول وقدرها
-   (30,000) ورسوم القيد والتسجيل وقدرها (10,000)، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
+   <p style="margin: 15px 0;text-align: center;text-decoration: underline; font-weight: bold; color: #000;"><strong>الموضوع: مطالبة بسداد ${escapeHtml(outstandingFeeText)}</strong></p>
+   <p style="margin: 15px 0; text-align: center;font-size: 18px">بالإشارة إلى الموضوع أعلاه، نرجو منكم المبادرة إلى سداد الرسوم غير المسددة المبينة أعلاه، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
    <p style="margin: 15px 0;text-align: center;font-weight: bold; color: #000;">نأمل منكم سرعة سداد المستحقات عليكم. وفي حال عدم السداد، ستُتخذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
    <p class="thanks" style="margin: 30px 0;text-align: center">شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير.</p>
    <div class="letter-signatures" style="display: flex; justify-content: space-between; margin-top: 60px; text-align: center; font-size: 16px;">
@@ -2332,12 +2352,12 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                         <td data-col-key="actions" className="border border-black px-1 py-1 print:hidden" style={isTotal ? totalCellStyle : traineeRowCellStyle}>
                           {!isOpening && !isTotal && (
                             <div className="flex min-w-[108px] flex-col items-center gap-1">
-                              {source === "traineeFeeStatus" && row.statusKey === "neither" && (
+                              {source === "traineeFeeStatus" && row.statusKey && (
                                 <button
                                   type="button"
                                   onClick={() => setFeeDemandTrainee(row)}
                                   className="inline-flex items-center justify-center gap-1 rounded-md bg-sky-700 px-2 py-1 text-[11px] font-bold text-white hover:bg-sky-800"
-                                  title="إنشاء مطالبة مالية لهذا المتدرب"
+                                  title="إنشاء مطالبة مالية بالرسوم غير المسددة فقط"
                                 >
                                   <ClipboardList className="h-3.5 w-3.5" /> مطالبة
                                 </button>
@@ -2363,6 +2383,12 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
         </div>
       </section>
       {feeDemandTrainee && (
+        (() => {
+          const unpaidItems = [
+            { label: "رسوم القيد والتسجيل", amount: Math.max(0, amountValue(feeDemandTrainee.registrationDue) - amountValue(feeDemandTrainee.registrationPaid)) },
+            { label: "رسوم الامتحانات", amount: Math.max(0, amountValue(feeDemandTrainee.examDue) - amountValue(feeDemandTrainee.examPaid)) },
+          ].filter((fee) => fee.amount > 0);
+          return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setFeeDemandTrainee(null); }}>
           <section className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-4 shadow-2xl sm:p-6" role="dialog" aria-modal="true" aria-labelledby="fee-demand-title" dir="rtl">
             <div className="mb-4 flex items-center justify-between gap-3 border-b border-slate-200 pb-3">
@@ -2373,9 +2399,14 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
               <p className="text-left">التاريخ: {reportDateLabel}</p>
               <p>الأخ الدكتور/ <strong>{String(feeDemandTrainee.trainee || feeDemandTrainee.name || "")}</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;المحترم،</p>
               <p>تحية طيبة وبعد،</p>
-              <p><strong>الموضوع: مطالبة بسداد رسوم الامتحان الكتابي الأول ورسوم القيد والتسجيل</strong></p>
-              <p>بالإشارة إلى الموضوع أعلاه، ومن خلال مراجعة السجلات المالية، نرجو منكم المبادرة إلى سداد الرسوم المستحقة عليكم، والتي تشمل رسوم الامتحان الكتابي الأول وقدرها (30000) ورسوم القيد والتسجيل وقدرها (10000)، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
-              <p>نأمل سرعة تسوية المستحقات. وفي حال عدم السداد، ستُتخذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
+              {unpaidItems.length ? <>
+                <p><strong>الموضوع: مطالبة بسداد الرسوم غير المسددة</strong></p>
+                <ul className="list-disc space-y-1 pr-6">
+                  {unpaidItems.map((fee) => <li key={fee.label}>{fee.label}: <strong>{fee.amount.toLocaleString("en-US")} ريال</strong></li>)}
+                </ul>
+                <p>بالإشارة إلى الموضوع أعلاه، نرجو منكم المبادرة إلى سداد الرسوم غير المسددة المبينة أعلاه، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
+                <p>نأمل سرعة تسوية المستحقات. وفي حال عدم السداد، ستُتخذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
+              </> : <p className="rounded-lg bg-emerald-50 p-3 font-bold text-emerald-800">لا توجد رسوم مستحقة غير مسددة على هذا المتدرب، لذا لا يمكن إصدار مطالبة مالية له.</p>}
               <p>شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير.</p>
             </div>
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
@@ -2399,10 +2430,12 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
             </div>
             <div className="mt-5 flex flex-wrap justify-end gap-2 border-t border-slate-200 pt-4">
               <button type="button" onClick={() => setFeeDemandTrainee(null)} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50">إغلاق</button>
-              <button type="button" onClick={printFeeDemand} className="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 text-sm font-bold text-white hover:bg-sky-800"><Printer className="h-4 w-4" /> معاينة وطباعة المطالبة</button>
+              <button type="button" disabled={!unpaidItems.length} onClick={printFeeDemand} className="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 text-sm font-bold text-white hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-400"><Printer className="h-4 w-4" /> معاينة وطباعة المطالبة</button>
             </div>
           </section>
         </div>
+          );
+        })()
       )}
 
       <PrintSettingsModal
