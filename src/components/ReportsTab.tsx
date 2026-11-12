@@ -1729,7 +1729,7 @@ export default function ReportsTab() {
    <div class="letter-signatures" style="display: flex; justify-content: space-between; margin-top: 60px; text-align: center; font-size: 16px;">
     <div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">الصندوق</label><strong style="display: block; margin-bottom: 15px;">${escapeHtml(feeDemandSignatures.department)}</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>
     <div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">الشؤون المالية</label><strong style="display: block; margin-bottom: 15px;">${escapeHtml(feeDemandSignatures.director)}</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>
-    <div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">رئيس المجلس اليمني للاختصاصات الطبية / فرع صعدة</label><strong style="display: block; margin-bottom: 15px;">${escapeHtml(feeDemandSignatures.signer)}</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>
+    <div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">رئيس فرع المجلس </label><strong style="display: block; margin-bottom: 15px;">${escapeHtml(feeDemandSignatures.signer)}</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>
    </div>
   </article>`;
 
