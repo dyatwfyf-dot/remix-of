@@ -2362,28 +2362,28 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
               <h2 id="fee-demand-title" className="text-lg font-black text-slate-900">مطالبة مالية للمتدرب</h2>
               <button type="button" onClick={() => setFeeDemandTrainee(null)} className="rounded-lg p-2 text-slate-600 hover:bg-slate-100" aria-label="إغلاق"><X className="h-5 w-5" /></button>
             </div>
-            <div className="space-y-3 text-sm leading-8 text-slate-900">
+                   <div className="space-y-3 text-sm leading-8 text-slate-900 text-center">
               <p className="text-left">التاريخ: {reportDateLabel}</p>
-              <p>الأخ الدكتور/ <strong>{String(feeDemandTrainee.trainee || feeDemandTrainee.name || "")}</strong> المحترم،</p>
+              <p>الأخ الدكتور/ <strong>{String(feeDemandTrainee.trainee || feeDemandTrainee.name || "")}</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;المحترم،</p>
               <p>تحية طيبة وبعد،</p>
-              <p><strong>الموضوع: مطالبة بسداد رسوم الامتحانات ورسوم القيد والتسجيل</strong></p>
-              <p>بالإشارة إلى سجلاتنا المالية، نرجو منكم المبادرة إلى سداد الرسوم المستحقة عليكم، وتشمل رسوم الامتحانات ورسوم القيد والتسجيل، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
+              <p><strong>الموضوع: مطالبة بسداد رسوم الامتحان الكتابي الأول ورسوم القيد والتسجيل</strong></p>
+              <p>بالإشارة إلى الموضوع أعلاه، ومن خلال مراجعة السجلات المالية، نرجو منكم المبادرة إلى سداد الرسوم المستحقة عليكم، والتي تشمل رسوم الامتحان الكتابي الأول وقدرها (30000) ورسوم القيد والتسجيل وقدرها (10000)، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
               <p>نأمل سرعة تسوية المستحقات. وفي حال عدم السداد، ستُتخذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
               <p>شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير.</p>
             </div>
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
               {([
-                ["department", "الإدارة"],
-                ["director", "اسم المدير"],
-                ["signer", "المسؤول عن التوقيع / الختم"],
+                ["department", "الصندوق"],
+                ["director", "الشؤون المالية"],
+                ["signer", "رئيس المجلس اليمني للاختصاصات الطبية / فرع صعدة"],
               ] as const).map(([key, label]) => (
-                <label key={key} className="flex flex-col gap-1 text-xs font-bold text-slate-700">
+                <label key={key} className="flex flex-col gap-1 text-xs font-bold text-slate-700 text-center">
                   {label}
                   <input
                     type="text"
                     value={feeDemandSignatures[key]}
                     onChange={(event) => setFeeDemandSignatures((previous) => ({ ...previous, [key]: event.target.value }))}
-                    className="min-h-10 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-600"
+                    className="min-h-10 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-600 text-center"
                     placeholder={`أدخل ${label}`}
                   />
                   <span className="mt-3 h-5 border-b border-dotted border-slate-500" />
@@ -2397,6 +2397,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
           </section>
         </div>
       )}
+
       <PrintSettingsModal
         open={printSettingsOpen}
         year={fiscalYear}
