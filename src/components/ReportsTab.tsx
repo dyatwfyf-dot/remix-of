@@ -999,8 +999,32 @@ export default function ReportsTab() {
    }, ];
   });
   
+  // إظهار كل متدرب من القائمة الأساسية لم يظهر اسمه مطلقاً في حوافظ التوريد كغير مسدد.
+  const traineesWithAnyHafizaData = new Set(
+   matchedTraineeHafiza.map(({ trainee }) => trainee.name)
+  );
+  const unpaidTraineeRows: ReportRow[] = Array.from(traineeRosterByName.values())
+   .filter((trainee) =>
+    !traineesWithAnyHafizaData.has(trainee.name) &&
+    (selectedTrainee === "all" || trainee.name === selectedTrainee) &&
+    (!selectedBatch.trim() || trainee.batch === selectedBatch.trim())
+   )
+   .map((trainee) => ({
+    id: `trainee-no-fees-${trainee.name}`,
+    trainee: trainee.name,
+    batch: trainee.batch,
+    specialty: trainee.specialty,
+    category: "—",
+    description: "لم يسدد أي رسوم",
+    source: "بيانات المتدربين",
+    amount: 0,
+    displayType: "لم يسدد أي رسوم",
+    notes: "لا توجد أي بيانات لهذا المتدرب في حوافظ التوريد",
+    summaryLevel: "unpaid",
+   }));
+
   const categories = Array.from(new Set(payments.map((row) => String(row.category)))).sort((a, b) => a.localeCompare(b, "ar"));
-  const result: ReportRow[] = [];
+  const result: ReportRow[] = [...unpaidTraineeRows];
   
   categories.forEach((category) => {
    const categoryPayments = payments.filter((row) => row.category === category).sort((a, b) => String(a.notifyDate).localeCompare(String(b.notifyDate)));
