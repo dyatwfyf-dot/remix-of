@@ -1714,22 +1714,22 @@ export default function ReportsTab() {
   })[char] || char);
   const traineeName = String(feeDemandTrainee.trainee || feeDemandTrainee.name || "").trim();
   const title = `مطالبة مالية بسداد الرسوم - ${traineeName}`;
-  const tableHtml = `<article class="fee-demand-letter" dir="rtl">
-   <h1>مطالبة مالية بسداد الرسوم</h1>
-   <p class="letter-date">التاريخ: ${escapeHtml(reportDateLabel)}</p>
-   <p class="salutation">الأخ الدكتور/ <strong>${escapeHtml(traineeName)}</strong> المحترم،</p>
-   <p>تحية طيبة وبعد،</p>
-   <p><strong>الموضوع: مطالبة بسداد رسوم الامتحان الكتابي الأول ورسوم القيد والتسجيل</strong></p>
-   <p>بالإشارة إلى الموضوع أعلاه، ومن خلال مراجعة السجلات المالية، نرجو منكم المبادرة إلى سداد الرسوم المستحقة عليكم، والتي تشمل رسوم الامتحان الكتابي الأول وقدرها (30000) ورسوم القيد والتسجيل وقدرها (10000)، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
-   <p>نأمل سرعة تسوية المستحقات. وفي حال عدم السداد، ستُتخذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
-   <p class="thanks">شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير.</p>
-   <div class="letter-signatures">
-    <div><label>الصندوق</label><strong>${escapeHtml(feeDemandSignatures.department)}</strong><span></span></div>
-    <div><label>الشؤون المالية</label><strong>${escapeHtml(feeDemandSignatures.director)}</strong><span></span></div>
-    <div><label>رئيس المجلس اليمني للاختصاصات الطبية / فرع صعدة</label><strong>${escapeHtml(feeDemandSignatures.signer)}</strong><span></span></div>
+  const tableHtml = `<article class="fee-demand-letter" dir="rtl" style="text-align: center; font-size: 18px; line-height: 2.2; font-family: Tahoma, sans-serif;">
+   <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 25px;">مطالبة مالية بسداد الرسوم</h1>
+   <p class="letter-date" style="text-align: left; font-size: 16px;">التاريخ: ${escapeHtml(reportDateLabel)}</p>
+   <p class="salutation" style="margin: 25px 0; font-size: 19px;">الأخ الدكتور/ <strong>${escapeHtml(traineeName)}</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;المحترم،</p>
+   <p style="margin: 15px 0;">تحية طيبة وبعد،</p>
+   <p style="margin: 15px 0;"><strong>الموضوع: مطالبة بسداد رسوم الامتحان الكتابي الأول ورسوم القيد والتسجيل</strong></p>
+   <p style="margin: 15px 0; text-align: center;">بالإشارة إلى الموضوع أعلاه، ومن خلال مراجعة السجلات المالية، نرجو منكم المبادرة إلى سداد الرسوم المستحقة عليكم، والتي تشمل رسوم الامتحان الكتابي الأول وقدرها (30000) ورسوم القيد والتسجيل وقدرها (10000)، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
+   <p style="margin: 15px 0;">نأمل سرعة تسوية المستحقات. وفي حال عدم السداد، ستُتخذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
+   <p class="thanks" style="margin: 30px 0;">شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير.</p>
+   <div class="letter-signatures" style="display: flex; justify-content: space-between; margin-top: 60px; text-align: center; font-size: 16px;">
+    <div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">الصندوق</label><strong style="display: block; margin-bottom: 15px;">${escapeHtml(feeDemandSignatures.department)}</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>
+    <div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">الشؤون المالية</label><strong style="display: block; margin-bottom: 15px;">${escapeHtml(feeDemandSignatures.director)}</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>
+    <div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">رئيس المجلس اليمني للاختصاصات الطبية / فرع صعدة</label><strong style="display: block; margin-bottom: 15px;">${escapeHtml(feeDemandSignatures.signer)}</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>
    </div>
   </article>`;
-  
+
   const finalCss = `
    @page { size:A4 portrait; margin:18mm; }
    #tableContainer .fee-demand-letter { width:100%; min-height:245mm; margin:0 auto; color:#111; font-family:Cairo,Tahoma,Arial,sans-serif; font-size:16px; line-height:2; }
