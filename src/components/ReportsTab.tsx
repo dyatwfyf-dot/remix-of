@@ -318,6 +318,11 @@ font-size: 13px !important; white-space:nowrap !important;
   #tableContainer table.reports-data-table td.reports-text-cell { white-space:normal !important; word-break:normal !important; overflow-wrap:anywhere !important; }
   #tableContainer table.reports-data-table td.reports-description-cell,
   #tableContainer table.reports-data-table td.reports-text-cell { min-width:25mm !important; max-width:58mm !important; }
+  #tableContainer table.reports-data-table { table-layout:auto !important; }
+  #tableContainer table.reports-data-table.reports-fee-status-table { table-layout:auto !important; }
+  #tableContainer table.reports-data-table thead tr.reports-column-header-row > th { white-space:normal !important; word-break:normal !important; overflow-wrap:anywhere !important; padding:4px 3px !important; }
+  #tableContainer table.reports-data-table .reports-header-label { display:-webkit-box !important; max-height:2.6em !important; overflow:hidden !important; white-space:normal !important; overflow-wrap:anywhere !important; word-break:normal !important; text-overflow:ellipsis !important; -webkit-box-orient:vertical !important; -webkit-line-clamp:2 !important; line-clamp:2 !important; }
+  #tableContainer table.reports-data-table .reports-cell-content { display:-webkit-box !important; max-height:2.8em !important; overflow:hidden !important; white-space:normal !important; overflow-wrap:anywhere !important; word-break:normal !important; text-overflow:ellipsis !important; line-height:1.4 !important; -webkit-box-orient:vertical !important; -webkit-line-clamp:2 !important; line-clamp:2 !important; }
   #tableContainer table.reports-data-table td[data-col-key="idx"] { min-width:10mm !important; }
   #tableContainer table.reports-data-table tr.signature-spacer-row > td { height:3mm !important; min-height:3mm !important; padding:0 !important; border:0 !important; background:#fff !important; }
   #tableContainer table.reports-data-table tr.signature-block-row,
@@ -1928,6 +1933,7 @@ export default function ReportsTab() {
             includeTotalRow={!isLoanOrCustody && source !== "traineeFeeStatus"}
             printTableClassName={source === "trainee" ? "reports-trainee-payment-table" : ""}
             excelCellFontSize={source === "trainee" ? 12 : undefined}
+            excelMaxTextLines={2}
           />
         </div>
 
@@ -1978,7 +1984,7 @@ export default function ReportsTab() {
                       className={`cursor-pointer border border-black px-2 py-2 font-black hover:bg-[#e6b800] ${numericKeys.includes(col.key) ? "reports-numeric-cell" : ["description", "name", "trainee", "specialty", "notes", "item"].includes(col.key) ? "reports-text-cell" : ""}`}
                     >
                       <div className="flex items-center justify-center gap-1">
-                        <span>{col.label}</span>
+                        <span className="reports-header-label" title={col.label}>{col.label}</span>
                         {activeSortColumn === col.key &&
                           (activeSortDirection === "asc" ? (
                             <ChevronUp className="h-3.5 w-3.5" />
@@ -2078,8 +2084,8 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                         <tr key={String(row.id)} onClick={() => setSelectedTraineeFeeStatus((current) => current === String(row.statusKey) ? "all" : String(row.statusKey))} role="button" aria-pressed={isSelectedStatus} title="اضغط لعرض أسماء المتدربين في هذه الحالة فقط، واضغط مرة أخرى لإلغاء التصفية" className={`reports-fee-status-summary-row cursor-pointer transition-all ${isSelectedStatus ? "ring-2 ring-inset ring-sky-700" : "hover:brightness-95"}`} style={{ backgroundColor: String(row.statusSummaryTone || "#E2E8F0"), color: "#111827", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}>
                           <td colSpan={colCount} className="border border-black px-3 py-2 text-right font-black" style={{ backgroundColor: String(row.statusSummaryTone || "#E2E8F0"), color: "#111827" }}>
                             <div className="flex flex-wrap items-center justify-between gap-2">
-                              <span>{String(row.statusSummaryLabel || "")}</span>
-                              <strong>{isSelectedStatus ? "✓ الحالة المختارة • " : ""}عدد المتدربين: {Number(row.statusSummaryCount) || 0}</strong>
+                              <span className="reports-cell-content min-w-0" title={String(row.statusSummaryLabel || "")}>{String(row.statusSummaryLabel || "")}</span>
+                              <strong className="reports-cell-content min-w-0" title={`عدد المتدربين: ${Number(row.statusSummaryCount) || 0}`}>{isSelectedStatus ? "✓ الحالة المختارة • " : ""}عدد المتدربين: {Number(row.statusSummaryCount) || 0}</strong>
                             </div>
                           </td>
                         </tr>
@@ -2137,7 +2143,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                             className="border border-black px-3 py-2 text-center font-black text-white"
                             style={totalCellStyle}
                           >
-                            {grandTotalLabel}
+                            <span className="reports-cell-content" title={grandTotalLabel}>{grandTotalLabel}</span>
                           </td>
                           <td
                             data-col-key="amount"
@@ -2241,8 +2247,10 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                               }
                             >
                               {col.key === "description" ? (
-                                <div className="whitespace-normal break-words leading-snug">{val !== undefined && val !== null && String(val) !== "" ? String(val) : "—"}</div>
-                              ) : isNumeric ? formatCurrency(val) : val !== undefined && val !== null && String(val) !== "" ? String(val) : "—"}
+                                <div className="reports-cell-content whitespace-normal break-words leading-snug" title={String(val ?? "—")}>{val !== undefined && val !== null && String(val) !== "" ? String(val) : "—"}</div>
+                              ) : isNumeric ? formatCurrency(val) : (
+                                <span className="reports-cell-content" title={String(val ?? "—")}>{val !== undefined && val !== null && String(val) !== "" ? String(val) : "—"}</span>
+                              )}
                             </td>
                           );
                         })}

@@ -59,6 +59,8 @@ type Props = {
   printTableClassName?: string;
   /** Optional larger body font for reports that need more readable Excel exports. */
   excelCellFontSize?: number;
+  /** Optional maximum visible wrapped lines for Excel cells. */
+  excelMaxTextLines?: number;
   onPrintRequest?: () => void;
   additionalWebActions ? : WebActionItem[];
   webClassName ? : string;
@@ -83,6 +85,7 @@ export default function TabActions({
   includeTotalRow = true,
   printTableClassName = "",
   excelCellFontSize,
+  excelMaxTextLines,
   onPrintRequest,
   additionalWebActions = [],
   webClassName = "",
@@ -225,12 +228,17 @@ export default function TabActions({
         totalRows: [dataStartRow + dataRows.length + 1],
         palette: getExcelPalette(title),
       });
-      if (excelCellFontSize) {
+      if (excelCellFontSize || excelMaxTextLines) {
         worksheet.eachRow({ includeEmpty: true }, (row: any, rowNumber: number) => {
           if (rowNumber < dataStartRow) return;
-          let estimatedLines = rowNumber === dataStartRow ? 2 : 1;
+          const maxLines = Number.isFinite(excelMaxTextLines)
+            ? Math.max(1, Math.floor(excelMaxTextLines as number))
+            : Number.POSITIVE_INFINITY;
+          let estimatedLines = rowNumber === dataStartRow ? Math.min(2, maxLines) : 1;
           row.eachCell({ includeEmpty: true }, (cell: any) => {
-            cell.font = { ...(cell.font || {}), name: "Arial", size: excelCellFontSize };
+            if (excelCellFontSize) {
+              cell.font = { ...(cell.font || {}), name: "Arial", size: excelCellFontSize };
+            }
             cell.alignment = {
               ...(cell.alignment || {}),
               vertical: "middle",
@@ -242,9 +250,9 @@ export default function TabActions({
             const wrappedLines = cellText
               .split(/\r?\n/)
               .reduce((sum: number, line: string) => sum + Math.max(1, Math.ceil(line.length / Math.max(8, columnWidth - 2))), 0);
-            estimatedLines = Math.max(estimatedLines, wrappedLines);
+            estimatedLines = Math.max(estimatedLines, Math.min(maxLines, wrappedLines));
           });
-          row.height = Math.max(row.height || 0, estimatedLines * 18 + 8);
+          row.height = Math.max(18, estimatedLines * 14 + 4);
         });
       }
       await downloadWorkbook(workbook, `${fileName}-${reportDate}.xlsx`);
