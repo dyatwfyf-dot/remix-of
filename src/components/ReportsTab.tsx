@@ -352,6 +352,35 @@ font-size: 13px !important; white-space:nowrap !important;
     #tableContainer table.reports-data-table td[data-col-key="idx"] { white-space:nowrap !important; word-break:keep-all !important; overflow-wrap:normal !important; }
   }
 
+  /* Auto-fit report content while keeping every column heading wrapped. */
+  #tableContainer table.reports-data-table { table-layout:auto!important; }
+  #tableContainer table.reports-data-table thead tr.reports-column-header-row > th {
+    white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important;
+    height:auto!important; max-height:none!important; vertical-align:middle!important;
+  }
+  #tableContainer table.reports-data-table .reports-header-label {
+    display:block!important; max-height:none!important; height:auto!important; overflow:visible!important;
+    text-overflow:clip!important; white-space:normal!important; overflow-wrap:anywhere!important;
+    word-break:normal!important; -webkit-line-clamp:unset!important; line-clamp:unset!important;
+  }
+  #tableContainer table.reports-data-table tbody > tr { height:auto!important; }
+  #tableContainer table.reports-data-table tbody > tr > td {
+    height:auto!important; max-height:none!important; vertical-align:middle!important;
+    white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important;
+  }
+  #tableContainer table.reports-data-table .reports-cell-content {
+    display:block!important; max-height:none!important; height:auto!important; overflow:visible!important;
+    text-overflow:clip!important; white-space:normal!important; overflow-wrap:anywhere!important;
+    word-break:normal!important; line-height:1.4!important;
+    -webkit-line-clamp:unset!important; line-clamp:unset!important;
+  }
+  #tableContainer table.reports-data-table td.reports-numeric-cell,
+  #tableContainer table.reports-data-table td.reports-no-wrap-cell,
+  #tableContainer table.reports-data-table td[data-col-key="idx"] {
+    white-space:nowrap!important; overflow-wrap:normal!important; word-break:keep-all!important;
+  }
+
+
 `;
 
 const custodyPortraitPrintCss = `
