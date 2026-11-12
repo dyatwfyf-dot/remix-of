@@ -90,6 +90,8 @@ row.displayType,
 return `${source}|row|${identity}`;
 };
 
+const TRAINEE_FEE_STATUS_DELETED_ROWS_KEY = "reports-trainee-fee-status-deleted-rows-v1";
+
 interface SignaturesMeta {
  sig1Dept: string;
  sig1Name: string;
@@ -578,6 +580,15 @@ export default function ReportsTab() {
  const [traineeSortDirection, setTraineeSortDirection] = useState < "asc" | "desc" > ("asc");
  const [traineeHasUserSorted, setTraineeHasUserSorted] = useState(false);
  const [deletedRows, setDeletedRows] = useState<Set<string>>(new Set());
+ const [deletedFeeStatusRows, setDeletedFeeStatusRows] = useState<Set<string>>(() => {
+  try {
+   const saved = localStorage.getItem(TRAINEE_FEE_STATUS_DELETED_ROWS_KEY);
+   const keys: unknown = saved ? JSON.parse(saved) : [];
+   return new Set(Array.isArray(keys) ? keys.filter((key): key is string => typeof key === "string") : []);
+  } catch {
+   return new Set();
+  }
+ });
  
  const [youssefOpeningBalance, setYoussefOpeningBalance] = useState < number > (() => {
   try {
@@ -608,7 +619,15 @@ export default function ReportsTab() {
     return {};
    }
   });
- 
+
+ useEffect(() => {
+  try {
+   localStorage.setItem(TRAINEE_FEE_STATUS_DELETED_ROWS_KEY, JSON.stringify([...deletedFeeStatusRows]));
+  } catch (error) {
+   console.error("تعذر حفظ الصفوف المحذوفة من تقرير السداد محلياً:", error);
+  }
+ }, [deletedFeeStatusRows]);
+
  const [signaturesMeta, setSignaturesMeta] = useState < SignaturesMeta > (() => {
   try {
    const saved = localStorage.getItem("reports-custody-signatures-meta-v1");
@@ -1408,7 +1427,8 @@ export default function ReportsTab() {
  const processedRows = useMemo < ReportRow[] > (() => {
   const activeSortCol = source === "trainee" ? traineeSortColumn : sortColumn;
   const activeSortDir = source === "trainee" ? traineeSortDirection : sortDirection;
-  const filtered = reportRows.filter((row) => !deletedRows.has(getReportRowKey(row, source)));
+  const activeDeletedRows = source === "traineeFeeStatus" ? deletedFeeStatusRows : deletedRows;
+  const filtered = reportRows.filter((row) => !activeDeletedRows.has(getReportRowKey(row, source)));
   if (source === "traineeFeeStatus") {
    const summaryRows = filtered.filter((row) => row.summaryLevel === "status-summary");
    const allTraineeRows = filtered.filter((row) => row.summaryLevel !== "status-summary");
@@ -1546,7 +1566,7 @@ export default function ReportsTab() {
    }
    return row;
   });
- }, [reportRows, sortColumn, sortDirection, source, traineeSortColumn, traineeSortDirection, deletedRows, selectedTraineeFeeStatus]);
+ }, [reportRows, sortColumn, sortDirection, source, traineeSortColumn, traineeSortDirection, deletedRows, deletedFeeStatusRows, selectedTraineeFeeStatus]);
  
  const reportIssuedAt = new Date();
  const reportYearStart = new Date(reportIssuedAt.getFullYear(), 0, 1);
@@ -1599,7 +1619,17 @@ export default function ReportsTab() {
  const amountColumnIndex = sourceConfig.columns.findIndex((col) => col.key === "amount");
  
  const deleteRow = (row: ReportRow) => {
-  setDeletedRows((prev) => new Set([...prev, getReportRowKey(row, source)]));
+  const rowKey = getReportRowKey(row, source);
+  if (source === "traineeFeeStatus") {
+   const nextDeletedRows = new Set(deletedFeeStatusRows);
+   nextDeletedRows.add(rowKey);
+   setDeletedFeeStatusRows(nextDeletedRows);
+   try {
+    localStorage.setItem(TRAINEE_FEE_STATUS_DELETED_ROWS_KEY, JSON.stringify([...nextDeletedRows]));
+   } catch {}
+   return;
+  }
+  setDeletedRows((prev) => new Set([...prev, rowKey]));
  };
  const openReportsPrintSettings = () => {
   if (!displayRows.length) {
