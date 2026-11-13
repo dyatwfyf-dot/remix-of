@@ -197,8 +197,8 @@
   border: 1px solid #000000 !important;
   border-bottom: 2px solid #9a7215 !important;
   background: linear-gradient(180deg, #fff7d7 0%, #f3d778 100%) !important;
-  color: #3c321b !important;
-  font-size: 11px;
+  color: #000000 !important;
+  font-size: 13px;
   font-weight: 900;
   line-height: 1.5;
   white-space: nowrap;
@@ -230,7 +230,7 @@
   border-bottom: 1px solid #000000 !important;
   background: #fff !important;
   color: #000000 !important;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 650;
   line-height: 1.55;
   vertical-align: middle;
@@ -264,7 +264,7 @@
 
 .reports-table-scroll .reports-data-table tbody td.reports-description-cell,
 .reports-table-scroll .reports-data-table tbody td.reports-text-cell {
-  min-width: 140px;
+  min-width: 180px;
   max-width: 280px;
 }
 
