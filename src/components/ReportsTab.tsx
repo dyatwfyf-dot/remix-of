@@ -1789,6 +1789,7 @@ export default function ReportsTab() {
    #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td { min-width:0!important; max-width:100%!important; overflow-wrap:anywhere!important; }
    ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:fixed!important; border-collapse:collapse!important; } #tableContainer table.reports-fee-status-table th, #tableContainer table.reports-fee-status-table td { box-sizing:border-box!important; min-width:0!important; max-width:100%!important; font-size:${fontSizePx}px!important; color:#111111!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; padding-left:3px!important; padding-right:3px!important; vertical-align:middle!important; } #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th { white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; line-height:1.25!important; } #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th > div, #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th > div > span { display:block!important; width:100%!important; min-width:0!important; white-space:normal!important; overflow-wrap:anywhere!important; }` : ""}
    ${source === "trainee" ? `#tableContainer table.reports-trainee-payment-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:auto!important; } #tableContainer table.reports-trainee-payment-table thead tr.reports-column-header-row th { font-size:${fontSizePx}px!important; white-space:normal!important; overflow-wrap:anywhere!important; } #tableContainer table.reports-trainee-payment-table tbody tr > td { font-size:${fontSizePx}px!important; white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important; } #tableContainer table.reports-trainee-payment-table tbody td.reports-numeric-cell { white-space:nowrap!important; overflow-wrap:normal!important; }` : ""}
+   ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:fixed!important; border-collapse:collapse!important; direction:rtl!important; text-align:center!important; font-family:Cairo,Tahoma,Arial,sans-serif!important; } #tableContainer table.reports-fee-status-table thead th { background:linear-gradient(180deg,#fff7d7 0%,#f3d778 100%)!important; background-color:#f3d778!important; color:#000!important; border:1px solid #000!important; font-size:14px!important; font-weight:900!important; line-height:1.4!important; padding:6px 4px!important; text-align:center!important; vertical-align:middle!important; white-space:normal!important; overflow-wrap:anywhere!important; -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; } #tableContainer table.reports-fee-status-table tbody td { background:#fff!important; background-color:#fff!important; color:#000!important; border:1px solid #000!important; font-family:Cairo,Tahoma,Arial,sans-serif!important; font-size:15px!important; font-weight:850!important; line-height:1.45!important; padding:5px 4px!important; text-align:center!important; vertical-align:middle!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; } #tableContainer table.reports-fee-status-table tbody tr:hover td { background:inherit!important; }` : ""}
    ${isCustodyReport ? custodyPortraitPrintCss : ""}
    #tableContainer table.reports-data-table tr.signature-block-row, #tableContainer table.reports-data-table tr.signature-block-row td { page-break-inside:avoid!important; break-inside:avoid!important; }
   `;
@@ -1812,8 +1813,8 @@ export default function ReportsTab() {
   })[char] || char);
   const traineeName = String(feeDemandTrainee.trainee || feeDemandTrainee.name || "").trim();
   const outstandingFees = [
-   { label: "رسوم القيد والتسجيل", amount: Math.max(0, amountValue(feeDemandTrainee.registrationDue) - amountValue(feeDemandTrainee.registrationPaid)) },
-   { label: "رسوم امتحان الكتابي الاول ", amount: Math.max(0, amountValue(feeDemandTrainee.examDue) - amountValue(feeDemandTrainee.examPaid)) },
+   { label: "رسوم القيد والتسجيل", amount: amountValue(feeDemandTrainee.registrationPaid) > 0 ? 0 : 10000 },
+   { label: "رسوم امتحان الكتابي الأول", amount: amountValue(feeDemandTrainee.examPaid) > 0 ? 0 : 30000 },
   ].filter((fee) => fee.amount > 0);
   if (!outstandingFees.length) {
    toast.info("لا توجد رسوم مستحقة غير مسددة لهذا المتدرب");
@@ -2470,8 +2471,8 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
       {feeDemandTrainee && (
         (() => {
           const unpaidItems = [
-            { label: "رسوم القيد والتسجيل", amount: Math.max(0, amountValue(feeDemandTrainee.registrationDue) - amountValue(feeDemandTrainee.registrationPaid)) },
-            { label: "رسوم امتحان الكتابي الأول", amount: Math.max(0, amountValue(feeDemandTrainee.examDue) - amountValue(feeDemandTrainee.examPaid)) },
+            { label: "رسوم القيد والتسجيل", amount: amountValue(feeDemandTrainee.registrationPaid) > 0 ? 0 : 10000 },
+            { label: "رسوم امتحان الكتابي الأول", amount: amountValue(feeDemandTrainee.examPaid) > 0 ? 0 : 30000 },
           ].filter((fee) => fee.amount > 0);
           return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setFeeDemandTrainee(null); }}>
