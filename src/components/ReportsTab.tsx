@@ -247,7 +247,11 @@ const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "ot
 };
 
 const reportsTabPrintCss = `
-  #tableContainer table.reports-data-table { width:100% !important; max-width:100% !important; table-layout:auto !important; font-size:8pt !important; }
+  #tableContainer table.reports-data-table {
+width:100% !important;
+  max-width:auto!important; 
+table-layout:auto !important;
+  font-size:8pt!important; }
   #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td { font-size: 14px !important; }
 
   #tableContainer .reports-print-heading { margin:0 auto 4mm !important; padding:2mm 0 !important; text-align:center !important; direction:rtl !important; color:#17324d !important; page-break-after:avoid !important; 
@@ -260,15 +264,18 @@ const reportsTabPrintCss = `
 font-Family: Cairo !important; 
   }
   #tableContainer .reports-print-heading .reports-print-sub { margin-top:1.5mm !important; color:#526a7e !important; font:900 18px/1.4 Cairo !important; }
-  #tableContainer table.reports-data-table { width:100% !important; min-width:0 !important; max-width:100% !important; margin:0 auto !important; border-collapse:collapse !important; border-spacing:0 !important; table-layout:auto !important; direction:rtl !important; text-align:center !important; color:#243b50 !important; font-family:Cairo !important; }
+  #tableContainer table.reports-data-table { width:100% !important; min-width:0 !important; max-width:auto!important; margin:0 auto!important; border-collapse:collapse !important; border-spacing:0 !important; table-layout:auto !important; direction:rtl !important; text-align:center !important; color:#243b50 !important; font-family:Cairo !important; }
   #tableContainer table.reports-data-table th,
-  #tableContainer table.reports-data-table td { box-sizing:border-box !important; width:auto !important; min-width:0 !important; max-width:100% !important; padding:5px 4px !important; border:1px solid #000 !important; text-align:center !important; vertical-align:middle !important;
-  font-family: Cairo !important; 
+  #tableContainer table.reports-data-table td { box-sizing:border-box !important; 
+width:100%!important; 
+min-width:0 !important; 
+max-width:auto!important; padding:5px 4px !important; border:1px solid #000 !important; text-align:center !important; vertical-align:middle !important;
+  font-family: Cairo!important; 
   font-size: 14px !important; font-weight:1000 !important; line-height:1.35 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-data-table thead { display:table-header-group !important; }
   #tableContainer table.reports-data-table thead tr.reports-column-header-row > th { background:linear-gradient(180deg,#fff4a3 0%,#ffd700 48%,#d99b00 100%) !important; background-color:#ffd700 !important; color:#000 !important; border-color:#000 !important; font-size: 12px !important; white-space:nowrap !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-trainee-payment-table thead tr.reports-column-header-row > th { font-size:14px!important; white-space:normal!important; overflow-wrap:anywhere!important; }
-  #tableContainer table.reports-trainee-payment-table tbody tr > td { font-size:14px!important; white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important; }
+  #tableContainer table.reports-trainee-payment-table tbody tr > td { font-size:16px!important; white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important; }
   #tableContainer table.reports-trainee-payment-table tbody td.reports-numeric-cell { white-space:nowrap!important; overflow-wrap:normal!important; }
   #tableContainer table.reports-data-table thead tr.reports-custody-title-row > th,
   #tableContainer table.reports-data-table thead tr.reports-custody-date-row > th { position:static !important; min-width:0 !important; max-width:none !important; background:#fff !important; background-color:#fff !important; color:#17324d !important; border:1px solid #000 !important;
@@ -304,7 +311,7 @@ font-family: Cairo !important; font-weight:900 !important;
 font-size: 13px !important; white-space:nowrap !important;
   font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-tuition-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#E8DFF5 !important; background-color:#E8DFF5 !important; color:#000000 !important; border-color:#000 !important; font-size:13px !important; white-space:nowrap !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-  #tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-registration-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#DDEBFF !important; background-color:#DDEBFF !important; color:#000000 !important; border-color:#000 !important; font-size:13px !important; white-space:nowrap !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  #tableContainer table.reports-data-table tbody > tr.reports-fee-row.reports-registration-fee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#DDEBFF !important; background-color:#DDEBFF !important; color:#000000 !important; border-color:#000 !important; font-size:15px!important; white-space:nowrap !important; font-weight:900 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   #tableContainer table.reports-trainee-payment-table tbody > tr.reports-trainee-total-row:not(.total-row):not(.report-grand-total-row) > td { background:#2C666E !important; background-color:#2C666E !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
   #tableContainer table.reports-trainee-payment-table tbody > tr.total-row > td,
   #tableContainer table.reports-trainee-payment-table tbody > tr.report-grand-total-row > td { background:#0437bb !important; background-color:#0437bb !important; color:#fff !important; border-color:#000 !important; font-weight:900 !important; }
@@ -320,7 +327,9 @@ font-size: 13px !important; white-space:nowrap !important;
   #tableContainer table.reports-data-table td.reports-description-cell,
   #tableContainer table.reports-data-table td.reports-text-cell { white-space:normal !important; word-break:normal !important; overflow-wrap:anywhere !important; }
   #tableContainer table.reports-data-table td.reports-description-cell,
-  #tableContainer table.reports-data-table td.reports-text-cell { min-width:50mm !important; max-width:78mm !important; }
+  #tableContainer table.reports-data-table td.reports-text-cell { 
+min-width:150mm!important; 
+max-width:178mm!important; }
   #tableContainer table.reports-data-table { table-layout:auto !important; }
   #tableContainer table.reports-data-table.reports-fee-status-table { table-layout:auto !important; }
   #tableContainer table.reports-data-table thead tr.reports-column-header-row > th { white-space:normal !important; word-break:normal !important; overflow-wrap:anywhere !important; padding:4px 3px !important; }
@@ -338,11 +347,18 @@ font-size: 13px !important; white-space:nowrap !important;
   #tableContainer .signature-person .signature-dotted-line { display:block !important; width:72% !important; height:2mm !important; margin:0 auto !important; background-image:radial-gradient(circle,#222 0.45px,transparent 0.65px) !important; background-size:3px 2px !important; background-repeat:repeat-x !important; background-position:center bottom !important; }
   #tableContainer .reports-print-control-value { color:inherit !important; white-space:normal !important; overflow-wrap:anywhere !important; }
   @media print {
-    #tableContainer, #tableContainer .reports-print-table-shell { width:100% !important; max-width:auto !important; overflow:visible !important; }
-    #tableContainer table.reports-data-table { width:100% !important; max-width:100% !important; min-width:0 !important; }
+    #tableContainer, #tableContainer .reports-print-table-shell { width:100%!important;
+  max-width:auto!important; 
+  overflow:visible !important; }
+    #tableContainer table.reports-data-table {
+  width:100%!important;
+  max-width:auto!important;
+  min-width:0!important; 
+    }
     #tableContainer table.reports-data-table tr,
     #tableContainer table.reports-data-table th,
-    #tableContainer table.reports-data-table td { position:static !important; box-shadow:none !important; page-break-inside:avoid !important; break-inside:avoid !important; }
+    #tableContainer table.reports-data-table td {
+position:static !important; box-shadow:none !important; page-break-inside:avoid !important; break-inside:avoid !important; }
     #tableContainer table.reports-data-table th,
     #tableContainer table.reports-data-table td { padding:4px 3px !important; white-space:normal !important; word-break:normal !important; overflow-wrap:anywhere !important; }
     #tableContainer table.reports-data-table th.rc-num,
@@ -352,10 +368,11 @@ font-size: 13px !important; white-space:nowrap !important;
     #tableContainer table.reports-data-table td[data-col-key="idx"] { white-space:nowrap !important; word-break:keep-all !important; overflow-wrap:normal !important; }
   }
 
-  /*Auto-fit report content while keeping every column heading wrapped*/
-  #tableContainer table.reports-data-table { table-layout:auto!important; }
+  /** Auto-fit report content while keeping every column heading wrapped. */
+  #tableContainer table.reports-data-table { 
+  table-layout:auto!important; }
   #tableContainer table.reports-data-table thead tr.reports-column-header-row > th {
-    white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important;
+ white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important;
     height:auto!important; max-height:none!important; vertical-align:middle!important;
   }
   #tableContainer table.reports-data-table .reports-header-label {
@@ -380,8 +397,8 @@ overflow-wrap
   word-break:normal!important;
 line-height:1.4!important;
 -webkit-line-clamp
-:unset!important; 
-line-clamp:unset!important;
+:2!important; 
+line-clamp:2!important;
   }
   #tableContainer table.reports-data-table td.reports-numeric-cell,
   #tableContainer table.reports-data-table td.reports-no-wrap-cell,
@@ -392,12 +409,12 @@ word-break:keep-all!important;
   }
   #tableContainer table.reports-data-table thead tr.reports-column-header-row > th {
     min-width:0!important;
-    max-width:220px!important; font-size:15px!important;
+    max-width:auto!important; font-size:15px!important;
   }
   #tableContainer table.reports-data-table tbody td {
     font-size:17px!important
   width:100%!important; 
-  max-width:320px!important;
+  max-width:auto!important;
   }
   #tableContainer table.reports-data-table tbody td.reports-empty-cell {
     width:auto!important; 
@@ -414,14 +431,15 @@ const custodyPortraitPrintCss = `
   #tableContainer .reports-print-table-shell { width:100%!important; min-width:0!important; max-width:auto!important; overflow:visible!important; }
   #tableContainer table.reports-custody-print-table { width:100%!important; min-width:0!important; max-width:auto!important; table-layout:auto!important; border-collapse:collapse!important; }
   #tableContainer table.reports-custody-print-table th,
-  #tableContainer table.reports-custody-print-table td { box-sizing:border-box!important; min-width:0!important; max-width:auto!important; padding:3px 3px!important; text-align:center!important; vertical-align:middle!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; overflow:visible!important; text-overflow:clip!important; font-size:15px!important; line-height:1.4!important; }
+  #tableContainer table.reports-custody-print-table td { box-sizing:border-box!important; min-width:0!important; max-width:auto!important; padding:3px 3px!important; text-align:center!important; vertical-align:middle!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; overflow:visible!important; text-overflow:clip!important; 
+  font-size:18px!important; line-height:1.4!important; }
   #tableContainer table.reports-custody-print-table th[data-col-key="idx"],
   #tableContainer table.reports-custody-print-table td[data-col-key="idx"],
   #tableContainer table.reports-custody-print-table td.reports-numeric-cell,
   #tableContainer table.reports-custody-print-table td.rc-num { white-space:nowrap!important; word-break:keep-all!important; overflow-wrap:normal!important; }
   #tableContainer table.reports-custody-print-table thead tr.reports-custody-title-row > th { padding:7px 4px 3px!important; font-size:17px!important; white-space:normal!important; }
-  #tableContainer table.reports-custody-print-table thead tr.reports-custody-date-row > th { padding:3px 4px 7px!important; font-size:13px!important; white-space:normal!important; }
-  #tableContainer table.reports-custody-print-table thead tr.reports-column-header-row > th { padding:4px 3px!important; font-size:13px!important; white-space:normal!important; overflow-wrap:anywhere!important; }
+  #tableContainer table.reports-custody-print-table thead tr.reports-custody-date-row > th { padding:3px 4px 7px!important; font-size:16px!important; white-space:normal!important; }
+  #tableContainer table.reports-custody-print-table thead tr.reports-column-header-row > th { padding:4px 3px!important; font-size:15px!important; white-space:normal!important; overflow-wrap:anywhere!important; }
   #tableContainer table.reports-custody-print-table tbody > tr > td { height:auto!important; min-height:8mm!important; }
 `;
 
