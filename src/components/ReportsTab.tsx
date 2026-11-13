@@ -427,8 +427,15 @@ word-break:keep-all!important;
 `;
 
 const custodyPortraitPrintCss = `
-  @page { size:A4 portrait; margin:5mm; }
+  /* Page size, orientation and margins are controlled by the preview toolbar. */
   #tableContainer .reports-print-table-shell { width:100%!important; min-width:0!important; max-width:auto!important; overflow:visible!important; }
+  #paperContainer[data-page-orientation="portrait"] #tableContainer .reports-print-table-shell.reports-custody-short-report-shell {
+    display:flex!important;
+    flex-direction:column!important;
+    min-height:190mm!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+  }
   #tableContainer table.reports-custody-print-table { width:100%!important; min-width:0!important; max-width:auto!important; table-layout:auto!important; border-collapse:collapse!important; }
   #tableContainer table.reports-custody-print-table th,
   #tableContainer table.reports-custody-print-table td { box-sizing:border-box!important; min-width:0!important; max-width:auto!important; padding:3px 3px!important; text-align:center!important; vertical-align:middle!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; overflow:visible!important; text-overflow:clip!important; 
@@ -444,7 +451,8 @@ const custodyPortraitPrintCss = `
 
   /* Short custody/loan reports use a balanced two-thirds-page layout on A4 portrait. */
   #tableContainer table.reports-custody-print-table.reports-custody-short-report {
-    height:190mm!important;
+    flex:1 1 auto!important;
+    height:100%!important;
     min-height:190mm!important;
     table-layout:fixed!important;
     color:#000!important;
@@ -711,7 +719,8 @@ const buildReportsScreenPrintHtml = (
         reportDateLabel + " • عدد السجلات: " + String(recordCount);
     }
   }
-  return '<div class="reports-print-table-shell">' + table.outerHTML + '</div>';
+  const shortCustodyShellClass = table.classList.contains("reports-custody-short-report") ? " reports-custody-short-report-shell" : "";
+  return '<div class="reports-print-table-shell' + shortCustodyShellClass + '">' + table.outerHTML + '</div>';
 };
 
 export default function ReportsTab() {
