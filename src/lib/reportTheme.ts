@@ -101,4 +101,44 @@ export const reportTableThemeCss = `
     background: #ffffff !important;
     color: #000000 !important;
   }
+  /* Readable print typography: preserve 16px body text in preview, print and PDF. */
+  .report-page-content table.reports-data-table tbody td,
+  #tableContainer table.reports-data-table tbody td,
+  .report-page-content table.reports-fee-status-table tbody td,
+  #tableContainer table.reports-fee-status-table tbody td {
+    font-size: 16px !important;
+    line-height: 1.45 !important;
+    vertical-align: middle !important;
+  }
+
+  /* Semantic text columns wrap long values; compact identifiers and numbers stay on one line. */
+  .report-page-content table.reports-data-table tbody td.text-cell,
+  .report-page-content table.reports-data-table tbody td.name-cell,
+  .report-page-content table.reports-data-table tbody td.specialty-cell,
+  .report-page-content table.reports-data-table tbody td.batch-cell,
+  .report-page-content table.reports-data-table tbody td.desc-cell,
+  .report-page-content table.reports-data-table tbody td.details-cell,
+  .report-page-content table.reports-data-table tbody td.description-cell,
+  #tableContainer table.reports-data-table tbody td.text-cell,
+  #tableContainer table.reports-data-table tbody td.name-cell,
+  #tableContainer table.reports-data-table tbody td.specialty-cell,
+  #tableContainer table.reports-data-table tbody td.batch-cell,
+  #tableContainer table.reports-data-table tbody td.desc-cell,
+  #tableContainer table.reports-data-table tbody td.details-cell,
+  #tableContainer table.reports-data-table tbody td.description-cell,
+  .report-page-content table.reports-fee-status-table tbody td,
+  #tableContainer table.reports-fee-status-table tbody td {
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .report-page-content table.reports-data-table tbody td .pdf-cell-text,
+  #tableContainer table.reports-data-table tbody td .pdf-cell-text {
+    font-size: 16px !important;
+    line-height: 1.45 !important;
+    white-space: inherit !important;
+    overflow-wrap: inherit !important;
+  }
+
 `;
