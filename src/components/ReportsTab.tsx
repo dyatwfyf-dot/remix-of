@@ -2471,7 +2471,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
         (() => {
           const unpaidItems = [
             { label: "رسوم القيد والتسجيل", amount: Math.max(0, amountValue(feeDemandTrainee.registrationDue) - amountValue(feeDemandTrainee.registrationPaid)) },
-            { label: "رسوم الامتحانات", amount: Math.max(0, amountValue(feeDemandTrainee.examDue) - amountValue(feeDemandTrainee.examPaid)) },
+            { label: "رسوم امتحان الكتابي الأول", amount: Math.max(0, amountValue(feeDemandTrainee.examDue) - amountValue(feeDemandTrainee.examPaid)) },
           ].filter((fee) => fee.amount > 0);
           return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setFeeDemandTrainee(null); }}>
@@ -2489,8 +2489,8 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                 <ul className="list-disc space-y-1 pr-6">
                   {unpaidItems.map((fee) => <li key={fee.label}>{fee.label}: <strong>{fee.amount.toLocaleString("en-US")} ريال</strong></li>)}
                 </ul>
-                <p>بالإشارة إلى الموضوع أعلاه، نرجو منكم المبادرة إلى سداد الرسوم غير المسددة المبينة أعلاه، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
-                <p>نأمل سرعة تسوية المستحقات. وفي حال عدم السداد، ستُتخذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
+                <p>نرجو المبادرة إلى سداد الرسوم المستحقة غير المسددة أو المتأخرة، والخاصة بإجراءات القيد والتسجيل والتقدم لامتحان الكتابي الأول بالمجلس اليمني للاختصاصات الطبية – فرع صعدة، ومراجعة الإدارة المالية لتوثيق السداد.</p>
+                <p>وفي حال عدم السداد، سيتم اتخاذ الإجراءات اللازمة وفقاً للوائح والأنظمة المعمول بها.</p>
               </> : <p className="rounded-lg bg-emerald-50 p-3 font-bold text-emerald-800">لا توجد رسوم مستحقة غير مسددة على هذا المتدرب، لذا لا يمكن إصدار مطالبة مالية له.</p>}
               <p>شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير.</p>
             </div>
