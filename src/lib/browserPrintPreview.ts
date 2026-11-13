@@ -649,6 +649,56 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     ${reportsCompactColumnsCss}
     ${reportTableThemeCss}
     ${finalCss}
+    /* Final page-fit rules shared by preview and browser printing. */
+    #tableContainer, #tableContainer .preview-report-content {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    #tableContainer table,
+    #tableContainer table.reports-data-table {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      table-layout: fixed !important;
+      border-collapse: collapse !important;
+    }
+    #tableContainer table th,
+    #tableContainer table td {
+      box-sizing: border-box !important;
+      width: auto !important;
+      min-width: 0 !important;
+      max-width: none !important;
+      white-space: normal !important;
+      overflow-wrap: anywhere !important;
+      word-break: normal !important;
+    }
+    #tableContainer table td.num,
+    #tableContainer table td.numeric-cell,
+    #tableContainer table td.date-cell,
+    #tableContainer table td.compact-cell,
+    #tableContainer table td.ref-cell,
+    #tableContainer table td.idx,
+    #tableContainer table td.reports-numeric-cell,
+    #tableContainer table td.reports-no-wrap-cell {
+      white-space: nowrap !important;
+      overflow-wrap: normal !important;
+      word-break: keep-all !important;
+    }
+    #tableContainer table .pdf-cell-text {
+      max-width: 100% !important;
+      white-space: inherit !important;
+      overflow-wrap: anywhere !important;
+    }
+    @media print {
+      html, body { width: 100% !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
+      .sheet-viewport { display: block !important; width: 100% !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
+      .sheet-paper { width: 100% !important; min-width: 0 !important; min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; box-shadow: none !important; transform: none !important; }
+      #tableContainer { width: 100% !important; min-width: 0 !important; max-width: 100% !important; }
+      #tableContainer table, #tableContainer table.reports-data-table { width: 100% !important; min-width: 0 !important; max-width: 100% !important; table-layout: fixed !important; }
+      #tableContainer table th, #tableContainer table td { min-width: 0 !important; max-width: none !important; }
+    } 
   </style>
 </head>
 <body>
@@ -982,23 +1032,48 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         paperContainer.style.setProperty('--print-cell-padding', '4px ' + horizontalPadding + 'px');
 
         const tableContainer = document.getElementById('tableContainer');
-        tableContainer.style.zoom = String(scale);
+        tableContainer.style.zoom = '1';
+        tableContainer.style.width = '100%';
         if (!fitToContent) {
-          // طابق حجم الورق والاتجاه المختارين في المعاينة مع إعداد الطباعة الفعلي.
+          // Keep the selected physical page, orientation and margins identical in preview and print.
           dynamicRule.innerHTML = '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + margin + '; }';
         }
 
         window.requestAnimationFrame(function() {
           const table = tableContainer.querySelector('table');
           if (!table) return;
-          tableContainer.style.zoom = '1';
+
           const availableWidth = Math.max(1, paperContainer.clientWidth -
-            parseFloat(getComputedStyle(paperContainer).paddingLeft) -
-            parseFloat(getComputedStyle(paperContainer).paddingRight));
+            parseFloat(getComputedStyle(paperContainer).paddingLeft || '0') -
+            parseFloat(getComputedStyle(paperContainer).paddingRight || '0'));
+
+          // Measure the table's intrinsic width without the page's width constraint.
+          const saved = {
+            width: table.style.width,
+            minWidth: table.style.minWidth,
+            maxWidth: table.style.maxWidth,
+            tableLayout: table.style.tableLayout,
+            containerWidth: tableContainer.style.width,
+          };
+          table.style.setProperty('width', 'max-content', 'important');
+          table.style.setProperty('min-width', 'max-content', 'important');
+          table.style.setProperty('max-width', 'none', 'important');
+          table.style.setProperty('table-layout', 'auto', 'important');
+          tableContainer.style.width = 'max-content';
           const naturalWidth = Math.max(table.scrollWidth, table.getBoundingClientRect().width);
-          const fitScale = Math.max(0.65, Math.min(1, availableWidth / Math.max(1, naturalWidth)));
+          table.style.width = saved.width;
+          table.style.minWidth = saved.minWidth;
+          table.style.maxWidth = saved.maxWidth;
+          table.style.tableLayout = saved.tableLayout;
+          tableContainer.style.width = saved.containerWidth;
+
+          // Allow stronger reduction for very wide reports instead of leaving columns outside the paper.
+          const fitScale = Math.max(0.35, Math.min(1, availableWidth / Math.max(1, naturalWidth)));
+          tableContainer.style.width = (100 / fitScale) + '%';
           tableContainer.style.zoom = String(scale * fitScale);
           if (fitToContent) {
+            tableContainer.style.width = '100%';
+            tableContainer.style.zoom = String(scale);
             const heightMm = Math.max(40, Math.ceil((paperContainer.scrollHeight * 25.4 / 96) * 10) / 10);
             paperContainer.style.height = heightMm + 'mm';
             dynamicRule.innerHTML = '@page { size: ' + pageWidthMm + 'mm ' + heightMm + 'mm; margin: 0; }';
