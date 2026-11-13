@@ -269,15 +269,14 @@ const reportsTabPrintCss = `
 #tableContainer table.reports-data-table tr.signature-spacer-row>td{height:3mm!important;padding:0!important;border:0!important;background:#fff!important}
 #tableContainer table.reports-data-table tr.signature-block-row,#tableContainer table.reports-data-table tr.signature-block-row>td{background:#fff!important;color:#000!important;page-break-inside:avoid!important;break-inside:avoid!important}
 #tableContainer table.reports-data-table tr.signature-block-row>td{padding:5px 8px!important;border:0!important}
+#tableContainer table.reports-data-table tbody td.text-cell,#tableContainer table.reports-data-table tbody td.name-cell,#tableContainer table.reports-data-table tbody td.specialty-cell,#tableContainer table.reports-data-table tbody td.batch-cell,#tableContainer table.reports-data-table tbody td.desc-cell,#tableContainer table.reports-data-table tbody td.details-cell,#tableContainer table.reports-data-table tbody td.description-cell,#tableContainer table.reports-fee-status-table tbody td{white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere!important;font-size:16px!important;line-height:1.45!important}
+#tableContainer table.reports-data-table tbody td .pdf-cell-text{font-size:16px!important;line-height:1.45!important}
 #tableContainer .signature-block-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:4mm!important;width:100%!important;direction:rtl!important;align-items:start!important}
 #tableContainer .signature-person{display:flex!important;flex-direction:column!important;align-items:center!important;min-width:0!important;gap:2.5mm!important}
 #tableContainer .signature-person .signature-dept-field,#tableContainer .signature-person .signature-name-field{display:block!important;width:100%!important;min-height:6mm!important;padding:1px 2px!important;border:0!important;color:#000!important;text-align:center!important;font-size:10pt!important;line-height:1.5!important;font-weight:850!important}
 #tableContainer .signature-person .signature-dotted-line{display:block!important;width:72%!important;height:2mm!important;margin:0 auto!important;background-image:radial-gradient(circle,#222 .45px,transparent .65px)!important;background-size:3px 2px!important;background-repeat:repeat-x!important;background-position:center bottom!important}
 `;
 
-
-#tableContainer table.reports-data-table tbody td.text-cell,#tableContainer table.reports-data-table tbody td.name-cell,#tableContainer table.reports-data-table tbody td.specialty-cell,#tableContainer table.reports-data-table tbody td.batch-cell,#tableContainer table.reports-data-table tbody td.desc-cell,#tableContainer table.reports-data-table tbody td.details-cell,#tableContainer table.reports-data-table tbody td.description-cell,#tableContainer table.reports-fee-status-table tbody td{white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere!important;font-size:16px!important;line-height:1.45!important}
-#tableContainer table.reports-data-table tbody td .pdf-cell-text{font-size:16px!important;line-height:1.45!important}
 
 const custodyPortraitPrintCss = `
   /* Page size, orientation and margins are controlled by the preview toolbar. */
