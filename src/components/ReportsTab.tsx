@@ -278,7 +278,8 @@ const reportsTabPrintCss = `
 
 #tableContainer table.reports-data-table tbody td.text-cell,#tableContainer table.reports-data-table tbody td.name-cell,#tableContainer table.reports-data-table tbody td.specialty-cell,#tableContainer table.reports-data-table tbody td.batch-cell,#tableContainer table.reports-data-table tbody td.desc-cell,#tableContainer table.reports-data-table tbody td.details-cell,#tableContainer table.reports-data-table tbody td.description-cell,#tableContainer table.reports-fee-status-table tbody td{white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere!important;font-size:16px!important;line-height:1.45!important}
 #tableContainer table.reports-data-table tbody td .pdf-cell-text{font-size:16px!important;line-height:1.45!important}
-\nconst custodyPortraitPrintCss = `
+
+const custodyPortraitPrintCss = `
   /* Page size, orientation and margins are controlled by the preview toolbar. */
   #tableContainer .reports-print-table-shell { width:100%!important; min-width:0!important; max-width:auto!important; overflow:visible!important; }
   #paperContainer[data-page-orientation="portrait"] #tableContainer .reports-print-table-shell.reports-custody-short-report-shell {
