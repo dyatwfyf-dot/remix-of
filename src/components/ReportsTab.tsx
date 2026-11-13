@@ -441,6 +441,80 @@ const custodyPortraitPrintCss = `
   #tableContainer table.reports-custody-print-table thead tr.reports-custody-date-row > th { padding:3px 4px 7px!important; font-size:16px!important; white-space:normal!important; }
   #tableContainer table.reports-custody-print-table thead tr.reports-column-header-row > th { padding:4px 3px!important; font-size:15px!important; white-space:normal!important; overflow-wrap:anywhere!important; }
   #tableContainer table.reports-custody-print-table tbody > tr > td { height:auto!important; min-height:8mm!important; }
+
+  /* Short custody/loan reports use a balanced two-thirds-page layout on A4 portrait. */
+  #tableContainer table.reports-custody-print-table.reports-custody-short-report {
+    height:190mm!important;
+    min-height:190mm!important;
+    table-layout:fixed!important;
+    color:#000!important;
+  }
+  #tableContainer table.reports-custody-print-table.reports-custody-short-report thead tr.reports-custody-title-row > th {
+    padding:11mm 8px 7mm!important;
+    font-size:22px!important;
+    line-height:1.5!important;
+    font-weight:1000!important;
+    color:#000!important;
+  }
+  #tableContainer table.reports-custody-print-table.reports-custody-short-report thead tr.reports-custody-date-row > th {
+    padding:5mm 8px 11mm!important;
+    font-size:19px!important;
+    line-height:1.5!important;
+    font-weight:900!important;
+    color:#000!important;
+  }
+  #tableContainer table.reports-custody-print-table.reports-custody-short-report thead tr.reports-column-header-row > th {
+    padding:6mm 4px!important;
+    font-size:18px!important;
+    line-height:1.5!important;
+    font-weight:1000!important;
+    color:#000!important;
+  }
+  #tableContainer table.reports-custody-print-table.reports-custody-short-report tbody tr:not(.total-row):not(.report-grand-total-row):not(.signature-spacer-row):not(.signature-block-row) > td {
+    padding:8mm 4px!important;
+    font-size:20px!important;
+    line-height:1.55!important;
+    font-weight:1000!important;
+    color:#000!important;
+  }
+  #tableContainer table.reports-custody-print-table.reports-custody-short-report tbody tr.total-row > td,
+  #tableContainer table.reports-custody-print-table.reports-custody-short-report tbody tr.report-grand-total-row > td {
+    padding:6mm 4px!important;
+    font-size:20px!important;
+    line-height:1.5!important;
+    font-weight:1000!important;
+  }
+  #tableContainer table.reports-custody-print-table.reports-custody-short-report tbody tr.signature-spacer-row > td {
+    height:20mm!important;
+    min-height:20mm!important;
+    padding:0!important;
+    border:0!important;
+  }
+  #tableContainer table.reports-custody-print-table.reports-custody-short-report tbody tr.signature-block-row > td {
+    padding:9mm 8px 10mm!important;
+    color:#000!important;
+    font-weight:1000!important;
+  }
+  #tableContainer table.reports-custody-print-table.reports-custody-short-report .signature-person {
+    gap:4mm!important;
+  }
+  #tableContainer table.reports-custody-print-table.reports-custody-short-report .signature-dept-field {
+    min-height:9mm!important;
+    font-size:18px!important;
+    line-height:1.5!important;
+    font-weight:1000!important;
+    color:#000!important;
+  }
+  #tableContainer table.reports-custody-print-table.reports-custody-short-report .signature-name-field {
+    min-height:9mm!important;
+    font-size:18px!important;
+    line-height:1.5!important;
+    font-weight:1000!important;
+    color:#000!important;
+  }
+  #tableContainer table.reports-custody-print-table.reports-custody-short-report .signature-dotted-line {
+    height:3mm!important;
+  }
 `;
 
 
@@ -622,7 +696,14 @@ const buildReportsScreenPrintHtml = (
     control.replaceWith(printableValue);
   });
   
-  if (isCustodyReport) table.classList.add("reports-custody-print-table");
+  if (isCustodyReport) {
+    table.classList.add("reports-custody-print-table");
+    const custodyDataRowCount = Array.from(table.tBodies[0]?.rows || []).filter((row) =>
+      !row.matches(".reports-opening-row, .total-row, .report-grand-total-row, .signature-spacer-row, .signature-block-row")
+    ).length;
+    // Apply the expanded layout only when the actual detail section is short.
+    if (custodyDataRowCount <= 4) table.classList.add("reports-custody-short-report");
+  }
   if (!isCustodyReport) {
     const dateCell = table.querySelector < HTMLTableCellElement > ("thead tr.reports-custody-date-row th");
     if (dateCell) {
