@@ -175,6 +175,19 @@ background: #0437bb !important;
   }
 
   .num, .numeric-cell, .date-cell, .idx { direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
+
+
+/* Unified report table theme shared by the downloaded PDF renderer. */
+table.reports-data-table{width:100%!important;max-width:100%!important;border-collapse:collapse!important;table-layout:auto!important;direction:rtl!important;text-align:center!important}
+table.reports-data-table th,table.reports-data-table td{box-sizing:border-box!important;border:1px solid #17212b!important;text-align:center!important;vertical-align:middle!important;font-family:Cairo,Tahoma,Arial,sans-serif!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+table.reports-data-table thead th{background:linear-gradient(180deg,#fff8d9,#f5d978 48%,#d7a92e)!important;color:#111!important;font-weight:900!important;white-space:normal!important;overflow-wrap:anywhere!important}
+table.reports-data-table tbody td{background:#fff!important;color:#111!important;font-weight:750!important}
+table.reports-data-table tbody tr.total-row>td,table.reports-data-table tbody tr.report-grand-total-row>td{background:#0871ce!important;color:#fff!important;font-weight:900!important}
+table.reports-data-table tbody tr.total-row>td *,table.reports-data-table tbody tr.report-grand-total-row>td *{background:transparent!important;color:#fff!important}
+table.reports-data-table tbody tr.reports-trainee-total-row:not(.total-row):not(.report-grand-total-row)>td{background:#d9f0ec!important;color:#102c2a!important;font-weight:900!important}
+table.reports-data-table tbody tr.reports-trainee-summary-row:not(.total-row):not(.report-grand-total-row)>td{background:#fff4d9!important;color:#211b0c!important;font-weight:850!important}
+table.reports-data-table tbody tr.reports-fee-row:not(.total-row):not(.report-grand-total-row)>td{background:#e8f1f7!important;color:#142b3d!important;font-weight:900!important}
+table.reports-data-table tbody tr.reports-period-row:not(.total-row):not(.report-grand-total-row)>td{background:#e9eef3!important;color:#17212b!important;font-weight:900!important}
 `;
 
 export const reportContainmentCss = `
@@ -450,6 +463,19 @@ border: 1px solid #000000 !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
   }
+
+
+/* Unified report table theme shared by the downloaded PDF renderer. */
+table.reports-data-table{width:100%!important;max-width:100%!important;border-collapse:collapse!important;table-layout:auto!important;direction:rtl!important;text-align:center!important}
+table.reports-data-table th,table.reports-data-table td{box-sizing:border-box!important;border:1px solid #17212b!important;text-align:center!important;vertical-align:middle!important;font-family:Cairo,Tahoma,Arial,sans-serif!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+table.reports-data-table thead th{background:linear-gradient(180deg,#fff8d9,#f5d978 48%,#d7a92e)!important;color:#111!important;font-weight:900!important;white-space:normal!important;overflow-wrap:anywhere!important}
+table.reports-data-table tbody td{background:#fff!important;color:#111!important;font-weight:750!important}
+table.reports-data-table tbody tr.total-row>td,table.reports-data-table tbody tr.report-grand-total-row>td{background:#0871ce!important;color:#fff!important;font-weight:900!important}
+table.reports-data-table tbody tr.total-row>td *,table.reports-data-table tbody tr.report-grand-total-row>td *{background:transparent!important;color:#fff!important}
+table.reports-data-table tbody tr.reports-trainee-total-row:not(.total-row):not(.report-grand-total-row)>td{background:#d9f0ec!important;color:#102c2a!important;font-weight:900!important}
+table.reports-data-table tbody tr.reports-trainee-summary-row:not(.total-row):not(.report-grand-total-row)>td{background:#fff4d9!important;color:#211b0c!important;font-weight:850!important}
+table.reports-data-table tbody tr.reports-fee-row:not(.total-row):not(.report-grand-total-row)>td{background:#e8f1f7!important;color:#142b3d!important;font-weight:900!important}
+table.reports-data-table tbody tr.reports-period-row:not(.total-row):not(.report-grand-total-row)>td{background:#e9eef3!important;color:#17212b!important;font-weight:900!important}
 `;
 const dimensions = (size: ReportPaperSize, orientation: ReportOrientation) => {
   const [short, long] = size === 'A3' ? [297, 420] : size === 'Letter' ? [215.9, 279.4] : [210, 297];
