@@ -699,6 +699,163 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       #tableContainer table, #tableContainer table.reports-data-table { width: 100% !important; min-width: 0 !important; max-width: 100% !important; table-layout: fixed !important; }
       #tableContainer table th, #tableContainer table td { min-width: 0 !important; max-width: none !important; }
     } 
+
+    /* Unified professional layout for every report in preview and browser print. */
+    #paperContainer, .sheet-paper, #tableContainer, .preview-report-content {
+      box-sizing: border-box !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+    }
+    #tableContainer table,
+    #tableContainer table.reports-data-table,
+    .preview-report-content table {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      table-layout: auto !important;
+      border-collapse: collapse !important;
+      border-spacing: 0 !important;
+      direction: rtl !important;
+    }
+    #tableContainer table th,
+    #tableContainer table td,
+    .preview-report-content table th,
+    .preview-report-content table td {
+      box-sizing: border-box !important;
+      min-width: 0 !important;
+      max-width: none !important;
+      padding: 4px 5px !important;
+      font-family: Cairo, Tahoma, Arial, sans-serif !important;
+      font-size: 16px !important;
+      line-height: 1.4 !important;
+      text-align: center !important;
+      vertical-align: middle !important;
+      white-space: normal !important;
+      overflow-wrap: anywhere !important;
+      word-break: normal !important;
+    }
+    #tableContainer table thead,
+    .preview-report-content table thead { display: table-header-group !important; }
+    #tableContainer table tfoot,
+    .preview-report-content table tfoot { display: table-footer-group !important; }
+    #tableContainer table thead th,
+    .preview-report-content table thead th {
+      font-size: 15px !important;
+      font-weight: 900 !important;
+      line-height: 1.3 !important;
+      background: linear-gradient(180deg,#fff8d9,#f5d978 48%,#d7a92e) !important;
+      color: #111 !important;
+      overflow-wrap: anywhere !important;
+    }
+    #tableContainer table tbody td,
+    .preview-report-content table tbody td {
+      background: #fff !important;
+      color: #111 !important;
+      font-weight: 700 !important;
+    }
+    #tableContainer table td.num,
+    #tableContainer table td.numeric-cell,
+    #tableContainer table td.date-cell,
+    #tableContainer table td.compact-cell,
+    #tableContainer table td.ref-cell,
+    #tableContainer table td.idx,
+    #tableContainer table td.reports-numeric-cell,
+    #tableContainer table td.reports-no-wrap-cell,
+    .preview-report-content table td.num,
+    .preview-report-content table td.numeric-cell,
+    .preview-report-content table td.date-cell,
+    .preview-report-content table td.compact-cell,
+    .preview-report-content table td.ref-cell,
+    .preview-report-content table td.idx,
+    .preview-report-content table td.reports-numeric-cell,
+    .preview-report-content table td.reports-no-wrap-cell {
+      white-space: nowrap !important;
+      word-break: keep-all !important;
+      overflow-wrap: normal !important;
+      font-variant-numeric: tabular-nums !important;
+    }
+    #tableContainer table td .pdf-cell-text,
+    .preview-report-content table td .pdf-cell-text {
+      display: inline-block !important;
+      max-width: 100% !important;
+      white-space: inherit !important;
+      overflow-wrap: inherit !important;
+      vertical-align: middle !important;
+    }
+    #tableContainer table tr,
+    .preview-report-content table tr {
+      break-inside: avoid !important;
+      page-break-inside: avoid !important;
+    }
+    #tableContainer table tr.signature-block-row,
+    .preview-report-content table tr.signature-block-row {
+      break-inside: avoid !important;
+      page-break-inside: avoid !important;
+    }
+    #tableContainer table tr.total-row > td,
+    #tableContainer table tr.report-grand-total-row > td,
+    .preview-report-content table tr.total-row > td,
+    .preview-report-content table tr.report-grand-total-row > td {
+      background: #0871ce !important;
+      color: #fff !important;
+      font-weight: 900 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    @media screen {
+      .sheet-viewport { align-items: flex-start !important; }
+      .sheet-paper { flex: 0 0 auto !important; }
+      #tableContainer { overflow: visible !important; }
+    }
+    @media print {
+      html, body {
+        width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        background: #fff !important;
+      }
+      .preview-toolbar { display: none !important; }
+      .sheet-viewport {
+        display: block !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+      }
+      .sheet-paper {
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        transform: none !important;
+      }
+      #tableContainer {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        overflow: visible !important;
+      }
+      #tableContainer table,
+      #tableContainer table.reports-data-table {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+      }
+      #tableContainer table thead { display: table-header-group !important; }
+      #tableContainer table tfoot { display: table-footer-group !important; }
+      #tableContainer table tr { break-inside: avoid !important; page-break-inside: avoid !important; }
+      .report-letterhead-block { break-inside: avoid !important; page-break-inside: avoid !important; }
+      .signature-block-row { break-inside: avoid !important; page-break-inside: avoid !important; }
+    }
+
   </style>
 </head>
 <body>
