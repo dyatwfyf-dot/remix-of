@@ -65,7 +65,7 @@ export interface ReportRow {
   notes ? : string;
   settlementNo ? : string;
   item ? : string;
-  summaryLevel ? : "opening" | "total" | "fee" | "trainee-fee-total" | "trainee-name-total" | "trainee-fee-roster" | "period" | "signature" | "detail" | "status-summary" | "unpaid";
+  summaryLevel ? : "opening" | "total" | "fee" | "trainee-fee-total" | "trainee-name-total" | "trainee-fee-roster" | "fee-unpaid-heading" | "fee-unpaid-name" | "period" | "signature" | "detail" | "status-summary" | "unpaid";
   total ? : string;
   [key: string]: any;
 }
@@ -1046,6 +1046,39 @@ export default function ReportsTab() {
       }, ];
     });
     
+    // عند اختيار نوع رسم محدد، نعرض عمليات السداد بتفاصيلها كاملة،
+    // ثم نضيف في نهاية الكشف أسماء غير المسددين فقط من بيانات المتدربين.
+    if (selectedFee !== "all") {
+      const paidNames = new Set(payments.map((row) => String(row.trainee || "").trim()));
+      const unpaidNames = Array.from(traineeRosterByName.values())
+        .filter((trainee) =>
+          !paidNames.has(trainee.name) &&
+          (selectedTrainee === "all" || trainee.name === selectedTrainee) &&
+          (!selectedBatch.trim() || trainee.batch === selectedBatch.trim())
+        )
+        .map((trainee) => trainee.name)
+        .sort((a, b) => a.localeCompare(b, "ar"));
+      return [
+        ...payments.map((row) => ({ ...row, displayType: "تفصيلي", summaryLevel: "detail" as const })),
+        {
+          id: `unpaid-fee-heading-${selectedFee}`,
+          trainee: `المتدربون الذين لم يسددوا: ${selectedFee}`,
+          summaryLevel: "fee-unpaid-heading" as const,
+        },
+        ...(unpaidNames.length
+          ? unpaidNames.map((name) => ({
+              id: `unpaid-fee-name-${selectedFee}-${name}`,
+              trainee: name,
+              summaryLevel: "fee-unpaid-name" as const,
+            }))
+          : [{
+              id: `unpaid-fee-empty-${selectedFee}`,
+              trainee: "لا يوجد متدربون غير مسددين لهذا الرسم",
+              summaryLevel: "fee-unpaid-name" as const,
+            }]),
+      ];
+    }
+
     // إظهار كل متدرب من القائمة الأساسية لم يظهر اسمه مطلقاً في حوافظ التوريد كغير مسدد.
     const traineesWithAnyHafizaData = new Set(
       matchedTraineeHafiza.map(({ trainee }) => trainee.name)
@@ -1670,6 +1703,15 @@ export default function ReportsTab() {
       filtered : [...filtered].sort((a, b) => {
         // عند الفرز فقط، يبقى إجمالي الرسم العام في النهاية، بينما تتبع إجماليات المتدرب اسمه.
         if (source === "trainee") {
+          const aIsFeeUnpaid = a.summaryLevel === "fee-unpaid-heading" || a.summaryLevel === "fee-unpaid-name";
+          const bIsFeeUnpaid = b.summaryLevel === "fee-unpaid-heading" || b.summaryLevel === "fee-unpaid-name";
+          if (aIsFeeUnpaid !== bIsFeeUnpaid) return aIsFeeUnpaid ? 1 : -1;
+          if (aIsFeeUnpaid && bIsFeeUnpaid) {
+            const aRank = a.summaryLevel === "fee-unpaid-heading" ? 0 : 1;
+            const bRank = b.summaryLevel === "fee-unpaid-heading" ? 0 : 1;
+            if (aRank !== bRank) return aRank - bRank;
+            return String(a.trainee || "").localeCompare(String(b.trainee || ""), "ar");
+          }
           const aIsFeeRoster = a.summaryLevel === "trainee-fee-roster";
           const bIsFeeRoster = b.summaryLevel === "trainee-fee-roster";
           if (aIsFeeRoster !== bIsFeeRoster) return aIsFeeRoster ? 1 : -1;
@@ -2362,6 +2404,16 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                     else if (row.summaryLevel === "period") rowStyle = "reports-period-row bg-[#5B5750] font-bold text-white";
                     else if (isTraineeSummary) rowStyle = "reports-trainee-summary-row bg-[#FFF1D6] font-bold text-black";
                     else rowStyle = "bg-white text-slate-900";
+
+                    if (row.summaryLevel === "fee-unpaid-heading" || row.summaryLevel === "fee-unpaid-name") {
+                      return (
+                        <tr key={String(row.id)} className={row.summaryLevel === "fee-unpaid-heading" ? "bg-amber-100 text-amber-950" : "bg-white text-black"}>
+                          <td colSpan={sourceConfig.columns.length + 2} className="border border-black px-3 py-2 text-center font-bold">
+                            {String(row.trainee || "")}
+                          </td>
+                        </tr>
+                      );
+                    }
 
                     if (isStatusSummary) {
                       const isSelectedStatus = selectedTraineeFeeStatus === String(row.statusKey);
