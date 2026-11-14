@@ -1199,6 +1199,13 @@ export default function ReportsTab() {
       batches: Set < string > ;
       specialties: Set < string > ;
     };
+    type PaymentTransaction = {
+      id: string;
+      hafizaNo: string;
+      notifyNo: string;
+      date: Date;
+      amount: number;
+    };
     type PaymentSummary = {
       registrationPaid: number;
       examPaid: number;
@@ -1206,6 +1213,8 @@ export default function ReportsTab() {
       examLastDate: Date | null;
       registrationAwaitingNotice: boolean;
       examAwaitingNotice: boolean;
+      registrationTransactions: PaymentTransaction[];
+      examTransactions: PaymentTransaction[];
     };
     
     // بطاقة بيانات المتدرب هي المصدر الأساسي لأسماء التقرير وبياناته الأكاديمية.
@@ -1285,14 +1294,30 @@ export default function ReportsTab() {
         examLastDate: null,
         registrationAwaitingNotice: false,
         examAwaitingNotice: false,
+        registrationTransactions: [],
+        examTransactions: [],
       };
       if (isRegistration) {
         payment.registrationPaid += amount;
+        payment.registrationTransactions.push({
+          id: String(record.id || `${record.hafizaNo || "receipt"}-${record.notifyNo || ""}-${date.getTime()}`),
+          hafizaNo: String(record.hafizaNo || ""),
+          notifyNo: String(record.notifyNo || ""),
+          date,
+          amount,
+        });
         payment.registrationAwaitingNotice ||= awaitingNoticeNumber;
         if (!payment.registrationLastDate || date > payment.registrationLastDate) payment.registrationLastDate = date;
       }
       if (isExam) {
         payment.examPaid += amount;
+        payment.examTransactions.push({
+          id: String(record.id || `${record.hafizaNo || "receipt"}-${record.notifyNo || ""}-${date.getTime()}`),
+          hafizaNo: String(record.hafizaNo || ""),
+          notifyNo: String(record.notifyNo || ""),
+          date,
+          amount,
+        });
         payment.examAwaitingNotice ||= awaitingNoticeNumber;
         if (!payment.examLastDate || date > payment.examLastDate) payment.examLastDate = date;
       }
@@ -1375,7 +1400,51 @@ export default function ReportsTab() {
       statusSummaryTone: status.tone,
       statusKey: status.key,
     }));
-    return [...summaryRows, ...detailRows];
+    const expandedDetailRows: ReportRow[] = detailRows.flatMap((traineeRow) => {
+      const payment = paymentsByTrainee.get(traineeNameKey(traineeRow.trainee)) || {
+        registrationTransactions: [],
+        examTransactions: [],
+      };
+      const rows: ReportRow[] = [];
+      const addFeeRows = (
+        feeType: string,
+        transactions: PaymentTransaction[],
+        due: number,
+        paid: number,
+      ) => {
+        transactions.forEach((transaction) => {
+          rows.push({
+            ...traineeRow,
+            id: `${traineeRow.id}-paid-${feeType}-${transaction.id}`,
+            feeType,
+            rowType: "سداد",
+            hafizaNo: transaction.hafizaNo,
+            notifyNo: transaction.notifyNo,
+            paymentDate: formatStatusDate(transaction.date),
+            paidAmount: transaction.amount,
+            unpaidAmount: "",
+          });
+        });
+        const remaining = Math.max(0, due - paid);
+        if (remaining > 0 || paid <= 0) {
+          rows.push({
+            ...traineeRow,
+            id: `${traineeRow.id}-unpaid-${feeType}`,
+            feeType,
+            rowType: "متبقي غير مسدد",
+            hafizaNo: "",
+            notifyNo: "",
+            paymentDate: "—",
+            paidAmount: "",
+            unpaidAmount: remaining > 0 ? remaining : "",
+          });
+        }
+      };
+      addFeeRows("رسوم القيد والتسجيل", payment.registrationTransactions || [], amountValue(traineeRow.registrationDue), amountValue(traineeRow.registrationPaid));
+      addFeeRows("رسوم الامتحانات", payment.examTransactions || [], amountValue(traineeRow.examDue), amountValue(traineeRow.examPaid));
+      return rows;
+    });
+    return [...summaryRows, ...expandedDetailRows];
   }, [hafiza, trainees, traineeFinancialRecords]);
   const sourceConfig = useMemo < { title: string;columns: TabCol[] } > (() => {
     if (source === "youssefLoan") {
@@ -1412,14 +1481,15 @@ export default function ReportsTab() {
           { key: "trainee", label: "اسم المتدرب" },
           { key: "batch", label: "الدفعة" },
           { key: "specialty", label: "التخصص" },
-          { key: "registrationPaid", label: "المسدد لرسوم القيد والتسجيل" },
-          { key: "registrationStatus", label: "حالة سداد رسوم القيد والتسجيل" },
-          { key: "examPaid", label: "المسدد لرسوم الامتحانات" },
-          { key: "examStatus", label: "حالة سداد الامتحانات" },
+          { key: "feeType", label: "نوع الرسم" },
+          { key: "rowType", label: "نوع الحركة" },
+          { key: "hafizaNo", label: "رقم الحافظة" },
+          { key: "notifyNo", label: "رقم إشعار التوريد" },
+          { key: "paymentDate", label: "تاريخ التوريد" },
+          { key: "paidAmount", label: "المبلغ المسدد" },
+          { key: "unpaidAmount", label: "المبلغ المتبقي غير المسدد" },
           { key: "overallStatus", label: "حالة السداد الإجمالية" },
           { key: "bankPendingNote", label: "ملاحظة التوريد البنكي" },
-          { key: "registrationLastDate", label: "آخر تاريخ لسداد القيد والتسجيل" },
-          { key: "examLastDate", label: "آخر تاريخ لسداد الامتحانات" },
         ],
       };
     }
