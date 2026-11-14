@@ -986,17 +986,17 @@ export default function ReportsTab() {
   
   const traineeRows = useMemo < ReportRow[] > (() => {
     const payments = matchedTraineeHafiza.flatMap(({ row, trainee: rosterTrainee }) => {
-      const date = normalizeDate(row.notifyDate);
+      const date = normalizeDate(row.notifyDate || row.date);
       const trainee = rosterTrainee.name;
       const batch = String(row.batch || "").trim();
       const specialty = String(row.specialty || "").trim();
       const category = canonicalFeeCategory(row.description);
       const amount = amountValue(row.notifyAmount);
+      const hasHafizaReceipt = Boolean(String(row.hafizaNo || "").trim()) && amountValue(row.hafizaAmount) > 0;
       if (
         !date ||
         date.getFullYear() < TRAINEE_REPORT_START_YEAR ||
         !trainee ||
-        amount <= 0 ||
         (selectedTrainee !== "all" && trainee !== selectedTrainee) ||
         (selectedFee !== "all" && category !== selectedFee) ||
         (selectedBatch.trim() !== "" && batch !== selectedBatch.trim())
@@ -1007,7 +1007,7 @@ export default function ReportsTab() {
       return [
       {
         id: `trainee-payment-${row.id}`,
-        notifyDate: row.notifyDate,
+        notifyDate: row.notifyDate || row.date,
         hafizaNo: row.hafizaNo || "",
         notifyNo: row.notifyNo || "",
         year: date.getFullYear(),
@@ -1019,6 +1019,8 @@ export default function ReportsTab() {
         description: String(row.description || "رسوم أخرى").trim(),
         source: "حوافظ التوريد",
         amount,
+        amountDisplay: amount > 0 ? "" : hasHafizaReceipt ? "لم تورد إلى البنك" : "",
+        hafizaAmount: amountValue(row.hafizaAmount),
       }, ];
     });
     
@@ -2481,6 +2483,8 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                             >
                               {val === undefined || val === null || String(val) === "" ? "" : col.key === "description" ? (
                                 <div className="reports-cell-content whitespace-normal break-words leading-snug" title={String(val)}>{String(val)}</div>
+                              ) : col.key === "amount" && source === "trainee" && row.amountDisplay ? (
+                                <span className="reports-cell-content font-bold text-amber-800" title={String(row.amountDisplay)}>{String(row.amountDisplay)}</span>
                               ) : isNumeric ? formatCurrency(val) : (
                                 <span className="reports-cell-content" title={String(val)}>{String(val)}</span>
                               )}
