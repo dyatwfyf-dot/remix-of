@@ -318,26 +318,57 @@ const custodyPortraitPrintCss = `
     break-inside:avoid!important;
     page-break-inside:avoid!important;
   }
-  #tableContainer table.reports-custody-print-table { width:100%!important; min-width:0!important; max-width:auto!important; table-layout:auto!important; border-collapse:collapse!important; }
+  #tableContainer table.reports-custody-print-table {
+  width:100%!important;
+  min-width:0!important; 
+  max-width:auto!important; 
+  table-layout:auto!important;
+border-collapse:collapse!important; 
+    
+  }
   #tableContainer table.reports-custody-print-table th,
-  #tableContainer table.reports-custody-print-table td { box-sizing:border-box!important; min-width:0!important; max-width:auto!important; padding:3px 3px!important; text-align:center!important; vertical-align:middle!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; overflow:visible!important; text-overflow:clip!important; 
-  font-size:18px!important; line-height:1.4!important; }
+  #tableContainer table.reports-custody-print-table td { 
+box-sizing:borde-box!important; 
+  min-width:0!important; 
+  max-width:auto!important; padding:3px 3px!important; text-align:center!important; vertical-align:middle!important; 
+white-space:nowrap!important; 
+  word-break:normal!important;
+overflow-wrap
+:anywhere!important; overflow:visible!important; text-overflow:clip!important; 
+  font-size:18px!important; line-height:1.9!important; }
   #tableContainer table.reports-custody-print-table th[data-col-key="idx"],
   #tableContainer table.reports-custody-print-table td[data-col-key="idx"],
   #tableContainer table.reports-custody-print-table td.reports-numeric-cell,
-  #tableContainer table.reports-custody-print-table td.rc-num { white-space:nowrap!important; word-break:keep-all!important; overflow-wrap:normal!important; }
-  #tableContainer table.reports-custody-print-table thead tr.reports-custody-title-row > th { padding:7px 4px 3px!important; font-size:17px!important; white-space:normal!important; }
+  #tableContainer table.reports-custody-print-table td.rc-num { 
+width: auto!important;
+min-width:auto!important;
+white-space:nowrap!important; 
+word-break:keep-all!important;
+overflow-wrap:normal!important; }
+  #tableContainer table.reports-custody-print-table thead tr.reports-custody-title-row > th { padding:7px 4px 3px!important; 
+  font-size:20px!important; 
+  white-space:normal!important; }
   #tableContainer table.reports-custody-print-table thead tr.reports-custody-date-row > th { padding:3px 4px 7px!important; font-size:16px!important; white-space:normal!important; }
-  #tableContainer table.reports-custody-print-table thead tr.reports-column-header-row > th { padding:4px 3px!important; font-size:15px!important; white-space:normal!important; overflow-wrap:anywhere!important; }
-  #tableContainer table.reports-custody-print-table tbody > tr > td { height:auto!important; min-height:8mm!important; }
+  #tableContainer table.reports-custody-print-table thead tr.reports-column-header-row > th { padding:4px 3px!important; font-size:15px!important; 
+  white-space:normal!important; overflow-wrap
+:anywhere!important; }
+  #tableContainer table.reports-custody-print-table tbody > tr > td {
+  width:auto!important;
+min-width:auto!important;
+white-space:nowrap!important; 
+  height:auto!important;
+  min-height:8mm!important; }
 
   /* Short custody/loan reports use a balanced two-thirds-page layout on A4 portrait. */
   #tableContainer table.reports-custody-print-table.reports-custody-short-report {
+  width: auto!important;
+min-width:auto!important;
+white-space:nowrap!important; 
     flex:1 1 auto!important;
     height:100%!important;
     min-height:190mm!important;
-    table-layout:fixed!important;
-    color:#000!important;
+ table-layout:fixed!important;
+  color:#000!important;
   }
   #tableContainer table.reports-custody-print-table.reports-custody-short-report thead tr.reports-custody-title-row > th {
     padding:11mm 8px 7mm!important;
