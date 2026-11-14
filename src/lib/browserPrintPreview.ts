@@ -856,6 +856,81 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       .signature-block-row { break-inside: avoid !important; page-break-inside: avoid !important; }
     }
 
+    /* A4-safe print layout: fit columns to the printable page without scaling the whole report. */
+    #tableContainer table,
+    #tableContainer table.reports-data-table,
+    .preview-report-content table {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      table-layout: fixed !important;
+    }
+    #tableContainer table th,
+    #tableContainer table td,
+    .preview-report-content table th,
+    .preview-report-content table td {
+      min-width: 0 !important;
+      max-width: none !important;
+      font-size: var(--print-cell-font-size, 16px) !important;
+      padding: var(--print-cell-padding, 3px 4px) !important;
+      white-space: normal !important;
+      overflow-wrap: anywhere !important;
+      word-break: normal !important;
+    }
+    #tableContainer table thead th,
+    .preview-report-content table thead th {
+      font-size: var(--print-header-font-size, 16px) !important;
+      white-space: normal !important;
+      overflow-wrap: anywhere !important;
+    }
+    #tableContainer table td.num,
+    #tableContainer table td.numeric-cell,
+    #tableContainer table td.date-cell,
+    #tableContainer table td.compact-cell,
+    #tableContainer table td.ref-cell,
+    #tableContainer table td.idx,
+    .preview-report-content table td.num,
+    .preview-report-content table td.numeric-cell,
+    .preview-report-content table td.date-cell,
+    .preview-report-content table td.compact-cell,
+    .preview-report-content table td.ref-cell,
+    .preview-report-content table td.idx {
+      white-space: nowrap !important;
+      overflow-wrap: normal !important;
+      word-break: keep-all !important;
+    }
+    #tableContainer table.a4-dense-table td.num,
+    #tableContainer table.a4-dense-table td.numeric-cell,
+    #tableContainer table.a4-dense-table td.date-cell,
+    #tableContainer table.a4-dense-table td.compact-cell,
+    #tableContainer table.a4-dense-table td.ref-cell,
+    #tableContainer table.a4-dense-table td.idx {
+      white-space: normal !important;
+      overflow-wrap: anywhere !important;
+      word-break: break-word !important;
+    }
+    #tableContainer table th .pdf-cell-text,
+    #tableContainer table td .pdf-cell-text {
+      max-width: 100% !important;
+      white-space: inherit !important;
+      overflow-wrap: inherit !important;
+      word-break: inherit !important;
+    }
+    @media print {
+      html, body, .sheet-viewport, .sheet-paper, #tableContainer {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        overflow: visible !important;
+      }
+      .sheet-paper { width: 100% !important; padding: 0 !important; }
+      #tableContainer table,
+      #tableContainer table.reports-data-table {
+        width: 100% !important;
+        table-layout: fixed !important;
+      }
+      #tableContainer table tr { break-inside: avoid !important; page-break-inside: avoid !important; }
+    }
+
   </style>
 </head>
 <body>
@@ -1180,13 +1255,14 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
           : pageSize === 'Letter'
             ? (orientation === 'portrait' ? 215.9 : 279.4)
             : (orientation === 'portrait' ? 210 : 297);
-        // توحيد حجم خط جميع التقارير دون تصغيره حسب عدد الأعمدة.
-        const fontSize = 16;
-        const horizontalPadding = columnCount > 12 ? 4 : 5;
+        // Maintain readable physical print text while allowing dense tables to fit A4.
+        const fontSize = columnCount > 12 ? 14 : columnCount > 9 ? 15 : 16;
+        const headerFontSize = columnCount > 12 ? 14 : columnCount > 9 ? 15 : 16;
+        const horizontalPadding = columnCount > 12 ? 2 : columnCount > 9 ? 3 : 5;
 
-        paperContainer.style.setProperty('--print-cell-font-size', fontSize.toFixed(1) + 'px');
-        paperContainer.style.setProperty('--print-header-font-size', '16px');
-        paperContainer.style.setProperty('--print-cell-padding', '4px ' + horizontalPadding + 'px');
+        paperContainer.style.setProperty('--print-cell-font-size', fontSize + 'px');
+        paperContainer.style.setProperty('--print-header-font-size', headerFontSize + 'px');
+        paperContainer.style.setProperty('--print-cell-padding', '3px ' + horizontalPadding + 'px');
 
         const tableContainer = document.getElementById('tableContainer');
         tableContainer.style.zoom = '1';
@@ -1204,30 +1280,12 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
             parseFloat(getComputedStyle(paperContainer).paddingLeft || '0') -
             parseFloat(getComputedStyle(paperContainer).paddingRight || '0'));
 
-          // Measure the table's intrinsic width without the page's width constraint.
-          const saved = {
-            width: table.style.width,
-            minWidth: table.style.minWidth,
-            maxWidth: table.style.maxWidth,
-            tableLayout: table.style.tableLayout,
-            containerWidth: tableContainer.style.width,
-          };
-          table.style.setProperty('width', 'max-content', 'important');
-          table.style.setProperty('min-width', 'max-content', 'important');
-          table.style.setProperty('max-width', 'none', 'important');
-          table.style.setProperty('table-layout', 'auto', 'important');
-          tableContainer.style.width = 'max-content';
-          const naturalWidth = Math.max(table.scrollWidth, table.getBoundingClientRect().width);
-          table.style.width = saved.width;
-          table.style.minWidth = saved.minWidth;
-          table.style.maxWidth = saved.maxWidth;
-          table.style.tableLayout = saved.tableLayout;
-          tableContainer.style.width = saved.containerWidth;
-
-          // Allow stronger reduction for very wide reports instead of leaving columns outside the paper.
-          const fitScale = Math.max(0.35, Math.min(1, availableWidth / Math.max(1, naturalWidth)));
-          tableContainer.style.width = (100 / fitScale) + '%';
-          tableContainer.style.zoom = String(scale * fitScale);
+          // Keep the report at the selected physical page width. Reflow columns and wrap text
+          // instead of shrinking the entire report with CSS zoom.
+          const denseTable = columnCount > 9;
+          table.classList.toggle('a4-dense-table', denseTable);
+          tableContainer.style.width = '100%';
+          tableContainer.style.zoom = String(scale);
           if (fitToContent) {
             tableContainer.style.width = '100%';
             tableContainer.style.zoom = String(scale);
