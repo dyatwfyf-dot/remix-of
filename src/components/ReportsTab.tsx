@@ -94,6 +94,7 @@ const getReportRowKey = (row: ReportRow, source: ReportSource): string => {
 };
 
 const TRAINEE_FEE_STATUS_DELETED_ROWS_KEY = "reports-trainee-fee-status-deleted-rows-v1";
+const TRAINEE_FEE_UNPAID_NAMES_DELETED_KEY = "reports-trainee-fee-unpaid-names-deleted-v1";
 
 interface SignaturesMeta {
   sig1Dept: string;
@@ -682,6 +683,24 @@ export default function ReportsTab() {
       }
     });
   
+  const [deletedUnpaidFeeNames, setDeletedUnpaidFeeNames] = useState < Set < string >> (() => {
+    try {
+      const saved = localStorage.getItem(TRAINEE_FEE_UNPAID_NAMES_DELETED_KEY);
+      const keys: unknown = saved ? JSON.parse(saved) : [];
+      return new Set(Array.isArray(keys) ? keys.filter((key): key is string => typeof key === "string") : []);
+    } catch {
+      return new Set();
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(TRAINEE_FEE_UNPAID_NAMES_DELETED_KEY, JSON.stringify([...deletedUnpaidFeeNames]));
+    } catch (error) {
+      console.error("تعذر حفظ أسماء المتدربين المحذوفة من قائمة غير المسددين:", error);
+    }
+  }, [deletedUnpaidFeeNames]);
+
   useEffect(() => {
     try {
       localStorage.setItem(TRAINEE_FEE_STATUS_DELETED_ROWS_KEY, JSON.stringify([...deletedFeeStatusRows]));
@@ -1000,17 +1019,17 @@ export default function ReportsTab() {
   );
   
   const batchOptions = useMemo(
-    () => Array.from(new Set(matchedTraineeHafiza.map(({ row }) => String(row.batch || "").trim()).filter(Boolean)))
+    () => Array.from(new Set(Array.from(traineeRosterByName.values()).map((trainee) => trainee.batch).filter(Boolean)))
     .sort((a, b) => a.localeCompare(b, "ar", { numeric: true })),
-    [matchedTraineeHafiza]
+    [traineeRosterByName]
   );
   
   const traineeRows = useMemo < ReportRow[] > (() => {
     const payments = matchedTraineeHafiza.flatMap(({ row, trainee: rosterTrainee }) => {
       const date = normalizeDate(row.notifyDate || row.date);
       const trainee = rosterTrainee.name;
-      const batch = String(row.batch || "").trim();
-      const specialty = String(row.specialty || "").trim();
+      const batch = rosterTrainee.batch || String(row.batch || "").trim();
+      const specialty = rosterTrainee.specialty || String(row.specialty || "").trim();
       const category = canonicalTraineePaymentFeeCategory(row.description);
       const amount = amountValue(row.notifyAmount);
       const hasHafizaReceipt = Boolean(String(row.hafizaNo || "").trim()) && amountValue(row.hafizaAmount) > 0;
@@ -1054,10 +1073,17 @@ export default function ReportsTab() {
         .filter((trainee) =>
           !paidNames.has(trainee.name) &&
           (selectedTrainee === "all" || trainee.name === selectedTrainee) &&
-          (!selectedBatch.trim() || trainee.batch === selectedBatch.trim())
+          (!selectedBatch.trim() || trainee.batch === selectedBatch.trim()) &&
+          !deletedUnpaidFeeNames.has(`${selectedFee}|${traineeNameKey(trainee.name)}`)
         )
         .map((trainee) => trainee.name)
         .sort((a, b) => a.localeCompare(b, "ar"));
+      const unpaidNameRows = Array.from({ length: Math.ceil(unpaidNames.length / 2) }, (_, index) => ({
+        id: `unpaid-fee-name-${selectedFee}-${selectedBatch || "all"}-${index}`,
+        trainee: unpaidNames[index * 2],
+        unpaidTrainee2: unpaidNames[index * 2 + 1] || "",
+        summaryLevel: "fee-unpaid-name" as const,
+      }));
       return [
         ...payments.map((row) => ({ ...row, displayType: "تفصيلي", summaryLevel: "detail" as const })),
         {
@@ -1066,14 +1092,11 @@ export default function ReportsTab() {
           summaryLevel: "fee-unpaid-heading" as const,
         },
         ...(unpaidNames.length
-          ? unpaidNames.map((name) => ({
-              id: `unpaid-fee-name-${selectedFee}-${name}`,
-              trainee: name,
-              summaryLevel: "fee-unpaid-name" as const,
-            }))
+          ? unpaidNameRows
           : [{
               id: `unpaid-fee-empty-${selectedFee}`,
               trainee: "لا يوجد متدربون غير مسددين لهذا الرسم",
+              unpaidTrainee2: "",
               summaryLevel: "fee-unpaid-name" as const,
             }]),
       ];
@@ -1250,7 +1273,7 @@ export default function ReportsTab() {
     });
     
     return result;
-  }, [matchedTraineeHafiza, selectedTrainee, selectedFee, selectedBatch, traineeGrouping, traineeDisplayMode]);
+  }, [matchedTraineeHafiza, selectedTrainee, selectedFee, selectedBatch, traineeGrouping, traineeDisplayMode, traineeRosterByName, deletedUnpaidFeeNames]);
   
   const feeTotalsRows = useMemo < ReportRow[] > (() => {
     const totals = new Map < string,
@@ -2406,10 +2429,22 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                     else rowStyle = "bg-white text-slate-900";
 
                     if (row.summaryLevel === "fee-unpaid-heading" || row.summaryLevel === "fee-unpaid-name") {
+                      const names = [String(row.trainee || ""), String(row.unpaidTrainee2 || "")].filter(Boolean);
                       return (
                         <tr key={String(row.id)} className={row.summaryLevel === "fee-unpaid-heading" ? "bg-amber-100 text-amber-950" : "bg-white text-black"}>
                           <td colSpan={sourceConfig.columns.length + 2} className="border border-black px-3 py-2 text-center font-bold">
-                            {String(row.trainee || "")}
+                            {row.summaryLevel === "fee-unpaid-heading" ? String(row.trainee || "") : (
+                              <div className="grid grid-cols-2 gap-2" dir="rtl">
+                                {names.map((name) => (
+                                  <div key={name} className="flex min-w-0 items-center justify-between gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-right">
+                                    <span className="min-w-0 flex-1 break-words">{name}</span>
+                                    <button type="button" onClick={() => setDeletedUnpaidFeeNames((previous) => { const next = new Set(previous); next.add(`${selectedFee}|${traineeNameKey(name)}`); return next; })} className="print:hidden inline-flex shrink-0 items-center gap-1 rounded-md bg-rose-100 px-2 py-1 text-xs font-bold text-rose-700 hover:bg-rose-200" title={`حذف ${name} من قائمة غير المسددين`} aria-label={`حذف ${name} من قائمة غير المسددين`}>
+                                      <Trash2 className="h-3.5 w-3.5" /> حذف
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           </td>
                         </tr>
                       );
