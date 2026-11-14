@@ -1021,7 +1021,7 @@ export default function ReportsTab() {
   const batchOptions = useMemo(
     () => Array.from(new Set(Array.from(traineeRosterByName.values()).map((trainee) => trainee.batch).filter(Boolean)))
     .sort((a, b) => a.localeCompare(b, "ar", { numeric: true })),
-    [matchedTraineeHafiza]
+    [traineeRosterByName]
   );
   
   const traineeRows = useMemo < ReportRow[] > (() => {
@@ -1273,7 +1273,7 @@ export default function ReportsTab() {
     });
     
     return result;
-  }, [matchedTraineeHafiza, selectedTrainee, selectedFee, selectedBatch, traineeGrouping, traineeDisplayMode]);
+  }, [matchedTraineeHafiza, selectedTrainee, selectedFee, selectedBatch, traineeGrouping, traineeDisplayMode, traineeRosterByName, deletedUnpaidFeeNames]);
   
   const feeTotalsRows = useMemo < ReportRow[] > (() => {
     const totals = new Map < string,
@@ -2434,7 +2434,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                         <tr key={String(row.id)} className={row.summaryLevel === "fee-unpaid-heading" ? "bg-amber-100 text-amber-950" : "bg-white text-black"}>
                           <td colSpan={sourceConfig.columns.length + 2} className="border border-black px-3 py-2 text-center font-bold">
                             {row.summaryLevel === "fee-unpaid-heading" ? String(row.trainee || "") : (
-                              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2" dir="rtl">
+                              <div className="grid grid-cols-2 gap-2" dir="rtl">
                                 {names.map((name) => (
                                   <div key={name} className="flex min-w-0 items-center justify-between gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-right">
                                     <span className="min-w-0 flex-1 break-words">{name}</span>
