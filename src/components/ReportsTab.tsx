@@ -595,6 +595,10 @@ export default function ReportsTab() {
   const [selectedBatch, setSelectedBatch] = useState("");
   const [selectedTraineeFeeStatus, setSelectedTraineeFeeStatus] = useState < string > ("all");
   const [feeDemandTrainee, setFeeDemandTrainee] = useState < ReportRow | null > (null);
+  const [feeDemandIncludeRegistration, setFeeDemandIncludeRegistration] = useState(false);
+  const [feeDemandIncludeExam, setFeeDemandIncludeExam] = useState(true);
+  const [feeDemandRegistrationAmount, setFeeDemandRegistrationAmount] = useState(10000);
+  const [feeDemandExamAmount, setFeeDemandExamAmount] = useState(30000);
   const [feeDemandSignatures, setFeeDemandSignatures] = useState < { department: string;director: string;signer: string } > (() => {
     try {
       const saved = localStorage.getItem("reports-fee-demand-signatures-v1");
@@ -1800,8 +1804,8 @@ export default function ReportsTab() {
     })[char] || char);
     const traineeName = String(feeDemandTrainee.trainee || feeDemandTrainee.name || "").trim();
     const outstandingFees = [
-      { label: "رسوم القيد والتسجيل", amount: amountValue(feeDemandTrainee.registrationPaid) > 0 ? 0 : 10000 },
-      { label: "رسوم امتحان الكتابي الأول", amount: amountValue(feeDemandTrainee.examPaid) > 0 ? 0 : 30000 },
+      { label: "رسوم القيد والتسجيل", amount: feeDemandIncludeRegistration && amountValue(feeDemandTrainee.registrationPaid) <= 0 ? Math.max(0, amountValue(feeDemandRegistrationAmount)) : 0 },
+      { label: "رسوم امتحان الكتابي الأول", amount: feeDemandIncludeExam && amountValue(feeDemandTrainee.examPaid) <= 0 ? Math.max(0, amountValue(feeDemandExamAmount)) : 0 },
     ].filter((fee) => fee.amount > 0);
     if (!outstandingFees.length) {
       toast.info("لا توجد رسوم مستحقة غير مسددة لهذا المتدرب");
@@ -1819,7 +1823,7 @@ export default function ReportsTab() {
 </p>
    <p style="margin: 15px 0; text-align: center;">تحية طيبة وبعد،</p>
    <p style="margin: 15px 0;text-align: center;text-decoration: underline; font-weight: bold; color: red;"><strong>الموضوع: مطالبة بسداد ${escapeHtml(outstandingFeeText)}</strong></p>
-   <p style="margin: 15px 0; text-align: center;font-size: 18px">بالإشارة إلى الموضوع أعلاه، نرجو منكم المبادرة إلى سداد الرسوم غير المسددة المبينة أعلاه، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
+   <p style="margin: 15px 0; text-align: center;font-size: 18px">بالإشارة إلى الموضوع أعلاه، نرجو منكم المبادرة إلى سداد الرسوم المحددة في هذه المطالبة وغير المسددة، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
    <p style="margin: 15px 0;text-align: center;font-weight: bold; color: #000;">نأمل منكم سرعة سداد المستحقات المالية التي عليكم.
    وفي حال عدم السداد، سيتم اتخاذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
    <p class="thanks" style="margin: 30px 0;text-align: center">شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير،،،،</p>
@@ -2460,9 +2464,11 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
       </section>
       {feeDemandTrainee && (
         (() => {
+          const registrationUnpaid = amountValue(feeDemandTrainee.registrationPaid) <= 0;
+          const examUnpaid = amountValue(feeDemandTrainee.examPaid) <= 0;
           const unpaidItems = [
-            { label: "رسوم القيد والتسجيل", amount: amountValue(feeDemandTrainee.registrationPaid) > 0 ? 0 : 10000 },
-            { label: "رسوم امتحان الكتابي الأول", amount: amountValue(feeDemandTrainee.examPaid) > 0 ? 0 : 30000 },
+            { label: "رسوم القيد والتسجيل", amount: feeDemandIncludeRegistration && registrationUnpaid ? Math.max(0, amountValue(feeDemandRegistrationAmount)) : 0 },
+            { label: "رسوم امتحان الكتابي الأول", amount: feeDemandIncludeExam && examUnpaid ? Math.max(0, amountValue(feeDemandExamAmount)) : 0 },
           ].filter((fee) => fee.amount > 0);
           return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setFeeDemandTrainee(null); }}>
@@ -2471,7 +2477,25 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
               <h2 id="fee-demand-title" className="text-lg font-black text-slate-900">مطالبة مالية للمتدرب</h2>
               <button type="button" onClick={() => setFeeDemandTrainee(null)} className="rounded-lg p-2 text-slate-600 hover:bg-slate-100" aria-label="إغلاق"><X className="h-5 w-5" /></button>
             </div>
-                   <div className="space-y-3 text-sm leading-8 text-slate-900 text-center">
+                   <div className="mb-4 rounded-xl border border-sky-200 bg-sky-50 p-3 text-right">
+              <h3 className="mb-2 font-black text-slate-800">تحديد الرسوم المطلوب إدراجها في المطالبة</h3>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {registrationUnpaid && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
+                  <input type="checkbox" checked={feeDemandIncludeRegistration} onChange={(event) => setFeeDemandIncludeRegistration(event.target.checked)} />
+                  <span className="flex-1">رسوم القيد والتسجيل</span>
+                  <input type="number" min="0" value={feeDemandRegistrationAmount} onChange={(event) => setFeeDemandRegistrationAmount(Math.max(0, Number(event.target.value) || 0))} className="w-28 rounded border border-slate-300 px-2 py-1 text-center" aria-label="مبلغ رسوم القيد والتسجيل" />
+                  <span>ريال</span>
+                </label>}
+                {examUnpaid && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
+                  <input type="checkbox" checked={feeDemandIncludeExam} onChange={(event) => setFeeDemandIncludeExam(event.target.checked)} />
+                  <span className="flex-1">رسوم امتحان الكتابي الأول</span>
+                  <input type="number" min="0" value={feeDemandExamAmount} onChange={(event) => setFeeDemandExamAmount(Math.max(0, Number(event.target.value) || 0))} className="w-28 rounded border border-slate-300 px-2 py-1 text-center" aria-label="مبلغ رسوم امتحان الكتابي الأول" />
+                  <span>ريال</span>
+                </label>}
+              </div>
+              <p className="mt-2 text-xs text-slate-600">يُدرج في المطالبة ما تختاره فقط من الرسوم غير المسددة، ويمكن تعديل مبلغ كل رسم قبل الطباعة. الخيار الافتراضي هو رسوم امتحان الكتابي الأول فقط.</p>
+            </div>
+            <div className="space-y-3 text-sm leading-8 text-slate-900 text-center">
               <p className="text-left">التاريخ: {reportDateLabel}</p>
               <p>الأخ الدكتور/ <strong>{String(feeDemandTrainee.trainee || feeDemandTrainee.name || "")}</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;المحترم،</p>
               <p>تحية طيبة وبعد،</p>
@@ -2480,7 +2504,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                 <ul className="list-disc space-y-1 pr-6">
                   {unpaidItems.map((fee) => <li key={fee.label}>{fee.label}: <strong>{fee.amount.toLocaleString("en-US")} ريال</strong></li>)}
                 </ul>
-                <p>نرجو المبادرة إلى سداد الرسوم المستحقة غير المسددة أو المتأخرة، والخاصة بإجراءات القيد والتسجيل والتقدم لامتحان الكتابي الأول بالمجلس اليمني للاختصاصات الطبية – فرع صعدة، ومراجعة الإدارة المالية لتوثيق السداد.</p>
+                <p>نرجو المبادرة إلى سداد الرسوم المستحقة المحددة أعلاه وغير المسددة أو المتأخرة، ومراجعة الإدارة المالية بالمجلس اليمني للاختصاصات الطبية – فرع صعدة لتوثيق السداد.</p>
                 <p>وفي حال عدم السداد، سيتم اتخاذ الإجراءات اللازمة وفقاً للوائح والأنظمة المعمول بها.</p>
               </> : <p className="rounded-lg bg-emerald-50 p-3 font-bold text-emerald-800">لا توجد رسوم مستحقة غير مسددة على هذا المتدرب، لذا لا يمكن إصدار مطالبة مالية له.</p>}
               <p>شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير.</p>
