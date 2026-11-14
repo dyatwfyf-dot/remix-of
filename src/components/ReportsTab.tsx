@@ -1703,6 +1703,15 @@ export default function ReportsTab() {
       filtered : [...filtered].sort((a, b) => {
         // عند الفرز فقط، يبقى إجمالي الرسم العام في النهاية، بينما تتبع إجماليات المتدرب اسمه.
         if (source === "trainee") {
+          const aIsFeeUnpaid = a.summaryLevel === "fee-unpaid-heading" || a.summaryLevel === "fee-unpaid-name";
+          const bIsFeeUnpaid = b.summaryLevel === "fee-unpaid-heading" || b.summaryLevel === "fee-unpaid-name";
+          if (aIsFeeUnpaid !== bIsFeeUnpaid) return aIsFeeUnpaid ? 1 : -1;
+          if (aIsFeeUnpaid && bIsFeeUnpaid) {
+            const aRank = a.summaryLevel === "fee-unpaid-heading" ? 0 : 1;
+            const bRank = b.summaryLevel === "fee-unpaid-heading" ? 0 : 1;
+            if (aRank !== bRank) return aRank - bRank;
+            return String(a.trainee || "").localeCompare(String(b.trainee || ""), "ar");
+          }
           const aIsFeeRoster = a.summaryLevel === "trainee-fee-roster";
           const bIsFeeRoster = b.summaryLevel === "trainee-fee-roster";
           if (aIsFeeRoster !== bIsFeeRoster) return aIsFeeRoster ? 1 : -1;
