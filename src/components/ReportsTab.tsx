@@ -217,6 +217,30 @@ const canonicalFeeCategory = (value: unknown) => {
   return String(value).trim() || "رسوم أخرى";
 };
 
+const TRAINEE_PAYMENT_FEE_CATEGORIES = [
+  "قسط الرسوم الدراسية السنوية",
+  "رسوم قيد وتسجيل",
+  "رسوم امتحان الكتابي الأول",
+  "رسوم امتحان الكتابي النهائي",
+  "رسوم الامتحان السريري الشفوي",
+  "رسوم البحث العلمي والرسالة",
+] as const;
+
+const canonicalTraineePaymentFeeCategory = (value: unknown): string | null => {
+  const text = normalizeFeeDescription(value);
+  if (!text) return null;
+  if (isNewTraineeRegistrationDescription(text)) return "رسوم قيد وتسجيل";
+  if (/(بحث\\s*علمي|رساله|الرساله|اطروحه)/.test(text)) return "رسوم البحث العلمي والرسالة";
+  const isWritten = /(كتابي|كتابه|تحريري)/.test(text);
+  const isFinal = /(نهائي|الاخير|ختامي)/.test(text);
+  const isFirst = /(الاول|اول|1)/.test(text);
+  if (isWritten && isFinal) return "رسوم امتحان الكتابي النهائي";
+  if (isWritten && isFirst) return "رسوم امتحان الكتابي الأول";
+  if (/(سريري|شفوي|شفهي|كلينيكي|clinical|oral)/i.test(text)) return "رسوم الامتحان السريري الشفوي";
+  if (isTuitionFeeDescription(text)) return "قسط الرسوم الدراسية السنوية";
+  return null;
+};
+
 const normalizeTraineeNameText = (value: unknown): string =>
   String(value ?? "")
   .normalize("NFKC")
@@ -971,11 +995,8 @@ export default function ReportsTab() {
   );
   
   const feeCategoryOptions = useMemo(
-    () => Array.from(new Set([
-      ...matchedTraineeHafiza.map(({ row }) => canonicalFeeCategory(row.description)).filter(Boolean),
-      "رسوم القيد والتسجيل",
-    ])).sort((a, b) => a.localeCompare(b, "ar")),
-    [matchedTraineeHafiza]
+    () => [...TRAINEE_PAYMENT_FEE_CATEGORIES],
+    []
   );
   
   const batchOptions = useMemo(
@@ -990,9 +1011,10 @@ export default function ReportsTab() {
       const trainee = rosterTrainee.name;
       const batch = String(row.batch || "").trim();
       const specialty = String(row.specialty || "").trim();
-      const category = canonicalFeeCategory(row.description);
+      const category = canonicalTraineePaymentFeeCategory(row.description);
       const amount = amountValue(row.notifyAmount);
       const hasHafizaReceipt = Boolean(String(row.hafizaNo || "").trim()) && amountValue(row.hafizaAmount) > 0;
+      if (!category) return [];
       if (
         !date ||
         date.getFullYear() < TRAINEE_REPORT_START_YEAR ||
@@ -1175,6 +1197,24 @@ export default function ReportsTab() {
         }));
       result.push(...nameYearRows);
     }
+
+    // قائمة ختامية لكل نوع رسم، والأسماء من قاعدة بيانات المتدربين
+    // مع إثبات السداد من سجلات حوافظ التوريد المطابقة.
+    const feeRosterCategories = selectedFee === "all" ? TRAINEE_PAYMENT_FEE_CATEGORIES : [selectedFee];
+    feeRosterCategories.forEach((category, index) => {
+      const categoryPayments = payments.filter((row) => row.category === category);
+      const paidNames = Array.from(new Set(categoryPayments.map((row) => String(row.trainee || "").trim()).filter(Boolean)))
+        .sort((a, b) => a.localeCompare(b, "ar"));
+      result.push({
+        id: `trainee-fee-roster-${index}-${category}`,
+        trainee: paidNames.length ? paidNames.join("، ") : "لا يوجد متدربون مسددون لهذا الرسم",
+        category,
+        description: `أسماء المتدربين الذين سددوا ${category}`,
+        displayType: "قائمة المتدربين المسددين",
+        source: "حوافظ التوريد",
+        summaryLevel: "trainee-fee-roster",
+      });
+    });
     
     return result;
   }, [matchedTraineeHafiza, selectedTrainee, selectedFee, selectedBatch, traineeGrouping, traineeDisplayMode]);
@@ -1651,7 +1691,8 @@ export default function ReportsTab() {
             row.summaryLevel === "period" ? 1 :
             row.summaryLevel === "trainee-fee-total" ? 2 :
             row.summaryLevel === "trainee-name-total" ? 3 :
-            row.summaryLevel === "total" || row.total === "نعم" ? 4 : 0;
+            row.summaryLevel === "total" || row.total === "نعم" ? 4 :
+            row.summaryLevel === "trainee-fee-roster" ? 5 : 0;
           const rankDiff = rowRank(a) - rowRank(b);
           if (rankDiff !== 0) return rankDiff;
         }
@@ -2251,8 +2292,9 @@ export default function ReportsTab() {
                     const isTraineeDetail = source === "trainee" && row.displayType === "تفصيلي";
                     const isTraineeAnnualTotal = source === "trainee" && row.summaryLevel === "trainee-name-total";
                     const isTraineeFeeTotal = source === "trainee" && row.summaryLevel === "trainee-fee-total";
-                    const isTraineeSummary = source === "trainee" && Boolean(row.displayType) && row.displayType !== "تفصيلي" && !isTraineeAnnualTotal && !isTraineeFeeTotal && row.summaryLevel !== "fee" && row.summaryLevel !== "period";
-                    const isTraineeTypedRow = isTraineeDetail || isTraineeSummary || isTraineeAnnualTotal;
+                    const isTraineeFeeRoster = source === "trainee" && row.summaryLevel === "trainee-fee-roster";
+                    const isTraineeSummary = source === "trainee" && Boolean(row.displayType) && row.displayType !== "تفصيلي" && !isTraineeAnnualTotal && !isTraineeFeeTotal && !isTraineeFeeRoster && row.summaryLevel !== "fee" && row.summaryLevel !== "period";
+                    const isTraineeTypedRow = isTraineeDetail || isTraineeSummary || isTraineeAnnualTotal || isTraineeFeeRoster;
                     const traineeRowCellStyle = isTraineeAnnualTotal
                       ? {
                           backgroundColor: "#2C666E",
@@ -2309,6 +2351,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                             ? "reports-fee-row reports-registration-fee-total-row bg-[#DDEBFF] font-bold text-black"
                             : "reports-fee-row bg-[#F1BF98] font-bold text-black";
                     }
+                    else if (isTraineeFeeRoster) rowStyle = "reports-trainee-fee-roster-row bg-[#E8F1F7] font-bold text-black";
                     else if (row.summaryLevel === "period") rowStyle = "reports-period-row bg-[#5B5750] font-bold text-white";
                     else if (isTraineeSummary) rowStyle = "reports-trainee-summary-row bg-[#FFF1D6] font-bold text-black";
                     else rowStyle = "bg-white text-slate-900";
@@ -2493,7 +2536,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                         })}
 
                         <td data-col-key="actions" className="border border-black px-1 py-1 print:hidden" style={isTotal ? totalCellStyle : traineeRowCellStyle}>
-                          {!isOpening && !isTotal && (
+                          {!isOpening && !isTotal && !isTraineeFeeRoster && (
                             <div className="flex min-w-[108px] flex-col items-center gap-1">
                               {source === "traineeFeeStatus" && row.statusKey && (
                                 <button
