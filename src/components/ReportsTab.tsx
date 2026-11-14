@@ -65,7 +65,7 @@ export interface ReportRow {
   notes ? : string;
   settlementNo ? : string;
   item ? : string;
-  summaryLevel ? : "opening" | "total" | "fee" | "trainee-fee-total" | "trainee-name-total" | "period" | "signature" | "detail" | "status-summary" | "unpaid";
+  summaryLevel ? : "opening" | "total" | "fee" | "trainee-fee-total" | "trainee-name-total" | "trainee-fee-roster" | "period" | "signature" | "detail" | "status-summary" | "unpaid";
   total ? : string;
   [key: string]: any;
 }
