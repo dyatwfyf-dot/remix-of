@@ -1206,6 +1206,8 @@ export default function ReportsTab() {
       examLastDate: Date | null;
       registrationAwaitingNotice: boolean;
       examAwaitingNotice: boolean;
+      registrationPayments: Array<{ date: string; hafizaNo: string; notifyNo: string; amount: number }>;
+      examPayments: Array<{ date: string; hafizaNo: string; notifyNo: string; amount: number }>;
     };
     
     // بطاقة بيانات المتدرب هي المصدر الأساسي لأسماء التقرير وبياناته الأكاديمية.
@@ -1285,14 +1287,24 @@ export default function ReportsTab() {
         examLastDate: null,
         registrationAwaitingNotice: false,
         examAwaitingNotice: false,
+        registrationPayments: [],
+        examPayments: [],
+      };
+      const paymentDetail = {
+        date: String(record.notifyDate || record.date || ""),
+        hafizaNo: String(record.hafizaNo || ""),
+        notifyNo: String(record.notifyNo || ""),
+        amount,
       };
       if (isRegistration) {
         payment.registrationPaid += amount;
+        payment.registrationPayments.push(paymentDetail);
         payment.registrationAwaitingNotice ||= awaitingNoticeNumber;
         if (!payment.registrationLastDate || date > payment.registrationLastDate) payment.registrationLastDate = date;
       }
       if (isExam) {
         payment.examPaid += amount;
+        payment.examPayments.push(paymentDetail);
         payment.examAwaitingNotice ||= awaitingNoticeNumber;
         if (!payment.examLastDate || date > payment.examLastDate) payment.examLastDate = date;
       }
@@ -1318,6 +1330,8 @@ export default function ReportsTab() {
         examLastDate: null,
         registrationAwaitingNotice: false,
         examAwaitingNotice: false,
+        registrationPayments: [],
+        examPayments: [],
       };
       const hasAnyHafizaRecord = traineesWithHafizaRecords.has(key);
       // لا يُعتد بأي بيانات أخرى خارج حوافظ التوريد: غياب سجل المتدرب فيها يعني عدم سداد الرسمين.
@@ -1339,17 +1353,14 @@ export default function ReportsTab() {
         hasExamPayment ? "both" : "registration-only" :
         hasExamPayment ? "exam-only" : "neither";
       const status = statusDefinitions.find((item) => item.key === statusKey) !;
-      return {
-        id: `trainee-fee-status-${key}`,
+      const baseRow = {
         trainee: traineeData.trainee,
         batch: Array.from(traineeData.batches).join("، ") || "—",
         specialty: Array.from(traineeData.specialties).join("، ") || "—",
         registrationPaid: payment.registrationPaid,
         registrationDue,
-        registrationStatus: payment.registrationAwaitingNotice ? "مسدد - لم يورد إلى البنك" : paidStatus(payment.registrationPaid),
         examPaid: payment.examPaid,
         examDue,
-        examStatus: payment.examAwaitingNotice ? "مسدد - لم يورد إلى البنك" : paidStatus(payment.examPaid),
         registrationLastDate: formatStatusDate(payment.registrationLastDate),
         examLastDate: formatStatusDate(payment.examLastDate),
         bankPending: payment.registrationAwaitingNotice || payment.examAwaitingNotice,
@@ -1361,10 +1372,52 @@ export default function ReportsTab() {
         statusGroup: status.label,
         statusKey,
       };
-    }).sort((a, b) => {
+      const feeRows: ReportRow[] = [];
+      const appendFeeRows = (
+        feeType: string,
+        paid: number,
+        due: number,
+        payments: PaymentSummary["registrationPayments"] | PaymentSummary["examPayments"],
+        awaitingNotice: boolean,
+      ) => {
+        payments.forEach((receipt, index) => feeRows.push({
+          ...baseRow,
+          id: `trainee-fee-payment-${key}-${feeType}-${index}-${receipt.hafizaNo}-${receipt.notifyNo}`,
+          feeType,
+          notifyDate: formatStatusDate(normalizeDate(receipt.date)),
+          hafizaNo: receipt.hafizaNo || "—",
+          notifyNo: receipt.notifyNo || "—",
+          paidAmount: receipt.amount,
+          unpaidAmount: "—",
+          feeStatus: awaitingNotice && !receipt.notifyNo ? "مسدد بالحافظة - بانتظار الإشعار" : "مسدد",
+          rowKind: "payment",
+        }));
+        const remaining = due > 0 ? Math.max(0, due - paid) : (paid > 0 ? 0 : null);
+        if (remaining === null || remaining > 0) {
+          const lastReceipt = payments[payments.length - 1];
+          feeRows.push({
+            ...baseRow,
+            id: `trainee-fee-unpaid-${key}-${feeType}`,
+            feeType,
+            notifyDate: lastReceipt ? formatStatusDate(normalizeDate(lastReceipt.date)) : "—",
+            hafizaNo: lastReceipt?.hafizaNo || "—",
+            notifyNo: lastReceipt?.notifyNo || "—",
+            paidAmount: 0,
+            unpaidAmount: remaining === null ? "غير محدد" : remaining,
+            feeStatus: paid > 0 ? "سداد جزئي - متبقي" : "غير مسدد",
+            rowKind: "unpaid",
+          });
+        }
+      };
+      appendFeeRows("رسوم القيد والتسجيل", payment.registrationPaid, registrationDue, payment.registrationPayments, payment.registrationAwaitingNotice);
+      appendFeeRows("رسوم الامتحانات", payment.examPaid, examDue, payment.examPayments, payment.examAwaitingNotice);
+      return feeRows;
+    }).flat().sort((a, b) => {
       const rank = (key: string) => statusDefinitions.findIndex((item) => item.key === key);
       const groupOrder = rank(String(a.statusKey)) - rank(String(b.statusKey));
-      return groupOrder || String(a.trainee).localeCompare(String(b.trainee), "ar");
+      return groupOrder || String(a.trainee).localeCompare(String(b.trainee), "ar") ||
+        String(a.feeType).localeCompare(String(b.feeType), "ar") ||
+        String(a.notifyDate).localeCompare(String(b.notifyDate));
     });
     
     const summaryRows: ReportRow[] = statusDefinitions.map((status) => ({
@@ -1412,14 +1465,14 @@ export default function ReportsTab() {
           { key: "trainee", label: "اسم المتدرب" },
           { key: "batch", label: "الدفعة" },
           { key: "specialty", label: "التخصص" },
-          { key: "registrationPaid", label: "المسدد لرسوم القيد والتسجيل" },
-          { key: "registrationStatus", label: "حالة سداد رسوم القيد والتسجيل" },
-          { key: "examPaid", label: "المسدد لرسوم الامتحانات" },
-          { key: "examStatus", label: "حالة سداد الامتحانات" },
+          { key: "feeType", label: "نوع الرسم" },
+          { key: "notifyDate", label: "تاريخ التوريد" },
+          { key: "hafizaNo", label: "رقم الحافظة" },
+          { key: "notifyNo", label: "رقم إشعار التوريد" },
+          { key: "paidAmount", label: "المبلغ المسدد في هذه العملية" },
+          { key: "unpaidAmount", label: "المبلغ المتبقي غير المسدد" },
+          { key: "feeStatus", label: "حالة الرسم" },
           { key: "overallStatus", label: "حالة السداد الإجمالية" },
-          { key: "bankPendingNote", label: "ملاحظة التوريد البنكي" },
-          { key: "registrationLastDate", label: "آخر تاريخ لسداد القيد والتسجيل" },
-          { key: "examLastDate", label: "آخر تاريخ لسداد الامتحانات" },
         ],
       };
     }
@@ -1696,7 +1749,7 @@ export default function ReportsTab() {
     source === "account" ? ["income", "expense"] :
     source === "expenses" ? ["expense"] :
     source === "revenue" ? ["amount"] :
-    source === "traineeFeeStatus" ? ["registrationDue", "registrationPaid", "examDue", "examPaid"] :
+    source === "traineeFeeStatus" ? ["paidAmount", "unpaidAmount"] :
     source === "trainee" || source === "feeTotals" ? ["amount"] : ["income", "expense", "amount"];
   
   const noWrapKeys = sourceConfig.columns
