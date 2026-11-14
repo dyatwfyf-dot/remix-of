@@ -808,7 +808,6 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       #tableContainer { overflow: visible !important; }
     }
     @media print {
-      @page { size: auto; }
       html, body {
         width: 100% !important;
         min-width: 0 !important;
