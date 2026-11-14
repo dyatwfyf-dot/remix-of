@@ -1533,7 +1533,7 @@ export default function ReportsTab() {
           { key: "hafizaNo", label: "رقم الحافظة" },
           { key: "notifyNo", label: "رقم الإشعار" },
           { key: "description", label: "البيان الأصلي" },
-          { key: "category", label: "التصنيف الموحد" },
+          { key: "category", label: "نوع الرسم" },
           { key: "displayType", label: "نوع السجل" },
           { key: "amount", label: "مبلغ التوريد" },
         ],
@@ -1670,6 +1670,13 @@ export default function ReportsTab() {
       filtered : [...filtered].sort((a, b) => {
         // عند الفرز فقط، يبقى إجمالي الرسم العام في النهاية، بينما تتبع إجماليات المتدرب اسمه.
         if (source === "trainee") {
+          const aIsFeeRoster = a.summaryLevel === "trainee-fee-roster";
+          const bIsFeeRoster = b.summaryLevel === "trainee-fee-roster";
+          if (aIsFeeRoster !== bIsFeeRoster) return aIsFeeRoster ? 1 : -1;
+          if (aIsFeeRoster && bIsFeeRoster) {
+            return TRAINEE_PAYMENT_FEE_CATEGORIES.indexOf(a.category as typeof TRAINEE_PAYMENT_FEE_CATEGORIES[number]) -
+              TRAINEE_PAYMENT_FEE_CATEGORIES.indexOf(b.category as typeof TRAINEE_PAYMENT_FEE_CATEGORIES[number]);
+          }
           const aIsFeeGrandTotal = a.summaryLevel === "fee";
           const bIsFeeGrandTotal = b.summaryLevel === "fee";
           if (aIsFeeGrandTotal !== bIsFeeGrandTotal) return aIsFeeGrandTotal ? 1 : -1;
