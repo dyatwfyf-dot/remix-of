@@ -230,7 +230,7 @@ const canonicalTraineePaymentFeeCategory = (value: unknown): string | null => {
   const text = normalizeFeeDescription(value);
   if (!text) return null;
   if (isNewTraineeRegistrationDescription(text)) return "رسوم قيد وتسجيل";
-  if (/(بحث\\s*علمي|رساله|الرساله|اطروحه)/.test(text)) return "رسوم البحث العلمي والرسالة";
+  if (/(بحث\s*علمي|رسالة|الرسالة|اطروحة|الأطروحة)/.test(text)) return "رسوم البحث العلمي والرسالة";
   const isWritten = /(كتابي|كتابه|تحريري)/.test(text);
   const isFinal = /(نهائي|الاخير|ختامي)/.test(text);
   const isFirst = /(الاول|اول|1)/.test(text);
