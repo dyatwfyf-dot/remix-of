@@ -1058,12 +1058,16 @@ export default function ExpensesTab() {
 
               const printTitleHtml = `
                 <section class="expenses-print-title" dir="rtl" aria-label="عنوان تقرير المصروفات">
-                  <p class="expenses-print-kicker">التقارير المالية</p>
-                  <h1>المصروفات</h1>
-                  <div class="expenses-print-description">${escapeHtml(expensesViewDescription)}</div>
-                  <div class="expenses-print-meta">
-                    <span>${escapeHtml(activeSubTab.label)}</span>
-                    <span>${escapeHtml(reportDateLabel)}</span>
+                  <div class="expenses-print-heading-line">
+                    <p class="expenses-print-kicker">التقارير المالية</p>
+                    <h1>المصروفات</h1>
+                  </div>
+                  <div class="expenses-print-details-line">
+                    <div class="expenses-print-description">${escapeHtml(expensesViewDescription)}</div>
+                    <div class="expenses-print-meta">
+                      <span>${escapeHtml(activeSubTab.label)}</span>
+                      <span>${escapeHtml(reportDateLabel)}</span>
+                    </div>
                   </div>
                 </section>
               `;
@@ -1077,13 +1081,15 @@ export default function ExpensesTab() {
                 .print-page { min-height: auto; width: 100%; margin: 0; padding: 0; border: 0; background: #fff; }
                 .report-letterhead-block { display: block; width: 100%; max-width: auto; height: 30mm; min-height: 30mm; max-height: 30mm; align-items: stretch; justify-content: center; margin: 0 0 3mm; page-break-before: avoid; page-break-after: avoid; }
     ${runningLetterheadCss}
- .expenses-print-title { display:block; width:100%; margin:0 auto 4mm; padding:2mm 0; border:0; border-radius:0; background:#fff !important; color:#142b3d !important; text-align:center; direction:rtl; page-break-after:avoid; }
- .expenses-print-kicker { margin:0 0 1mm; color:#334b5e !important; font:800 12px/1.4 Cairo,Tahoma,Arial,sans-serif; }
- .expenses-print-title h1 { margin:0; color:#142b3d !important; font:900 18px/1.4 Cairo,Tahoma,Arial,sans-serif; }
- .expenses-print-description { margin-top:1.5mm; color:#334b5e !important; font:800 15px/1.4 Cairo,Tahoma,Arial,sans-serif; }
- .expenses-print-meta { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:3mm; margin-top:1.5mm; color:#334b5e !important; font:800 11px/1.5 Cairo,Tahoma,Arial,sans-serif; }
- .expenses-print-meta span { display:inline-block; padding:0 2mm; border:0; border-radius:0; background:#fff !important; color:#334b5e !important; white-space:normal; }
- @media (max-width:520px) { .expenses-print-title { text-align:center; } .expenses-print-meta { width:100%; } }
+ .expenses-print-title { display:block; width:100%; margin:0 auto 4mm; padding:2mm 1mm; border:0; border-bottom:1.5px solid #334b5e; border-radius:0; background:#fff !important; color:#142b3d !important; direction:rtl; page-break-after:avoid; font-family:Cairo,Tahoma,Arial,sans-serif; }
+ .expenses-print-heading-line { display:flex; align-items:baseline; justify-content:center; flex-wrap:wrap; gap:2mm 5mm; padding-bottom:1.5mm; border-bottom:1px solid #94a3b8; }
+ .expenses-print-kicker { margin:0; color:#334b5e !important; font:800 12px/1.5 Cairo,Tahoma,Arial,sans-serif; }
+ .expenses-print-title h1 { margin:0; color:#142b3d !important; font:900 18px/1.5 Cairo,Tahoma,Arial,sans-serif; }
+ .expenses-print-details-line { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1mm 4mm; padding-top:1.5mm; }
+ .expenses-print-description { margin:0; color:#334b5e !important; font:800 13px/1.5 Cairo,Tahoma,Arial,sans-serif; }
+ .expenses-print-meta { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:2mm 4mm; color:#334b5e !important; font:800 10px/1.5 Cairo,Tahoma,Arial,sans-serif; }
+ .expenses-print-meta span { display:inline-block; padding:0; border:0; border-radius:0; background:#fff !important; color:#334b5e !important; white-space:normal; }
+ @media (max-width:520px) { .expenses-print-details-line { justify-content:center; text-align:center; } .expenses-print-meta { width:100%; } }
  #expenses-report { width: 100%; }
  #expenses-report > * { margin-bottom: 4mm; }
  #expenses-report .overflow-x-auto, #expenses-report .overflow-auto { overflow: visible !important; }

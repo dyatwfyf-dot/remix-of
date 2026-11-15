@@ -171,6 +171,38 @@ export default function RevenueTab() {
         heading.style.setProperty("font-size", "18px", "important");
         heading.style.setProperty("font-weight", "900", "important");
       }
+      printHeading.querySelectorAll<HTMLElement>('[aria-hidden="true"]').forEach((decoration) => decoration.remove());
+      const headingLayout = printHeading.querySelector<HTMLElement>(".revenue-heading-layout");
+      if (headingLayout) {
+        headingLayout.style.setProperty("display", "flex", "important");
+        headingLayout.style.setProperty("flex-wrap", "wrap", "important");
+        headingLayout.style.setProperty("align-items", "center", "important");
+        headingLayout.style.setProperty("justify-content", "space-between", "important");
+        headingLayout.style.setProperty("gap", "3px 14px", "important");
+      }
+      const headingMain = printHeading.querySelector<HTMLElement>(".revenue-heading-main");
+      if (headingMain) {
+        headingMain.style.setProperty("display", "flex", "important");
+        headingMain.style.setProperty("flex-wrap", "wrap", "important");
+        headingMain.style.setProperty("align-items", "center", "important");
+        headingMain.style.setProperty("gap", "3px 10px", "important");
+        if (headingMain.firstElementChild) headingMain.firstElementChild.remove();
+      }
+      const headingCopy = printHeading.querySelector<HTMLElement>(".revenue-heading-copy");
+      if (headingCopy) {
+        headingCopy.style.setProperty("display", "flex", "important");
+        headingCopy.style.setProperty("flex-wrap", "wrap", "important");
+        headingCopy.style.setProperty("align-items", "baseline", "important");
+        headingCopy.style.setProperty("gap", "2px 10px", "important");
+        headingCopy.querySelectorAll<HTMLElement>("p").forEach((paragraph) => paragraph.style.setProperty("margin", "0", "important"));
+      }
+      const headingMeta = printHeading.querySelector<HTMLElement>(".revenue-heading-meta");
+      if (headingMeta) {
+        headingMeta.style.setProperty("display", "flex", "important");
+        headingMeta.style.setProperty("flex-wrap", "wrap", "important");
+        headingMeta.style.setProperty("align-items", "center", "important");
+        headingMeta.style.setProperty("gap", "3px 8px", "important");
+      }
       printHeading.querySelectorAll("svg").forEach((icon) => icon.remove());
     }
     sourceRows.forEach((sourceRow, rowIndex) => {
@@ -184,11 +216,12 @@ export default function RevenueTab() {
         if (cellStyle.backgroundColor === "rgba(0, 0, 0, 0)" && rowStyle.backgroundColor !== "rgba(0, 0, 0, 0)") {
           targetCell.style.setProperty("background-color", rowStyle.backgroundColor, "important");
         }
+        targetCell.style.setProperty("font-family", "Cairo, Tahoma, Arial, sans-serif", "important");
         if (!targetCell.classList.contains("numeric-cell")) {
           targetCell.style.setProperty("white-space", "normal", "important");
-          targetCell.style.setProperty("overflow-wrap", "anywhere", "important");
+          targetCell.style.setProperty("overflow-wrap", "break-word", "important");
           targetCell.style.setProperty("word-break", "normal", "important");
-          targetCell.style.setProperty("line-height", "1.4", "important");
+          targetCell.style.setProperty("line-height", "1.5", "important");
           targetCell.style.setProperty("vertical-align", "middle", "important");
         }
       });
@@ -198,20 +231,28 @@ export default function RevenueTab() {
       '* { box-sizing:border-box; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }' +
       'html,body { margin:0; padding:0; direction:rtl; color:#000; font-family:Cairo,Arial,sans-serif; }' +
       '#revenue-print { width:100%; }' +
-      '#revenue-print .revenue-report-heading { display:block !important; width:100% !important; margin:0 auto 4mm !important; padding:2mm 0 !important; border:0 !important; border-radius:0 !important; background:#fff !important; color:#142b3d !important; text-align:center !important; page-break-after:avoid !important; box-shadow:none !important; }' +
-      '#revenue-print .revenue-report-heading h2 { margin:0 !important; color:#142b3d !important; font-size:18px !important; line-height:1.4 !important; font-weight:900 !important; }' +
-      '#revenue-print .revenue-report-heading p { color:#334b5e !important; font-size:12px !important; font-weight:800 !important; }' +
+      '#revenue-print .revenue-report-heading { display:block !important; width:100% !important; margin:0 auto 3mm !important; padding:1.5mm 0 !important; border:0 !important; border-bottom:1.5px solid #334b5e !important; border-radius:0 !important; background:#fff !important; color:#142b3d !important; text-align:right !important; page-break-after:avoid !important; box-shadow:none !important; font-family:Cairo,Tahoma,Arial,sans-serif !important; }' +
+      '#revenue-print .revenue-heading-layout { display:flex !important; flex-wrap:wrap !important; align-items:center !important; justify-content:space-between !important; gap:2px 12px !important; }' +
+      '#revenue-print .revenue-heading-main { display:flex !important; flex-wrap:wrap !important; align-items:center !important; gap:2px 8px !important; }' +
+      '#revenue-print .revenue-heading-copy { display:flex !important; flex-wrap:wrap !important; align-items:baseline !important; gap:2px 9px !important; }' +
+      '#revenue-print .revenue-heading-copy p { margin:0 !important; color:#334b5e !important; font-size:11px !important; font-weight:800 !important; }' +
+      '#revenue-print .revenue-report-heading h2 { margin:0 !important; color:#142b3d !important; font-size:17px !important; line-height:1.4 !important; font-weight:900 !important; }' +
+      '#revenue-print .revenue-heading-meta { display:flex !important; flex-wrap:wrap !important; align-items:center !important; gap:2px 8px !important; }' +
+      '#revenue-print .revenue-heading-meta > div { padding:0 !important; border:0 !important; background:#fff !important; color:#334b5e !important; box-shadow:none !important; font-size:10px !important; }' +
       '#revenue-print .revenue-report-heading svg { display:none !important; }' +
-      '#revenue-print .revenue-report-heading > div { display:block !important; }' +
-      '#revenue-print .revenue-report-heading > div > div { display:block !important; margin:0 auto !important; }' +
       '#revenue-print .overflow-auto,#revenue-print .overflow-x-auto { overflow:visible !important; max-height:none !important; }' +
       '#revenue-print .sticky { position:static !important; }' +
-      '#revenue-print table { width:100% !important; min-width:0 !important; table-layout:fixed !important; border-collapse:collapse !important; }' +
+      '#revenue-print table { width:100% !important; min-width:0 !important; table-layout:fixed !important; border-collapse:collapse !important; font-family:Cairo,Tahoma,Arial,sans-serif !important; }' +
+      '#revenue-print table col.revenue-resource-col { width:24% !important; }' +
+      '#revenue-print table col.revenue-code-col { width:7% !important; }' +
+      '#revenue-print table col.revenue-value-col { width:8% !important; }' +
+      '#revenue-print table th,#revenue-print table td,#revenue-print table input { font-family:Cairo,Tahoma,Arial,sans-serif !important; }' +
+      '#revenue-print table td:first-child { text-align:right !important; padding-right:6px !important; line-height:1.5 !important; }' +
       '#revenue-print th:nth-child(2),#revenue-print th:nth-child(3),#revenue-print th:nth-child(4),#revenue-print th:nth-child(5),#revenue-print td.numeric-cell { direction:ltr !important; font-variant-numeric:tabular-nums !important; }' +
-      '#revenue-print td:first-child { white-space:normal !important; overflow-wrap:anywhere !important; word-break:normal !important; font-weight:800 !important; }' +
+      '#revenue-print td:first-child { white-space:normal !important; overflow-wrap:break-word !important; word-break:normal !important; font-weight:800 !important; }' +
       '#revenue-print th,#revenue-print td { border:1px solid #000 !important; text-align:center !important; vertical-align:middle !important; padding:4px 3px !important; font-size:10px !important; line-height:1.4 !important; }' +
-      '#revenue-print th { white-space:normal !important; overflow-wrap:anywhere !important; word-break:normal !important; font-weight:900 !important; }' +
-      '#revenue-print td { white-space:normal !important; overflow-wrap:anywhere !important; word-break:normal !important; font-weight:700 !important; }' +
+      '#revenue-print th { white-space:normal !important; overflow-wrap:break-word !important; word-break:normal !important; font-weight:900 !important; }' +
+      '#revenue-print td { white-space:normal !important; overflow-wrap:break-word !important; word-break:normal !important; font-weight:700 !important; }' +
       '#revenue-print td.numeric-cell { white-space:nowrap !important; overflow-wrap:normal !important; word-break:keep-all !important; }' +
       '#revenue-print .numeric-cell { direction:ltr; font-variant-numeric:tabular-nums; }' +
       '#revenue-print input { width:100% !important; min-width:0 !important; border:0 !important; background:transparent !important; color:inherit !important; font:inherit !important; text-align:center !important; }' +
@@ -234,6 +275,29 @@ export default function RevenueTab() {
   return (
     // الحاوية الخارجية: فرض الاتجاه العربي العام وضمان التباعد العمودي
     <div className="mizan-revenue-tab sheet-tabs-ui w-full space-y-3 p-1.5 text-center sm:space-y-5 sm:p-3" dir="rtl">
+      <style>{`
+        .mizan-revenue-tab .revenue-main-table,
+        .mizan-revenue-tab .revenue-main-table th,
+        .mizan-revenue-tab .revenue-main-table td,
+        .mizan-revenue-tab .revenue-main-table input { font-family:Cairo,Tahoma,Arial,sans-serif !important; }
+        .mizan-revenue-tab .revenue-main-table { width:100%; min-width:1120px; table-layout:fixed; }
+        .mizan-revenue-tab .revenue-main-table col.revenue-resource-col { width:24%; }
+        .mizan-revenue-tab .revenue-main-table col.revenue-code-col { width:7%; }
+        .mizan-revenue-tab .revenue-main-table col.revenue-value-col { width:8%; }
+        .mizan-revenue-tab .revenue-main-table td:first-child { text-align:right !important; white-space:normal !important; overflow-wrap:break-word !important; word-break:normal !important; line-height:1.55 !important; padding:7px 9px !important; }
+        .mizan-revenue-tab .revenue-main-table .revenue-chapter-name { white-space:normal !important; line-height:1.5 !important; }
+        .mizan-revenue-tab .revenue-main-table th { font-family:Cairo,Tahoma,Arial,sans-serif !important; font-weight:900 !important; line-height:1.4 !important; }
+        .mizan-revenue-tab .revenue-report-heading { font-family:Cairo,Tahoma,Arial,sans-serif; }
+        .mizan-revenue-tab .revenue-heading-layout { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 18px; }
+        .mizan-revenue-tab .revenue-heading-main { display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; min-width:0; }
+        .mizan-revenue-tab .revenue-heading-copy { display:flex; flex-wrap:wrap; align-items:baseline; gap:3px 12px; min-width:0; }
+        .mizan-revenue-tab .revenue-heading-copy p { margin:0 !important; }
+        .mizan-revenue-tab .revenue-heading-meta { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+        @media (max-width:640px) {
+          .mizan-revenue-tab .revenue-main-table { min-width:1120px; }
+          .mizan-revenue-tab .revenue-main-table td:first-child { padding:6px 8px !important; font-size:13px !important; }
+        }
+      `}</style>
       {/* لوحة التحكم والتحقق: تم تغيير لون الحدود هنا أيضاً إلى أسود متناسق */}
       <div className="grid grid-cols-2 items-end gap-1.5 rounded-xl border border-black bg-white p-1.5 shadow-sm sm:flex sm:flex-wrap sm:gap-3 sm:p-4">
         {/* اختيار الشهر */}
@@ -332,20 +396,20 @@ export default function RevenueTab() {
       {/* لوحة وعاء الجدول الكبيرة الزجاجية بحدود سوداء */}
       <div id="revenue-report-content" className="bg-white rounded-2xl shadow-xl shadow-slate-100/50 border-2 border-black overflow-hidden">
         {/* العنوان الرئيسي الاحترافي لتقرير الإيرادات */}
-        <header className="revenue-report-heading relative overflow-hidden border-b-2 border-black bg-gradient-to-l from-sky-950 via-sky-800 to-cyan-800 px-3 py-4 text-white sm:px-6 sm:py-5">
+        <header className="revenue-report-heading relative overflow-hidden border-b-2 border-black bg-gradient-to-l from-sky-950 via-sky-800 to-cyan-800 px-3 py-3 text-white sm:px-6 sm:py-4">
           <div className="pointer-events-none absolute -left-8 -top-12 h-36 w-36 rounded-full border-[18px] border-white/5" aria-hidden="true" />
-          <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex min-w-0 items-center gap-3 text-right">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/25 bg-white/10 shadow-inner sm:h-14 sm:w-14">
-                <LayoutGrid className="h-6 w-6 sm:h-7 sm:w-7" />
+          <div className="revenue-heading-layout relative">
+            <div className="revenue-heading-main min-w-0 text-right">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/25 bg-white/10 shadow-inner sm:h-12 sm:w-12">
+                <LayoutGrid className="h-5 w-5 sm:h-6 sm:w-6" />
               </div>
-              <div className="min-w-0">
-                <p className="mb-1 text-[11px] font-bold tracking-wide text-sky-100 sm:text-xs">التقارير المالية</p>
+              <div className="revenue-heading-copy">
+                <p className="text-[11px] font-bold tracking-wide text-sky-100 sm:text-xs">التقارير المالية</p>
                 <h2 className="font-cairo text-lg font-black leading-tight tracking-wide sm:text-2xl">{SCHEMA.title}</h2>
-                <p className="mt-1 text-xs font-semibold text-sky-100 sm:text-sm">{SCHEMA.office}</p>
+                <p className="text-xs font-semibold text-sky-100 sm:text-sm">{SCHEMA.office}</p>
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+            <div className="revenue-heading-meta">
               <div className="flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-xs font-bold shadow-sm sm:text-sm">
                 <Calendar className="h-4 w-4 shrink-0 text-cyan-100" />
                 <span>عن شهر {MONTH_NAMES[month - 1]} {year}م</span>
@@ -360,10 +424,18 @@ export default function RevenueTab() {
         {/* صندوق الحماية من الضيق: الجدول والحدود كلها سوداء واحتواء الخلايا تلقائي */}
         <div className="w-full overflow-auto max-h-[72vh] [-ms-overflow-style:none] [scrollbar-width:thin] relative">
 <table className="revenue-main-table min-w-full table-fixed text-center border-collapse text-sm sm:text-base font-bold border border-black">
+<colgroup>
+  <col className="revenue-resource-col" />
+  <col className="revenue-code-col" />
+  <col className="revenue-code-col" />
+  <col className="revenue-code-col" />
+  <col className="revenue-code-col" />
+  {Array.from({ length: 6 }, (_, index) => <col key={`revenue-value-${index}`} className="revenue-value-col" />)}
+</colgroup>
 <thead className="sticky top-0 z-20 shadow-sm">
               <tr className="bg-slate-100 text-slate-700 font-bold border-b-2 border-black">
 <th rowSpan={2} className="border border-black text-center whitespace-normal !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
-  بيان؟ الموارد 
+  بيان الموارد 
                 </th>
 <th rowSpan={2} className="border border-black text-center whitespace-normal !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
                   الباب
