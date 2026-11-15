@@ -40,7 +40,11 @@ export function typeKey(c: number, s: number, i: number, t: number) {
 
 export default function RevenueTab() {
   // 1. استخراج حالة الإيرادات ودالة التحديث من مخزن زوستاند (Zustand Store)
-  const { revenue, setRevenue, clearTab } = useStore() as any;
+  // اشترك في حقول الإيرادات المطلوبة فقط، بدلاً من الاشتراك في المخزن بالكامل.
+  // هذا يمنع إعادة حساب وعرض جدول الإيرادات عند تغيّر بيانات تبويبات أخرى.
+  const revenue = useStore((state) => state.revenue);
+  const setRevenue = useStore((state) => state.setRevenue);
+  const clearTab = useStore((state) => state.clearTab);
   const { reportDate } = useReportDate();
 
   // 2. إدارة حالة التاريخ المحاسبي الحالي
