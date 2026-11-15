@@ -1056,6 +1056,23 @@ export default function ExpensesTab() {
                 });
               });
 
+              const printTitleHtml = `
+                <section class="expenses-print-title" dir="rtl" aria-label="عنوان تقرير المصروفات">
+                  <div class="expenses-print-title-main">
+                    <div class="expenses-print-icon" aria-hidden="true">📊</div>
+                    <div class="expenses-print-heading">
+                      <p>التقارير المالية</p>
+                      <h1>المصروفات</h1>
+                      <div class="expenses-print-description">${escapeHtml(expensesViewDescription)}</div>
+                    </div>
+                  </div>
+                  <div class="expenses-print-meta">
+                    <span class="expenses-print-period">${escapeHtml(activeSubTab.label)}</span>
+                    <span class="expenses-print-date">${escapeHtml(reportDateLabel)}</span>
+                  </div>
+                </section>
+              `;
+
               const html = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escapeHtml(`المصروفات - ${view} - ${reportDateLabel}`)}</title>
                 <style>
                 @page { size: A4 ${view === "year" ? "landscape" : "portrait"}; margin: 3mm; }
@@ -1065,6 +1082,16 @@ export default function ExpensesTab() {
                 .print-page { min-height: auto; width: 100%; margin: 0; padding: 0; border: 0; background: #fff; }
                 .report-letterhead-block { display: block; width: 100%; max-width: auto; height: 30mm; min-height: 30mm; max-height: 30mm; align-items: stretch; justify-content: center; margin: 0 0 3mm; page-break-before: avoid; page-break-after: avoid; }
     ${runningLetterheadCss}
+ .expenses-print-title { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; margin:0 0 4mm; padding:10px 14px; border:1px solid #bae6fd; border-radius:10px; background:linear-gradient(100deg,#082f49 0%,#075985 58%,#0e7490 100%) !important; color:#fff !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+ .expenses-print-title-main { display:flex; align-items:center; gap:10px; min-width:0; }
+ .expenses-print-icon { display:flex; align-items:center; justify-content:center; width:38px; height:38px; flex:0 0 38px; border:1px solid rgba(255,255,255,.35); border-radius:9px; background:rgba(255,255,255,.12) !important; font-size:22px; }
+ .expenses-print-heading p { margin:0 0 2px; color:#e0f2fe !important; font-size:10px; font-weight:700; }
+ .expenses-print-heading h1 { margin:0; color:#fff !important; font-size:19px; line-height:1.2; font-weight:900; }
+ .expenses-print-description { margin-top:3px; color:#e0f2fe !important; font-size:11px; font-weight:700; }
+ .expenses-print-meta { display:flex; align-items:center; justify-content:flex-start; flex-wrap:wrap; gap:6px; font-size:10px; font-weight:800; }
+ .expenses-print-period,.expenses-print-date { display:inline-block; padding:6px 9px; border:1px solid rgba(255,255,255,.3); border-radius:7px; background:rgba(255,255,255,.12) !important; color:#fff !important; white-space:nowrap; }
+ .expenses-print-date { background:#fff !important; color:#0c4a6e !important; }
+ @media (max-width:520px) { .expenses-print-title { align-items:flex-start; flex-direction:column; } .expenses-print-meta { width:100%; } }
  #expenses-report { width: 100%; }
  #expenses-report > * { margin-bottom: 4mm; }
  #expenses-report .overflow-x-auto, #expenses-report .overflow-auto { overflow: visible !important; }
@@ -1130,7 +1157,7 @@ export default function ExpensesTab() {
                   #expenses-report th, #expenses-report td { white-space: normal !important; }
                   #expenses-report .numeric-cell, #expenses-report .date-cell { white-space: nowrap !important; }
                 }
-                </style></head><body><div class="print-page">${reportLetterheadHtml()}<div id="expenses-report">${printContent.innerHTML}</div></div>
+                </style></head><body><div class="print-page">${reportLetterheadHtml()}<div id="expenses-report">${printTitleHtml}${printContent.innerHTML}</div></div>
                 <script>window.onload=()=>setTimeout(()=>window.print(),300)</script></body></html>`;
               const parsed = new DOMParser().parseFromString(html, "text/html");
               parsed.querySelectorAll("script").forEach((script) => script.remove());
