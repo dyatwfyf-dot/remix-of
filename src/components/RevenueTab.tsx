@@ -163,6 +163,11 @@ export default function RevenueTab() {
       '* { box-sizing:border-box; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }' +
       'html,body { margin:0; padding:0; direction:rtl; color:#000; font-family:Cairo,Arial,sans-serif; }' +
       '#revenue-print { width:100%; }' +
+      '#revenue-print .revenue-report-heading { display:block !important; width:100% !important; margin:0 0 5mm !important; padding:5mm 6mm !important; border:1px solid #0c4a6e !important; border-bottom:2px solid #000 !important; border-radius:3mm !important; background:linear-gradient(100deg,#082f49 0%,#075985 58%,#0e7490 100%) !important; color:#fff !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }' +
+      '#revenue-print .revenue-report-heading h2 { margin:0 !important; color:#fff !important; font-size:17px !important; line-height:1.25 !important; font-weight:900 !important; }' +
+      '#revenue-print .revenue-report-heading p { color:#e0f2fe !important; }' +
+      '#revenue-print .revenue-report-heading .bg-white { background:#fff !important; color:#082f49 !important; }' +
+      '#revenue-print .revenue-report-heading svg { display:inline-block !important; }' +
       '#revenue-print .overflow-auto,#revenue-print .overflow-x-auto { overflow:visible !important; max-height:none !important; }' +
       '#revenue-print .sticky { position:static !important; }' +
       '#revenue-print table { width:100% !important; min-width:0 !important; table-layout:fixed !important; border-collapse:collapse !important; }' +
@@ -289,19 +294,31 @@ export default function RevenueTab() {
 
       {/* لوحة وعاء الجدول الكبيرة الزجاجية بحدود سوداء */}
       <div id="revenue-report-content" className="bg-white rounded-2xl shadow-xl shadow-slate-100/50 border-2 border-black overflow-hidden">
-        {/* الترويسة العلوية للجدول المالي للمجلس */}
-        <div className="bg-gradient-to-r from-sky-700 to-sky-800 text-white p-3 sm:p-6 text-center space-y-1.5 border-b-2 border-black">
-          <h2 className="font-extrabold text-lg sm:text-xl font-cairo tracking-wide">
-            {SCHEMA.title}
-          </h2>
-          <p className="text-sm opacity-90 font-medium">{SCHEMA.office}</p>
-          <div className="inline-flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full text-sm font-semibold backdrop-blur-sm mt-2">
-            <LayoutGrid className="w-4 h-4" />
-            <span>
-              عن شهر {MONTH_NAMES[month - 1]} من العام المالي {year}م
-            </span>
+        {/* العنوان الرئيسي الاحترافي لتقرير الإيرادات */}
+        <header className="revenue-report-heading relative overflow-hidden border-b-2 border-black bg-gradient-to-l from-sky-950 via-sky-800 to-cyan-800 px-3 py-4 text-white sm:px-6 sm:py-5">
+          <div className="pointer-events-none absolute -left-8 -top-12 h-36 w-36 rounded-full border-[18px] border-white/5" aria-hidden="true" />
+          <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-center gap-3 text-right">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/25 bg-white/10 shadow-inner sm:h-14 sm:w-14">
+                <LayoutGrid className="h-6 w-6 sm:h-7 sm:w-7" />
+              </div>
+              <div className="min-w-0">
+                <p className="mb-1 text-[11px] font-bold tracking-wide text-sky-100 sm:text-xs">التقارير المالية</p>
+                <h2 className="font-cairo text-lg font-black leading-tight tracking-wide sm:text-2xl">{SCHEMA.title}</h2>
+                <p className="mt-1 text-xs font-semibold text-sky-100 sm:text-sm">{SCHEMA.office}</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+              <div className="flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-xs font-bold shadow-sm sm:text-sm">
+                <Calendar className="h-4 w-4 shrink-0 text-cyan-100" />
+                <span>عن شهر {MONTH_NAMES[month - 1]} {year}م</span>
+              </div>
+              <div className="rounded-lg border border-white/25 bg-white px-3 py-2 text-xs font-extrabold text-sky-950 shadow-sm sm:text-sm">
+                تاريخ التقرير: {String(reportDate)}
+              </div>
+            </div>
           </div>
-        </div>
+        </header>
 
         {/* صندوق الحماية من الضيق: الجدول والحدود كلها سوداء واحتواء الخلايا تلقائي */}
         <div className="w-full overflow-auto max-h-[72vh] [-ms-overflow-style:none] [scrollbar-width:thin] relative">
