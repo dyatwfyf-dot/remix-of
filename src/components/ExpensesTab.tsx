@@ -960,6 +960,33 @@ export default function ExpensesTab() {
             onClick={() => {
               const el = document.getElementById("expenses-view-content");
               if (!el) return;
+
+              // نقل ألوان الصفوف والأعمدة كما تظهر فعلياً على الشاشة إلى نسخة الطباعة.
+              // بعض المتصفحات لا تطبع خلفية عناصر tr أو أصناف Tailwind بصورة موثوقة،
+              // لذلك نثبت لون كل خلية مباشرة مع إعطاء الأولوية للون الخلية ثم الصف.
+              const printContent = el.cloneNode(true) as HTMLElement;
+              const sourceRows = Array.from(el.querySelectorAll("tr"));
+              const printRows = Array.from(printContent.querySelectorAll("tr"));
+              sourceRows.forEach((sourceRow, rowIndex) => {
+                const targetRow = printRows[rowIndex];
+                if (!targetRow) return;
+                const rowStyle = window.getComputedStyle(sourceRow);
+                Array.from(sourceRow.cells).forEach((sourceCell, cellIndex) => {
+                  const targetCell = targetRow.cells[cellIndex];
+                  if (!targetCell) return;
+                  const cellStyle = window.getComputedStyle(sourceCell);
+                  const cellBackground = cellStyle.backgroundColor !== "rgba(0, 0, 0, 0)"
+                    ? cellStyle.backgroundColor
+                    : rowStyle.backgroundColor;
+                  if (cellBackground && cellBackground !== "rgba(0, 0, 0, 0)") {
+                    targetCell.style.setProperty("background-color", cellBackground, "important");
+                  }
+                  targetCell.style.setProperty("color", cellStyle.color || rowStyle.color, "important");
+                  targetCell.style.setProperty("-webkit-print-color-adjust", "exact", "important");
+                  targetCell.style.setProperty("print-color-adjust", "exact", "important");
+                });
+              });
+
               const html = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escapeHtml(`المصروفات - ${view} - ${reportDateLabel}`)}</title>
                 <style>
                 @page { size: A4 ${view === "year" ? "landscape" : "portrait"}; margin: 3mm; }
