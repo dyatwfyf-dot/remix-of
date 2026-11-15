@@ -166,6 +166,31 @@ const tabs: TabItem[] = [
   },
 ];
 
+ // تحميل مكوّن التبويب مسبقاً عند الاقتراب من زرّه، حتى يبدأ تنزيل الشيفرة قبل النقر.
+ // يستفيد الاستيراد الكسول من ذاكرة وحدات JavaScript نفسها ولا ينشئ نسخة ثانية من المكوّن.
+const tabPreloaders: Record<Tab, () => Promise<unknown>> = {
+  "trainee-data": () => import("@/components/TraineeFinancialDataTab"),
+  installments: () => import("@/components/InstallmentsTab"),
+  hafiza: () => import("@/components/HafizaTab"),
+  account: () => import("@/components/AccountTab"),
+  journal: () => import("@/components/JournalTab"),
+  monthly: () => import("@/components/MonthlyStatementTab"),
+  revenue: () => import("@/components/RevenueTab"),
+  "expenses-table": () => import("@/components/ExpensesTab"),
+  reports: () => import("@/components/ReportsTab"),
+  "general-expenses-ledger": () => import("@/components/AppTabs"),
+};
+
+const preloadedTabs = new Set<Tab>();
+const preloadTab = (tab: Tab) => {
+  if (preloadedTabs.has(tab)) return;
+  preloadedTabs.add(tab);
+  void tabPreloaders[tab]().catch(() => {
+    // عند فشل التحميل الأول، نسمح بمحاولة جديدة عند النقر أو التركيز التالي.
+    preloadedTabs.delete(tab);
+  });
+};
+
 const isTabValue = (value: string | null): value is Tab =>
   value !== null && tabs.some((tab) => tab.value === value);
 
@@ -333,6 +358,9 @@ function Index() {
                 <button
                   key={tab.value}
                   type="button"
+                  onPointerEnter={() => preloadTab(tab.value)}
+                  onPointerDown={() => preloadTab(tab.value)}
+                  onFocus={() => preloadTab(tab.value)}
                   onClick={() => handleTabChange(tab.value)}
                   aria-current={isActive ? "page" : undefined}
                   aria-label={tab.label}
