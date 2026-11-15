@@ -7,7 +7,8 @@ import { revenuePdf } from "@/lib/exportPdf";
 import { useReportDate } from "@/lib/reportDate";
 
 // استيراد الأيقونات لإضفاء لمسة بصرية حديثة متناسقة مع الهوية الجديدة
-import { Calendar, FileSpreadsheet, FileText, LayoutGrid, DollarSign } from "lucide-react";
+import { Calendar, FileSpreadsheet, FileText, LayoutGrid, DollarSign, Printer } from "lucide-react";
+import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import WebActionMenu from "@/components/WebActionMenu";
 
 const MONTH_NAMES = [
@@ -114,6 +115,56 @@ export default function RevenueTab() {
   // دالة تنسيق عرض الأرقام المالية مع استبدال الصفر بشرطة مقروءة محاسبياً
   const cellNum = (n: number) => (n ? fmt(n) : "-");
 
+  const printRevenue = () => {
+    const source = document.getElementById("revenue-report-content");
+    if (!source) return;
+    const printContent = source.cloneNode(true) as HTMLElement;
+    const sourceRows = Array.from(source.querySelectorAll("tr"));
+    const printRows = Array.from(printContent.querySelectorAll("tr"));
+    sourceRows.forEach((sourceRow, rowIndex) => {
+      const targetRow = printRows[rowIndex];
+      if (!targetRow) return;
+      const rowStyle = window.getComputedStyle(sourceRow);
+      Array.from(sourceRow.cells).forEach((sourceCell, cellIndex) => {
+        const targetCell = targetRow.cells[cellIndex];
+        if (!targetCell) return;
+        const cellStyle = window.getComputedStyle(sourceCell);
+        const background = cellStyle.backgroundColor !== "rgba(0, 0, 0, 0)" ? cellStyle.backgroundColor : rowStyle.backgroundColor;
+        if (background && background !== "rgba(0, 0, 0, 0)") targetCell.style.setProperty("background-color", background, "important");
+        targetCell.style.setProperty("color", cellStyle.color || rowStyle.color, "important");
+        targetCell.style.setProperty("-webkit-print-color-adjust", "exact", "important");
+        targetCell.style.setProperty("print-color-adjust", "exact", "important");
+      });
+    });
+    const title = "كشف الإيرادات - " + MONTH_NAMES[month - 1] + " - " + year;
+    const css = '@page { size: A4 landscape; margin: 5mm; }' +
+      '* { box-sizing:border-box; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }' +
+      'html,body { margin:0; padding:0; direction:rtl; color:#000; font-family:Cairo,Arial,sans-serif; }' +
+      '#revenue-print { width:100%; }' +
+      '#revenue-print .overflow-auto,#revenue-print .overflow-x-auto { overflow:visible !important; max-height:none !important; }' +
+      '#revenue-print .sticky { position:static !important; }' +
+      '#revenue-print table { width:100% !important; min-width:0 !important; table-layout:fixed !important; border-collapse:collapse !important; }' +
+      '#revenue-print th,#revenue-print td { border:1px solid #000 !important; text-align:center !important; vertical-align:middle !important; padding:3px 2px !important; font-size:9px !important; line-height:1.2 !important; }' +
+      '#revenue-print th { white-space:normal !important; overflow-wrap:anywhere !important; word-break:normal !important; font-weight:900 !important; }' +
+      '#revenue-print td { white-space:nowrap !important; overflow-wrap:normal !important; word-break:keep-all !important; font-weight:700 !important; }' +
+      '#revenue-print .numeric-cell { direction:ltr; font-variant-numeric:tabular-nums; }' +
+      '#revenue-print input { width:100% !important; min-width:0 !important; border:0 !important; background:transparent !important; color:inherit !important; font:inherit !important; text-align:center !important; }' +
+      '#revenue-print .shadow,#revenue-print .shadow-sm,#revenue-print .shadow-xl { box-shadow:none !important; }' +
+      '@media print { #revenue-print table { page-break-inside:auto; } #revenue-print thead { display:table-header-group; } #revenue-print tr { page-break-inside:avoid; } }';
+    const html = '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>' + title + '</title><style>' + css + '</style></head><body><div id="revenue-print">' + printContent.innerHTML + '</div></body></html>';
+    const parsed = new DOMParser().parseFromString(html, "text/html");
+    const opened = openBrowserPrintPreview({
+      title,
+      reportDateLabel: String(reportDate),
+      tableHtml: parsed.body.innerHTML,
+      contentCss: css,
+      defaultOrientation: "landscape",
+      defaultPageSize: "A4",
+      defaultMarginMm: 5,
+    });
+    if (!opened) alert("تم منع فتح نافذة معاينة الطباعة، يرجى السماح بالنوافذ المنبثقة");
+  };
+
   return (
     // الحاوية الخارجية: فرض الاتجاه العربي العام وضمان التباعد العمودي
     <div className="mizan-revenue-tab sheet-tabs-ui w-full space-y-3 p-1.5 text-center sm:space-y-5 sm:p-3" dir="rtl">
@@ -166,7 +217,12 @@ export default function RevenueTab() {
                 onSelect: () => exportRevenueStatement(revenue, year, reportDate),
               },
               {
-                label: "طباعة / PDF",
+                label: "معاينة الطباعة / طباعة",
+                icon: Printer,
+                onSelect: printRevenue,
+              },
+              {
+                label: "تنزيل PDF",
                 icon: FileText,
                 onSelect: () => revenuePdf(revenue, year, month, reportDate),
               },
@@ -189,12 +245,11 @@ export default function RevenueTab() {
             <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
             <span>تصدير Excel السنوي</span>
           </button>
-          <button
-            onClick={() => revenuePdf(revenue, year, month, reportDate)}
-            className="min-w-0 flex flex-1 items-center justify-center gap-1 px-1.5 py-1 text-sm sm:flex-initial sm:gap-1.5 sm:px-2 sm:py-1 bg-gradient-to-r from-sky-700 to-sky-800 hover:from-sky-800 hover:to-sky-900 text-white font-bold rounded-lg transition-all shadow-md shadow-sky-700/10 active:scale-[0.98]"
-          >
-            <FileText className="w-4 h-4" />
-            <span>طباعة / PDF</span>
+          <button onClick={printRevenue} className="min-w-0 flex flex-1 items-center justify-center gap-1 px-1.5 py-1 text-sm sm:flex-initial sm:gap-1.5 sm:px-2 sm:py-1 bg-gradient-to-r from-sky-700 to-sky-800 text-white font-bold rounded-lg shadow-md">
+            <Printer className="w-4 h-4" /><span>معاينة / طباعة</span>
+          </button>
+          <button onClick={() => revenuePdf(revenue, year, month, reportDate)} className="min-w-0 flex flex-1 items-center justify-center gap-1 px-1.5 py-1 text-sm sm:flex-initial sm:gap-1.5 sm:px-2 sm:py-1 bg-white text-slate-700 border border-slate-200 font-bold rounded-lg shadow-sm">
+            <FileText className="w-4 h-4" /><span>تنزيل PDF</span>
           </button>
           <button
             onClick={() => {
@@ -209,7 +264,7 @@ export default function RevenueTab() {
       </div>
 
       {/* لوحة وعاء الجدول الكبيرة الزجاجية بحدود سوداء */}
-      <div className="bg-white rounded-2xl shadow-xl shadow-slate-100/50 border-2 border-black overflow-hidden">
+      <div id="revenue-report-content" className="bg-white rounded-2xl shadow-xl shadow-slate-100/50 border-2 border-black overflow-hidden">
         {/* الترويسة العلوية للجدول المالي للمجلس */}
         <div className="bg-gradient-to-r from-sky-700 to-sky-800 text-white p-3 sm:p-6 text-center space-y-1.5 border-b-2 border-black">
           <h2 className="font-extrabold text-lg sm:text-xl font-cairo tracking-wide">
