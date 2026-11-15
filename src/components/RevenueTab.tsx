@@ -217,7 +217,12 @@ export default function RevenueTab() {
                 onSelect: () => exportRevenueStatement(revenue, year, reportDate),
               },
               {
-                label: "طباعة / PDF",
+                label: "معاينة الطباعة / طباعة",
+                icon: Printer,
+                onSelect: printRevenue,
+              },
+              {
+                label: "تنزيل PDF",
                 icon: FileText,
                 onSelect: () => revenuePdf(revenue, year, month, reportDate),
               },
@@ -240,12 +245,11 @@ export default function RevenueTab() {
             <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
             <span>تصدير Excel السنوي</span>
           </button>
-          <button
-            onClick={() => revenuePdf(revenue, year, month, reportDate)}
-            className="min-w-0 flex flex-1 items-center justify-center gap-1 px-1.5 py-1 text-sm sm:flex-initial sm:gap-1.5 sm:px-2 sm:py-1 bg-gradient-to-r from-sky-700 to-sky-800 hover:from-sky-800 hover:to-sky-900 text-white font-bold rounded-lg transition-all shadow-md shadow-sky-700/10 active:scale-[0.98]"
-          >
-            <FileText className="w-4 h-4" />
-            <span>طباعة / PDF</span>
+          <button onClick={printRevenue} className="min-w-0 flex flex-1 items-center justify-center gap-1 px-1.5 py-1 text-sm sm:flex-initial sm:gap-1.5 sm:px-2 sm:py-1 bg-gradient-to-r from-sky-700 to-sky-800 text-white font-bold rounded-lg shadow-md">
+            <Printer className="w-4 h-4" /><span>معاينة / طباعة</span>
+          </button>
+          <button onClick={() => revenuePdf(revenue, year, month, reportDate)} className="min-w-0 flex flex-1 items-center justify-center gap-1 px-1.5 py-1 text-sm sm:flex-initial sm:gap-1.5 sm:px-2 sm:py-1 bg-white text-slate-700 border border-slate-200 font-bold rounded-lg shadow-sm">
+            <FileText className="w-4 h-4" /><span>تنزيل PDF</span>
           </button>
           <button
             onClick={() => {
