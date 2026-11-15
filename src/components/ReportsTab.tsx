@@ -42,6 +42,20 @@ type PeriodType = "all" | "month" | "quarter" | "half" | "year";
 type TraineeGrouping = "month" | "year";
 type TraineeDisplayMode = "detail" | "summary" | "both";
 
+const REPORT_SOURCE_STORAGE_KEY = "reports-last-selected-source-v1";
+const REPORT_SOURCES: readonly ReportSource[] = [
+  "youssefLoan",
+  "tawfiqCustody",
+  "account",
+  "hafiza",
+  "expenses",
+  "revenue",
+  "combined",
+  "trainee",
+  "feeTotals",
+  "traineeFeeStatus",
+];
+
 export interface ReportRow {
   id ? : string;
   date ? : string;
@@ -646,8 +660,25 @@ export default function ReportsTab() {
   const accounts = useStore((state) => state.accounts);
   const revenue = useStore((state) => state.revenue);
   
-  const [source, setSource] = useState < ReportSource > ("youssefLoan");
+  const [source, setSource] = useState<ReportSource>(() => {
+    try {
+      const saved = localStorage.getItem(REPORT_SOURCE_STORAGE_KEY);
+      return saved && REPORT_SOURCES.includes(saved as ReportSource)
+        ? (saved as ReportSource)
+        : "youssefLoan";
+    } catch {
+      return "youssefLoan";
+    }
+  });
   const [period, setPeriod] = useState < PeriodType > ("all");
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(REPORT_SOURCE_STORAGE_KEY, source);
+    } catch (error) {
+      console.error("تعذر حفظ آخر نافذة تقرير:", error);
+    }
+  }, [source]);
   const [year, setYear] = useState < number > (fiscalYear);
   const [month, setMonth] = useState < number > (new Date().getMonth());
   
