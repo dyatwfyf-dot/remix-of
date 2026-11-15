@@ -897,6 +897,18 @@ export default function ExpensesTab() {
     { key: "year", label: "كشف السنة", group: "year" },
   ];
   
+  const activeSubTab = subTabs.find((tab) => tab.key === view) ?? subTabs[0];
+  const expensesViewDescription =
+    view.startsWith("m") && view.length <= 3
+      ? `كشف المصروفات لشهر ${MONTHS[Number(view.slice(1))]} — العام المالي ${year}م`
+      : view.startsWith("p")
+        ? `${QUARTERS[Number(view.slice(1)) - 1]?.label ?? "المدة"} — العام المالي ${year}م`
+        : view === "final"
+          ? `كشف الحساب النهائي — العام المالي ${year}م`
+          : view === "year"
+            ? `ملخص المصروفات السنوي — العام المالي ${year}م`
+            : `الغلاف — العام المالي ${year}م`;
+
   const groupCls = (g: string) =>
     g === "intro" ?
     "bg-slate-700" :
@@ -925,6 +937,33 @@ export default function ExpensesTab() {
   return (
     <div className="mizan-expenses-tab sheet-tabs-ui space-y-3" dir="rtl">
       <style>{EXPENSES_TABLE_CSS}</style>
+      {/* عنوان رئيسي واضح للتبويب مع سياق الفترة المحددة */}
+      <section
+        className="overflow-hidden rounded-xl border border-sky-200 bg-gradient-to-l from-sky-950 via-sky-800 to-cyan-700 text-white shadow-md"
+        dir="rtl"
+        aria-label="عنوان تبويب المصروفات"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-5">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/25 bg-white/10 text-2xl shadow-inner" aria-hidden="true">
+              📊
+            </span>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-sky-100">التقارير المالية</p>
+              <h2 className="text-lg font-black leading-tight sm:text-xl">المصروفات</h2>
+              <p className="mt-1 text-xs font-semibold text-sky-100 sm:text-sm">{expensesViewDescription}</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
+            <span className="rounded-lg border border-white/25 bg-white/10 px-3 py-2">
+              {activeSubTab.label}
+            </span>
+            <span className="rounded-lg bg-white px-3 py-2 text-sky-900 shadow-sm">
+              {reportDateLabel}
+            </span>
+          </div>
+        </div>
+      </section>
       {/* فصل التنقل بين الفترات عن إجراءات الطباعة والتصدير والمسح */}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
         <div className="expenses-subtabs min-w-0 flex-1 overflow-x-auto rounded-xl border border-slate-200 bg-slate-100 p-1.5">
@@ -1096,7 +1135,7 @@ export default function ExpensesTab() {
               const parsed = new DOMParser().parseFromString(html, "text/html");
               parsed.querySelectorAll("script").forEach((script) => script.remove());
               const opened = openBrowserPrintPreview({
-                title: `المصروفات - ${view}`,
+                title: `المصروفات — ${activeSubTab.label} — العام المالي ${year}م`,
                 reportDateLabel,
                 tableHtml: parsed.body.innerHTML,
                 contentCss: Array.from(parsed.querySelectorAll("style")).map((style) => style.textContent || "").join("\n"),
