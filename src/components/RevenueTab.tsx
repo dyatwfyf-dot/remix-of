@@ -53,6 +53,9 @@ export default function RevenueTab() {
     [revenue],
   );
 
+  // دالة تنسيق أرقام الترقيم باللغة الإنجليزية.
+  const codeNum = (n: number) => Number(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
+
   // 3. عمليات الحسابات التجميعية الفورية (Aggregations) المحسنة بالأداء عبر useMemo
   const data = useMemo(() => {
     // حساب مبالغ الأشهر السابقة التراكمية
@@ -114,7 +117,6 @@ export default function RevenueTab() {
 
   // دالة تنسيق عرض الأرقام المالية مع استبدال الصفر بشرطة مقروءة محاسبياً
   const cellNum = (n: number) => (n ? fmt(n) : "-");
-  const codeNum = (n: number) => Number(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
 
   const printRevenue = () => {
     const source = document.getElementById("revenue-report-content");
