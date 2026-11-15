@@ -2276,12 +2276,17 @@ export default function ReportsTab() {
                       رقم الدفعة
                       <select
                         multiple
+                        size={4}
                         value={selectedBatches}
-                        onChange={(e) => setSelectedBatches(Array.from(e.target.selectedOptions, (option) => option.value))}
+                        onChange={(e) => {
+                          const values = Array.from(e.target.selectedOptions, (option) => option.value);
+                          setSelectedBatches(values.filter((value) => value !== "__all__"));
+                        }}
                         aria-label="اختيار دفعة أو أكثر لعرضها في كشف المدفوعات"
                         title="يمكن اختيار أكثر من دفعة"
                         className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
                       >
+                        <option value="__all__">كل الدفعات</option>
                         {batchOptions.map((batch) => (
                           <option key={batch} value={batch}>
                             {batch}
@@ -2474,7 +2479,7 @@ color: "#ffffff",
  let rowStyle = "";
  if (isOpening) rowStyle = "reports-opening-row bg-[#FBFEFF] font-bold text-black";
 else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
-                    else if ((((source === "traineeFeeStatus" && row.bankPending) || (source === "trainee" && row.amountDisplay === "لم تورد إلى البنك"))) || (source === "trainee" && row.amountDisplay === "لم تورد إلى البنك")) rowStyle = "reports-bank-pending-row bg-amber-50 font-bold text-amber-950";
+                    else if ((source === "traineeFeeStatus" && row.bankPending) || (source === "trainee" && row.amountDisplay === "لم تورد إلى البنك")) rowStyle = "reports-bank-pending-row bg-amber-50 font-bold text-amber-950";
                     else if (isTraineeDetail) rowStyle = "reports-detail-row bg-white font-bold text-black";
                     else if (row.summaryLevel === "trainee-name-total") rowStyle = "reports-trainee-total-row bg-[#2C666E] font-bold text-white";
                     else if (row.summaryLevel === "fee") {
