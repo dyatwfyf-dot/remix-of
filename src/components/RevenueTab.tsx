@@ -96,7 +96,7 @@ export default function RevenueTab() {
             iCur += v.cur;
             iPrev += v.prev;
           });
-          itemsAgg[`${ch.no}-${sec.no}-${it.no}`] = { cur: iCur, prev: iPrev, tot: iCur + iPrev };
+          itemsAgg[`${codeNum(ch.no)}-${codeNum(sec.no)}-${codeNum(it.no)}`] = { cur: iCur, prev: iPrev, tot: iCur + iPrev };
           sCur += iCur;
           sPrev += iPrev;
         });
@@ -114,6 +114,7 @@ export default function RevenueTab() {
 
   // دالة تنسيق عرض الأرقام المالية مع استبدال الصفر بشرطة مقروءة محاسبياً
   const cellNum = (n: number) => (n ? fmt(n) : "-");
+  const codeNum = (n: number) => Number(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
 
   const printRevenue = () => {
     const source = document.getElementById("revenue-report-content");
@@ -121,6 +122,27 @@ export default function RevenueTab() {
     const printContent = source.cloneNode(true) as HTMLElement;
     const sourceRows = Array.from(source.querySelectorAll("tr"));
     const printRows = Array.from(printContent.querySelectorAll("tr"));
+    const visualProperties = [
+      "background-color", "background-image", "color", "border-top-color", "border-right-color",
+      "border-bottom-color", "border-left-color", "border-top-width", "border-right-width",
+      "border-bottom-width", "border-left-width", "border-top-style", "border-right-style",
+      "border-bottom-style", "border-left-style", "font-family", "font-size", "font-weight",
+      "font-style", "line-height", "text-align", "vertical-align", "padding-top", "padding-right",
+      "padding-bottom", "padding-left", "white-space", "word-break", "overflow-wrap", "border-radius",
+    ];
+    const sourceElements = [source, ...Array.from(source.querySelectorAll<HTMLElement>("*"))];
+    const targetElements = [printContent, ...Array.from(printContent.querySelectorAll<HTMLElement>("*"))];
+    sourceElements.forEach((sourceElement, index) => {
+      const targetElement = targetElements[index];
+      if (!targetElement) return;
+      const computed = window.getComputedStyle(sourceElement);
+      visualProperties.forEach((property) => {
+        const value = computed.getPropertyValue(property);
+        if (value) targetElement.style.setProperty(property, value, "important");
+      });
+      targetElement.style.setProperty("-webkit-print-color-adjust", "exact", "important");
+      targetElement.style.setProperty("print-color-adjust", "exact", "important");
+    });
     sourceRows.forEach((sourceRow, rowIndex) => {
       const targetRow = printRows[rowIndex];
       if (!targetRow) return;
@@ -129,11 +151,9 @@ export default function RevenueTab() {
         const targetCell = targetRow.cells[cellIndex];
         if (!targetCell) return;
         const cellStyle = window.getComputedStyle(sourceCell);
-        const background = cellStyle.backgroundColor !== "rgba(0, 0, 0, 0)" ? cellStyle.backgroundColor : rowStyle.backgroundColor;
-        if (background && background !== "rgba(0, 0, 0, 0)") targetCell.style.setProperty("background-color", background, "important");
-        targetCell.style.setProperty("color", cellStyle.color || rowStyle.color, "important");
-        targetCell.style.setProperty("-webkit-print-color-adjust", "exact", "important");
-        targetCell.style.setProperty("print-color-adjust", "exact", "important");
+        if (cellStyle.backgroundColor === "rgba(0, 0, 0, 0)" && rowStyle.backgroundColor !== "rgba(0, 0, 0, 0)") {
+          targetCell.style.setProperty("background-color", rowStyle.backgroundColor, "important");
+        }
       });
     });
     const title = "كشف الإيرادات - " + MONTH_NAMES[month - 1] + " - " + year;
@@ -144,6 +164,8 @@ export default function RevenueTab() {
       '#revenue-print .overflow-auto,#revenue-print .overflow-x-auto { overflow:visible !important; max-height:none !important; }' +
       '#revenue-print .sticky { position:static !important; }' +
       '#revenue-print table { width:100% !important; min-width:0 !important; table-layout:fixed !important; border-collapse:collapse !important; }' +
+      '#revenue-print th:nth-child(2),#revenue-print th:nth-child(3),#revenue-print th:nth-child(4),#revenue-print th:nth-child(5),#revenue-print td.numeric-cell { direction:ltr !important; font-variant-numeric:tabular-nums !important; }' +
+      '#revenue-print td:first-child { white-space:nowrap !important; font-weight:800 !important; }' +
       '#revenue-print th,#revenue-print td { border:1px solid #000 !important; text-align:center !important; vertical-align:middle !important; padding:3px 2px !important; font-size:9px !important; line-height:1.2 !important; }' +
       '#revenue-print th { white-space:normal !important; overflow-wrap:anywhere !important; word-break:normal !important; font-weight:900 !important; }' +
       '#revenue-print td { white-space:nowrap !important; overflow-wrap:normal !important; word-break:keep-all !important; font-weight:700 !important; }' +
@@ -281,7 +303,7 @@ export default function RevenueTab() {
 
         {/* صندوق الحماية من الضيق: الجدول والحدود كلها سوداء واحتواء الخلايا تلقائي */}
         <div className="w-full overflow-auto max-h-[72vh] [-ms-overflow-style:none] [scrollbar-width:thin] relative">
-<table className="min-w-auto table-auto text-center border-collapse text-sm sm:text-base font-bold border border-black">
+<table className="revenue-main-table min-w-full table-fixed text-center border-collapse text-sm sm:text-base font-bold border border-black">
 <thead className="sticky top-0 z-20 shadow-sm">
               <tr className="bg-slate-100 text-slate-700 font-bold border-b-2 border-black">
 <th rowSpan={2} className="border border-black text-center whitespace-normal !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
@@ -353,7 +375,7 @@ export default function RevenueTab() {
                   <Fragment key={`ch-${ch.no}`}>
                     {/* مستوى الأبواب الرئيسية */}
                     <tr className="bg-slate-100/80 font-bold text-slate-900 border-b border-black">
-                      <td className="border border-black text-center text-sky-900 font-cairo whitespace-normal !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                      <td className="revenue-chapter-name border border-black text-center text-sky-950 font-cairo font-black whitespace-nowrap bg-gradient-to-l from-amber-100 via-yellow-50 to-sky-100 !px-2 !py-2 sm:!px-3 sm:!py-2.5 !text-base sm:!text-lg">
                         {ch.longTitle || ch.title}
                       </td>
                       <td className="border border-black text-center numeric-cell font-bold text-sky-800 bg-sky-50/20 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
@@ -378,7 +400,7 @@ export default function RevenueTab() {
                       <Fragment key={`sec-${ch.no}-${sec.no}`}>
                         {/* مستوى الفصول الفرعية */}
                         <tr className="bg-slate-50 font-semibold text-slate-800 border-b border-black">
-                          <td className="border border-black text-center text-slate-700 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                          <td className="border border-black text-center text-slate-800 font-bold whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
                             {sec.title}
                           </td>
                           <td className="border border-black !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base whitespace-normal"></td>
@@ -404,7 +426,7 @@ export default function RevenueTab() {
                           <Fragment key={`it-${ch.no}-${sec.no}-${it.no}`}>
                             {/* مستوى البنود */}
                             <tr className="bg-white text-slate-700 border-b border-black">
-                              <td className="border border-black text-center text-slate-600 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                              <td className="border border-black text-center text-indigo-800 font-bold whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
                                 {it.title}
                               </td>
                               <td colSpan={2} className="border border-black !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base whitespace-nowrap"></td>
@@ -440,7 +462,7 @@ export default function RevenueTab() {
                                   </td>
                                   <td colSpan={3} className="border border-black !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base whitespace-nowrap"></td>
                                   <td className="border border-black text-center numeric-cell text-slate-400 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
-                                    {t.no}
+                                    {codeNum(t.no)}
                                   </td>
                                   <td className="border border-black !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base whitespace-nowrap"></td>
 
