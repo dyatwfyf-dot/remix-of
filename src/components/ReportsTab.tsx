@@ -684,7 +684,7 @@ export default function ReportsTab() {
   
   const [selectedTrainee, setSelectedTrainee] = useState < string > ("all");
   const [selectedFee, setSelectedFee] = useState < string > ("all");
-  const [selectedBatch, setSelectedBatch] = useState("");
+  const [selectedBatches, setSelectedBatches] = useState<string[]>([]);
   const [selectedTraineeFeeStatus, setSelectedTraineeFeeStatus] = useState < string > ("all");
   const [feeDemandTrainee, setFeeDemandTrainee] = useState < ReportRow | null > (null);
   const [feeDemandIncludeRegistration, setFeeDemandIncludeRegistration] = useState(false);
@@ -1107,7 +1107,7 @@ export default function ReportsTab() {
         !trainee ||
         (selectedTrainee !== "all" && trainee !== selectedTrainee) ||
         (selectedFee !== "all" && category !== selectedFee) ||
-        (selectedBatch.trim() !== "" && batch !== selectedBatch.trim())
+        (selectedBatches.length > 0 && !selectedBatches.includes(batch))
       ) {
         return [];
       }
@@ -1140,13 +1140,13 @@ export default function ReportsTab() {
         .filter((trainee) =>
           !paidNames.has(trainee.name) &&
           (selectedTrainee === "all" || trainee.name === selectedTrainee) &&
-          (!selectedBatch.trim() || trainee.batch === selectedBatch.trim()) &&
+          (selectedBatches.length === 0 || selectedBatches.includes(trainee.batch)) &&
           !deletedUnpaidFeeNames.has(`${selectedFee}|${traineeNameKey(trainee.name)}`)
         )
         .map((trainee) => trainee.name)
         .sort((a, b) => a.localeCompare(b, "ar"));
       const unpaidNameRows = Array.from({ length: Math.ceil(unpaidNames.length / 2) }, (_, index) => ({
-        id: `unpaid-fee-name-${selectedFee}-${selectedBatch || "all"}-${index}`,
+        id: `unpaid-fee-name-${selectedFee}-${selectedBatches.join("-") || "all"}-${index}`,
         trainee: unpaidNames[index * 2],
         unpaidTrainee2: unpaidNames[index * 2 + 1] || "",
         summaryLevel: "fee-unpaid-name" as const,
@@ -1177,7 +1177,7 @@ export default function ReportsTab() {
       .filter((trainee) =>
         !traineesWithAnyHafizaData.has(trainee.name) &&
         (selectedTrainee === "all" || trainee.name === selectedTrainee) &&
-        (!selectedBatch.trim() || trainee.batch === selectedBatch.trim())
+        (selectedBatches.length === 0 || selectedBatches.includes(trainee.batch))
       )
       .map((trainee) => ({
         id: `trainee-no-fees-${trainee.name}`,
@@ -1236,7 +1236,7 @@ export default function ReportsTab() {
         id: `trainee-fee-category-${category}`,
         period: `إجمالي ${category}`,
         trainee: selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee,
-        batch: selectedBatch.trim() || "—",
+        batch: selectedBatches.length ? selectedBatches.join("، ") : "—",
         category,
         description: "إجمالي الرسم",
         source: "حوافظ التوريد",
@@ -1309,7 +1309,7 @@ export default function ReportsTab() {
           id: `trainee-name-total-${trainee}-${year}`,
           year,
           trainee,
-          batch: selectedBatch.trim() || "—",
+          batch: selectedBatches.length ? selectedBatches.join("، ") : "—",
           category: "—",
           description: `إجمالي ${trainee} لعام ${year}`,
           source: "حوافظ التوريد",
@@ -1340,7 +1340,7 @@ export default function ReportsTab() {
     });
     
     return result;
-  }, [matchedTraineeHafiza, selectedTrainee, selectedFee, selectedBatch, traineeGrouping, traineeDisplayMode, traineeRosterByName, deletedUnpaidFeeNames]);
+  }, [matchedTraineeHafiza, selectedTrainee, selectedFee, selectedBatches, traineeGrouping, traineeDisplayMode, traineeRosterByName, deletedUnpaidFeeNames]);
   
   const feeTotalsRows = useMemo < ReportRow[] > (() => {
     const totals = new Map < string,
@@ -1919,7 +1919,7 @@ export default function ReportsTab() {
   
   const title =
     source === "trainee" ?
-    `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFee === "all" ? "كل الرسوم" : selectedFee}${selectedBatch.trim() ? ` — الدفعة ${selectedBatch.trim()}` : ""} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}` :
+    `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFee === "all" ? "كل الرسوم" : selectedFee}${selectedBatches.length ? ` — الدفعات ${selectedBatches.join("، ")}` : " — كل الدفعات"} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}` :
     source === "feeTotals" ?
     `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}` :
     source === "traineeFeeStatus" ?
@@ -2142,7 +2142,7 @@ export default function ReportsTab() {
                   setDeletedRows(new Set());
                   setSelectedTraineeFeeStatus("all");
                 }}
-                className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
+                className="min-h-24 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
               >
                 {SOURCES.map((s) => (
                   <option key={s.value} value={s.value}>
@@ -2275,18 +2275,20 @@ export default function ReportsTab() {
                     <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
                       رقم الدفعة
                       <select
-                        value={selectedBatch}
-                        onChange={(e) => setSelectedBatch(e.target.value)}
-                        aria-label="تصفية كشف المدفوعات حسب رقم الدفعة"
+                        multiple
+                        value={selectedBatches}
+                        onChange={(e) => setSelectedBatches(Array.from(e.target.selectedOptions, (option) => option.value))}
+                        aria-label="اختيار دفعة أو أكثر لعرضها في كشف المدفوعات"
+                        title="يمكن اختيار أكثر من دفعة"
                         className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
                       >
-                        <option value="">كل الدفعات</option>
                         {batchOptions.map((batch) => (
                           <option key={batch} value={batch}>
                             {batch}
                           </option>
                         ))}
                       </select>
+                      <span className="text-[11px] font-semibold text-slate-500">اترك الاختيار فارغاً لعرض كل الدفعات، ويمكن تحديد أكثر من دفعة.</span>
                     </label>
 
                     <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
@@ -2472,7 +2474,7 @@ color: "#ffffff",
  let rowStyle = "";
  if (isOpening) rowStyle = "reports-opening-row bg-[#FBFEFF] font-bold text-black";
 else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
-                    else if ((source === "traineeFeeStatus" && row.bankPending) || (source === "trainee" && row.amountDisplay === "لم تورد إلى البنك")) rowStyle = "reports-bank-pending-row bg-amber-50 font-bold text-amber-950";
+                    else if ((((source === "traineeFeeStatus" && row.bankPending) || (source === "trainee" && row.amountDisplay === "لم تورد إلى البنك"))) || (source === "trainee" && row.amountDisplay === "لم تورد إلى البنك")) rowStyle = "reports-bank-pending-row bg-amber-50 font-bold text-amber-950";
                     else if (isTraineeDetail) rowStyle = "reports-detail-row bg-white font-bold text-black";
                     else if (row.summaryLevel === "trainee-name-total") rowStyle = "reports-trainee-total-row bg-[#2C666E] font-bold text-white";
                     else if (row.summaryLevel === "fee") {
@@ -2620,7 +2622,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                             : undefined
                         }
                       >
-                        <td data-col-key="idx" className="border border-black px-2 py-2 font-bold" style={isTotal ? totalCellStyle : source === "traineeFeeStatus" && row.bankPending ? { backgroundColor: "#FEF3C7", color: "#78350F", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" } : traineeRowCellStyle}>
+                        <td data-col-key="idx" className="border border-black px-2 py-2 font-bold" style={isTotal ? totalCellStyle : ((source === "traineeFeeStatus" && row.bankPending) || (source === "trainee" && row.amountDisplay === "لم تورد إلى البنك")) ? { backgroundColor: "#FEF3C7", color: "#78350F", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" } : traineeRowCellStyle}>
                           {isOpening ? "—" : isTotal ? "★" : source === "traineeFeeStatus" ? index - 3 : index + 1}
                         </td>
 
@@ -2677,7 +2679,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                               style={
                                 isTotal
                                   ? totalCellStyle
-                                  : source === "traineeFeeStatus" && row.bankPending
+                                  : ((source === "traineeFeeStatus" && row.bankPending) || (source === "trainee" && row.amountDisplay === "لم تورد إلى البنك"))
                                     ? { backgroundColor: "#FEF3C7", color: "#78350F", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }
                                     : isTraineeTypedRow
                                     ? traineeRowCellStyle
