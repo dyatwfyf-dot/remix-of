@@ -145,6 +145,34 @@ export default function RevenueTab() {
       targetElement.style.setProperty("-webkit-print-color-adjust", "exact", "important");
       targetElement.style.setProperty("print-color-adjust", "exact", "important");
     });
+    const printHeading = printContent.querySelector<HTMLElement>(".revenue-report-heading");
+    if (printHeading) {
+      ["background", "background-image", "background-color", "border", "border-radius", "box-shadow"].forEach((property) =>
+        printHeading.style.setProperty(property, "none", "important"),
+      );
+      printHeading.style.setProperty("display", "block", "important");
+      printHeading.style.setProperty("width", "100%", "important");
+      printHeading.style.setProperty("margin", "0 auto 4mm", "important");
+      printHeading.style.setProperty("padding", "2mm 0", "important");
+      printHeading.style.setProperty("text-align", "center", "important");
+      printHeading.style.setProperty("color", "#142b3d", "important");
+      printHeading.style.setProperty("page-break-after", "avoid", "important");
+      printHeading.querySelectorAll<HTMLElement>("*").forEach((child) => {
+        child.style.setProperty("background", "#fff", "important");
+        child.style.setProperty("background-image", "none", "important");
+        child.style.setProperty("color", "#334b5e", "important");
+        child.style.setProperty("border", "0", "important");
+        child.style.setProperty("box-shadow", "none", "important");
+        child.style.setProperty("text-align", "center", "important");
+      });
+      const heading = printHeading.querySelector<HTMLElement>("h2");
+      if (heading) {
+        heading.style.setProperty("color", "#142b3d", "important");
+        heading.style.setProperty("font-size", "18px", "important");
+        heading.style.setProperty("font-weight", "900", "important");
+      }
+      printHeading.querySelectorAll("svg").forEach((icon) => icon.remove());
+    }
     sourceRows.forEach((sourceRow, rowIndex) => {
       const targetRow = printRows[rowIndex];
       if (!targetRow) return;
@@ -156,6 +184,13 @@ export default function RevenueTab() {
         if (cellStyle.backgroundColor === "rgba(0, 0, 0, 0)" && rowStyle.backgroundColor !== "rgba(0, 0, 0, 0)") {
           targetCell.style.setProperty("background-color", rowStyle.backgroundColor, "important");
         }
+        if (!targetCell.classList.contains("numeric-cell")) {
+          targetCell.style.setProperty("white-space", "normal", "important");
+          targetCell.style.setProperty("overflow-wrap", "anywhere", "important");
+          targetCell.style.setProperty("word-break", "normal", "important");
+          targetCell.style.setProperty("line-height", "1.4", "important");
+          targetCell.style.setProperty("vertical-align", "middle", "important");
+        }
       });
     });
     const title = "كشف الإيرادات - " + MONTH_NAMES[month - 1] + " - " + year;
@@ -163,19 +198,21 @@ export default function RevenueTab() {
       '* { box-sizing:border-box; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }' +
       'html,body { margin:0; padding:0; direction:rtl; color:#000; font-family:Cairo,Arial,sans-serif; }' +
       '#revenue-print { width:100%; }' +
-      '#revenue-print .revenue-report-heading { display:block !important; width:100% !important; margin:0 0 5mm !important; padding:5mm 6mm !important; border:1px solid #0c4a6e !important; border-bottom:2px solid #000 !important; border-radius:3mm !important; background:linear-gradient(100deg,#082f49 0%,#075985 58%,#0e7490 100%) !important; color:#fff !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }' +
-      '#revenue-print .revenue-report-heading h2 { margin:0 !important; color:#fff !important; font-size:17px !important; line-height:1.25 !important; font-weight:900 !important; }' +
-      '#revenue-print .revenue-report-heading p { color:#e0f2fe !important; }' +
-      '#revenue-print .revenue-report-heading .bg-white { background:#fff !important; color:#082f49 !important; }' +
-      '#revenue-print .revenue-report-heading svg { display:inline-block !important; }' +
+      '#revenue-print .revenue-report-heading { display:block !important; width:100% !important; margin:0 auto 4mm !important; padding:2mm 0 !important; border:0 !important; border-radius:0 !important; background:#fff !important; color:#142b3d !important; text-align:center !important; page-break-after:avoid !important; box-shadow:none !important; }' +
+      '#revenue-print .revenue-report-heading h2 { margin:0 !important; color:#142b3d !important; font-size:18px !important; line-height:1.4 !important; font-weight:900 !important; }' +
+      '#revenue-print .revenue-report-heading p { color:#334b5e !important; font-size:12px !important; font-weight:800 !important; }' +
+      '#revenue-print .revenue-report-heading svg { display:none !important; }' +
+      '#revenue-print .revenue-report-heading > div { display:block !important; }' +
+      '#revenue-print .revenue-report-heading > div > div { display:block !important; margin:0 auto !important; }' +
       '#revenue-print .overflow-auto,#revenue-print .overflow-x-auto { overflow:visible !important; max-height:none !important; }' +
       '#revenue-print .sticky { position:static !important; }' +
       '#revenue-print table { width:100% !important; min-width:0 !important; table-layout:fixed !important; border-collapse:collapse !important; }' +
       '#revenue-print th:nth-child(2),#revenue-print th:nth-child(3),#revenue-print th:nth-child(4),#revenue-print th:nth-child(5),#revenue-print td.numeric-cell { direction:ltr !important; font-variant-numeric:tabular-nums !important; }' +
-      '#revenue-print td:first-child { white-space:nowrap !important; font-weight:800 !important; }' +
-      '#revenue-print th,#revenue-print td { border:1px solid #000 !important; text-align:center !important; vertical-align:middle !important; padding:3px 2px !important; font-size:9px !important; line-height:1.2 !important; }' +
+      '#revenue-print td:first-child { white-space:normal !important; overflow-wrap:anywhere !important; word-break:normal !important; font-weight:800 !important; }' +
+      '#revenue-print th,#revenue-print td { border:1px solid #000 !important; text-align:center !important; vertical-align:middle !important; padding:4px 3px !important; font-size:10px !important; line-height:1.4 !important; }' +
       '#revenue-print th { white-space:normal !important; overflow-wrap:anywhere !important; word-break:normal !important; font-weight:900 !important; }' +
-      '#revenue-print td { white-space:nowrap !important; overflow-wrap:normal !important; word-break:keep-all !important; font-weight:700 !important; }' +
+      '#revenue-print td { white-space:normal !important; overflow-wrap:anywhere !important; word-break:normal !important; font-weight:700 !important; }' +
+      '#revenue-print td.numeric-cell { white-space:nowrap !important; overflow-wrap:normal !important; word-break:keep-all !important; }' +
       '#revenue-print .numeric-cell { direction:ltr; font-variant-numeric:tabular-nums; }' +
       '#revenue-print input { width:100% !important; min-width:0 !important; border:0 !important; background:transparent !important; color:inherit !important; font:inherit !important; text-align:center !important; }' +
       '#revenue-print .shadow,#revenue-print .shadow-sm,#revenue-print .shadow-xl { box-shadow:none !important; }' +
