@@ -315,24 +315,58 @@ export default function MonthlyStatementTab() {
   const netBalance = totals.curDebit - totals.curCredit;
 
   const handlePrint = () => {
-    const tableHtml = tableRef.current?.outerHTML;
-    if (!tableHtml) {
+    const sourceTable = tableRef.current;
+    if (!sourceTable) {
       toast.error("تعذر تجهيز كشف الحساب للطباعة");
       return;
     }
+
+    // نقل ألوان الصفوف والخلايا المحسوبة من الجدول الظاهر إلى نسخة الطباعة.
+    const printTable = sourceTable.cloneNode(true) as HTMLTableElement;
+    const sourceRows = Array.from(sourceTable.querySelectorAll("tr"));
+    const printRows = Array.from(printTable.querySelectorAll("tr"));
+    sourceRows.forEach((sourceRow, rowIndex) => {
+      const targetRow = printRows[rowIndex];
+      if (!targetRow) return;
+      const rowStyle = window.getComputedStyle(sourceRow);
+      Array.from(sourceRow.cells).forEach((sourceCell, cellIndex) => {
+        const targetCell = targetRow.cells[cellIndex];
+        if (!targetCell) return;
+        const cellStyle = window.getComputedStyle(sourceCell);
+        const cellBackground = cellStyle.backgroundColor;
+        const rowBackground = rowStyle.backgroundColor;
+        const background = cellBackground && cellBackground !== "rgba(0, 0, 0, 0)"
+          ? cellBackground
+          : rowBackground;
+        if (background && background !== "rgba(0, 0, 0, 0)") {
+          targetCell.style.setProperty("background-color", background, "important");
+        }
+        if (cellStyle.backgroundImage && cellStyle.backgroundImage !== "none") {
+          targetCell.style.setProperty("background-image", cellStyle.backgroundImage, "important");
+        } else if (rowStyle.backgroundImage && rowStyle.backgroundImage !== "none") {
+          targetCell.style.setProperty("background-image", rowStyle.backgroundImage, "important");
+        }
+        targetCell.style.setProperty("color", cellStyle.color || rowStyle.color, "important");
+        targetCell.style.setProperty("-webkit-print-color-adjust", "exact", "important");
+        targetCell.style.setProperty("print-color-adjust", "exact", "important");
+      });
+    });
+
     const opened = openBrowserPrintPreview({
       title: `كشف الحساب الشهري - ${periodLabel}`,
       reportDateLabel,
-      tableHtml,
+      tableHtml: printTable.outerHTML,
       defaultOrientation: "landscape",
       defaultPageSize: "A4",
       defaultMarginMm: 3,
       contentCss: `
+        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         table { width:100% !important; border-collapse:collapse !important; table-layout:auto !important; background:#fff; color:#000 !important; }
-        th,td { border:1px solid #000 !important; padding:4px 5px !important; text-align:center !important; vertical-align:middle !important; color:#000 !important; font-family:Cairo,Arial,sans-serif !important; font-weight:800 !important; white-space:normal !important; }
+        th,td { border:1px solid #000 !important; padding:4px 5px !important; text-align:center !important; vertical-align:middle !important; font-family:Cairo,Arial,sans-serif !important; font-weight:800 !important; white-space:normal !important; }
         th { background:#dbeafe !important; font-weight:900 !important; color:#000 !important; }
-        tbody tr:nth-child(even) td { background:#f8fafc !important; color:#000 !important; }
-        tbody tr td:first-child { text-align:right !important; font-weight:900 !important; color:#000 !important; }
+        tbody tr:nth-child(even) td { background:#f8fafc !important; }
+        tbody tr td:first-child { text-align:right !important; font-weight:900 !important; }
+        tbody tr.monthly-group-total td { background:#fde68a !important; color:#713f12 !important; font-weight:900 !important; border-top:2px solid #d97706 !important; border-bottom:2px solid #d97706 !important; }
         tfoot td { background:#1e3a8a !important; color:#fff !important; font-weight:900 !important; }
       `,
     });
@@ -713,7 +747,7 @@ export default function MonthlyStatementTab() {
                   })}
 
                   {/* جملة المجموعة (تجميع الأرصدة بدون مقاصة تصفيرية) */}
-                  <tr className="bg-slate-100/90 font-bold text-slate-800 border-b border-slate-200 text-xl">
+                  <tr className="monthly-group-total bg-amber-100 font-black text-amber-950 border-y-2 border-amber-400 text-xl">
                     <td className="px-3 py-2 text-center pr-4 border-l border-black text-black">
                       جملة {group.title}
                     </td>
