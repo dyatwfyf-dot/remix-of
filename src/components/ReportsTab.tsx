@@ -646,7 +646,21 @@ export default function ReportsTab() {
   const accounts = useStore((state) => state.accounts);
   const revenue = useStore((state) => state.revenue);
   
-  const [source, setSource] = useState < ReportSource > ("youssefLoan");
+  const [source, setSource] = useState<ReportSource>(() => {
+    try {
+      const savedSource = localStorage.getItem("reports-last-selected-source-v1");
+      return SOURCES.some((item) => item.value === savedSource)
+        ? (savedSource as ReportSource)
+        : "youssefLoan";
+    } catch {
+      return "youssefLoan";
+    }
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem("reports-last-selected-source-v1", source);
+    } catch {}
+  }, [source]);
   const [period, setPeriod] = useState < PeriodType > ("all");
   const [year, setYear] = useState < number > (fiscalYear);
   const [month, setMonth] = useState < number > (new Date().getMonth());
