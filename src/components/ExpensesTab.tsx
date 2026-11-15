@@ -961,12 +961,39 @@ export default function ExpensesTab() {
               const el = document.getElementById("expenses-view-content");
               if (!el) return;
 
-              // نقل ألوان الصفوف والأعمدة كما تظهر فعلياً على الشاشة إلى نسخة الطباعة.
-              // بعض المتصفحات لا تطبع خلفية عناصر tr أو أصناف Tailwind بصورة موثوقة،
-              // لذلك نثبت لون كل خلية مباشرة مع إعطاء الأولوية للون الخلية ثم الصف.
+              // انقل التنسيقات المحسوبة من الواجهة نفسها إلى نسخة مستقلة للطباعة.
+              // نافذة المعاينة لا ترث ملفات Tailwind الخاصة بالتطبيق؛ لذلك لا يكفي نقل className.
               const printContent = el.cloneNode(true) as HTMLElement;
-              const sourceRows = Array.from(el.querySelectorAll("tr"));
-              const printRows = Array.from(printContent.querySelectorAll("tr"));
+              const visualProperties = [
+                "background-color", "background-image", "background-repeat", "background-position",
+                "background-size", "color", "border-top-color", "border-right-color",
+                "border-bottom-color", "border-left-color", "border-top-style", "border-right-style",
+                "border-bottom-style", "border-left-style", "border-top-width", "border-right-width",
+                "border-bottom-width", "border-left-width", "border-radius", "font-family",
+                "font-size", "font-weight", "font-style", "font-variant", "line-height",
+                "text-align", "text-decoration", "text-transform", "text-shadow", "vertical-align",
+                "padding-top", "padding-right", "padding-bottom", "padding-left", "white-space",
+                "word-break", "overflow-wrap", "letter-spacing", "opacity", "box-shadow",
+              ];
+              const sourceElements = [el, ...Array.from(el.querySelectorAll<HTMLElement>("*"))];
+              const printElements = [printContent, ...Array.from(printContent.querySelectorAll<HTMLElement>("*"))];
+
+              sourceElements.forEach((sourceElement, index) => {
+                const targetElement = printElements[index];
+                if (!targetElement) return;
+                const computed = window.getComputedStyle(sourceElement);
+                visualProperties.forEach((property) => {
+                  const value = computed.getPropertyValue(property);
+                  if (value) targetElement.style.setProperty(property, value, "important");
+                });
+                targetElement.style.setProperty("-webkit-print-color-adjust", "exact", "important");
+                targetElement.style.setProperty("print-color-adjust", "exact", "important");
+              });
+
+              // تثبيت لون الصف على خلاياه عند كون خلفية الخلية شفافة؛ هذا يحافظ على
+              // ألوان صفوف الأبواب والفصول والبنود والإجماليات في جميع المتصفحات.
+              const sourceRows = Array.from(el.querySelectorAll<HTMLTableRowElement>("tr"));
+              const printRows = Array.from(printContent.querySelectorAll<HTMLTableRowElement>("tr"));
               sourceRows.forEach((sourceRow, rowIndex) => {
                 const targetRow = printRows[rowIndex];
                 if (!targetRow) return;
@@ -975,11 +1002,14 @@ export default function ExpensesTab() {
                   const targetCell = targetRow.cells[cellIndex];
                   if (!targetCell) return;
                   const cellStyle = window.getComputedStyle(sourceCell);
-                  const cellBackground = cellStyle.backgroundColor !== "rgba(0, 0, 0, 0)"
-                    ? cellStyle.backgroundColor
-                    : rowStyle.backgroundColor;
-                  if (cellBackground && cellBackground !== "rgba(0, 0, 0, 0)") {
-                    targetCell.style.setProperty("background-color", cellBackground, "important");
+                  if (cellStyle.backgroundColor === "rgba(0, 0, 0, 0)" &&
+                      cellStyle.backgroundImage === "none") {
+                    if (rowStyle.backgroundColor !== "rgba(0, 0, 0, 0)") {
+                      targetCell.style.setProperty("background-color", rowStyle.backgroundColor, "important");
+                    }
+                    if (rowStyle.backgroundImage !== "none") {
+                      targetCell.style.setProperty("background-image", rowStyle.backgroundImage, "important");
+                    }
                   }
                   targetCell.style.setProperty("color", cellStyle.color || rowStyle.color, "important");
                   targetCell.style.setProperty("-webkit-print-color-adjust", "exact", "important");
@@ -1061,7 +1091,7 @@ export default function ExpensesTab() {
                   #expenses-report th, #expenses-report td { white-space: normal !important; }
                   #expenses-report .numeric-cell, #expenses-report .date-cell { white-space: nowrap !important; }
                 }
-                </style></head><body><div class="print-page">${reportLetterheadHtml()}<div id="expenses-report">${el.innerHTML}</div></div>
+                </style></head><body><div class="print-page">${reportLetterheadHtml()}<div id="expenses-report">${printContent.innerHTML}</div></div>
                 <script>window.onload=()=>setTimeout(()=>window.print(),300)</script></body></html>`;
               const parsed = new DOMParser().parseFromString(html, "text/html");
               parsed.querySelectorAll("script").forEach((script) => script.remove());
