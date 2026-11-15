@@ -1058,17 +1058,12 @@ export default function ExpensesTab() {
 
               const printTitleHtml = `
                 <section class="expenses-print-title" dir="rtl" aria-label="عنوان تقرير المصروفات">
-                  <div class="expenses-print-title-main">
-                    <div class="expenses-print-icon" aria-hidden="true">📊</div>
-                    <div class="expenses-print-heading">
-                      <p>التقارير المالية</p>
-                      <h1>المصروفات</h1>
-                      <div class="expenses-print-description">${escapeHtml(expensesViewDescription)}</div>
-                    </div>
-                  </div>
+                  <p class="expenses-print-kicker">التقارير المالية</p>
+                  <h1>المصروفات</h1>
+                  <div class="expenses-print-description">${escapeHtml(expensesViewDescription)}</div>
                   <div class="expenses-print-meta">
-                    <span class="expenses-print-period">${escapeHtml(activeSubTab.label)}</span>
-                    <span class="expenses-print-date">${escapeHtml(reportDateLabel)}</span>
+                    <span>${escapeHtml(activeSubTab.label)}</span>
+                    <span>${escapeHtml(reportDateLabel)}</span>
                   </div>
                 </section>
               `;
@@ -1082,16 +1077,13 @@ export default function ExpensesTab() {
                 .print-page { min-height: auto; width: 100%; margin: 0; padding: 0; border: 0; background: #fff; }
                 .report-letterhead-block { display: block; width: 100%; max-width: auto; height: 30mm; min-height: 30mm; max-height: 30mm; align-items: stretch; justify-content: center; margin: 0 0 3mm; page-break-before: avoid; page-break-after: avoid; }
     ${runningLetterheadCss}
- .expenses-print-title { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; margin:0 0 4mm; padding:10px 14px; border:1px solid #bae6fd; border-radius:10px; background:linear-gradient(100deg,#082f49 0%,#075985 58%,#0e7490 100%) !important; color:#fff !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
- .expenses-print-title-main { display:flex; align-items:center; gap:10px; min-width:0; }
- .expenses-print-icon { display:flex; align-items:center; justify-content:center; width:38px; height:38px; flex:0 0 38px; border:1px solid rgba(255,255,255,.35); border-radius:9px; background:rgba(255,255,255,.12) !important; font-size:22px; }
- .expenses-print-heading p { margin:0 0 2px; color:#e0f2fe !important; font-size:10px; font-weight:700; }
- .expenses-print-heading h1 { margin:0; color:#fff !important; font-size:19px; line-height:1.2; font-weight:900; }
- .expenses-print-description { margin-top:3px; color:#e0f2fe !important; font-size:11px; font-weight:700; }
- .expenses-print-meta { display:flex; align-items:center; justify-content:flex-start; flex-wrap:wrap; gap:6px; font-size:10px; font-weight:800; }
- .expenses-print-period,.expenses-print-date { display:inline-block; padding:6px 9px; border:1px solid rgba(255,255,255,.3); border-radius:7px; background:rgba(255,255,255,.12) !important; color:#fff !important; white-space:nowrap; }
- .expenses-print-date { background:#fff !important; color:#0c4a6e !important; }
- @media (max-width:520px) { .expenses-print-title { align-items:flex-start; flex-direction:column; } .expenses-print-meta { width:100%; } }
+ .expenses-print-title { display:block; width:100%; margin:0 auto 4mm; padding:2mm 0; border:0; border-radius:0; background:#fff !important; color:#142b3d !important; text-align:center; direction:rtl; page-break-after:avoid; }
+ .expenses-print-kicker { margin:0 0 1mm; color:#334b5e !important; font:800 12px/1.4 Cairo,Tahoma,Arial,sans-serif; }
+ .expenses-print-title h1 { margin:0; color:#142b3d !important; font:900 18px/1.4 Cairo,Tahoma,Arial,sans-serif; }
+ .expenses-print-description { margin-top:1.5mm; color:#334b5e !important; font:800 15px/1.4 Cairo,Tahoma,Arial,sans-serif; }
+ .expenses-print-meta { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:3mm; margin-top:1.5mm; color:#334b5e !important; font:800 11px/1.5 Cairo,Tahoma,Arial,sans-serif; }
+ .expenses-print-meta span { display:inline-block; padding:0 2mm; border:0; border-radius:0; background:#fff !important; color:#334b5e !important; white-space:normal; }
+ @media (max-width:520px) { .expenses-print-title { text-align:center; } .expenses-print-meta { width:100%; } }
  #expenses-report { width: 100%; }
  #expenses-report > * { margin-bottom: 4mm; }
  #expenses-report .overflow-x-auto, #expenses-report .overflow-auto { overflow: visible !important; }
