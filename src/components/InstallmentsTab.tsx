@@ -467,6 +467,7 @@ export default function InstallmentsTab() {
       row.fees,
       row.totalPaid,
       row.remaining,
+      row.notes,
       ...Object.values(row
         .payments || {}),
       ...Object.values(row
@@ -3333,12 +3334,11 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
         onClear={() => clearInstallments()}
         printLabel="الأقساط/إجمالي"
         pdfLayout="wide-centered"
-        pdfOrientation="portrait"
+        pdfOrientation="landscape"
         pdfMarginMm={1}
         pdfCss={INSTALLMENTS_SUMMARY_REPORT_CSS}
-         printRowStyle={getConditionalRowPrintStyle}
-         pdfOrientation="landscape"
-         additionalWebActions={installments2026WebActions}
+        printRowStyle={getConditionalRowPrintStyle}
+        additionalWebActions={installments2026WebActions}
 className="col-span-full grid grid-cols-2 gap-2 w-full 
 [&>button]:w-auto 
 [&>button]:min-w-auto
