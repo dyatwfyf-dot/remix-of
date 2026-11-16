@@ -16,6 +16,83 @@ import { reportDocumentCss } from "@/lib/reportPdf";
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import WebActionMenu, { type WebActionItem } from "@/components/WebActionMenu";
 
+const adaptiveLedgerPrintCss = `
+/* تنسيق موحد قابل للتكيف لجداول الحوافظ والحساب الجاري والقيود اليومية في المعاينة والطباعة وPDF */
+#tableContainer table.hafiza-ledger-table,
+#tableContainer table.accounts-ledger-table,
+#tableContainer table.journal-ledger-table {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  table-layout: auto !important;
+  border-collapse: collapse !important;
+  direction: rtl !important;
+}
+#tableContainer table.hafiza-ledger-table th,
+#tableContainer table.hafiza-ledger-table td,
+#tableContainer table.accounts-ledger-table th,
+#tableContainer table.accounts-ledger-table td,
+#tableContainer table.journal-ledger-table th,
+#tableContainer table.journal-ledger-table td {
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+  vertical-align: middle !important;
+  text-align: center !important;
+  line-height: 1.35 !important;
+  max-width: none !important;
+  height: auto !important;
+}
+#tableContainer table.hafiza-ledger-table th,
+#tableContainer table.hafiza-ledger-table td { padding: 3px 4px !important; }
+#tableContainer table.accounts-ledger-table th,
+#tableContainer table.accounts-ledger-table td { padding: 3px 4px !important; }
+#tableContainer table.journal-ledger-table th,
+#tableContainer table.journal-ledger-table td { padding: 4px 5px !important; }
+#tableContainer table.hafiza-ledger-table tbody tr,
+#tableContainer table.accounts-ledger-table tbody tr,
+#tableContainer table.journal-ledger-table tbody tr {
+  height: auto !important;
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+#tableContainer table.hafiza-ledger-table thead,
+#tableContainer table.accounts-ledger-table thead,
+#tableContainer table.journal-ledger-table thead {
+  display: table-header-group !important;
+}
+#tableContainer table.hafiza-ledger-table th,
+#tableContainer table.accounts-ledger-table th,
+#tableContainer table.journal-ledger-table th {
+  font-weight: 800 !important;
+}
+#tableContainer table.hafiza-ledger-table td.numeric-cell,
+#tableContainer table.hafiza-ledger-table td.date-cell,
+#tableContainer table.accounts-ledger-table td.numeric-cell,
+#tableContainer table.accounts-ledger-table td.date-cell,
+#tableContainer table.journal-ledger-table td.numeric-cell,
+#tableContainer table.journal-ledger-table td.date-cell {
+  white-space: nowrap !important;
+  overflow-wrap: normal !important;
+}
+@media print {
+  #tableContainer table.hafiza-ledger-table,
+  #tableContainer table.accounts-ledger-table,
+  #tableContainer table.journal-ledger-table {
+    width: 100% !important;
+    table-layout: auto !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+  #tableContainer table.hafiza-ledger-table th,
+  #tableContainer table.hafiza-ledger-table td,
+  #tableContainer table.accounts-ledger-table th,
+  #tableContainer table.accounts-ledger-table td { font-size: 9.5px !important; padding: 2px 3px !important; }
+  #tableContainer table.journal-ledger-table th,
+  #tableContainer table.journal-ledger-table td { font-size: 10.5px !important; padding: 3px 4px !important; }
+}
+`;
+
 export type TabCol = { key: string;label: string };
 
 export const greenPrintHeaderCss = `
@@ -118,7 +195,7 @@ export default function TabActions({
       reportDateLabel,
       tableHtml: tableHtml(),
       contentCss: pdfCss ? `${reportDocumentCss}\n${pdfCss}` : reportDocumentCss,
-      finalCss: pdfFinalCss,
+      finalCss: [adaptiveLedgerPrintCss, pdfFinalCss].filter(Boolean).join("\n"),
       defaultOrientation,
       defaultPageSize: "A4",
       ...(pdfMarginMm === undefined ? {} : { defaultMarginMm: pdfMarginMm }),

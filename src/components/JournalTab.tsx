@@ -513,6 +513,8 @@ export default function JournalTab() {
       fileName="قيود-اليومية"
       numericKeys={["debit", "credit"]}
       pdfLayout="wide-centered"
+      pdfOrientation="landscape"
+      printTableClassName="journal-ledger-table"
       pdfCss={greenPrintHeaderCss}
       onClear={clearJournal}
       additionalWebActions={journalWebActions}
@@ -780,7 +782,7 @@ export default function JournalTab() {
           </div>
         ) : (
 <div className="overflow-auto max-h-[75vh]">
-<table className="journal-ledger-table w-auto table-auto border-collapse text-center text-xs sm:text-sm font-bold">
+<table className="journal-ledger-table w-full table-auto border-collapse text-center text-xs sm:text-sm font-bold">
  <thead className="w-auto sticky top-0 z-20 bg-gradient-to-l from-slate-900 via-indigo-950 to-purple-900 text-white shadow-md whitespace-normal">
 <tr>
 {JOURNAL_COLS.map((c) => (
