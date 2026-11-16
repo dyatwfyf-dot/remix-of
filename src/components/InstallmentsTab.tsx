@@ -2228,7 +2228,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         const amount = Number(row?.payments?.[m]) || 0;
         if (amount <= 0) return "";
         return `
-          <tr class="${year === 2026 ? "installments-statement-row " : ""}row-paid">
+          <tr class="installments-statement-row row-paid">
             <td class="lbl">قسط شهر ${escapeHtml(m)}</td>
             <td class="num">${escapeHtml(fmt(amount))}</td>
           </tr>`;
@@ -2244,7 +2244,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
 
     const prevRow =
       year === 2026
-        ? `<tr class="${year === 2026 ? "installments-statement-row " : ""}row-due-old">
+        ? `<tr class="installments-statement-row row-due-old">
             <td class="lbl">متبقي من العام 2025 (مدور)</td>
             <td class="num">${escapeHtml(fmt(prevDue))}</td>
           </tr>`
@@ -2436,6 +2436,53 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         font-weight: 900;
         border-top: 2.5px solid #0f766e !important;
       }
+      /* استعادة التنسيق الأصلي لكشف حساب المتدرب وعزله عن القالب العام للتقارير. */
+      .page-frame table.trainee-account-statement {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: fixed !important;
+        border-collapse: collapse !important;
+        direction: rtl !important;
+        margin-top: 4px !important;
+      }
+      .page-frame table.trainee-account-statement th,
+      .page-frame table.trainee-account-statement td {
+        border: 1.5px solid #0f766e !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+        padding: 8px 12px !important;
+        font-family: Cairo, sans-serif !important;
+        font-size: 20px !important;
+        line-height: 1.4 !important;
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .page-frame table.trainee-account-statement thead th {
+        background: #0f766e !important;
+        background-image: none !important;
+        color: #ffffff !important;
+        font-size: 17px !important;
+        font-weight: 900 !important;
+      }
+      .page-frame table.trainee-account-statement tbody tr.row-fees > td { background: #eff6ff !important; color: #000000 !important; }
+      .page-frame table.trainee-account-statement tbody tr.row-due-old > td { background: #fef3c7 !important; color: #000000 !important; }
+      .page-frame table.trainee-account-statement tbody tr.row-total-due > td { background: ${year === 2026 ? "#fecaca" : "#fee2e2"} !important; color: #000000 !important; font-weight: 900 !important; }
+      .page-frame table.trainee-account-statement tbody tr.row-paid > td { background: ${year === 2026 ? "#dcfce7" : "#f0fdf4"} !important; color: #000000 !important; font-weight: 800 !important; }
+      .page-frame table.trainee-account-statement tbody tr.row-unpaid > td { background: #f8fafc !important; color: #64748b !important; }
+      .page-frame table.trainee-account-statement tbody tr.row-total-paid > td { background: ${year === 2026 ? "#a7f3d0" : "#d1fae5"} !important; color: #000000 !important; font-weight: 900 !important; }
+      .page-frame table.trainee-account-statement tbody tr.row-final > td {
+        background: ${year === 2026 ? "#0f766e" : "#f1f5f9"} !important;
+        color: ${year === 2026 ? "#ffffff" : "#000000"} !important;
+        font-size: 20px !important;
+        font-weight: 900 !important;
+        border-top: 2.5px solid #0f766e !important;
+      }
+      .page-frame table.trainee-account-statement tbody tr.installments-statement-row > td * {
+        background: transparent !important;
+        color: inherit !important;
+      }
       .foot {
         margin-top: 10px;
         padding-top: 10px;
@@ -2471,20 +2518,21 @@ td.t-fees { background: ${colorTokens.fees} !important; }
             ${infoCard("رقم الهاتف", row.phone)}
           </div>
 <div class="table-wrapper">
-<table>
+<table class="trainee-account-statement">
+              <colgroup><col style="width:65%"><col style="width:35%"></colgroup>
               <thead>
                 <tr>
-                  <th style="width: 65%">البيان</th>
+                  <th>البيان</th>
                   <th style="width: 35%">المبلغ</th>
                 </tr>
               </thead>
               <tbody>
-                <tr class="${year === 2026 ? "installments-statement-row " : ""}row-fees"><td class="lbl">إجمالي الرسوم المستحقة</td><td class="num">${escapeHtml(fmt(fees))}</td></tr>
+                <tr class="installments-statement-row row-fees"><td class="lbl">إجمالي الرسوم المستحقة</td><td class="num">${escapeHtml(fmt(fees))}</td></tr>
                 ${prevRow}
-                <tr class="${year === 2026 ? "installments-statement-row " : ""}row-total-due"><td class="lbl">إجمالي المبلغ المطلوب</td><td class="num">${escapeHtml(fmt(dueTotal))}</td></tr>
+                <tr class="installments-statement-row row-total-due"><td class="lbl">إجمالي المبلغ المطلوب</td><td class="num">${escapeHtml(fmt(dueTotal))}</td></tr>
                 ${monthlyRows}
-                <tr class="${year === 2026 ? "installments-statement-row " : ""}row-total-paid"><td class="lbl">إجمالي المسدد (له)</td><td class="num">${escapeHtml(fmt(totalPaid))}</td></tr>
-                <tr class="${year === 2026 ? "installments-statement-row " : ""}row-final"><td class="lbl">${escapeHtml(remainingLabel)}</td><td class="num">${escapeHtml(fmt(Math.abs(remaining)))}</td></tr>
+                <tr class="installments-statement-row row-total-paid"><td class="lbl">إجمالي المسدد (له)</td><td class="num">${escapeHtml(fmt(totalPaid))}</td></tr>
+                <tr class="installments-statement-row row-final"><td class="lbl">${escapeHtml(remainingLabel)}</td><td class="num">${escapeHtml(fmt(Math.abs(remaining)))}</td></tr>
               </tbody>
             </table>
           </div>
@@ -2536,6 +2584,20 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       defaultPageSize: "A4",
       defaultMarginMm: 0,
       fitToContent: true,
+      finalCss: `
+        html body #tableContainer table.trainee-account-statement { width:100% !important; max-width:100% !important; table-layout:fixed !important; border-collapse:collapse !important; }
+        html body #tableContainer table.trainee-account-statement th,
+        html body #tableContainer table.trainee-account-statement td { border:1.5px solid #0f766e !important; padding:8px 12px !important; font-family:Cairo,sans-serif !important; font-size:20px !important; line-height:1.4 !important; text-align:center !important; vertical-align:middle !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+        html body #tableContainer table.trainee-account-statement thead th { background:#0f766e !important; background-image:none !important; color:#fff !important; font-size:17px !important; font-weight:900 !important; }
+        html body #tableContainer table.trainee-account-statement tbody tr.row-fees > td { background:#eff6ff !important; color:#000 !important; }
+        html body #tableContainer table.trainee-account-statement tbody tr.row-due-old > td { background:#fef3c7 !important; color:#000 !important; }
+        html body #tableContainer table.trainee-account-statement tbody tr.row-total-due > td { background:${year === 2026 ? "#fecaca" : "#fee2e2"} !important; color:#000 !important; font-weight:900 !important; }
+        html body #tableContainer table.trainee-account-statement tbody tr.row-paid > td { background:${year === 2026 ? "#dcfce7" : "#f0fdf4"} !important; color:#000 !important; font-weight:800 !important; }
+        html body #tableContainer table.trainee-account-statement tbody tr.row-unpaid > td { background:#f8fafc !important; color:#64748b !important; }
+        html body #tableContainer table.trainee-account-statement tbody tr.row-total-paid > td { background:${year === 2026 ? "#a7f3d0" : "#d1fae5"} !important; color:#000 !important; font-weight:900 !important; }
+        html body #tableContainer table.trainee-account-statement tbody tr.row-final > td { background:${year === 2026 ? "#0f766e" : "#f1f5f9"} !important; color:${year === 2026 ? "#fff" : "#000"} !important; font-size:20px !important; font-weight:900 !important; }
+        html body #tableContainer table.trainee-account-statement tbody tr.installments-statement-row > td * { background:transparent !important; color:inherit !important; }
+      `,
     });
     if (!opened) {
       toast.error("تم منع فتح نافذة المعاينة، يرجى السماح بالنوافذ المنبثقة في كروم");
