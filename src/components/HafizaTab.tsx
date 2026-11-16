@@ -394,14 +394,14 @@ className="w-full text-center px-3 py-2 hover:bg-sky-50 text-xs sm:text-xs flex 
                   <X className="w-4 h-4" />
                 </Button>
               )}
- <TabActions title="حوافظ التوريد" rows={hafiza} columns={COLS} fileName="حوافظ-التوريد" pdfLayout="wide-centered" pdfOrientation="portrait" pdfCss={greenPrintHeaderCss} />
+ <TabActions title="حوافظ التوريد" rows={hafiza} columns={COLS} fileName="حوافظ-التوريد" pdfLayout="wide-centered" pdfOrientation="landscape" pdfCss={greenPrintHeaderCss} printTableClassName="hafiza-ledger-table" />
             </div>
           </div>
         </CardHeader>
 
   <CardContent className="p-0">
 <div className="w-auto overflow-auto max-h-[72vh]">
-<Table className="w-auto table-auto text-center border-collapse border border-black">
+<Table className="hafiza-ledger-table w-full table-auto text-center border-collapse border border-black">
  <TableHeader className="sticky top-0 z-10 border-b border-slate-200 whitespace-normal">
                 <TableRow>
 <TableHead className="w-auto text-center font-bold text-slate-800 bg-[#faedcd]">م</TableHead>
