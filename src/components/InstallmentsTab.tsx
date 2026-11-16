@@ -136,6 +136,7 @@ const INSTALLMENTS_SUMMARY_REPORT_CSS = `
   .report-page-content td.numeric-cell *, .report-page-content th.numeric-cell * {
     white-space: nowrap !important; overflow-wrap: normal !important; word-break: keep-all !important;
     direction: ltr !important; unicode-bidi: isolate !important; font-variant-numeric: tabular-nums !important;
+    max-width: 100% !important; overflow: hidden !important; text-overflow: clip !important;
   }
   .report-page-content table.reports-data-table th[data-col-key="notes"],
   .report-page-content table.reports-data-table td[data-col-key="notes"] {
