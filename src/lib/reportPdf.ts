@@ -1,4 +1,4 @@
-import { reportsCompactColumnsCss, tagReportCells } from "./reportsCompactColumnsCss";
+import { reportsCompactColumnsCss, tagReportCells, tagSerialColumns } from "./reportsCompactColumnsCss";
 import { deliverBlobToUser, isNativeFileStorageAvailable } from './nativeFileStorage';
 import { escapeHtml, reportLetterheadHtml } from './printTableHtml';
 import { reportTableThemeCss } from './reportTheme';
@@ -561,6 +561,7 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
   const { fileName, pageSize = 'A4', orientation = 'portrait', marginMm = 3, fitToContent = false } = options;
   const doc = source.ownerDocument;
   tagReportCells(source);
+  tagSerialColumns(source);
   // Preserve numbers and dates as atomic values in every exported table,
   // including tables that do not use the reports-data-table class.
   const numericOrDate = /^[\s\u200e\u200f]*[+-]?(?:(?:[0-9٠-٩۰-۹]+)(?:[,.٬٫][0-9٠-٩۰-۹]+)*|[0-9٠-٩۰-۹]{1,4}[-/.][0-9٠-٩۰-۹]{1,2}[-/.][0-9٠-٩۰-۹]{1,4})(?:\s*(?:ر\.?\s*ي|ريال|ر\.?\s*س))?[\s\u200e\u200f]*$/;

@@ -1,4 +1,4 @@
-import { reportsCompactColumnsCss, tagReportCellsScript } from "./reportsCompactColumnsCss";
+import { reportsCompactColumnsCss, tagReportCellsScript, tagSerialColumnsScript } from "./reportsCompactColumnsCss";
 import { Capacitor } from "@capacitor/core";
 import { reportLetterheadHtml } from "./printTableHtml";
 import { downloadRenderedReportPdf } from "./reportPdf";
@@ -1060,7 +1060,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   </div>
 
   <script>
-    try { ${tagReportCellsScript} } catch (e) {}
+    try { ${tagReportCellsScript}\n${tagSerialColumnsScript} } catch (e) {}
     (function() {
       const fitToContent = ${fitToContent ? "true" : "false"};
       if (fitToContent) document.body.classList.add('fit-content-mode');
@@ -1321,6 +1321,19 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
             currentTable.querySelectorAll('th,td').forEach(function(cell) {
               const value = (cell.textContent || '').trim();
               if (numericOrDate.test(value)) cell.classList.add('numeric-cell');
+            });
+          });
+
+          const serialHeader = /^(?:م|#|المسلسل|مسلسل|التسلسل|تسلسل|no|sno)$/i;
+          tableContainer.querySelectorAll('table').forEach(function(currentTable) {
+            const headerCells = Array.from(currentTable.querySelectorAll('thead tr:first-child th, thead tr:first-child td, tr:first-child th, tr:first-child td'));
+            const serialIndex = headerCells.findIndex(function(cell) {
+              return serialHeader.test((cell.textContent || '').replace(/[\\s.]/g, '').trim());
+            });
+            if (serialIndex < 0) return;
+            currentTable.querySelectorAll('tr').forEach(function(row) {
+              const cell = row.children.item(serialIndex);
+              if (cell) cell.classList.add('serial-number-column');
             });
           });
 

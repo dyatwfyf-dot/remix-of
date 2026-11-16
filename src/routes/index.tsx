@@ -32,6 +32,7 @@ const AppTabs = lazy(() => import("@/components/AppTabs"));
 import { canInstall, onInstallAvailability, promptInstall } from "@/lib/pwa";
 import { installAndroidBackButton } from "@/lib/capacitorNavigation";
 import YearSelector from "@/components/YearSelector";
+import { tagSerialColumns } from "@/lib/reportsCompactColumnsCss";
 
 // إعداد مسار التوجيه والبيانات التعريفية للمتصفح
 export const Route = createFileRoute("/")({
@@ -211,6 +212,18 @@ function Index() {
 
   useEffect(() => {
     setIsMounted(true);
+  }, []);
+
+  // Detect serial-number columns in every dynamically rendered tab table.
+  // Observe row/table insertion only; class tagging does not trigger this observer.
+  useEffect(() => {
+    const tagTables = () => tagSerialColumns(document);
+    tagTables();
+    const observer = new MutationObserver((records) => {
+      if (records.some((record) => record.addedNodes.length > 0)) tagTables();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
