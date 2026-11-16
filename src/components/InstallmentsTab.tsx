@@ -3365,7 +3365,7 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
 
       <button
         onClick={() => setCondFormatModal(true)}
-        className={`apk-only-actions w-full px-2 py-1.5 rounded-md text-sm font-extrabold shadow transition-colors flex items-center justify-center gap-1 ${
+        className={`apk-only-actions installment-action-btn installment-action-format w-full px-2 py-1.5 rounded-md text-sm font-extrabold shadow transition-colors flex items-center justify-center gap-1 ${
           condFormatRules.length
             ? "bg-yellow-900 text-yellow-900 animate-pulse"
             : "bg-white/20 text-black hover:bg-white/30"
@@ -3383,7 +3383,7 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
       {/* السطر 2: إضافة طالب جديد + إضافة عمود جديد */}
       <button
         onClick={() => setNewRowModal2026(true)}
-        className="apk-only-actions w-full px-2 py-1.5 bg-blue-900 text-white rounded-md text-sm sm:text-sm font-bold shadow hover:bg-blue-800 transition-colors flex items-center justify-center gap-1"
+        className="apk-only-actions installment-action-btn installment-action-student w-full px-2 py-1.5 bg-blue-900 text-white rounded-md text-sm sm:text-sm font-bold shadow hover:bg-blue-800 transition-colors flex items-center justify-center gap-1"
       >
         <Plus className={ICON_MOBILE} />
         <span>طالب جديد</span>
@@ -3391,7 +3391,7 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
 
       <button
         onClick={() => setNewColModal(true)}
-        className="apk-only-actions w-full px-2 py-1.5 bg-amber-800 text-white rounded-md text-xs sm:text-sm font-bold shadow hover:bg-amber-700 transition-colors flex items-center justify-center gap-1"
+        className="apk-only-actions installment-action-btn installment-action-column w-full px-2 py-1.5 bg-amber-800 text-white rounded-md text-xs sm:text-sm font-bold shadow hover:bg-amber-700 transition-colors flex items-center justify-center gap-1"
       >
         <Plus className={ICON_MOBILE} />
         <span>عمود جديد</span>
@@ -3400,12 +3400,12 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
       {/* السطر 3: إضافة قسط + استيراد */}
       <button
         onClick={() => setNewPaymentModal(true)}
-        className="apk-only-actions w-full px-2 py-1.5 bg-red-700 text-white rounded-md text-sm font-bold shadow hover:bg-red-800 transition-colors flex items-center justify-center gap-1 truncate"
+        className="apk-only-actions installment-action-btn installment-action-payment w-full px-2 py-1.5 bg-red-700 text-white rounded-md text-sm font-bold shadow hover:bg-red-800 transition-colors flex items-center justify-center gap-1 truncate"
       >
         <span>➕ إضافة قسط</span>
       </button>
 
-      <label className={`apk-only-actions relative w-full px-2 py-1.5 bg-white text-sky-700 rounded-md text-sm font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1 text-center ${importingYear !== null ? "opacity-60 pointer-events-none" : ""}`}>
+      <label className={`apk-only-actions installment-action-btn installment-action-import relative w-full px-2 py-1.5 bg-white text-sky-700 rounded-md text-sm font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1 text-center ${importingYear !== null ? "opacity-60 pointer-events-none" : ""}`}>
         {importingYear === 2026 ? "جارٍ الاستيراد…" : "📥 استيراد"}
         <input
           type="file"
@@ -3419,7 +3419,7 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
       {/* السطر 4: تصدير إلى Excel + طباعة تفصيلية */}
       <button
         onClick={() => exportToExcel(2026)}
-        className={`w-full ${BTN_COMPACT} bg-green-100 text-green-900 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1 text-sm`}
+        className={`installment-action-btn installment-action-excel w-full ${BTN_COMPACT} bg-green-100 text-green-900 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1 text-sm`}
       >
         <FileSpreadsheet className={ICON_MOBILE} />
         <span>تصدير Excel</span>
@@ -3427,7 +3427,7 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
 
       <button
         onClick={() => setPrintSettingsYear(2026)}
-        className={`w-full ${BTN_COMPACT} bg-green-800 text-black rounded-md font-bold shadow hover:bg-green-700 transition-colors flex items-center justify-center gap-1 text-sm`}
+        className={`installment-action-btn installment-action-print w-full ${BTN_COMPACT} bg-green-800 text-black rounded-md font-bold shadow hover:bg-green-700 transition-colors flex items-center justify-center gap-1 text-sm`}
       >
         <Printer className={ICON_MOBILE} />
         <span>طباعة تفصيلية</span>
@@ -3466,7 +3466,7 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
         printRowStyle={getConditionalRowPrintStyle}
         printTableClassName="installments-summary-2026"
         additionalWebActions={installments2026WebActions}
-className="col-span-full grid grid-cols-2 gap-2 w-full 
+className="installments-summary-actions col-span-full grid grid-cols-2 gap-2 w-full 
 [&>button]:w-auto 
 [&>button]:min-w-auto
 [&>button]:justify-center 
@@ -3476,7 +3476,7 @@ className="col-span-full grid grid-cols-2 gap-2 w-full
 
       {/* السطر 6: زر تنزيل PDF تفصيلي (يمتد عبر العرض الكامل لختام المجموعة) */}
       <button
-        className="apk-only-actions min-w-auto flex-items-center justify-center gap-1 px-3 py-2 bg-[#10528e] text-white rounded-md text-sm font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all disabled:opacity-50"
+        className="apk-only-actions installment-action-btn installment-action-pdf min-w-auto flex-items-center justify-center gap-1 px-3 py-2 bg-[#10528e] text-white rounded-md text-sm font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all disabled:opacity-50"
         type="button"
         onClick={handleDetailedPdf2026}
         disabled={detailedPdfBusy2026}
