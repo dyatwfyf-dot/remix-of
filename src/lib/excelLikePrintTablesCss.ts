@@ -143,22 +143,58 @@ export const excelLikePrintTablesCss = `
   /* Data-key fallback for tables whose values arrive as strings rather than numbers. */
   .report-page-content table th[data-col-key*="date" i],
   .report-page-content table td[data-col-key*="date" i],
-  .report-page-content table th[data-col-key*="no" i],
-  .report-page-content table td[data-col-key*="no" i],
+  .report-page-content table th[data-col-key$="no" i],
+  .report-page-content table td[data-col-key$="no" i],
   .report-page-content table th[data-col-key*="number" i],
   .report-page-content table td[data-col-key*="number" i],
+  .report-page-content table th[data-col-key*="code" i],
+  .report-page-content table td[data-col-key*="code" i],
+  .report-page-content table th[data-col-key*="reference" i],
+  .report-page-content table td[data-col-key*="reference" i],
   #tableContainer table th[data-col-key*="date" i],
   #tableContainer table td[data-col-key*="date" i],
-  #tableContainer table th[data-col-key*="no" i],
-  #tableContainer table td[data-col-key*="no" i],
+  #tableContainer table th[data-col-key$="no" i],
+  #tableContainer table td[data-col-key$="no" i],
   #tableContainer table th[data-col-key*="number" i],
   #tableContainer table td[data-col-key*="number" i],
+  #tableContainer table th[data-col-key*="code" i],
+  #tableContainer table td[data-col-key*="code" i],
+  #tableContainer table th[data-col-key*="reference" i],
+  #tableContainer table td[data-col-key*="reference" i],
   .preview-report-content table th[data-col-key*="date" i],
   .preview-report-content table td[data-col-key*="date" i],
-  .preview-report-content table th[data-col-key*="no" i],
-  .preview-report-content table td[data-col-key*="no" i],
+  .preview-report-content table th[data-col-key$="no" i],
+  .preview-report-content table td[data-col-key$="no" i],
   .preview-report-content table th[data-col-key*="number" i],
-  .preview-report-content table td[data-col-key*="number" i] {
+  .preview-report-content table td[data-col-key*="number" i],
+  .preview-report-content table th[data-col-key*="code" i],
+  .preview-report-content table td[data-col-key*="code" i],
+  .preview-report-content table th[data-col-key*="reference" i],
+  .preview-report-content table td[data-col-key*="reference" i],
+  .report-page-content table th[data-col-key*="amount" i],
+  .report-page-content table td[data-col-key*="amount" i],
+  .report-page-content table th[data-col-key*="fee" i],
+  .report-page-content table td[data-col-key*="fee" i],
+  .report-page-content table th[data-col-key*="total" i],
+  .report-page-content table td[data-col-key*="total" i],
+  .report-page-content table th[data-col-key*="balance" i],
+  .report-page-content table td[data-col-key*="balance" i],
+  #tableContainer table th[data-col-key*="amount" i],
+  #tableContainer table td[data-col-key*="amount" i],
+  #tableContainer table th[data-col-key*="fee" i],
+  #tableContainer table td[data-col-key*="fee" i],
+  #tableContainer table th[data-col-key*="total" i],
+  #tableContainer table td[data-col-key*="total" i],
+  #tableContainer table th[data-col-key*="balance" i],
+  #tableContainer table td[data-col-key*="balance" i],
+  .preview-report-content table th[data-col-key*="amount" i],
+  .preview-report-content table td[data-col-key*="amount" i],
+  .preview-report-content table th[data-col-key*="fee" i],
+  .preview-report-content table td[data-col-key*="fee" i],
+  .preview-report-content table th[data-col-key*="total" i],
+  .preview-report-content table td[data-col-key*="total" i],
+  .preview-report-content table th[data-col-key*="balance" i],
+  .preview-report-content table td[data-col-key*="balance" i] {
     white-space: nowrap !important;
     overflow-wrap: normal !important;
     word-break: keep-all !important;
@@ -183,6 +219,98 @@ export const excelLikePrintTablesCss = `
   .preview-report-content table tr {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
+  }
+
+
+  /* Preserve all semantic row highlighting after shared white-cell themes. */
+  .report-page-content table tbody tr.note-red > td,
+  #tableContainer table tbody tr.note-red > td,
+  .preview-report-content table tbody tr.note-red > td,
+  body > table tbody tr.note-red > td { background: #fecaca !important; }
+  .report-page-content table tbody tr.note-amber > td,
+  #tableContainer table tbody tr.note-amber > td,
+  .preview-report-content table tbody tr.note-amber > td,
+  body > table tbody tr.note-amber > td { background: #fef08a !important; }
+  .report-page-content table tbody tr.note-green > td,
+  #tableContainer table tbody tr.note-green > td,
+  .preview-report-content table tbody tr.note-green > td,
+  body > table tbody tr.note-green > td { background: #bbf7d0 !important; }
+  .report-page-content table tbody tr.note-blue > td,
+  #tableContainer table tbody tr.note-blue > td,
+  .preview-report-content table tbody tr.note-blue > td,
+  body > table tbody tr.note-blue > td { background: #bfdbfe !important; }
+  .report-page-content table tbody tr.note-violet > td,
+  #tableContainer table tbody tr.note-violet > td,
+  .preview-report-content table tbody tr.note-violet > td,
+  body > table tbody tr.note-violet > td { background: #e9d5ff !important; }
+  .report-page-content table tbody tr.note-gray > td,
+  #tableContainer table tbody tr.note-gray > td,
+  .preview-report-content table tbody tr.note-gray > td,
+  body > table tbody tr.note-gray > td { background: #e5e7eb !important; }
+
+  .report-page-content table tbody tr.notes-status-red > td,
+  #tableContainer table tbody tr.notes-status-red > td,
+  .preview-report-content table tbody tr.notes-status-red > td,
+  .report-page-content table tbody tr.notes-status-yellow > td,
+  #tableContainer table tbody tr.notes-status-yellow > td,
+  .preview-report-content table tbody tr.notes-status-yellow > td,
+  .report-page-content table tbody tr.notes-status-green > td,
+  #tableContainer table tbody tr.notes-status-green > td,
+  .preview-report-content table tbody tr.notes-status-green > td,
+  .report-page-content table tbody tr.notes-status-orange > td,
+  #tableContainer table tbody tr.notes-status-orange > td,
+  .preview-report-content table tbody tr.notes-status-orange > td,
+  .report-page-content table tbody tr.notes-status-blue > td,
+  #tableContainer table tbody tr.notes-status-blue > td,
+  .preview-report-content table tbody tr.notes-status-blue > td,
+  .report-page-content table tbody tr.notes-status-emerald > td,
+  #tableContainer table tbody tr.notes-status-emerald > td,
+  .preview-report-content table tbody tr.notes-status-emerald > td {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .report-page-content table tbody tr.notes-status-red > td,
+  #tableContainer table tbody tr.notes-status-red > td,
+  .preview-report-content table tbody tr.notes-status-red > td { background: #fecaca !important; }
+  .report-page-content table tbody tr.notes-status-yellow > td,
+  #tableContainer table tbody tr.notes-status-yellow > td,
+  .preview-report-content table tbody tr.notes-status-yellow > td { background: #fef08a !important; }
+  .report-page-content table tbody tr.notes-status-green > td,
+  #tableContainer table tbody tr.notes-status-green > td,
+  .preview-report-content table tbody tr.notes-status-green > td { background: #bbf7d0 !important; }
+  .report-page-content table tbody tr.notes-status-orange > td,
+  #tableContainer table tbody tr.notes-status-orange > td,
+  .preview-report-content table tbody tr.notes-status-orange > td { background: #fed7aa !important; }
+  .report-page-content table tbody tr.notes-status-blue > td,
+  #tableContainer table tbody tr.notes-status-blue > td,
+  .preview-report-content table tbody tr.notes-status-blue > td { background: #e0f2fe !important; }
+  .report-page-content table tbody tr.notes-status-emerald > td,
+  #tableContainer table tbody tr.notes-status-emerald > td,
+  .preview-report-content table tbody tr.notes-status-emerald > td { background: #ecfdf5 !important; }
+
+  .report-page-content table tbody tr.note-row > td,
+  #tableContainer table tbody tr.note-row > td,
+  .preview-report-content table tbody tr.note-row > td,
+  .report-page-content table tbody tr.notes-status-red > td,
+  #tableContainer table tbody tr.notes-status-red > td,
+  .preview-report-content table tbody tr.notes-status-red > td,
+  .report-page-content table tbody tr.notes-status-yellow > td,
+  #tableContainer table tbody tr.notes-status-yellow > td,
+  .preview-report-content table tbody tr.notes-status-yellow > td,
+  .report-page-content table tbody tr.notes-status-green > td,
+  #tableContainer table tbody tr.notes-status-green > td,
+  .preview-report-content table tbody tr.notes-status-green > td,
+  .report-page-content table tbody tr.notes-status-orange > td,
+  #tableContainer table tbody tr.notes-status-orange > td,
+  .preview-report-content table tbody tr.notes-status-orange > td,
+  .report-page-content table tbody tr.notes-status-blue > td,
+  #tableContainer table tbody tr.notes-status-blue > td,
+  .preview-report-content table tbody tr.notes-status-blue > td,
+  .report-page-content table tbody tr.notes-status-emerald > td,
+  #tableContainer table tbody tr.notes-status-emerald > td,
+  .preview-report-content table tbody tr.notes-status-emerald > td {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   @media print {
