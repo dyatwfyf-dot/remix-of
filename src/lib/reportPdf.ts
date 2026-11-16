@@ -2,6 +2,7 @@ import { reportsCompactColumnsCss, tagReportCells } from "./reportsCompactColumn
 import { deliverBlobToUser, isNativeFileStorageAvailable } from './nativeFileStorage';
 import { escapeHtml, reportLetterheadHtml } from './printTableHtml';
 import { reportTableThemeCss } from './reportTheme';
+import { excelLikePrintTablesCss } from "./excelLikePrintTablesCss";
 
 export type ReportPaperSize = 'A4' | 'A3' | 'Letter';
 export type ReportOrientation = 'portrait' | 'landscape';
@@ -672,7 +673,8 @@ export async function downloadReportPdf(options: {
       ${reportContainmentCss}
       ${options.css || ''}
       ${reportsCompactColumnsCss}
-      ${reportTableThemeCss}</style></head><body><div id="report-source" class="report-page-content">
+      ${reportTableThemeCss}
+      ${excelLikePrintTablesCss}</style></head><body><div id="report-source" class="report-page-content">
       ${options.body.includes('report-letterhead') ? '' : reportLetterheadHtml()}${options.body}</div></body></html>`);
     doc.close();
     const source = doc.getElementById('report-source');
