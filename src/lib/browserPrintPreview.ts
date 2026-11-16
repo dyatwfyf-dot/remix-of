@@ -1,4 +1,4 @@
-import { reportsCompactColumnsCss, tagReportCellsScript } from "./reportsCompactColumnsCss";
+import { reportsCompactColumnsCss, tagReportCellsScript, tagSerialColumnsScript } from "./reportsCompactColumnsCss";
 import { Capacitor } from "@capacitor/core";
 import { reportLetterheadHtml } from "./printTableHtml";
 import { downloadRenderedReportPdf } from "./reportPdf";
@@ -1060,7 +1060,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   </div>
 
   <script>
-    try { ${tagReportCellsScript} } catch (e) {}
+    try { ${tagReportCellsScript}\n${tagSerialColumnsScript} } catch (e) {}
     (function() {
       const fitToContent = ${fitToContent ? "true" : "false"};
       if (fitToContent) document.body.classList.add('fit-content-mode');
