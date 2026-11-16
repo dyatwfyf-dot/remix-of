@@ -8,9 +8,13 @@
  */
 export const excelLikePrintTablesCss = `
   .report-page-content table,
+  .report-page-content table[class],
   #tableContainer table,
+  #tableContainer table[class],
   .preview-report-content table,
-  body > table {
+  .preview-report-content table[class],
+  body > table,
+  body > table[class] {
     width: 100% !important;
     min-width: 0 !important;
     max-width: 100% !important;
@@ -21,9 +25,13 @@ export const excelLikePrintTablesCss = `
   }
 
   .report-page-content table col,
+  .report-page-content table[class] col,
   #tableContainer table col,
+  #tableContainer table[class] col,
   .preview-report-content table col,
-  body > table col {
+  .preview-report-content table[class] col,
+  body > table col,
+  body > table[class] col {
     width: auto !important;
     min-width: 0 !important;
     max-width: none !important;
@@ -31,12 +39,20 @@ export const excelLikePrintTablesCss = `
 
   .report-page-content table th,
   .report-page-content table td,
+  .report-page-content table[class] th,
+  .report-page-content table[class] td,
   #tableContainer table th,
   #tableContainer table td,
+  #tableContainer table[class] th,
+  #tableContainer table[class] td,
   .preview-report-content table th,
   .preview-report-content table td,
+  .preview-report-content table[class] th,
+  .preview-report-content table[class] td,
   body > table th,
-  body > table td {
+  body > table td,
+  body > table[class] th,
+  body > table[class] td {
     box-sizing: border-box !important;
     width: auto !important;
     min-width: 0 !important;
@@ -315,9 +331,13 @@ export const excelLikePrintTablesCss = `
 
   @media print {
     .report-page-content table,
+    .report-page-content table[class],
     #tableContainer table,
+    #tableContainer table[class],
     .preview-report-content table,
-    body > table {
+    .preview-report-content table[class],
+    body > table,
+    body > table[class] {
       width: 100% !important;
       max-width: 100% !important;
       table-layout: auto !important;
