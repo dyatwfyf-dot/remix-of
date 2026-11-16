@@ -126,11 +126,21 @@ const HEADING_MOBILE =
 const INSTALLMENTS_SUMMARY_REPORT_CSS = `
   html, body { margin: 0 !important; padding: 0 !important; }
   .report-page-content { width: 100% !important; min-width: 0 !important; }
-  .report-page-content table { width: 100% !important; table-layout: fixed !important; border-collapse: collapse !important; }
+  .report-page-content table { width: 100% !important; max-width: 100% !important; table-layout: auto !important; border-collapse: collapse !important; }
   .report-page-content, .report-page-content table, .report-page-content th, .report-page-content td, .report-page-content * { font-family: Cairo, Arial, sans-serif !important; font-size: 16px !important; font-weight: 900 !important; }
   .report-page-content th, .report-page-content td { padding: 0 4px !important; margin: 0 !important; vertical-align: middle !important; text-align: center !important; white-space: normal !important; line-height: 1.2 !important; }
   .report-page-content th { background: #0f766e !important; color: #000 !important; }
-  .report-page-content td { color: #000 !important; overflow-wrap: anywhere !important; word-break: break-word !important; }
+  .report-page-content td { color: #000 !important; overflow-wrap: anywhere !important; word-break: normal !important; }
+  .report-page-content td.numeric-cell, .report-page-content th.numeric-cell,
+  .report-page-content td.numeric-cell *, .report-page-content th.numeric-cell * {
+    white-space: nowrap !important; overflow-wrap: normal !important; word-break: keep-all !important;
+    direction: ltr !important; unicode-bidi: isolate !important; font-variant-numeric: tabular-nums !important;
+  }
+  .report-page-content table.reports-data-table th[data-col-key="notes"],
+  .report-page-content table.reports-data-table td[data-col-key="notes"] {
+    width: 1% !important; max-width: 10% !important; white-space: normal !important;
+    overflow-wrap: anywhere !important; word-break: normal !important;
+  }
   .report-page-content .num, .report-page-content .numeric-cell { white-space: nowrap !important; word-break: keep-all !important; direction: ltr !important; }
   .report-page-content h1, .report-page-content h2 { margin: 0 0 5px !important; text-align: center !important; }
 `;
@@ -427,8 +437,28 @@ export default function InstallmentsTab() {
     }
   };
   
-  const getConditionalRowClass = (row:
-    any) => {
+  const getConditionalRowPrintStyle = (row: any): string => {
+    const searchableValues = [
+      row.name, row.batch, row.specialty, row.prevDue, row.fees, row.totalPaid, row.remaining, row.notes,
+      ...Object.values(row.payments || {}), ...Object.values(row.customData || {}),
+    ].map((value) => String(value ?? "").toLowerCase());
+    const matchedRule = condFormatRules.find((rule) => {
+      const term = String(rule.text || "").trim().toLowerCase();
+      return term.length > 0 && searchableValues.some((value) => value.includes(term));
+    });
+    const colorMap: Record<string, string> = {
+      "bg-sky-100": "#e0f2fe", "bg-blue-100": "#dbeafe", "bg-indigo-100": "#e0e7ff",
+      "bg-violet-100": "#ede9fe", "bg-purple-100": "#f3e8ff", "bg-pink-100": "#fce7f3",
+      "bg-rose-100": "#ffe4e6", "bg-red-100": "#fee2e2", "bg-orange-100": "#ffedd5",
+      "bg-amber-100": "#fef3c7", "bg-yellow-100": "#fef9c3", "bg-lime-100": "#ecfccb",
+      "bg-green-100": "#dcfce7", "bg-emerald-100": "#d1fae5", "bg-teal-100": "#ccfbf1",
+      "bg-cyan-100": "#cffafe", "bg-slate-100": "#f1f5f9", "bg-gray-100": "#f3f4f6",
+    };
+    const color = matchedRule?.color ? colorMap[matchedRule.color] : undefined;
+    return color ? `background-color: ${color} !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;` : "";
+  };
+
+  const getConditionalRowClass = (row: any) => {
     const searchableValues = [
       row.name,
       row.batch,
@@ -1151,7 +1181,6 @@ export default function InstallmentsTab() {
           cell: (r) =>
             escapeHtml(r
               .notes || "—"),
-          wide: true,
         });
       }
       
@@ -1183,9 +1212,7 @@ export default function InstallmentsTab() {
         Math.max(1, widthUnits);
       // في A4 الطولي يوجد عدد كبير من أعمدة الأشهر؛ نخفض الخط تلقائيًا
       // ونمنع القيمة اليدوية من إعادة الجدول إلى عرض يتجاوز الصفحة.
-      const autoFont = Math.max(
-        18.2, Math.min(15,
-          unitMm * 1.18));
+      const autoFont = Math.max(10, Math.min(15, unitMm * 1.18));
       const fontSizePx = Math.min(
         settings.fontMode ===
         "manual" ? settings
@@ -1203,9 +1230,7 @@ export default function InstallmentsTab() {
         const steps = Math.max(0,
           Math.ceil(Math.max(0,
             len - 16) / 10));
-        const final = Math.max(18,
-          base - Math.min(16,
-            steps * 0.7));
+        const final = Math.max(9, base - Math.min(6, steps * 0.7));
         return `font-size:${final.toFixed(2)}px`;
       };
       
@@ -1217,7 +1242,7 @@ export default function InstallmentsTab() {
       .join("")}</colgroup>`;
       
       const thead = `<tr>${cols
-      .map((c) => `<th class="c-${c.key.replace(/[^a-zA-Z]/g, "")}">${escapeHtml(c.label)}</th>`)
+      .map((c) => `<th class="c-${c.key.replace(/[^a-zA-Z]/g, "")}" data-col-key="${escapeHtml(c.key)}">${escapeHtml(c.label)}</th>`)
       .join("")}</tr>`;
       
       const tbody = (rows || [])
@@ -1227,12 +1252,9 @@ export default function InstallmentsTab() {
             .map((c) => {
               const v = c.cell(
                 r, i);
-              const toneClass =
-                c.tone ?
-                ` t-${c.tone}` :
-                "";
-              const
-                statusClass =
+              const toneClass = c.tone ? ` t-${c.tone}` : "";
+              const numericClass = c.key === "idx" || Boolean(c.tone) || c.key.startsWith("month:") ? " numeric-cell" : "";
+              const statusClass =
                 c.key ===
                 "status" ? (
                   cleanNumber(r
@@ -1243,7 +1265,7 @@ export default function InstallmentsTab() {
                 "";
               const searchableValues = [
                 r.name, r.batch, r.specialty, r.prevDue, r.fees,
-                r.totalPaid, r.remaining,
+                r.totalPaid, r.remaining, r.notes,
                 ...Object.values(r.payments || {}),
                 ...Object.values(r.customData || {}),
               ].map((value) => String(value ?? "").toLowerCase());
@@ -1266,7 +1288,7 @@ export default function InstallmentsTab() {
                     "bg-slate-100": "#f1f5f9", "bg-gray-100": "#f3f4f6",
                   } as Record<string, string>)[matchedRule.color] || undefined
                 : undefined;
-              return `<td class="${c.wide ? "wrap" : ""}${toneClass}${statusClass}" style="${fitStyle(v)}${conditionalColor ? `;background-color:${conditionalColor} !important` : ""}"><span class="cell-content">${v}</span></td>`;
+              return `<td class="${c.wide ? "wrap" : ""}${numericClass}${toneClass}${statusClass}" data-col-key="${escapeHtml(c.key)}" style="${fitStyle(v)}${conditionalColor ? `;background-color:${conditionalColor} !important` : ""}"><span class="cell-content${numericClass}">${v}</span></td>`;
             })
             .join("");
           return `<tr class="${noteRowClass(r.notes)}">${tds}</tr>`;
@@ -1535,8 +1557,8 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         font-weight: 900 !important;
         color: #000 !important;
       }
-      table { table-layout: fixed !important; width: 100% !important; }
-      th, td {
+      table.installments-report-table { table-layout: auto !important; width: 100% !important; max-width: 100% !important; }
+       table.installments-report-table th, table.installments-report-table td {
         padding: 0 4px !important;
         margin: 0 !important;
         text-align: center !important;
@@ -1560,12 +1582,14 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         line-height: 1.2 !important;
       }
       th *, td * { font-family: Cairo, Arial, sans-serif !important; font-size: 16px !important; font-weight: 900 !important; color: #000 !important; }
-      td.numeric-cell, th.numeric-cell, td.date-cell, th.date-cell, td.compact-cell, th.compact-cell,
-      td.numeric-cell .cell-content, th.numeric-cell .cell-content {
-        white-space: nowrap !important;
-        overflow-wrap: normal !important;
-        word-break: keep-all !important;
-      }
+      table.installments-report-table td.numeric-cell, table.installments-report-table th.numeric-cell,
+       table.installments-report-table td.numeric-cell .cell-content, table.installments-report-table th.numeric-cell .cell-content {
+         white-space: nowrap !important; overflow-wrap: normal !important; word-break: keep-all !important;
+         direction: ltr !important; unicode-bidi: isolate !important; font-variant-numeric: tabular-nums !important;
+       }
+       table.installments-report-table th[data-col-key="notes"], table.installments-report-table td[data-col-key="notes"] {
+         width: 1% !important; max-width: 10% !important; white-space: normal !important; overflow-wrap: anywhere !important;
+       }
     `;
       
       const body = `
@@ -1583,8 +1607,8 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       </div>`
           : ""
       }
-      <table>
-        ${colGroup}
+      <table class="installments-report-table">
+         ${colGroup}
         <thead>${thead}</thead>
         <tbody>${tbody}${totalRow}</tbody>
       </table>
@@ -1619,7 +1643,18 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         tableHtml: body,
         contentCss: reportCss,
         finalCss: `
-          #tableContainer table.installments-table { width: 100% !important; border-collapse: collapse !important; table-layout: fixed !important; direction: rtl !important; }
+          #tableContainer table.installments-table { width: 100% !important; border-collapse: collapse !important; table-layout: auto !important; direction: rtl !important; }
+           #tableContainer table.installments-table td.numeric-cell,
+           #tableContainer table.installments-table th.numeric-cell,
+           #tableContainer table.installments-table td.numeric-cell *,
+           #tableContainer table.installments-table th.numeric-cell * {
+             white-space: nowrap !important; overflow-wrap: normal !important; word-break: keep-all !important;
+             direction: ltr !important; unicode-bidi: isolate !important; font-variant-numeric: tabular-nums !important;
+           }
+           #tableContainer table.installments-table th[data-col-key="notes"],
+           #tableContainer table.installments-table td[data-col-key="notes"] {
+             width: 1% !important; max-width: 10% !important; white-space: normal !important; overflow-wrap: anywhere !important;
+           }
           #tableContainer table.installments-table th { background: ${colorTokens.head} !important; color: ${colorTokens.headText} !important; font-weight: 900 !important; }
           #tableContainer table.installments-table td { background-clip: padding-box !important; color: #000 !important; }
           #tableContainer table.installments-table tr.total-row td { background: #0871ce !important; color: #fff !important; font-weight: 900 !important; }
@@ -3301,7 +3336,9 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
         pdfOrientation="portrait"
         pdfMarginMm={1}
         pdfCss={INSTALLMENTS_SUMMARY_REPORT_CSS}
-        additionalWebActions={installments2026WebActions}
+         printRowStyle={getConditionalRowPrintStyle}
+         pdfOrientation="landscape"
+         additionalWebActions={installments2026WebActions}
 className="col-span-full grid grid-cols-2 gap-2 w-full 
 [&>button]:w-auto 
 [&>button]:min-w-auto
