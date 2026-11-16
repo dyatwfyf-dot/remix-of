@@ -460,6 +460,56 @@ export default function InstallmentsTab() {
     return color ? `background-color: ${color} !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;` : "";
   };
 
+  // نفس ألوان الحالة الأكاديمية في تبويب بيانات المتدربين،
+  // وتُطبّق هنا على كامل صف أقساط 2026 بحسب عمود الملاحظات فقط.
+  const normalizeNotesStatus = (value: unknown) =>
+    String(value ?? "")
+      .trim()
+      .replace(/[ًٌٍَُِّْـ]/g, "")
+      .replace(/[إأآ]/g, "ا")
+      .replace(/ى/g, "ي")
+      .replace(/ة/g, "ه")
+      .replace(/\s+/g, " ")
+      .toLocaleLowerCase("ar");
+
+  type NotesStatusTone = "red" | "yellow" | "green" | "orange" | "blue" | "emerald";
+
+  const getNotesStatusTone = (value: unknown): NotesStatusTone | null => {
+    const status = normalizeNotesStatus(value);
+    if (!status) return null;
+    if (["منسحب", "منسحبه", "انسحب", "انسحبت", "منقطع", "منقطعه", "مستقيل", "مستقيله"].includes(status))
+      return "red";
+    if (["مفصول", "مفصوله", "فصل", "راسب", "راسبه"].includes(status))
+      return "yellow";
+    if (["متخرج", "متخرجه", "خريج", "خريجه"].includes(status))
+      return "green";
+    if (["موقوف", "موقوفه", "معتذر", "معتذره"].includes(status))
+      return "orange";
+    if (["مؤجل", "مؤجله"].includes(status))
+      return "blue";
+    if (["مستمر", "مستمره", "منتظم", "منتظمه", "على راس العمل"].includes(status))
+      return "emerald";
+    return null;
+  };
+
+  const getNotesStatusRowClass = (value: unknown) => {
+    const tone = getNotesStatusTone(value);
+    const classes: Record<NotesStatusTone, string> = {
+      red: "bg-red-200 [&>td]:!bg-red-200",
+      yellow: "bg-yellow-200 [&>td]:!bg-yellow-200",
+      green: "bg-green-200 [&>td]:!bg-green-200",
+      orange: "bg-orange-200 [&>td]:!bg-orange-200",
+      blue: "bg-sky-100 [&>td]:!bg-sky-100",
+      emerald: "bg-emerald-50 [&>td]:!bg-emerald-50",
+    };
+    return tone ? classes[tone] : "";
+  };
+
+  const getNotesStatusPrintClass = (value: unknown) => {
+    const tone = getNotesStatusTone(value);
+    return tone ? `notes-status-${tone}` : "";
+  };
+
   const getConditionalRowClass = (row: any) => {
     const searchableValues = [
       row.name,
@@ -1251,6 +1301,9 @@ export default function InstallmentsTab() {
       const tbody = (rows || [])
         .map((r: any, i:
         number) => {
+          const notesStatusPrintClass = year === 2026
+            ? getNotesStatusPrintClass(r.notes)
+            : "";
           const tds = cols
             .map((c) => {
               const v = c.cell(
@@ -1278,7 +1331,7 @@ export default function InstallmentsTab() {
                     return term.length > 0 && searchableValues.some((value) => value.includes(term));
                   })
                 : undefined;
-              const conditionalColor = matchedRule?.color
+              const conditionalColor = !notesStatusPrintClass && matchedRule?.color
                 ? ({
                     "bg-sky-100": "#e0f2fe", "bg-blue-100": "#dbeafe",
                     "bg-indigo-100": "#e0e7ff", "bg-violet-100": "#ede9fe",
@@ -1294,7 +1347,7 @@ export default function InstallmentsTab() {
               return `<td class="${c.wide ? "wrap" : ""}${numericClass}${toneClass}${statusClass}" data-col-key="${escapeHtml(c.key)}" style="${fitStyle(v)}${conditionalColor ? `;background-color:${conditionalColor} !important` : ""}"><span class="cell-content${numericClass}">${v}</span></td>`;
             })
             .join("");
-          return `<tr class="${noteRowClass(r.notes)}">${tds}</tr>`;
+          return `<tr class="${noteRowClass(r.notes)} ${notesStatusPrintClass}">${tds}</tr>`;
         })
         .join("");
       
@@ -1592,6 +1645,25 @@ td.t-fees { background: ${colorTokens.fees} !important; }
        }
        table.installments-report-table th[data-col-key="notes"], table.installments-report-table td[data-col-key="notes"] {
          width: 1% !important; max-width: 10% !important; white-space: normal !important; overflow-wrap: anywhere !important;
+       }
+       /* 2026 notes-driven academic status row colors: same palette as trainee data tab. */
+       table.installments-report-table tbody tr.notes-status-red > td {
+         background: #fecaca !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+       }
+       table.installments-report-table tbody tr.notes-status-yellow > td {
+         background: #fef08a !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+       }
+       table.installments-report-table tbody tr.notes-status-green > td {
+         background: #bbf7d0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+       }
+       table.installments-report-table tbody tr.notes-status-orange > td {
+         background: #fed7aa !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+       }
+       table.installments-report-table tbody tr.notes-status-blue > td {
+         background: #e0f2fe !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+       }
+       table.installments-report-table tbody tr.notes-status-emerald > td {
+         background: #ecfdf5 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
        }
     `;
       
@@ -3492,11 +3564,12 @@ className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transit
                       const status = getStatusText(r.remaining);
                       const originalIndex = originalIndex2026.get(r.name) ?? -1;
                       const rowBgClass = getConditionalRowClass(r);
+                      const notesStatusRowClass = getNotesStatusRowClass(r.notes);
 
                       return (
                         <tr
                           key={i}
-                          className={`border-t border-slate-200 transition-colors ${rowBgClass}`}
+                          className={`border-t border-slate-200 transition-colors ${rowBgClass} ${notesStatusRowClass}`}
                         >
 <td className="text-center text-black font-mono whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             {(currentPage2026 - 1) * INSTALLMENT_PAGE_SIZE + i + 1}
