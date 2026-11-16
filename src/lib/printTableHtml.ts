@@ -544,8 +544,9 @@ export function buildTableHtml(opts: {
   reportDate?: string;
   includeTotalRow?: boolean;
   tableClassName?: string;
+  rowStyleResolver?: (row: Record<string, any>) => string;
 }) {
-  const { title, columns, rows, numericKeys = [], subtitle, reportDate, includeTotalRow = true, tableClassName } = opts;
+  const { title, columns, rows, numericKeys = [], subtitle, reportDate, includeTotalRow = true, tableClassName, rowStyleResolver } = opts;
 
   const isDescriptionColumn = (c: TableCol) =>
     c.key === "description" || /^(البيان|بيان|تفاصيل|وصف|الشرح)$/i.test(c.label.trim());
@@ -646,16 +647,16 @@ export function buildTableHtml(opts: {
       </tr>`;
     }
 
-    return `<tr class="${getReportRowClass(row, index)}"><td class="idx numeric-cell" data-col-key="idx"><span class="pdf-cell-text">${
+    const rowStyle = rowStyleResolver?.(row) || "";
+    const conditionalCellStyle = rowStyle ? ` style="${escapeHtml(rowStyle)}"` : "";
+    return `<tr class="${getReportRowClass(row, index)}"${rowStyle ? ' data-installment-conditional="true"' : ""}><td class="idx numeric-cell" data-col-key="idx"${conditionalCellStyle}><span class="pdf-cell-text">${
       row.summaryLevel === "opening" ? "—" : row.summaryLevel === "total" || row.total === "نعم" ? "★" : index + 1
     }</span></td>${columns
       .map((column) => {
         const value = row[column.key];
         const isNumeric = numericKeys.includes(column.key) || typeof value === "number";
         const classes = getCellClass(column, value);
-        return `<td class="${classes}" data-col-key="${escapeHtml(column.key)}" data-col-name="${escapeHtml(
-          column.label
-        )}"><span class="pdf-cell-text">${formatCellContent(value, isNumeric)}</span></td>`;
+        return `<td class="${classes}" data-col-key="${escapeHtml(column.key)}" data-col-name="${escapeHtml(column.label)}"${conditionalCellStyle}><span class="pdf-cell-text">${formatCellContent(value, isNumeric)}</span></td>`;
       })
       .join("")}</tr>`;
   };
