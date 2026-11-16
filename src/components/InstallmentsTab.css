@@ -364,3 +364,91 @@
   .mizan-installments-tab .installments-controls-2025 > .apk-only-actions,
   .mizan-installments-tab .installments-controls-2026 > .apk-only-actions { gap: 7px !important; }
 }
+
+
+/* Final mobile action layout: flatten action wrappers so every button participates
+   in the same two-column grid instead of forcing full-width stacked rows. */
+.mizan-installments-tab .installments-controls-2025,
+.mizan-installments-tab .installments-controls-2026 {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-auto-flow: row !important;
+  grid-auto-rows: minmax(46px, auto);
+  align-items: stretch !important;
+  gap: 10px !important;
+  padding: 12px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 16px !important;
+  background: linear-gradient(145deg, #f8fafc 0%, #eef2f7 58%, #e0eaf5 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 5px 15px rgba(15,23,42,.09) !important;
+  min-width: 0 !important;
+}
+.mizan-installments-tab .installments-controls-2025 > .installments-search-2025,
+.mizan-installments-tab .installments-controls-2026 > .installments-search-2026 {
+  grid-column: 1 / -1 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+/* Important: these wrapper divs used to span both columns. Dissolve them into
+   the parent grid so their contained buttons become normal two-column items. */
+.mizan-installments-tab .installments-controls-2025 > div.apk-only-actions,
+.mizan-installments-tab .installments-controls-2026 > div.apk-only-actions {
+  display: contents !important;
+  grid-column: auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+/* Every actual button and upload label occupies exactly one of the two columns. */
+.mizan-installments-tab .installments-controls-2025 > button,
+.mizan-installments-tab .installments-controls-2025 > label,
+.mizan-installments-tab .installments-controls-2025 > div.apk-only-actions > button,
+.mizan-installments-tab .installments-controls-2025 > div.apk-only-actions > label,
+.mizan-installments-tab .installments-controls-2026 > button,
+.mizan-installments-tab .installments-controls-2026 > label,
+.mizan-installments-tab .installments-controls-2026 > div.apk-only-actions > button,
+.mizan-installments-tab .installments-controls-2026 > div.apk-only-actions > label {
+  grid-column: auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 46px !important;
+  margin: 0 !important;
+  padding: 8px 6px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  border-radius: 11px !important;
+  font-size: clamp(10px, 2.8vw, 14px) !important;
+  font-weight: 800 !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  box-sizing: border-box !important;
+}
+/* Stable, readable spacing and contrast on narrow Android screens. */
+@media (max-width: 420px) {
+  .mizan-installments-tab .installments-controls-2025,
+  .mizan-installments-tab .installments-controls-2026 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    padding: 9px !important;
+  }
+  .mizan-installments-tab .installments-controls-2025 > button,
+  .mizan-installments-tab .installments-controls-2025 > label,
+  .mizan-installments-tab .installments-controls-2025 > div.apk-only-actions > button,
+  .mizan-installments-tab .installments-controls-2025 > div.apk-only-actions > label,
+  .mizan-installments-tab .installments-controls-2026 > button,
+  .mizan-installments-tab .installments-controls-2026 > label,
+  .mizan-installments-tab .installments-controls-2026 > div.apk-only-actions > button,
+  .mizan-installments-tab .installments-controls-2026 > div.apk-only-actions > label {
+    min-height: 44px !important;
+    padding: 7px 4px !important;
+    font-size: 11px !important;
+  }
+}
