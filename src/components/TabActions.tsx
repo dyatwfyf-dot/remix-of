@@ -17,14 +17,14 @@ import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import WebActionMenu, { type WebActionItem } from "@/components/WebActionMenu";
 
 const adaptiveLedgerPrintCss = `
-/* تنسيق موحد قابل للتكيف لجداول الحوافظ والحساب الجاري والقيود اليومية في المعاينة والطباعة وPDF */
+/* Base semantic hints for ledger tables; final shared Excel-like rules size every column by content. */
 #tableContainer table.hafiza-ledger-table,
 #tableContainer table.accounts-ledger-table,
 #tableContainer table.journal-ledger-table {
   width: 100% !important;
   min-width: 0 !important;
   max-width: 100% !important;
-  table-layout: fixed !important;
+  table-layout: auto !important;
   border-collapse: collapse !important;
   direction: rtl !important;
 }
@@ -34,38 +34,24 @@ const adaptiveLedgerPrintCss = `
 #tableContainer table.accounts-ledger-table td,
 #tableContainer table.journal-ledger-table th,
 #tableContainer table.journal-ledger-table td {
-  white-space: normal !important;
-  overflow-wrap: anywhere !important;
-  word-break: normal !important;
-  overflow: hidden !important;
+  box-sizing: border-box !important;
+  height: auto !important;
   vertical-align: middle !important;
   text-align: center !important;
   line-height: 1.35 !important;
-  max-width: none !important;
-  height: auto !important;
-}
-#tableContainer table.hafiza-ledger-table th,
-#tableContainer table.hafiza-ledger-table td { padding: 3px 4px !important; }
-#tableContainer table.accounts-ledger-table th,
-#tableContainer table.accounts-ledger-table td { padding: 3px 4px !important; }
-#tableContainer table.journal-ledger-table th,
-#tableContainer table.journal-ledger-table td { padding: 4px 5px !important; }
-#tableContainer table.hafiza-ledger-table tbody tr,
-#tableContainer table.accounts-ledger-table tbody tr,
-#tableContainer table.journal-ledger-table tbody tr {
-  height: auto !important;
-  break-inside: avoid !important;
-  page-break-inside: avoid !important;
+  padding: 3px 4px !important;
 }
 #tableContainer table.hafiza-ledger-table thead,
 #tableContainer table.accounts-ledger-table thead,
 #tableContainer table.journal-ledger-table thead {
   display: table-header-group !important;
 }
-#tableContainer table.hafiza-ledger-table th,
-#tableContainer table.accounts-ledger-table th,
-#tableContainer table.journal-ledger-table th {
-  font-weight: 800 !important;
+#tableContainer table.hafiza-ledger-table tbody tr,
+#tableContainer table.accounts-ledger-table tbody tr,
+#tableContainer table.journal-ledger-table tbody tr {
+  height: auto !important;
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
 }
 #tableContainer table.hafiza-ledger-table td.numeric-cell,
 #tableContainer table.hafiza-ledger-table td.date-cell,
@@ -75,83 +61,15 @@ const adaptiveLedgerPrintCss = `
 #tableContainer table.journal-ledger-table td.date-cell {
   white-space: nowrap !important;
   overflow-wrap: normal !important;
-  overflow: hidden !important;
-  text-overflow: clip !important;
+  word-break: keep-all !important;
 }
-/* توزيع أعمدة الحساب الجاري: مساحة أكبر للبيان والاسم، وأعمدة رقمية مضبوطة */
-#tableContainer table.accounts-ledger-table th:nth-child(1),
-#tableContainer table.accounts-ledger-table td:nth-child(1) { width: 3% !important; }
-#tableContainer table.accounts-ledger-table th:nth-child(8),
-#tableContainer table.accounts-ledger-table td:nth-child(8) { width: 15% !important; }
-#tableContainer table.accounts-ledger-table th:nth-child(9),
-#tableContainer table.accounts-ledger-table td:nth-child(9) { width: 9% !important; }
-#tableContainer table.accounts-ledger-table th:nth-child(10),
-#tableContainer table.accounts-ledger-table td:nth-child(10) { width: 10% !important; }
-#tableContainer table.accounts-ledger-table td:nth-child(8) { white-space: normal !important; overflow-wrap: anywhere !important; }
-#tableContainer table.accounts-ledger-table td.numeric-cell,
-#tableContainer table.accounts-ledger-table td.numeric-cell * { white-space: nowrap !important; overflow-wrap: normal !important; word-break: keep-all !important; }
-
-/* القيود اليومية: عرض كافٍ للأرقام والبيان مع التفاف أسماء الحسابات فقط */
-#tableContainer table.journal-ledger-table th:nth-child(1),
-#tableContainer table.journal-ledger-table td:nth-child(1) { width: 8% !important; }
-#tableContainer table.journal-ledger-table th:nth-child(2),
-#tableContainer table.journal-ledger-table td:nth-child(2) { width: 9% !important; }
-#tableContainer table.journal-ledger-table th:nth-child(3),
-#tableContainer table.journal-ledger-table td:nth-child(3) { width: 9% !important; }
-#tableContainer table.journal-ledger-table th:nth-child(4),
-#tableContainer table.journal-ledger-table td:nth-child(4) { width: 19% !important; }
-#tableContainer table.journal-ledger-table th:nth-child(5),
-#tableContainer table.journal-ledger-table td:nth-child(5),
-#tableContainer table.journal-ledger-table th:nth-child(6),
-#tableContainer table.journal-ledger-table td:nth-child(6) { width: 16% !important; }
-#tableContainer table.journal-ledger-table th:nth-child(7),
-#tableContainer table.journal-ledger-table td:nth-child(7),
-#tableContainer table.journal-ledger-table th:nth-child(8),
-#tableContainer table.journal-ledger-table td:nth-child(8) { width: 11% !important; }
-#tableContainer table.journal-ledger-table td:nth-child(7),
-#tableContainer table.journal-ledger-table td:nth-child(8),
-#tableContainer table.journal-ledger-table tfoot td:nth-child(7),
-#tableContainer table.journal-ledger-table tfoot td:nth-child(8) {
-  white-space: nowrap !important; overflow-wrap: normal !important; word-break: keep-all !important;
-  direction: ltr !important; font-variant-numeric: tabular-nums !important;
-}
-#tableContainer table.hafiza-ledger-table th[data-col-key="idx"],
-#tableContainer table.hafiza-ledger-table td[data-col-key="idx"] { width: 4% !important; }
-#tableContainer table.hafiza-ledger-table th[data-col-key="name"],
-#tableContainer table.hafiza-ledger-table td[data-col-key="name"] { width: 12% !important; }
-#tableContainer table.hafiza-ledger-table th[data-col-key="batch"],
-#tableContainer table.hafiza-ledger-table td[data-col-key="batch"] { width: 6% !important; }
-#tableContainer table.hafiza-ledger-table th[data-col-key="specialty"],
-#tableContainer table.hafiza-ledger-table td[data-col-key="specialty"] { width: 10% !important; }
-#tableContainer table.hafiza-ledger-table th[data-col-key="date"],
-#tableContainer table.hafiza-ledger-table td[data-col-key="date"] { width: 9% !important; }
-#tableContainer table.hafiza-ledger-table th[data-col-key="hafizaNo"],
-#tableContainer table.hafiza-ledger-table td[data-col-key="hafizaNo"] { width: 8% !important; }
-#tableContainer table.hafiza-ledger-table th[data-col-key="description"],
-#tableContainer table.hafiza-ledger-table td[data-col-key="description"] { width: 16% !important; }
-#tableContainer table.hafiza-ledger-table th[data-col-key="hafizaAmount"],
-#tableContainer table.hafiza-ledger-table td[data-col-key="hafizaAmount"] { width: 9% !important; }
-#tableContainer table.hafiza-ledger-table th[data-col-key="notifyDate"],
-#tableContainer table.hafiza-ledger-table td[data-col-key="notifyDate"] { width: 9% !important; }
-#tableContainer table.hafiza-ledger-table th[data-col-key="notifyNo"],
-#tableContainer table.hafiza-ledger-table td[data-col-key="notifyNo"] { width: 8% !important; }
-#tableContainer table.hafiza-ledger-table th[data-col-key="notifyAmount"],
-#tableContainer table.hafiza-ledger-table td[data-col-key="notifyAmount"] { width: 9% !important; }
 @media print {
   #tableContainer table.hafiza-ledger-table,
   #tableContainer table.accounts-ledger-table,
   #tableContainer table.journal-ledger-table {
+    table-layout: auto !important;
     width: 100% !important;
-    table-layout: fixed !important;
-    break-inside: auto !important;
-    page-break-inside: auto !important;
   }
-  #tableContainer table.hafiza-ledger-table th,
-  #tableContainer table.hafiza-ledger-table td { font-size: 8.5px !important; padding: 1px 2px !important; }
-  #tableContainer table.accounts-ledger-table th,
-  #tableContainer table.accounts-ledger-table td { font-size: 9.5px !important; padding: 2px 3px !important; }
-  #tableContainer table.journal-ledger-table th,
-  #tableContainer table.journal-ledger-table td { font-size: 10.5px !important; padding: 3px 4px !important; }
 }
 `;
 
