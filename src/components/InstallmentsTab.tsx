@@ -469,7 +469,7 @@ export default function InstallmentsTab() {
       .replace(/[إأآ]/g, "ا")
       .replace(/ى/g, "ي")
       .replace(/ة/g, "ه")
-      .replace(/\\s+/g, " ")
+      .replace(/\s+/g, " ")
       .toLocaleLowerCase("ar");
 
   const getNotesStatusRowClass = (value: unknown) => {
