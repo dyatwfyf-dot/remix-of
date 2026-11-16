@@ -656,12 +656,13 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       max-width: 100% !important;
       box-sizing: border-box !important;
     }
+    /* Excel-like adaptive columns: let content determine width, wrap prose only. */
     #tableContainer table,
     #tableContainer table.reports-data-table {
       width: 100% !important;
       min-width: 0 !important;
       max-width: 100% !important;
-      table-layout: fixed !important;
+      table-layout: auto !important;
       border-collapse: collapse !important;
     }
     #tableContainer table th,
@@ -670,9 +671,19 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       width: auto !important;
       min-width: 0 !important;
       max-width: none !important;
+      height: auto !important;
+      vertical-align: middle !important;
       white-space: normal !important;
       overflow-wrap: anywhere !important;
       word-break: normal !important;
+      line-height: 1.3 !important;
+      font-size: var(--print-cell-font-size, 12px) !important;
+      padding: var(--print-cell-padding, 3px 4px) !important;
+    }
+    #tableContainer table th {
+      font-size: var(--print-header-font-size, 12px) !important;
+      white-space: normal !important;
+      overflow-wrap: anywhere !important;
     }
     #tableContainer table td.num,
     #tableContainer table td.numeric-cell,
@@ -681,15 +692,40 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     #tableContainer table td.ref-cell,
     #tableContainer table td.idx,
     #tableContainer table td.reports-numeric-cell,
-    #tableContainer table td.reports-no-wrap-cell {
+    #tableContainer table td.reports-no-wrap-cell,
+    #tableContainer table th.numeric-cell,
+    #tableContainer table th.date-cell {
+      white-space: nowrap !important;
+      overflow-wrap: normal !important;
+      word-break: keep-all !important;
+      direction: ltr !important;
+      unicode-bidi: isolate !important;
+      font-variant-numeric: tabular-nums !important;
+    }
+    #tableContainer table td.numeric-cell .pdf-cell-text,
+    #tableContainer table td.date-cell .pdf-cell-text,
+    #tableContainer table td.num .pdf-cell-text,
+    #tableContainer table td.ref-cell .pdf-cell-text,
+    #tableContainer table td.idx .pdf-cell-text {
       white-space: nowrap !important;
       overflow-wrap: normal !important;
       word-break: keep-all !important;
     }
     #tableContainer table .pdf-cell-text {
+      display: inline-block !important;
       max-width: 100% !important;
       white-space: inherit !important;
-      overflow-wrap: anywhere !important;
+      overflow-wrap: inherit !important;
+      word-break: inherit !important;
+      vertical-align: middle !important;
+    }
+    #tableContainer table tr { height: auto !important; }
+    @media print {
+      #tableContainer table { table-layout: auto !important; width: 100% !important; }
+      #tableContainer table th, #tableContainer table td {
+        height: auto !important;
+        font-size: var(--print-cell-font-size, 11px) !important;
+      }
     }
     @media print {
       html, body { width: 100% !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
@@ -1256,9 +1292,9 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
             ? (orientation === 'portrait' ? 215.9 : 279.4)
             : (orientation === 'portrait' ? 210 : 297);
         // Maintain readable physical print text while allowing dense tables to fit A4.
-        const fontSize = columnCount > 12 ? 14 : columnCount > 9 ? 15 : 16;
-        const headerFontSize = columnCount > 12 ? 14 : columnCount > 9 ? 15 : 16;
-        const horizontalPadding = columnCount > 12 ? 2 : columnCount > 9 ? 3 : 5;
+        const fontSize = columnCount > 16 ? 9 : columnCount > 13 ? 10 : columnCount > 10 ? 11 : columnCount > 7 ? 12 : 14;
+        const headerFontSize = columnCount > 16 ? 9 : columnCount > 13 ? 10 : columnCount > 10 ? 11 : columnCount > 7 ? 12 : 14;
+        const horizontalPadding = columnCount > 13 ? 1.5 : columnCount > 9 ? 2.5 : 4;
 
         paperContainer.style.setProperty('--print-cell-font-size', fontSize + 'px');
         paperContainer.style.setProperty('--print-header-font-size', headerFontSize + 'px');
@@ -1275,6 +1311,15 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         window.requestAnimationFrame(function() {
           const table = tableContainer.querySelector('table');
           if (!table) return;
+
+          // Detect pure numeric and date cells so values remain intact on one line.
+          const numericOrDate = /^[\\s\\u200e\\u200f]*[+-]?(?:(?:[0-9٠-٩۰-۹]+)(?:[,.٬٫][0-9٠-٩۰-۹]+)*|[0-9٠-٩۰-۹]{1,4}[-/.][0-9٠-٩۰-۹]{1,2}[-/.][0-9٠-٩۰-۹]{1,4})(?:\\s*(?:ر\\.?\\s*ي|ريال|ر\\.?\\s*س))?[\\s\\u200e\\u200f]*$/;
+          tableContainer.querySelectorAll('table').forEach(function(currentTable) {
+            currentTable.querySelectorAll('th,td').forEach(function(cell) {
+              const value = (cell.textContent || '').trim();
+              if (numericOrDate.test(value)) cell.classList.add('numeric-cell');
+            });
+          });
 
           const availableWidth = Math.max(1, paperContainer.clientWidth -
             parseFloat(getComputedStyle(paperContainer).paddingLeft || '0') -
