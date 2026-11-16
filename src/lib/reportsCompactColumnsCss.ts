@@ -1,6 +1,23 @@
 // Shared compact column sizing for report tables (screen, print preview, print, PDF).
 // Numeric/date cells stay on one line; long text wraps without truncation.
 
+/** Mark serial-number columns (م, #, مسلسل) and keep their cells sized to their contents. */
+export function tagSerialColumns(root: ParentNode) {
+  const serialHeader = /^(?:م|#|المسلسل|مسلسل|التسلسل|تسلسل|م\.?|no\.?|s\.?no\.?)$/i;
+  root.querySelectorAll("table").forEach((table) => {
+    const headers = Array.from(table.querySelectorAll("thead tr:first-child th, thead tr:first-child td, tr:first-child th, tr:first-child td"));
+    const index = headers.findIndex((cell) => serialHeader.test((cell.textContent || "").replace(/[\s.]/g, "").trim()));
+    if (index < 0) return;
+    table.querySelectorAll("tr").forEach((row) => {
+      const cell = row.children.item(index) as HTMLElement | null;
+      if (cell) cell.classList.add("serial-number-column");
+    });
+  });
+}
+
+/** Same logic as an inline script for the standalone preview window. */
+export const tagSerialColumnsScript = `(${tagSerialColumns.toString()})(document);`;
+
 /** Classifies each cell of report tables under `root` as numeric (no wrap) or text (wrap). */
 export function tagReportCells(root: ParentNode) {
   const numRe = /^[\s\-+()]*[\d\u0660-\u0669\u06F0-\u06F9][\d\u0660-\u0669\u06F0-\u06F9\s.,٫٬،%\-/:+()]*$/;
@@ -33,6 +50,20 @@ export const reportsCompactColumnsCss = `
     white-space: nowrap !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
+  }
+  table.reports-data-table th.serial-number-column,
+  table.reports-data-table td.serial-number-column,
+  table th.serial-number-column,
+  table td.serial-number-column {
+    width: 1% !important;
+    min-width: 2.2rem !important;
+    max-width: 4.5rem !important;
+    padding-inline: 3px !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
+    font-variant-numeric: tabular-nums !important;
   }
   table.reports-data-table th.rc-num,
   table.reports-data-table td.rc-num {
