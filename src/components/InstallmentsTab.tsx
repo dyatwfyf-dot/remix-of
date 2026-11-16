@@ -35,10 +35,8 @@ import { noteRowClass,
 import type { WebActionItem } from "./WebActionMenu";
 import PrintSettingsModal, {
   DEFAULT_PRINT_SETTINGS,
-  marginToCss,
   type InstallmentsPrintSettings,
 } from "./PrintSettingsModal";
-import { openPrintDocument } from "@/lib/printDocument";
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import { useReportDate } from "@/lib/reportDate";
 import { reportLetterheadHtml } from "@/lib/printTableHtml";
@@ -1243,7 +1241,32 @@ export default function InstallmentsTab() {
                   " s-ok" :
                   " s-bad") :
                 "";
-              return `<td class="${c.wide ? "wrap" : ""}${toneClass}${statusClass}" style="${fitStyle(v)}"><span class="cell-content">${v}</span></td>`;
+              const searchableValues = [
+                r.name, r.batch, r.specialty, r.prevDue, r.fees,
+                r.totalPaid, r.remaining,
+                ...Object.values(r.payments || {}),
+                ...Object.values(r.customData || {}),
+              ].map((value) => String(value ?? "").toLowerCase());
+              const matchedRule = year === 2026
+                ? condFormatRules.find((rule) => {
+                    const term = String(rule.text || "").trim().toLowerCase();
+                    return term.length > 0 && searchableValues.some((value) => value.includes(term));
+                  })
+                : undefined;
+              const conditionalColor = matchedRule?.color
+                ? ({
+                    "bg-sky-100": "#e0f2fe", "bg-blue-100": "#dbeafe",
+                    "bg-indigo-100": "#e0e7ff", "bg-violet-100": "#ede9fe",
+                    "bg-purple-100": "#f3e8ff", "bg-pink-100": "#fce7f3",
+                    "bg-rose-100": "#ffe4e6", "bg-red-100": "#fee2e2",
+                    "bg-orange-100": "#ffedd5", "bg-amber-100": "#fef3c7",
+                    "bg-yellow-100": "#fef9c3", "bg-lime-100": "#ecfccb",
+                    "bg-green-100": "#dcfce7", "bg-emerald-100": "#d1fae5",
+                    "bg-teal-100": "#ccfbf1", "bg-cyan-100": "#cffafe",
+                    "bg-slate-100": "#f1f5f9", "bg-gray-100": "#f3f4f6",
+                  } as Record<string, string>)[matchedRule.color] || undefined
+                : undefined;
+              return `<td class="${c.wide ? "wrap" : ""}${toneClass}${statusClass}" style="${fitStyle(v)}${conditionalColor ? `;background-color:${conditionalColor} !important` : ""}"><span class="cell-content">${v}</span></td>`;
             })
             .join("");
           return `<tr class="${noteRowClass(r.notes)}">${tds}</tr>`;
@@ -1590,28 +1613,30 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         return;
       }
       
-      const ok =
-        await openPrintDocument({
-          title: `تقرير_الأقساط_والمدفوعات_${year}_${reportDate}`,
-          body,
-          css: reportCss,
-          pageSize: settings
-            .pageSize,
-          orientation: settings
-            .orientation,
-          margin: marginToCss(
-            settings.margin),
-          autoPrint: false,
-        });
-      
+      const ok = await openBrowserPrintPreview({
+        title: `تقرير الأقساط والمدفوعات للعام ${year}`,
+        reportDateLabel: date,
+        tableHtml: body,
+        contentCss: reportCss,
+        finalCss: `
+          #tableContainer table.installments-table { width: 100% !important; border-collapse: collapse !important; table-layout: fixed !important; direction: rtl !important; }
+          #tableContainer table.installments-table th { background: ${colorTokens.head} !important; color: ${colorTokens.headText} !important; font-weight: 900 !important; }
+          #tableContainer table.installments-table td { background-clip: padding-box !important; color: #000 !important; }
+          #tableContainer table.installments-table tr.total-row td { background: #0871ce !important; color: #fff !important; font-weight: 900 !important; }
+          #tableContainer table.installments-table tr.total-row td * { color: #fff !important; }
+          #tableContainer table.installments-table tr { break-inside: avoid !important; page-break-inside: avoid !important; }
+          #tableContainer .doc-header, #tableContainer .doc-foot { font-family: Cairo, Arial, sans-serif !important; }
+        `,
+        defaultOrientation: settings.orientation,
+        defaultPageSize: settings.pageSize,
+        defaultMarginMm: settings.margin === "narrow" ? 1 : settings.margin === "wide" ? 12 : 6,
+        fitToContent: false,
+      });
+
       if (ok) {
-        toast.success(
-          "تم فتح التقرير — اختر «حفظ كـ PDF» للحصول على ملف عالي الجودة"
-          );
+        toast.success("تم فتح معاينة التقرير — يمكنك الطباعة أو الحفظ بصيغة PDF");
       } else {
-        toast.error(
-          "تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة"
-          );
+        toast.error("تعذّر فتح نافذة معاينة الطباعة، يرجى السماح بالنوافذ المنبثقة");
       }
     } catch (error) {
       toast.error(
