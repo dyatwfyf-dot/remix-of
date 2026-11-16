@@ -238,6 +238,86 @@ export const excelLikePrintTablesCss = `
   }
 
 
+  /* Screen/print/PDF palette parity for the 2026 installments reports. */
+  #tableContainer table.installments-summary-2026 thead th,
+  #report-source table.installments-summary-2026 thead th {
+    background: linear-gradient(180deg,#7dd3fc 0%,#38bdf8 52%,#0ea5e9 100%) !important;
+    color: #000 !important; border: 1px solid #0369a1 !important;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+  }
+  #tableContainer table.installments-summary-2026 thead th[data-col-key="idx"],
+  #tableContainer table.installments-summary-2026 thead th[data-col-key="name"],
+  #report-source table.installments-summary-2026 thead th[data-col-key="idx"],
+  #report-source table.installments-summary-2026 thead th[data-col-key="name"] { color: #fff !important; }
+
+  #tableContainer table.installments-screen-parity thead th,
+  #report-source table.installments-screen-parity thead th {
+    background: linear-gradient(180deg,#7dd3fc 0%,#38bdf8 52%,#0ea5e9 100%) !important;
+    color: #000 !important; border: 1px solid #0369a1 !important;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+  }
+  #tableContainer table.installments-screen-parity thead th[data-col-key="idx"],
+  #tableContainer table.installments-screen-parity thead th[data-col-key="name"],
+  #report-source table.installments-screen-parity thead th[data-col-key="idx"],
+  #report-source table.installments-screen-parity thead th[data-col-key="name"] { color: #fff !important; }
+
+  #tableContainer table.installments-summary-2026 tbody td,
+  #tableContainer table.installments-screen-parity tbody td,
+  #report-source table.installments-summary-2026 tbody td,
+  #report-source table.installments-screen-parity tbody td {
+    border: 1px solid #cbd5e1 !important;
+    color: #000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  #tableContainer table.installments-summary-2026 tbody td[data-col-key="name"],
+  #tableContainer table.installments-screen-parity tbody td.screen-name-cell,
+  #report-source table.installments-summary-2026 tbody td[data-col-key="name"],
+  #report-source table.installments-screen-parity tbody td.screen-name-cell { background: #fdf4ff !important; }
+  #tableContainer table.installments-summary-2026 tbody td[data-col-key="batch"],
+  #tableContainer table.installments-summary-2026 tbody td[data-col-key="specialty"],
+  #tableContainer table.installments-summary-2026 tbody td[data-col-key="fees"],
+  #tableContainer table.installments-screen-parity tbody td.screen-batch-cell,
+  #tableContainer table.installments-screen-parity tbody td.screen-specialty-cell,
+  #tableContainer table.installments-screen-parity tbody td.screen-fees-cell,
+  #report-source table.installments-summary-2026 tbody td[data-col-key="batch"],
+  #report-source table.installments-summary-2026 tbody td[data-col-key="specialty"],
+  #report-source table.installments-summary-2026 tbody td[data-col-key="fees"],
+  #report-source table.installments-screen-parity tbody td.screen-batch-cell,
+  #report-source table.installments-screen-parity tbody td.screen-specialty-cell,
+  #report-source table.installments-screen-parity tbody td.screen-fees-cell { background: #f0f9ff !important; }
+  #tableContainer table.installments-summary-2026 tbody td[data-col-key="prevDue"],
+  #tableContainer table.installments-screen-parity tbody td.screen-prevdue-cell,
+  #report-source table.installments-summary-2026 tbody td[data-col-key="prevDue"],
+  #report-source table.installments-screen-parity tbody td.screen-prevdue-cell { background: #f8fcff !important; }
+  #tableContainer table.installments-summary-2026 tbody td[data-col-key="totalPaid"],
+  #tableContainer table.installments-screen-parity tbody td.screen-totalpaid-cell,
+  #report-source table.installments-summary-2026 tbody td[data-col-key="totalPaid"],
+  #report-source table.installments-screen-parity tbody td.screen-totalpaid-cell { background: #ecfdf5 !important; }
+  #tableContainer table.installments-summary-2026 tbody td[data-col-key="remaining"],
+  #tableContainer table.installments-screen-parity tbody td.screen-remaining-cell,
+  #report-source table.installments-summary-2026 tbody td[data-col-key="remaining"],
+  #report-source table.installments-screen-parity tbody td.screen-remaining-cell { background: #fff1f2 !important; }
+  #tableContainer table.installments-summary-2026 tbody td[data-col-key="notes"],
+  #tableContainer table.installments-screen-parity tbody td.screen-notes-cell,
+  #report-source table.installments-summary-2026 tbody td[data-col-key="notes"],
+  #report-source table.installments-screen-parity tbody td.screen-notes-cell { background: #fffbeb !important; }
+  #tableContainer table.installments-screen-parity tbody td.screen-month-cell,
+  #tableContainer table.installments-screen-parity tbody td.screen-extra-cell,
+  #tableContainer table.installments-screen-parity tbody td.screen-status-cell,
+  #tableContainer table.installments-screen-parity tbody td.screen-idx-cell,
+  #report-source table.installments-screen-parity tbody td.screen-month-cell,
+  #report-source table.installments-screen-parity tbody td.screen-extra-cell,
+  #report-source table.installments-screen-parity tbody td.screen-status-cell,
+  #report-source table.installments-screen-parity tbody td.screen-idx-cell { background: #fff !important; }
+  #tableContainer table.installments-summary-2026 tbody tr.total-row > td,
+  #tableContainer table.installments-screen-parity tbody tr.total-row > td,
+  #report-source table.installments-summary-2026 tbody tr.total-row > td,
+  #report-source table.installments-screen-parity tbody tr.total-row > td {
+    background: #e0f2fe !important; color: #000 !important;
+    border-color: #7dd3fc !important; font-weight: 900 !important;
+  }
+
   /* Preserve all semantic row highlighting after shared white-cell themes. */
   .report-page-content table tbody tr.note-red > td,
   #tableContainer table tbody tr.note-red > td,
