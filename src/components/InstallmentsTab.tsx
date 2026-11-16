@@ -460,6 +460,36 @@ export default function InstallmentsTab() {
     return color ? `background-color: ${color} !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;` : "";
   };
 
+  // نفس ألوان الحالة الأكاديمية في تبويب بيانات المتدربين،
+  // وتُطبّق هنا على كامل صف أقساط 2026 بحسب عمود الملاحظات فقط.
+  const normalizeNotesStatus = (value: unknown) =>
+    String(value ?? "")
+      .trim()
+      .replace(/[ًٌٍَُِّْـ]/g, "")
+      .replace(/[إأآ]/g, "ا")
+      .replace(/ى/g, "ي")
+      .replace(/ة/g, "ه")
+      .replace(/\\s+/g, " ")
+      .toLocaleLowerCase("ar");
+
+  const getNotesStatusRowClass = (value: unknown) => {
+    const status = normalizeNotesStatus(value);
+    if (!status) return "";
+    if (["منسحب", "منسحبه", "انسحب", "انسحبت", "منقطع", "منقطعه", "مستقيل", "مستقيله"].includes(status))
+      return "bg-red-200 [&>td]:!bg-red-200";
+    if (["مفصول", "مفصوله", "فصل", "راسب", "راسبه"].includes(status))
+      return "bg-yellow-200 [&>td]:!bg-yellow-200";
+    if (["متخرج", "متخرجه", "خريج", "خريجه"].includes(status))
+      return "bg-green-200 [&>td]:!bg-green-200";
+    if (["موقوف", "موقوفه", "معتذر", "معتذره"].includes(status))
+      return "bg-orange-200 [&>td]:!bg-orange-200";
+    if (["مؤجل", "مؤجله"].includes(status))
+      return "bg-sky-100 [&>td]:!bg-sky-100";
+    if (["مستمر", "مستمره", "منتظم", "منتظمه", "على راس العمل"].includes(status))
+      return "bg-emerald-50 [&>td]:!bg-emerald-50";
+    return "";
+  };
+
   const getConditionalRowClass = (row: any) => {
     const searchableValues = [
       row.name,
@@ -3492,11 +3522,12 @@ className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transit
                       const status = getStatusText(r.remaining);
                       const originalIndex = originalIndex2026.get(r.name) ?? -1;
                       const rowBgClass = getConditionalRowClass(r);
+                      const notesStatusRowClass = getNotesStatusRowClass(r.notes);
 
                       return (
                         <tr
                           key={i}
-                          className={`border-t border-slate-200 transition-colors ${rowBgClass}`}
+                          className={`border-t border-slate-200 transition-colors ${rowBgClass} ${notesStatusRowClass}`}
                         >
 <td className="text-center text-black font-mono whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-slate-200">
                             {(currentPage2026 - 1) * INSTALLMENT_PAGE_SIZE + i + 1}
