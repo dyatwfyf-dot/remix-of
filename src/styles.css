@@ -1008,3 +1008,27 @@ body {
   .mizan-hafiza-tab > div:nth-child(2) { padding:.65rem !important; }
   .mizan-hafiza-tab > div:nth-child(2) button { min-height:42px; font-size:.82rem !important; }
 }
+
+
+
+/* احتواء تلقائي لجداول الحوافظ والحساب الجاري والقيود اليومية على الشاشة */
+.mizan-hafiza-tab table.hafiza-ledger-table,
+.mizan-account-tab table.accounts-ledger-table,
+.mizan-journal-tab table.journal-ledger-table {
+  width: 100% !important;
+  min-width: 0 !important;
+  table-layout: auto !important;
+}
+.mizan-hafiza-tab table.hafiza-ledger-table th,
+.mizan-hafiza-tab table.hafiza-ledger-table td,
+.mizan-account-tab table.accounts-ledger-table th,
+.mizan-account-tab table.accounts-ledger-table td,
+.mizan-journal-tab table.journal-ledger-table th,
+.mizan-journal-tab table.journal-ledger-table td {
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+  vertical-align: middle !important;
+  height: auto !important;
+  line-height: 1.35 !important;
+}
