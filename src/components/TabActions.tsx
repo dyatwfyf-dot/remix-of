@@ -195,7 +195,7 @@ export default function TabActions({
       reportDateLabel,
       tableHtml: tableHtml(),
       contentCss: pdfCss ? `${reportDocumentCss}\n${pdfCss}` : reportDocumentCss,
-      finalCss: [adaptiveLedgerPrintCss, pdfFinalCss].filter(Boolean).join("\\n"),
+      finalCss: [adaptiveLedgerPrintCss, pdfFinalCss].filter(Boolean).join("\n"),
       defaultOrientation,
       defaultPageSize: "A4",
       ...(pdfMarginMm === undefined ? {} : { defaultMarginMm: pdfMarginMm }),
