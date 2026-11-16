@@ -1032,3 +1032,19 @@ body {
   height: auto !important;
   line-height: 1.35 !important;
 }
+
+
+/* Keep the serial/index column compact on screen, like a spreadsheet row number. */
+table:has(> thead th:first-child:is(.serial-number-column, [data-column="serial"])) th:first-child,
+table:has(> thead th:first-child:is(.serial-number-column, [data-column="serial"])) td:first-child,
+table:has(> tbody tr:first-child th:first-child:is(.serial-number-column, [data-column="serial"])) td:first-child {
+  width: 1% !important;
+  min-width: 2.2rem !important;
+  max-width: 4.5rem !important;
+  padding-inline: .25rem !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow-wrap: normal !important;
+  word-break: keep-all !important;
+  font-variant-numeric: tabular-nums !important;
+}
