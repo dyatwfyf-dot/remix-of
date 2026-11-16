@@ -145,6 +145,18 @@ const INSTALLMENTS_SUMMARY_REPORT_CSS = `
   }
   .report-page-content .num, .report-page-content .numeric-cell { white-space: nowrap !important; word-break: keep-all !important; direction: ltr !important; }
   .report-page-content h1, .report-page-content h2 { margin: 0 0 5px !important; text-align: center !important; }
+  /* Summary print style for installments 2026 mirrors visible screen table. */
+  .report-page-content table.installments-summary-2026 { border-collapse: collapse !important; direction: rtl !important; }
+  .report-page-content table.installments-summary-2026 thead th { background: linear-gradient(180deg,#7dd3fc 0%,#38bdf8 52%,#0ea5e9 100%) !important; color: #000 !important; border: 1px solid #0369a1 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .report-page-content table.installments-summary-2026 thead th[data-col-key="idx"], .report-page-content table.installments-summary-2026 thead th[data-col-key="name"] { color: #fff !important; }
+  .report-page-content table.installments-summary-2026 tbody td { border: 1px solid #cbd5e1 !important; color: #000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .report-page-content table.installments-summary-2026 tbody td[data-col-key="name"] { background: #fdf4ff !important; }
+  .report-page-content table.installments-summary-2026 tbody td[data-col-key="batch"], .report-page-content table.installments-summary-2026 tbody td[data-col-key="specialty"], .report-page-content table.installments-summary-2026 tbody td[data-col-key="fees"] { background: #f0f9ff !important; }
+  .report-page-content table.installments-summary-2026 tbody td[data-col-key="prevDue"] { background: #f8fcff !important; }
+  .report-page-content table.installments-summary-2026 tbody td[data-col-key="totalPaid"] { background: #ecfdf5 !important; }
+  .report-page-content table.installments-summary-2026 tbody td[data-col-key="remaining"] { background: #fff1f2 !important; }
+  .report-page-content table.installments-summary-2026 tbody td[data-col-key="notes"] { background: #fffbeb !important; }
+  .report-page-content table.installments-summary-2026 tbody tr.total-row td { background: #e0f2fe !important; color: #000 !important; border-color: #7dd3fc !important; font-weight: 900 !important; }
 `;
 
 // All PDF reports use the same paper layout and measured row pagination.
@@ -448,6 +460,9 @@ export default function InstallmentsTab() {
       const term = String(rule.text || "").trim().toLowerCase();
       return term.length > 0 && searchableValues.some((value) => value.includes(term));
     });
+    const notesTone = getNotesStatusTone(row.notes);
+    const notesPrintColors: Record<NotesStatusTone, string> = { red: "#fecaca", yellow: "#fef08a", green: "#bbf7d0", orange: "#fed7aa", blue: "#e0f2fe", emerald: "#ecfdf5" };
+    if (notesTone) return `background-color: ${notesPrintColors[notesTone]} !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;`;
     const colorMap: Record<string, string> = {
       "bg-sky-100": "#e0f2fe", "bg-blue-100": "#dbeafe", "bg-indigo-100": "#e0e7ff",
       "bg-violet-100": "#ede9fe", "bg-purple-100": "#f3e8ff", "bg-pink-100": "#fce7f3",
@@ -1310,6 +1325,15 @@ export default function InstallmentsTab() {
                 r, i);
               const toneClass = c.tone ? ` t-${c.tone}` : "";
               const numericClass = c.key === "idx" || Boolean(c.tone) || c.key.startsWith("month:") ? " numeric-cell" : "";
+              const screenCellClassMap: Record<string, string> = {
+                idx: "screen-idx-cell", name: "screen-name-cell", batch: "screen-batch-cell",
+                specialty: "screen-specialty-cell", prevDue: "screen-prevdue-cell", fees: "screen-fees-cell",
+                totalPaid: "screen-totalpaid-cell", remaining: "screen-remaining-cell",
+                notes: "screen-notes-cell", status: "screen-status-cell",
+              };
+              const screenCellClass = year === 2026
+                ? (screenCellClassMap[c.key] || (c.key.startsWith("month:") ? "screen-month-cell" : c.key.startsWith("col:") ? "screen-extra-cell" : ""))
+                : "";
               const statusClass =
                 c.key ===
                 "status" ? (
@@ -1344,7 +1368,7 @@ export default function InstallmentsTab() {
                     "bg-slate-100": "#f1f5f9", "bg-gray-100": "#f3f4f6",
                   } as Record<string, string>)[matchedRule.color] || undefined
                 : undefined;
-              return `<td class="${c.wide ? "wrap" : ""}${numericClass}${toneClass}${statusClass}" data-col-key="${escapeHtml(c.key)}" style="${fitStyle(v)}${conditionalColor ? `;background-color:${conditionalColor} !important` : ""}"><span class="cell-content${numericClass}">${v}</span></td>`;
+              return `<td class="${c.wide ? "wrap" : ""}${numericClass}${toneClass}${statusClass} ${screenCellClass}" data-col-key="${escapeHtml(c.key)}" style="${fitStyle(v)}${conditionalColor ? `;background-color:${conditionalColor} !important` : ""}"><span class="cell-content${numericClass}">${v}</span></td>`;
             })
             .join("");
           return `<tr class="${noteRowClass(r.notes)} ${notesStatusPrintClass}">${tds}</tr>`;
@@ -1665,6 +1689,34 @@ td.t-fees { background: ${colorTokens.fees} !important; }
        table.installments-report-table tbody tr.notes-status-emerald > td {
          background: #ecfdf5 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
        }
+       /* Screen-equivalent appearance for the detailed 2026 installments report. */
+       table.installments-screen-parity { direction: rtl !important; border-collapse: collapse !important; }
+       table.installments-screen-parity thead th {
+         background: linear-gradient(180deg,#7dd3fc 0%,#38bdf8 52%,#0ea5e9 100%) !important;
+         color: #000 !important; border: 1px solid #0369a1 !important;
+         -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+       }
+       table.installments-screen-parity thead th[data-col-key="idx"], table.installments-screen-parity thead th[data-col-key="name"] { color: #fff !important; }
+       table.installments-screen-parity tbody td { border: 1px solid #cbd5e1 !important; color: #000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+       table.installments-screen-parity tbody td.screen-name-cell { background: #fdf4ff !important; }
+       table.installments-screen-parity tbody td.screen-batch-cell, table.installments-screen-parity tbody td.screen-specialty-cell, table.installments-screen-parity tbody td.screen-fees-cell { background: #f0f9ff !important; }
+       table.installments-screen-parity tbody td.screen-prevdue-cell { background: #f8fcff !important; }
+       table.installments-screen-parity tbody td.screen-month-cell, table.installments-screen-parity tbody td.screen-extra-cell, table.installments-screen-parity tbody td.screen-status-cell, table.installments-screen-parity tbody td.screen-idx-cell { background: #ffffff !important; }
+       table.installments-screen-parity tbody td.screen-totalpaid-cell { background: #ecfdf5 !important; }
+       table.installments-screen-parity tbody td.screen-remaining-cell { background: #fff1f2 !important; }
+       table.installments-screen-parity tbody td.screen-notes-cell { background: #fffbeb !important; }
+       table.installments-screen-parity tbody tr.total-row > td { background: #e0f2fe !important; color: #000 !important; border-color: #7dd3fc !important; font-weight: 900 !important; }
+       table.installments-screen-parity tbody tr.notes-status-red > td { background: #fecaca !important; }
+       table.installments-screen-parity tbody tr.notes-status-yellow > td { background: #fef08a !important; }
+       table.installments-screen-parity tbody tr.notes-status-green > td { background: #bbf7d0 !important; }
+       table.installments-screen-parity tbody tr.notes-status-orange > td { background: #fed7aa !important; }
+       table.installments-screen-parity tbody tr.notes-status-blue > td { background: #e0f2fe !important; }
+       table.installments-screen-parity tbody tr.notes-status-emerald > td { background: #ecfdf5 !important; }
+       table.installments-screen-parity tbody tr.notes-status-red > td, table.installments-screen-parity tbody tr.notes-status-yellow > td,
+       table.installments-screen-parity tbody tr.notes-status-green > td, table.installments-screen-parity tbody tr.notes-status-orange > td,
+       table.installments-screen-parity tbody tr.notes-status-blue > td, table.installments-screen-parity tbody tr.notes-status-emerald > td {
+         -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+       }
     `;
       
       const body = `
@@ -1682,7 +1734,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       </div>`
           : ""
       }
-      <table class="installments-report-table">
+      <table class="installments-report-table${year === 2026 ? " installments-screen-parity" : ""}">
          ${colGroup}
         <thead>${thead}</thead>
         <tbody>${tbody}${totalRow}</tbody>
@@ -3313,7 +3365,7 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
 
       <button
         onClick={() => setCondFormatModal(true)}
-        className={`apk-only-actions w-full px-2 py-1.5 rounded-md text-sm font-extrabold shadow transition-colors flex items-center justify-center gap-1 ${
+        className={`apk-only-actions installment-action-btn installment-action-format w-full px-2 py-1.5 rounded-md text-sm font-extrabold shadow transition-colors flex items-center justify-center gap-1 ${
           condFormatRules.length
             ? "bg-yellow-900 text-yellow-900 animate-pulse"
             : "bg-white/20 text-black hover:bg-white/30"
@@ -3331,7 +3383,7 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
       {/* السطر 2: إضافة طالب جديد + إضافة عمود جديد */}
       <button
         onClick={() => setNewRowModal2026(true)}
-        className="apk-only-actions w-full px-2 py-1.5 bg-blue-900 text-white rounded-md text-sm sm:text-sm font-bold shadow hover:bg-blue-800 transition-colors flex items-center justify-center gap-1"
+        className="apk-only-actions installment-action-btn installment-action-student w-full px-2 py-1.5 bg-blue-900 text-white rounded-md text-sm sm:text-sm font-bold shadow hover:bg-blue-800 transition-colors flex items-center justify-center gap-1"
       >
         <Plus className={ICON_MOBILE} />
         <span>طالب جديد</span>
@@ -3339,7 +3391,7 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
 
       <button
         onClick={() => setNewColModal(true)}
-        className="apk-only-actions w-full px-2 py-1.5 bg-amber-800 text-white rounded-md text-xs sm:text-sm font-bold shadow hover:bg-amber-700 transition-colors flex items-center justify-center gap-1"
+        className="apk-only-actions installment-action-btn installment-action-column w-full px-2 py-1.5 bg-amber-800 text-white rounded-md text-xs sm:text-sm font-bold shadow hover:bg-amber-700 transition-colors flex items-center justify-center gap-1"
       >
         <Plus className={ICON_MOBILE} />
         <span>عمود جديد</span>
@@ -3348,12 +3400,12 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
       {/* السطر 3: إضافة قسط + استيراد */}
       <button
         onClick={() => setNewPaymentModal(true)}
-        className="apk-only-actions w-full px-2 py-1.5 bg-red-700 text-white rounded-md text-sm font-bold shadow hover:bg-red-800 transition-colors flex items-center justify-center gap-1 truncate"
+        className="apk-only-actions installment-action-btn installment-action-payment w-full px-2 py-1.5 bg-red-700 text-white rounded-md text-sm font-bold shadow hover:bg-red-800 transition-colors flex items-center justify-center gap-1 truncate"
       >
         <span>➕ إضافة قسط</span>
       </button>
 
-      <label className={`apk-only-actions relative w-full px-2 py-1.5 bg-white text-sky-700 rounded-md text-sm font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1 text-center ${importingYear !== null ? "opacity-60 pointer-events-none" : ""}`}>
+      <label className={`apk-only-actions installment-action-btn installment-action-import relative w-full px-2 py-1.5 bg-white text-sky-700 rounded-md text-sm font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1 text-center ${importingYear !== null ? "opacity-60 pointer-events-none" : ""}`}>
         {importingYear === 2026 ? "جارٍ الاستيراد…" : "📥 استيراد"}
         <input
           type="file"
@@ -3367,7 +3419,7 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
       {/* السطر 4: تصدير إلى Excel + طباعة تفصيلية */}
       <button
         onClick={() => exportToExcel(2026)}
-        className={`w-full ${BTN_COMPACT} bg-green-100 text-green-900 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1 text-sm`}
+        className={`installment-action-btn installment-action-excel w-full ${BTN_COMPACT} bg-green-100 text-green-900 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1 text-sm`}
       >
         <FileSpreadsheet className={ICON_MOBILE} />
         <span>تصدير Excel</span>
@@ -3375,7 +3427,7 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
 
       <button
         onClick={() => setPrintSettingsYear(2026)}
-        className={`w-full ${BTN_COMPACT} bg-green-800 text-black rounded-md font-bold shadow hover:bg-green-700 transition-colors flex items-center justify-center gap-1 text-sm`}
+        className={`installment-action-btn installment-action-print w-full ${BTN_COMPACT} bg-green-800 text-black rounded-md font-bold shadow hover:bg-green-700 transition-colors flex items-center justify-center gap-1 text-sm`}
       >
         <Printer className={ICON_MOBILE} />
         <span>طباعة تفصيلية</span>
@@ -3412,8 +3464,9 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
         pdfMarginMm={1}
         pdfCss={INSTALLMENTS_SUMMARY_REPORT_CSS}
         printRowStyle={getConditionalRowPrintStyle}
+        printTableClassName="installments-summary-2026"
         additionalWebActions={installments2026WebActions}
-className="col-span-full grid grid-cols-2 gap-2 w-full 
+className="installments-summary-actions col-span-full grid grid-cols-2 gap-2 w-full 
 [&>button]:w-auto 
 [&>button]:min-w-auto
 [&>button]:justify-center 
@@ -3423,7 +3476,7 @@ className="col-span-full grid grid-cols-2 gap-2 w-full
 
       {/* السطر 6: زر تنزيل PDF تفصيلي (يمتد عبر العرض الكامل لختام المجموعة) */}
       <button
-        className="apk-only-actions min-w-auto flex-items-center justify-center gap-1 px-3 py-2 bg-[#10528e] text-white rounded-md text-sm font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all disabled:opacity-50"
+        className="apk-only-actions installment-action-btn installment-action-pdf min-w-auto flex-items-center justify-center gap-1 px-3 py-2 bg-[#10528e] text-white rounded-md text-sm font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all disabled:opacity-50"
         type="button"
         onClick={handleDetailedPdf2026}
         disabled={detailedPdfBusy2026}
