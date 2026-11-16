@@ -24,7 +24,7 @@ const adaptiveLedgerPrintCss = `
   width: 100% !important;
   min-width: 0 !important;
   max-width: 100% !important;
-  table-layout: auto !important;
+  table-layout: fixed !important;
   border-collapse: collapse !important;
   direction: rtl !important;
 }
@@ -37,6 +37,7 @@ const adaptiveLedgerPrintCss = `
   white-space: normal !important;
   overflow-wrap: anywhere !important;
   word-break: normal !important;
+  overflow: hidden !important;
   vertical-align: middle !important;
   text-align: center !important;
   line-height: 1.35 !important;
@@ -74,18 +75,42 @@ const adaptiveLedgerPrintCss = `
 #tableContainer table.journal-ledger-table td.date-cell {
   white-space: nowrap !important;
   overflow-wrap: normal !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
 }
+#tableContainer table.hafiza-ledger-table th[data-col-key="idx"],
+#tableContainer table.hafiza-ledger-table td[data-col-key="idx"] { width: 4% !important; }
+#tableContainer table.hafiza-ledger-table th[data-col-key="name"],
+#tableContainer table.hafiza-ledger-table td[data-col-key="name"] { width: 12% !important; }
+#tableContainer table.hafiza-ledger-table th[data-col-key="batch"],
+#tableContainer table.hafiza-ledger-table td[data-col-key="batch"] { width: 6% !important; }
+#tableContainer table.hafiza-ledger-table th[data-col-key="specialty"],
+#tableContainer table.hafiza-ledger-table td[data-col-key="specialty"] { width: 10% !important; }
+#tableContainer table.hafiza-ledger-table th[data-col-key="date"],
+#tableContainer table.hafiza-ledger-table td[data-col-key="date"] { width: 9% !important; }
+#tableContainer table.hafiza-ledger-table th[data-col-key="hafizaNo"],
+#tableContainer table.hafiza-ledger-table td[data-col-key="hafizaNo"] { width: 8% !important; }
+#tableContainer table.hafiza-ledger-table th[data-col-key="description"],
+#tableContainer table.hafiza-ledger-table td[data-col-key="description"] { width: 16% !important; }
+#tableContainer table.hafiza-ledger-table th[data-col-key="hafizaAmount"],
+#tableContainer table.hafiza-ledger-table td[data-col-key="hafizaAmount"] { width: 9% !important; }
+#tableContainer table.hafiza-ledger-table th[data-col-key="notifyDate"],
+#tableContainer table.hafiza-ledger-table td[data-col-key="notifyDate"] { width: 9% !important; }
+#tableContainer table.hafiza-ledger-table th[data-col-key="notifyNo"],
+#tableContainer table.hafiza-ledger-table td[data-col-key="notifyNo"] { width: 8% !important; }
+#tableContainer table.hafiza-ledger-table th[data-col-key="notifyAmount"],
+#tableContainer table.hafiza-ledger-table td[data-col-key="notifyAmount"] { width: 9% !important; }
 @media print {
   #tableContainer table.hafiza-ledger-table,
   #tableContainer table.accounts-ledger-table,
   #tableContainer table.journal-ledger-table {
     width: 100% !important;
-    table-layout: auto !important;
+    table-layout: fixed !important;
     break-inside: auto !important;
     page-break-inside: auto !important;
   }
   #tableContainer table.hafiza-ledger-table th,
-  #tableContainer table.hafiza-ledger-table td,
+  #tableContainer table.hafiza-ledger-table td { font-size: 8.5px !important; padding: 1px 2px !important; }
   #tableContainer table.accounts-ledger-table th,
   #tableContainer table.accounts-ledger-table td { font-size: 9.5px !important; padding: 2px 3px !important; }
   #tableContainer table.journal-ledger-table th,
