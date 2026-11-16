@@ -132,7 +132,9 @@ type Props = {
   pdfFinalCss?: string;
   /** Render the visible table markup when exact screen/print parity is required. */
   renderPrintTableHtml?: (reportDateLabel: string) => string;
-  includeTotalRow?: boolean;
+   /** Optional row-level inline style used to preserve conditional row colors in print/PDF. */
+   printRowStyle?: (row: Record<string, any>) => string;
+   includeTotalRow?: boolean;
   printTableClassName?: string;
   /** Optional larger body font for reports that need more readable Excel exports. */
   excelCellFontSize?: number;
@@ -159,7 +161,8 @@ export default function TabActions({
   pdfCss,
   pdfFinalCss,
   renderPrintTableHtml,
-  includeTotalRow = true,
+   printRowStyle,
+   includeTotalRow = true,
   printTableClassName = "",
   excelCellFontSize,
   excelMaxTextLines,
@@ -174,7 +177,7 @@ export default function TabActions({
   const printData = printRows ?? rows;
   const tableHtml = () => renderPrintTableHtml
     ? renderPrintTableHtml(reportDateLabel)
-    : buildTableHtml({ title, columns: printColumns, rows: printData, numericKeys, reportDate, includeTotalRow, tableClassName: printTableClassName });
+    : buildTableHtml({ title, columns: printColumns, rows: printData, numericKeys, reportDate, includeTotalRow, tableClassName: printTableClassName, rowStyleResolver: printRowStyle });
   
   const handlePrint = () => {
     if (onPrintRequest) {
