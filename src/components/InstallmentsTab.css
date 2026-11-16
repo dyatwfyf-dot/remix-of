@@ -123,3 +123,15 @@
     font-size: 0.68rem;
   }
 }
+
+
+/* Installments print: numeric values stay on one line and conditional colors survive printing. */
+@media print {
+  .mizan-installments-tab table.installments-table td.numeric-cell,
+  .mizan-installments-tab table.installments-table th.numeric-cell,
+  .mizan-installments-tab table.installments-table td.numeric-cell *,
+  .mizan-installments-tab table.installments-table th.numeric-cell * {
+    white-space: nowrap !important; overflow-wrap: normal !important; word-break: keep-all !important;
+    direction: ltr !important; unicode-bidi: isolate !important; font-variant-numeric: tabular-nums !important;
+  }
+}
