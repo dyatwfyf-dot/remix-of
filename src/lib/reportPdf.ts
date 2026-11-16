@@ -312,6 +312,65 @@ border: 1px solid #000000 !important;
     border: 1px solid #000000 !important;
 
   }
+  /* Shared Excel-like print layout for every report table and every PDF export. */
+  .report-page-content table {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    table-layout: auto !important;
+    border-collapse: collapse !important;
+  }
+  .report-page-content table th,
+  .report-page-content table td {
+    box-sizing: border-box !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+    vertical-align: middle !important;
+    line-height: 1.3 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+  }
+  .report-page-content table th,
+  .report-page-content table td {
+    padding: 3px 4px !important;
+  }
+  .report-page-content table td.numeric-cell,
+  .report-page-content table td.num,
+  .report-page-content table td.date-cell,
+  .report-page-content table td.compact-cell,
+  .report-page-content table td.ref-cell,
+  .report-page-content table td.idx,
+  .report-page-content table td.reports-numeric-cell,
+  .report-page-content table td.reports-no-wrap-cell,
+  .report-page-content table th.numeric-cell,
+  .report-page-content table th.date-cell {
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
+    direction: ltr !important;
+    unicode-bidi: isolate !important;
+    font-variant-numeric: tabular-nums !important;
+  }
+  .report-page-content table td.numeric-cell .pdf-cell-text,
+  .report-page-content table td.num .pdf-cell-text,
+  .report-page-content table td.date-cell .pdf-cell-text,
+  .report-page-content table td.ref-cell .pdf-cell-text,
+  .report-page-content table td.idx .pdf-cell-text {
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
+  }
+  .report-page-content table .pdf-cell-text {
+    max-width: 100% !important;
+    white-space: inherit !important;
+    overflow-wrap: inherit !important;
+    word-break: inherit !important;
+  }
+  .report-page-content table tr { height: auto !important; }
+
   .report-page-content tbody td:not(.desc-cell):not(.details-cell):not(.description-cell):not([data-col-key="description"]),
   .report-page-content tbody td:not(.desc-cell):not(.details-cell):not(.description-cell):not([data-col-key="description"]) .pdf-cell-text {
     white-space: nowrap !important;
@@ -501,6 +560,12 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
   const { fileName, pageSize = 'A4', orientation = 'portrait', marginMm = 3, fitToContent = false } = options;
   const doc = source.ownerDocument;
   tagReportCells(source);
+  // Preserve numbers and dates as atomic values in every exported table,
+  // including tables that do not use the reports-data-table class.
+  const numericOrDate = /^[\\s\\u200e\\u200f]*[+-]?(?:(?:[0-9٠-٩۰-۹]+)(?:[,.٬٫][0-9٠-٩۰-۹]+)*|[0-9٠-٩۰-۹]{1,4}[-/.][0-9٠-٩۰-۹]{1,2}[-/.][0-9٠-٩۰-۹]{1,4})(?:\\s*(?:ر\\.?\\s*ي|ريال|ر\\.?\\s*س))?[\\s\\u200e\\u200f]*$/;
+  source.querySelectorAll('table th, table td').forEach((cell) => {
+    if (numericOrDate.test((cell.textContent || '').trim())) cell.classList.add('numeric-cell');
+  });
   await ready(doc);
   const [{ default: html2canvas }, { default: JsPDF }] = await Promise.all([import('html2canvas'), import('jspdf')]);
   const [widthMm, pageHeightMm] = dimensions(pageSize, orientation);
