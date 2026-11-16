@@ -145,6 +145,18 @@ const INSTALLMENTS_SUMMARY_REPORT_CSS = `
   }
   .report-page-content .num, .report-page-content .numeric-cell { white-space: nowrap !important; word-break: keep-all !important; direction: ltr !important; }
   .report-page-content h1, .report-page-content h2 { margin: 0 0 5px !important; text-align: center !important; }
+  /* Summary print style for installments 2026 mirrors visible screen table. */
+  .report-page-content table.installments-summary-2026 { border-collapse: collapse !important; direction: rtl !important; }
+  .report-page-content table.installments-summary-2026 thead th { background: linear-gradient(180deg,#7dd3fc 0%,#38bdf8 52%,#0ea5e9 100%) !important; color: #000 !important; border: 1px solid #0369a1 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .report-page-content table.installments-summary-2026 thead th[data-col-key="idx"], .report-page-content table.installments-summary-2026 thead th[data-col-key="name"] { color: #fff !important; }
+  .report-page-content table.installments-summary-2026 tbody td { border: 1px solid #cbd5e1 !important; color: #000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .report-page-content table.installments-summary-2026 tbody td[data-col-key="name"] { background: #fdf4ff !important; }
+  .report-page-content table.installments-summary-2026 tbody td[data-col-key="batch"], .report-page-content table.installments-summary-2026 tbody td[data-col-key="specialty"], .report-page-content table.installments-summary-2026 tbody td[data-col-key="fees"] { background: #f0f9ff !important; }
+  .report-page-content table.installments-summary-2026 tbody td[data-col-key="prevDue"] { background: #f8fcff !important; }
+  .report-page-content table.installments-summary-2026 tbody td[data-col-key="totalPaid"] { background: #ecfdf5 !important; }
+  .report-page-content table.installments-summary-2026 tbody td[data-col-key="remaining"] { background: #fff1f2 !important; }
+  .report-page-content table.installments-summary-2026 tbody td[data-col-key="notes"] { background: #fffbeb !important; }
+  .report-page-content table.installments-summary-2026 tbody tr.total-row td { background: #e0f2fe !important; color: #000 !important; border-color: #7dd3fc !important; font-weight: 900 !important; }
 `;
 
 // All PDF reports use the same paper layout and measured row pagination.
@@ -448,6 +460,9 @@ export default function InstallmentsTab() {
       const term = String(rule.text || "").trim().toLowerCase();
       return term.length > 0 && searchableValues.some((value) => value.includes(term));
     });
+    const notesTone = getNotesStatusTone(row.notes);
+    const notesPrintColors: Record<NotesStatusTone, string> = { red: "#fecaca", yellow: "#fef08a", green: "#bbf7d0", orange: "#fed7aa", blue: "#e0f2fe", emerald: "#ecfdf5" };
+    if (notesTone) return `background-color: ${notesPrintColors[notesTone]} !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;`;
     const colorMap: Record<string, string> = {
       "bg-sky-100": "#e0f2fe", "bg-blue-100": "#dbeafe", "bg-indigo-100": "#e0e7ff",
       "bg-violet-100": "#ede9fe", "bg-purple-100": "#f3e8ff", "bg-pink-100": "#fce7f3",
@@ -3412,6 +3427,7 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
         pdfMarginMm={1}
         pdfCss={INSTALLMENTS_SUMMARY_REPORT_CSS}
         printRowStyle={getConditionalRowPrintStyle}
+        printTableClassName="installments-summary-2026"
         additionalWebActions={installments2026WebActions}
 className="col-span-full grid grid-cols-2 gap-2 w-full 
 [&>button]:w-auto 
