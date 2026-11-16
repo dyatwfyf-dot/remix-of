@@ -452,3 +452,81 @@
     font-size: 11px !important;
   }
 }
+
+
+/* 2026: all controls are individual grid items, two per row (same compact layout as 2025). */
+.mizan-installments-tab .installments-controls-2026 {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-auto-flow: row !important;
+  gap: 10px !important;
+  align-items: stretch !important;
+}
+.mizan-installments-tab .installments-controls-2026 > .installments-search-2026 {
+  grid-column: 1 / -1 !important;
+}
+/* Direct controls previously inherited span-2 from the generic apk-only-actions rule. */
+.mizan-installments-tab .installments-controls-2026 > button.installment-action-btn,
+.mizan-installments-tab .installments-controls-2026 > label.installment-action-btn,
+.mizan-installments-tab .installments-controls-2026 > .installment-action-btn {
+  grid-column: auto !important;
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 46px !important;
+  margin: 0 !important;
+  padding: 8px 6px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  border-radius: 12px !important;
+  font-size: clamp(10px, 2.7vw, 14px) !important;
+  font-weight: 800 !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  box-sizing: border-box !important;
+}
+/* Flatten the TabActions shell so its four buttons join the same two-column grid. */
+.mizan-installments-tab .installments-controls-2026 > div.installments-summary-actions {
+  display: contents !important;
+}
+.mizan-installments-tab .installments-controls-2026 > div.installments-summary-actions > button {
+  grid-column: auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  min-height: 46px !important;
+  margin: 0 !important;
+  padding: 8px 5px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 12px !important;
+  font-size: clamp(10px, 2.6vw, 13px) !important;
+  font-weight: 800 !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+}
+/* Individual action colors. */
+.mizan-installments-tab .installments-controls-2026 .installment-action-format { background: linear-gradient(135deg,#7c3aed,#5b21b6) !important; color:#fff !important; }
+.mizan-installments-tab .installments-controls-2026 .installment-action-student { background: linear-gradient(135deg,#2563eb,#1d4ed8) !important; color:#fff !important; }
+.mizan-installments-tab .installments-controls-2026 .installment-action-column { background: linear-gradient(135deg,#d97706,#92400e) !important; color:#fff !important; }
+.mizan-installments-tab .installments-controls-2026 .installment-action-payment { background: linear-gradient(135deg,#db2777,#9d174d) !important; color:#fff !important; }
+.mizan-installments-tab .installments-controls-2026 .installment-action-import { background: linear-gradient(135deg,#0d9488,#115e59) !important; color:#fff !important; }
+.mizan-installments-tab .installments-controls-2026 .installment-action-excel { background: linear-gradient(135deg,#059669,#065f46) !important; color:#fff !important; }
+.mizan-installments-tab .installments-controls-2026 .installment-action-print { background: linear-gradient(135deg,#0e7490,#155e75) !important; color:#fff !important; }
+.mizan-installments-tab .installments-controls-2026 .installment-action-pdf { background: linear-gradient(135deg,#d97706,#92400e) !important; color:#fff !important; }
+.mizan-installments-tab .installments-controls-2026 > div.installments-summary-actions > button[title*="معاينة"] { background: linear-gradient(135deg,#0e7490,#155e75) !important; color:#fff !important; }
+.mizan-installments-tab .installments-controls-2026 > div.installments-summary-actions > button[title*="تنزيل"] { background: linear-gradient(135deg,#2563eb,#1e40af) !important; color:#fff !important; }
+.mizan-installments-tab .installments-controls-2026 > div.installments-summary-actions > button[title*="تصدير"] { background: linear-gradient(135deg,#059669,#065f46) !important; color:#fff !important; }
+.mizan-installments-tab .installments-controls-2026 > div.installments-summary-actions > button[title*="مسح"] { background: linear-gradient(135deg,#dc2626,#991b1b) !important; color:#fff !important; }
+@media (max-width: 420px) {
+  .mizan-installments-tab .installments-controls-2026 { gap: 8px !important; padding: 9px !important; }
+  .mizan-installments-tab .installments-controls-2026 > .installment-action-btn,
+  .mizan-installments-tab .installments-controls-2026 > div.installments-summary-actions > button {
+    min-height: 44px !important;
+    font-size: 11px !important;
+    padding: 7px 4px !important;
+  }
+}
