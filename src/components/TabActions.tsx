@@ -78,6 +78,43 @@ const adaptiveLedgerPrintCss = `
   overflow: hidden !important;
   text-overflow: clip !important;
 }
+/* توزيع أعمدة الحساب الجاري: مساحة أكبر للبيان والاسم، وأعمدة رقمية مضبوطة */
+#tableContainer table.accounts-ledger-table th:nth-child(1),
+#tableContainer table.accounts-ledger-table td:nth-child(1) { width: 3% !important; }
+#tableContainer table.accounts-ledger-table th:nth-child(8),
+#tableContainer table.accounts-ledger-table td:nth-child(8) { width: 15% !important; }
+#tableContainer table.accounts-ledger-table th:nth-child(9),
+#tableContainer table.accounts-ledger-table td:nth-child(9) { width: 9% !important; }
+#tableContainer table.accounts-ledger-table th:nth-child(10),
+#tableContainer table.accounts-ledger-table td:nth-child(10) { width: 10% !important; }
+#tableContainer table.accounts-ledger-table td:nth-child(8) { white-space: normal !important; overflow-wrap: anywhere !important; }
+#tableContainer table.accounts-ledger-table td.numeric-cell,
+#tableContainer table.accounts-ledger-table td.numeric-cell * { white-space: nowrap !important; overflow-wrap: normal !important; word-break: keep-all !important; }
+
+/* القيود اليومية: عرض كافٍ للأرقام والبيان مع التفاف أسماء الحسابات فقط */
+#tableContainer table.journal-ledger-table th:nth-child(1),
+#tableContainer table.journal-ledger-table td:nth-child(1) { width: 8% !important; }
+#tableContainer table.journal-ledger-table th:nth-child(2),
+#tableContainer table.journal-ledger-table td:nth-child(2) { width: 9% !important; }
+#tableContainer table.journal-ledger-table th:nth-child(3),
+#tableContainer table.journal-ledger-table td:nth-child(3) { width: 9% !important; }
+#tableContainer table.journal-ledger-table th:nth-child(4),
+#tableContainer table.journal-ledger-table td:nth-child(4) { width: 19% !important; }
+#tableContainer table.journal-ledger-table th:nth-child(5),
+#tableContainer table.journal-ledger-table td:nth-child(5),
+#tableContainer table.journal-ledger-table th:nth-child(6),
+#tableContainer table.journal-ledger-table td:nth-child(6) { width: 16% !important; }
+#tableContainer table.journal-ledger-table th:nth-child(7),
+#tableContainer table.journal-ledger-table td:nth-child(7),
+#tableContainer table.journal-ledger-table th:nth-child(8),
+#tableContainer table.journal-ledger-table td:nth-child(8) { width: 11% !important; }
+#tableContainer table.journal-ledger-table td:nth-child(7),
+#tableContainer table.journal-ledger-table td:nth-child(8),
+#tableContainer table.journal-ledger-table tfoot td:nth-child(7),
+#tableContainer table.journal-ledger-table tfoot td:nth-child(8) {
+  white-space: nowrap !important; overflow-wrap: normal !important; word-break: keep-all !important;
+  direction: ltr !important; font-variant-numeric: tabular-nums !important;
+}
 #tableContainer table.hafiza-ledger-table th[data-col-key="idx"],
 #tableContainer table.hafiza-ledger-table td[data-col-key="idx"] { width: 4% !important; }
 #tableContainer table.hafiza-ledger-table th[data-col-key="name"],
@@ -249,7 +286,7 @@ export default function TabActions({
         reportDateLabel,
         tableHtml: tableHtml(),
         contentCss: pdfCss ? `${reportDocumentCss}\n${pdfCss}` : reportDocumentCss,
-        finalCss: pdfFinalCss,
+        finalCss: [adaptiveLedgerPrintCss, pdfFinalCss].filter(Boolean).join("\n"),
         defaultOrientation: orientation,
         defaultPageSize: "A4",
         ...(pdfMarginMm === undefined ? {} : { defaultMarginMm: pdfMarginMm }),
