@@ -1324,6 +1324,19 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
             });
           });
 
+          const serialHeader = /^(?:م|#|المسلسل|مسلسل|التسلسل|تسلسل|no|sno)$/i;
+          tableContainer.querySelectorAll('table').forEach(function(currentTable) {
+            const headerCells = Array.from(currentTable.querySelectorAll('thead tr:first-child th, thead tr:first-child td, tr:first-child th, tr:first-child td'));
+            const serialIndex = headerCells.findIndex(function(cell) {
+              return serialHeader.test((cell.textContent || '').replace(/[\\s.]/g, '').trim());
+            });
+            if (serialIndex < 0) return;
+            currentTable.querySelectorAll('tr').forEach(function(row) {
+              const cell = row.children.item(serialIndex);
+              if (cell) cell.classList.add('serial-number-column');
+            });
+          });
+
           const availableWidth = Math.max(1, paperContainer.clientWidth -
             parseFloat(getComputedStyle(paperContainer).paddingLeft || '0') -
             parseFloat(getComputedStyle(paperContainer).paddingRight || '0'));
