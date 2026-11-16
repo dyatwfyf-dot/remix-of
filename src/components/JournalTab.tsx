@@ -513,6 +513,8 @@ export default function JournalTab() {
       fileName="قيود-اليومية"
       numericKeys={["debit", "credit"]}
       pdfLayout="wide-centered"
+      pdfOrientation="landscape"
+      printTableClassName="journal-ledger-table"
       pdfCss={greenPrintHeaderCss}
       onClear={clearJournal}
       additionalWebActions={journalWebActions}
