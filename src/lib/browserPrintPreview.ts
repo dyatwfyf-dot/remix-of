@@ -4,6 +4,7 @@ import { reportLetterheadHtml } from "./printTableHtml";
 import { downloadRenderedReportPdf } from "./reportPdf";
 import { reportTableThemeCss } from "./reportTheme";
 import { printReportHtmlAsync } from "./nativePrinter";
+import { excelLikePrintTablesCss } from "./excelLikePrintTablesCss";
 
 interface OpenBrowserPrintPreviewOptions {
   title: string;
@@ -931,7 +932,9 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       #tableContainer table tr { break-inside: avoid !important; page-break-inside: avoid !important; }
     }
 
-  </style>
+      /* Shared content-measured Excel-like layout for every printed table. */
+    ${excelLikePrintTablesCss}
+</style>
 </head>
 <body>
   <div class="preview-toolbar">
