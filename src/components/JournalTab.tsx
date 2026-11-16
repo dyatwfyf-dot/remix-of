@@ -854,12 +854,12 @@ whitespace-normal">
                           {j.creditAccount || "—"}
                         </span>
                       </td>
- <td className="w-auto min-w-0 font-bold font-black text-emerald-800 !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-normal">
+ <td className="w-auto min-w-0 font-bold font-black text-emerald-800 numeric-cell !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-nowrap">
                         <span className={journalClampCls}>
                           {j.debit ? j.debit.toLocaleString("en-US") : "—"}
                         </span>
                       </td>
-<td className="w-auto min-w-0 font-bold font-black text-black !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-nowrap">
+<td className="w-auto min-w-0 font-bold font-black text-black numeric-cell !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-nowrap">
                         <span className={journalClampCls}>
                           {j.credit ? j.credit.toLocaleString("en-US") : "—"}
                         </span>
@@ -893,10 +893,10 @@ className="grid h-8 w-8 place-items-center rounded-xl bg-purple-50 text-purple-7
                   <td colSpan={6} className="text-center font-black text-indigo-950 !px-2 !py-2.5 !text-xs sm:!text-sm whitespace-nowrap">
                     إجمالي القيود المعروضة
                   </td>
-                  <td className="font-mono font-black text-emerald-900 !px-2 !py-2.5 !text-xs sm:!text-sm whitespace-nowrap">
+                  <td className="font-mono font-black text-emerald-900 numeric-cell !px-2 !py-2.5 !text-xs sm:!text-sm whitespace-nowrap">
                     {grandDebit.toLocaleString("en-US")}
                   </td>
-                  <td className="font-mono font-black text-rose-900 !px-2 !py-2.5 !text-xs sm:!text-sm whitespace-nowrap">
+                  <td className="font-mono font-black text-rose-900 numeric-cell !px-2 !py-2.5 !text-xs sm:!text-sm whitespace-nowrap">
                     {grandCredit.toLocaleString("en-US")}
                   </td>
                   <td />
