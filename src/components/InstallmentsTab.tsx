@@ -126,9 +126,10 @@ const HEADING_MOBILE =
 const INSTALLMENTS_SUMMARY_REPORT_CSS = `
   html, body { margin: 0 !important; padding: 0 !important; }
   .report-page-content { width: 100% !important; min-width: 0 !important; }
-  .report-page-content table { width: 100% !important; max-width: 100% !important; table-layout: auto !important; border-collapse: collapse !important; }
-  .report-page-content, .report-page-content table, .report-page-content th, .report-page-content td, .report-page-content * { font-family: Cairo, Arial, sans-serif !important; font-size: 16px !important; font-weight: 900 !important; }
-  .report-page-content th, .report-page-content td { padding: 0 4px !important; margin: 0 !important; vertical-align: middle !important; text-align: center !important; white-space: normal !important; line-height: 1.2 !important; }
+  .report-page-content table { width: 100% !important; max-width: 100% !important; table-layout: fixed !important; border-collapse: collapse !important; }
+  .report-page-content, .report-page-content table, .report-page-content th, .report-page-content td { font-family: Cairo, Arial, sans-serif !important; font-weight: 900 !important; }
+  .report-page-content table th, .report-page-content table td, .report-page-content table th *, .report-page-content table td * { font-size: 8px !important; }
+  .report-page-content th, .report-page-content td { box-sizing: border-box !important; padding: 1px 2px !important; margin: 0 !important; vertical-align: middle !important; text-align: center !important; white-space: normal !important; line-height: 1.1 !important; overflow: hidden !important; }
   .report-page-content th { background: #0f766e !important; color: #000 !important; }
   .report-page-content td { color: #000 !important; overflow-wrap: anywhere !important; word-break: normal !important; }
   .report-page-content td.numeric-cell, .report-page-content th.numeric-cell,
