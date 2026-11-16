@@ -135,3 +135,94 @@
     direction: ltr !important; unicode-bidi: isolate !important; font-variant-numeric: tabular-nums !important;
   }
 }
+
+
+/* شبكة إجراءات الأقساط: أزرار متجاورة بألوان مستقلة وواضحة على الهاتف */
+.mizan-installments-tab .installments-controls-2026 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  align-items: stretch;
+  gap: 0.6rem !important;
+}
+.mizan-installments-tab .installments-controls-2026 > .installments-search-2026 {
+  grid-column: 1 / -1 !important;
+}
+.mizan-installments-tab .installments-controls-2026 > :is(button, label),
+.mizan-installments-tab .installments-controls-2025 > :is(button, label) {
+  grid-column: auto !important;
+  min-height: 46px;
+  border-radius: 0.85rem !important;
+  border: 1px solid rgba(15, 23, 42, 0.18) !important;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.14) !important;
+  font-weight: 800 !important;
+  line-height: 1.25 !important;
+  padding: 0.55rem 0.4rem !important;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.mizan-installments-tab .installments-controls-2026 > button:nth-of-type(1) {
+  background: linear-gradient(135deg,#7c3aed,#5b21b6) !important; color:#fff !important;
+}
+.mizan-installments-tab .installments-controls-2026 > button:nth-of-type(2) {
+  background: linear-gradient(135deg,#0284c7,#075985) !important; color:#fff !important;
+}
+.mizan-installments-tab .installments-controls-2026 > button:nth-of-type(3) {
+  background: linear-gradient(135deg,#d97706,#92400e) !important; color:#fff !important;
+}
+.mizan-installments-tab .installments-controls-2026 > button:nth-of-type(4) {
+  background: linear-gradient(135deg,#db2777,#9d174d) !important; color:#fff !important;
+}
+.mizan-installments-tab .installments-controls-2026 > label {
+  background: linear-gradient(135deg,#0d9488,#115e59) !important; color:#fff !important;
+}
+.mizan-installments-tab .installments-controls-2026 > .apk-only-actions.grid {
+  grid-column: 1 / -1 !important;
+  display: grid !important;
+  grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+  gap: 0.6rem !important;
+  width: 100%;
+}
+.mizan-installments-tab .installments-controls-2026 > .apk-only-actions.grid > button,
+.mizan-installments-tab .installments-controls-2025 > .apk-only-actions.flex > button {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 46px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.85rem !important;
+  padding: 0.55rem 0.4rem !important;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-weight: 800 !important;
+}
+.mizan-installments-tab .installments-controls-2026 > .apk-only-actions.grid > button:nth-child(1),
+.mizan-installments-tab .installments-controls-2025 > .apk-only-actions.flex > button:nth-child(1) {
+  background: linear-gradient(135deg,#0f766e,#115e59) !important; color:#fff !important;
+}
+.mizan-installments-tab .installments-controls-2026 > .apk-only-actions.grid > button:nth-child(2),
+.mizan-installments-tab .installments-controls-2025 > .apk-only-actions.flex > button:nth-child(2) {
+  background: linear-gradient(135deg,#2563eb,#1e40af) !important; color:#fff !important;
+}
+.mizan-installments-tab .installments-controls-2026 > .apk-only-actions.grid > button:nth-child(3) {
+  background: linear-gradient(135deg,#0891b2,#155e75) !important; color:#fff !important;
+}
+.mizan-installments-tab .installments-controls-2026 > .apk-only-actions.grid > button:nth-child(4) {
+  background: linear-gradient(135deg,#ea580c,#9a3412) !important; color:#fff !important;
+}
+.mizan-installments-tab .installments-controls-2026 > .apk-only-actions.grid > button[title="مسح بيانات هذا التبويب"],
+.mizan-installments-tab .installments-controls-2025 > .apk-only-actions.flex > button[title="مسح بيانات هذا التبويب"] {
+  background: linear-gradient(135deg,#dc2626,#991b1b) !important; color:#fff !important;
+}
+.mizan-installments-tab .installments-controls-2025 > .apk-only-actions.flex {
+  display: grid !important;
+  grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+  gap: 0.6rem !important;
+}
+@media (max-width: 420px) {
+  .mizan-installments-tab .installments-controls-2026 > :is(button,label),
+  .mizan-installments-tab .installments-controls-2026 > .apk-only-actions.grid > button,
+  .mizan-installments-tab .installments-controls-2025 > .apk-only-actions.flex > button {
+    min-height: 44px;
+    font-size: 0.76rem !important;
+  }
+}
