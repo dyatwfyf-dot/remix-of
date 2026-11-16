@@ -394,7 +394,7 @@ className="w-full text-center px-3 py-2 hover:bg-sky-50 text-xs sm:text-xs flex 
                   <X className="w-4 h-4" />
                 </Button>
               )}
- <TabActions title="حوافظ التوريد" rows={hafiza} columns={COLS} fileName="حوافظ-التوريد" pdfLayout="wide-centered" pdfOrientation="landscape" pdfCss={greenPrintHeaderCss} printTableClassName="hafiza-ledger-table" />
+ <TabActions title="حوافظ التوريد" rows={hafiza} columns={COLS} fileName="حوافظ-التوريد" numericKeys={["hafizaAmount", "notifyAmount"]} pdfLayout="wide-centered" pdfOrientation="landscape" pdfCss={greenPrintHeaderCss} printTableClassName="hafiza-ledger-table" />
             </div>
           </div>
         </CardHeader>
