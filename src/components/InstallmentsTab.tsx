@@ -1392,10 +1392,10 @@ line-height: 1.5;
    }
 
 table {
-font-size:${fontSizePx}px;
-table-layout: auto !important;
+font-size:${fontSizePx}px !important;
+table-layout: fixed !important;
 width: 100% !important;
-max-width:auto !important;
+max-width:100% !important;
 	border: 1px solid #000;
       }
 
@@ -1405,7 +1405,7 @@ th, td {
 	text-align: center !important;
 min-width: 0 !important;
 max-width: 100% !important;
-font-size:${fontSizePx}px !important;
+font-size:${fontSizePx}px;
 overflow-wrap: normal !important;
 word-break: break-word !important;
 hyphens: none !important;
@@ -1471,7 +1471,7 @@ white-space: normal!important;
         text-align: center !important;
       }
       td.numeric-cell *, th.numeric-cell *, td.date-cell *, th.date-cell *, td.compact-cell *, th.compact-cell * {
-        font-size: ${Math.max(4, fontSizePx - 0.4)}px !important;
+        font-size: inherit !important;
         line-height: inherit !important;
         white-space: nowrap !important;
         overflow-wrap:nowrap !important;
@@ -1554,11 +1554,11 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       /* قواعد PDF النهائية: Cairo، حجم 16px، أسود غامق، وبدون حشو رأسي */
       html, body, table, th, td, .cell-content, .doc-header, .doc-foot {
         font-family: Cairo, Arial, sans-serif !important;
-        font-size: 16px !important;
         font-weight: 900 !important;
         color: #000 !important;
       }
-      table.installments-report-table { table-layout: auto !important; width: 100% !important; max-width: 100% !important; }
+      html, body, table { font-size: ${fontSizePx}px !important; }
+      table.installments-report-table { table-layout: fixed !important; width: 100% !important; max-width: 100% !important; }
        table.installments-report-table th, table.installments-report-table td {
         padding: 0 4px !important;
         margin: 0 !important;
@@ -1582,7 +1582,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         word-break: break-word !important;
         line-height: 1.2 !important;
       }
-      th *, td * { font-family: Cairo, Arial, sans-serif !important; font-size: 16px !important; font-weight: 900 !important; color: #000 !important; }
+      th *, td * { font-family: Cairo, Arial, sans-serif !important; font-size: inherit !important; font-weight: 900 !important; color: #000 !important; }
       table.installments-report-table td.numeric-cell, table.installments-report-table th.numeric-cell,
        table.installments-report-table td.numeric-cell .cell-content, table.installments-report-table th.numeric-cell .cell-content {
          white-space: nowrap !important; overflow-wrap: normal !important; word-break: keep-all !important;
