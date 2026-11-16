@@ -1,6 +1,7 @@
 import { Capacitor } from "@capacitor/core";
 import { registerReportWindow } from "@/lib/capacitorNavigation";
 import { reportLetterheadHtml } from "@/lib/printTableHtml";
+import { excelLikePrintTablesCss } from "@/lib/excelLikePrintTablesCss";
 
 /**
  * يضمن وجود الترويسة داخل رأس كل جدول، وليس كعنصر منفصل يظهر في الصفحة الأولى فقط.
@@ -20,6 +21,7 @@ function ensurePrintLetterhead(html: string, forceTable: boolean = true): string
     .report-letterhead-row { break-inside: avoid; page-break-inside: avoid; }
     .report-letterhead-cell { border: 0 !important; background: #fff !important; padding: 0 0 2mm !important; }
     .report-letterhead-block { display: block !important; width: 100% !important; margin: 0 auto 4mm !important; page-break-before: avoid !important; page-break-after: avoid !important; }
+    ${excelLikePrintTablesCss}
   </style>`;
 
   let printableHtml = html.includes("</head>") ? html.replace("</head>", `${printCss}</head>`) : `${printCss}${html}`;
