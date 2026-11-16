@@ -759,6 +759,8 @@ const isOpeningRow = (row: any) => String(row.description ?? "").includes("ال�
         fileName={`الحساب-الجاري-${accountReportYear}`}
         numericKeys={["hafizaAmount", "income", "expense", "balance"]}
         pdfLayout="wide-centered"
+        pdfOrientation="landscape"
+        printTableClassName="accounts-ledger-table"
         pdfCss={greenPrintHeaderCss}
       />
     </div>
@@ -1011,6 +1013,8 @@ actions={accountEntryWebActions}
               fileName="الحساب-الجاري"
               numericKeys={["hafizaAmount", "income", "expense", "balance"]}
               pdfLayout="wide-centered"
+              pdfOrientation="landscape"
+              printTableClassName="accounts-ledger-table"
               pdfCss={greenPrintHeaderCss}
               onClear={clearAccounts}
               className="col-span-2 w-full"
@@ -1020,7 +1024,7 @@ actions={accountEntryWebActions}
 
 <div className="p-1.5 sm:p-3">
 <div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-xl">
-<table className="w-auto table-auto text-xm xm:text-base text-center font-semibold border-collapse border-2 border-black">
+<table className="accounts-ledger-table w-full table-auto text-xm xm:text-base text-center font-semibold border-collapse border-2 border-black">
 <thead className="w-auto max-w-0 sticky bg-[#40E0D0] top-0 z-20 text-[#0f2f44] font-black text-[16px] whitespace-normal">
                 <tr>
 <th className="border border-black text-center
