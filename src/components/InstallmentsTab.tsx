@@ -3676,6 +3676,21 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
         pdfOrientation="landscape"
         pdfMarginMm={1}
         pdfCss={INSTALLMENTS_SUMMARY_REPORT_CSS}
+        pdfFinalCss={`
+          #tableContainer table.installments-summary-2026 thead th,
+          #tableContainer table.installments-summary-2026 tbody td {
+            border: 1px solid #000000 !important;
+            border-color: #000000 !important;
+          }
+          #tableContainer table.installments-summary-2026 tbody tr.total-row > td,
+          #tableContainer table.installments-summary-2026 tbody tr.total-row > td * {
+            color: #000000 !important;
+            background: #e0f2fe !important;
+            border: 1px solid #000000 !important;
+            border-color: #000000 !important;
+            font-weight: 900 !important;
+          }
+        `}
         printRowStyle={getConditionalRowPrintStyle}
         printTableClassName="installments-summary-2026"
         additionalWebActions={installments2026WebActions}
