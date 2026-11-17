@@ -198,7 +198,7 @@
   }
   h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 800; letter-spacing: 0 }
 
-  /* Cairo هو الخط الموحد لكل تبويبات التطبيق وتقاريره وجداوله. */
+  /* Cairo هو الخط الموحد لواجهة التطبيق وبقية التبويبات؛ التقارير تستخدم IBM Plex Sans Arabic. */
   .apk-tabs-ui,
   .apk-tabs-ui * {
     font-family: var(--font-ui) !important;
