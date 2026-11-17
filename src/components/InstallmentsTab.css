@@ -532,13 +532,13 @@
 }
 
 /* 2026 installment table cell boundaries and total row: black in the live view. */
-.mizan-installments-tab table.installments-table > thead > tr > th,
-.mizan-installments-tab table.installments-table > tbody > tr > td {
+.mizan-installments-tab table.installments-table-2026 > thead > tr > th,
+.mizan-installments-tab table.installments-table-2026 > tbody > tr > td {
   border: 1px solid #000000 !important;
   border-color: #000000 !important;
 }
-.mizan-installments-tab table.installments-table > tbody > tr.total-row > td,
-.mizan-installments-tab table.installments-table > tbody > tr.total-row > td * {
+.mizan-installments-tab table.installments-table-2026 > tbody > tr.total-row > td,
+.mizan-installments-tab table.installments-table-2026 > tbody > tr.total-row > td * {
   color: #000000 !important;
   border: 1px solid #000000 !important;
   border-color: #000000 !important;
