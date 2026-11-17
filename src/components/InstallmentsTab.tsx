@@ -1652,7 +1652,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
           word-break: break-word !important;
         }
       }
-      /* قواعد PDF النهائية: Cairo، حجم 16px، أسود غامق، وبدون حشو رأسي */
+      /* قواعد PDF النهائية: خط التقرير المحلي، حجم 16px، أسود غامق، وبدون حشو رأسي */
       html, body, table, th, td, .cell-content, .doc-header, .doc-foot {
         font-family: ${reportArabicFontStack} !important;
         font-weight: 900 !important;
@@ -2538,7 +2538,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
           ? "الرصيد الإضافي (له)"
           : "الحالة: تم السداد بالكامل";
 
-    // تنسيقات CSS لقص الصفحة على حدود كشف المتدرب وتوحيد خط Cairo
+    // تنسيقات CSS محلية لقص الصفحة على حدود كشف المتدرب وتوحيد خط التقرير
     const statementCss = `
       ${reportArabicFontFacesCss}
       * { 
