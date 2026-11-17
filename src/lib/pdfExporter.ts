@@ -8,6 +8,7 @@ import {
 import { downloadReportPdf } from "@/lib/reportPdf";
 import { reportTableThemeCss } from "@/lib/reportTheme";
 import { printReportHtml } from "@/lib/nativePrinter";
+import { reportArabicFontStack } from "./reportArabicFonts";
 
 async function htmlToPdf(opts: { html: string; css: string; fileName: string; orientation?: 'portrait' | 'landscape'; pageWidthPx?: number }): Promise<void> {
   await downloadReportPdf({ title: opts.fileName, body: opts.html, css: opts.css, fileName: opts.fileName, orientation: opts.orientation });
@@ -201,7 +202,7 @@ font-family: Cairo !important;
           font-weight: 900 !important;
           white-space: normal !important;
           font-size: 14px;
-font-family: AlQabas-Bold;
+font-family: ${reportArabicFontStack};
 
 
         }
