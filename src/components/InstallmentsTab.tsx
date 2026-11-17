@@ -26,6 +26,7 @@ import {
   Settings,
   FileSpreadsheet,
   FileText,
+  ClipboardList,
   Image as ImageIcon,
   Download,
 } from "lucide-react";
@@ -303,6 +304,15 @@ export default function InstallmentsTab() {
   const [detailedPdfBusy2026,
     setDetailedPdfBusy2026
   ] = useState(false);
+  const [feeDemandTrainee, setFeeDemandTrainee] = useState<{ name: string; registrationPaid: number; examPaid: number } | null>(null);
+  const [feeDemandIncludeRegistration, setFeeDemandIncludeRegistration] = useState(false);
+  const [feeDemandIncludeExam, setFeeDemandIncludeExam] = useState(true);
+  const [feeDemandIncludeFinalWritten, setFeeDemandIncludeFinalWritten] = useState(false);
+  const [feeDemandIncludeOralScientific, setFeeDemandIncludeOralScientific] = useState(false);
+  const [feeDemandIncludeOralClinical, setFeeDemandIncludeOralClinical] = useState(false);
+  const [feeDemandRegistrationAmount, setFeeDemandRegistrationAmount] = useState(10000);
+  const [feeDemandExamAmount, setFeeDemandExamAmount] = useState(30000);
+  const [feeDemandSignatures, setFeeDemandSignatures] = useState<{ department: string; director: string; signer: string }>(() => ({ department: "الشؤون المالية", director: "", signer: "" }));
   
   const [search2025, setSearch2025] =
   useState("");
