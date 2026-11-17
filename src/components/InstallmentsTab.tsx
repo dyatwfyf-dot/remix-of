@@ -4622,6 +4622,63 @@ className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transit
         )}
       </Modal>
 
+
+      {feeDemandTrainee && (() => {
+        const registrationUnpaid = feeDemandTrainee.registrationPaid <= 0;
+        const examUnpaid = feeDemandTrainee.examPaid <= 0;
+        const unpaidItems = [
+          { label: "رسوم القيد والتسجيل", amount: feeDemandIncludeRegistration && registrationUnpaid ? Math.max(0, feeDemandRegistrationAmount) : 0 },
+          { label: "رسوم امتحان الكتابي الأول", amount: feeDemandIncludeExam && examUnpaid ? Math.max(0, feeDemandExamAmount) : 0 },
+          { label: "رسوم امتحان الكتابي النهائي", amount: feeDemandIncludeFinalWritten ? 30000 : 0 },
+          { label: "رسوم امتحان العلمي الشفوي", amount: feeDemandIncludeOralScientific ? 100000 : 0 },
+          { label: "رسوم امتحان شفوي/سريري", amount: feeDemandIncludeOralClinical ? 30000 : 0 },
+        ].filter((fee) => fee.amount > 0);
+        return (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setFeeDemandTrainee(null); }}>
+            <section className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-4 shadow-2xl sm:p-6" role="dialog" aria-modal="true" aria-labelledby="installment-fee-demand-title" dir="rtl">
+              <div className="mb-4 flex items-center justify-between gap-3 border-b border-slate-200 pb-3">
+                <h2 id="installment-fee-demand-title" className="text-lg font-black text-slate-900">مطالبة مالية للمتدرب</h2>
+                <button type="button" onClick={() => setFeeDemandTrainee(null)} className="rounded-lg p-2 text-slate-600 hover:bg-slate-100" aria-label="إغلاق"><X className="h-5 w-5" /></button>
+              </div>
+              <div className="mb-4 rounded-xl border border-sky-200 bg-sky-50 p-3 text-right">
+                <h3 className="mb-2 font-black text-slate-800">تحديد الرسوم المطلوب إدراجها في المطالبة</h3>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {registrationUnpaid && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800"><input type="checkbox" checked={feeDemandIncludeRegistration} onChange={(event) => setFeeDemandIncludeRegistration(event.target.checked)} /><span className="flex-1">رسوم القيد والتسجيل</span><input type="number" min="0" value={feeDemandRegistrationAmount} onChange={(event) => setFeeDemandRegistrationAmount(Math.max(0, Number(event.target.value) || 0))} className="w-24 rounded border border-slate-300 px-2 py-1 text-center" aria-label="مبلغ رسوم القيد والتسجيل" /><span>ريال</span></label>}
+                  {examUnpaid && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800"><input type="checkbox" checked={feeDemandIncludeExam} onChange={(event) => setFeeDemandIncludeExam(event.target.checked)} /><span className="flex-1">رسوم امتحان الكتابي الأول</span><input type="number" min="0" value={feeDemandExamAmount} onChange={(event) => setFeeDemandExamAmount(Math.max(0, Number(event.target.value) || 0))} className="w-24 rounded border border-slate-300 px-2 py-1 text-center" aria-label="مبلغ رسوم امتحان الكتابي الأول" /><span>ريال</span></label>}
+                  <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800"><input type="checkbox" checked={feeDemandIncludeFinalWritten} onChange={(event) => setFeeDemandIncludeFinalWritten(event.target.checked)} /><span className="flex-1">رسوم امتحان الكتابي النهائي</span><strong className="whitespace-nowrap">30,000 ريال</strong></label>
+                  <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800"><input type="checkbox" checked={feeDemandIncludeOralScientific} onChange={(event) => setFeeDemandIncludeOralScientific(event.target.checked)} /><span className="flex-1">رسوم امتحان العلمي الشفوي</span><strong className="whitespace-nowrap">100,000 ريال</strong></label>
+                  <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800"><input type="checkbox" checked={feeDemandIncludeOralClinical} onChange={(event) => setFeeDemandIncludeOralClinical(event.target.checked)} /><span className="flex-1">رسوم امتحان شفوي/سريري</span><strong className="whitespace-nowrap">30,000 ريال</strong></label>
+                </div>
+                <p className="mt-2 text-xs text-slate-600">يُدرج في المطالبة ما تختاره فقط من الرسوم غير المسددة، ويمكن تعديل مبلغ كل رسم قبل الطباعة. الخيار الافتراضي هو رسوم امتحان الكتابي الأول فقط.</p>
+              </div>
+              <div className="space-y-3 text-sm leading-8 text-slate-900 text-center">
+                <p className="text-left">التاريخ: {reportDateLabel}</p>
+                <p>الأخ الدكتور/ <strong>{feeDemandTrainee.name}</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;المحترم،</p>
+                <p>تحية طيبة وبعد،</p>
+                {unpaidItems.length ? <><p><strong>الموضوع: مطالبة بسداد الرسوم غير المسددة</strong></p><ul className="list-disc space-y-1 pr-6">{unpaidItems.map((fee) => <li key={fee.label}>{fee.label}: <strong>{fee.amount.toLocaleString("en-US")} ريال</strong></li>)}</ul><p>نرجو المبادرة إلى سداد الرسوم المستحقة المحددة أعلاه وغير المسددة أو المتأخرة، ومراجعة الإدارة المالية بالمجلس اليمني للاختصاصات الطبية – فرع صعدة لتوثيق السداد.</p><p>وفي حال عدم السداد، سيتم اتخاذ الإجراءات اللازمة وفقاً للوائح والأنظمة المعمول بها.</p></> : <p className="rounded-lg bg-emerald-50 p-3 font-bold text-emerald-800">لا توجد رسوم مستحقة غير مسددة على هذا المتدرب، لذا لا يمكن إصدار مطالبة مالية له.</p>}
+                <p>شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير.</p>
+              </div>
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                {([["department", "الصندوق"], ["director", "الشؤون المالية"], ["signer", "رئيس المجلس اليمني للاختصاصات الطبية / فرع صعدة"]] as const).map(([key, label]) => (
+                  <label key={key} className="flex flex-col gap-1 text-xs font-bold text-slate-700 text-center">
+                    {label}
+                    <input type="text" value={feeDemandSignatures[key]} onChange={(event) => {
+                      const next = { ...feeDemandSignatures, [key]: event.target.value };
+                      setFeeDemandSignatures(next);
+                      try { localStorage.setItem("reports-fee-demand-signatures-v1", JSON.stringify(next)); } catch {}
+                    }} className="min-h-10 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-600 text-center" placeholder={"أدخل " + label} />
+                    <span className="mt-3 h-5 border-b border-dotted border-slate-500" />
+                  </label>
+                ))}
+              </div>
+              <div className="mt-5 flex flex-wrap justify-end gap-2 border-t border-slate-200 pt-4">
+                <button type="button" onClick={() => setFeeDemandTrainee(null)} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50">إغلاق</button>
+                <button type="button" disabled={!unpaidItems.length} onClick={printFeeDemand} className="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 text-sm font-bold text-white hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-400"><Printer className="h-4 w-4" /> معاينة وطباعة المطالبة</button>
+              </div>
+            </section>
+          </div>
+        );
+      })()}
       <PrintSettingsModal
         open={printSettingsYear !== null}
         year={printSettingsYear ?? 2026}
