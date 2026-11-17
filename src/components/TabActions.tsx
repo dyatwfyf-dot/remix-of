@@ -215,10 +215,10 @@ export default function TabActions({
         toast.error("تعذر فتح معاينة التقرير؛ اسمح بالنوافذ المنبثقة ثم أعد المحاولة");
         return;
       }
-      toast.success("تم فتح المعاينة ويجري تنزيل PDF بالإعدادات نفسها");
+      toast.success("تم فتح واجهة تصدير PDF؛ اختر «حفظ كملف PDF» لإتمام الحفظ");
     } catch (err) {
       console.error("PDF export error:", err);
-      toast.error("تعذّر تنزيل ملف PDF، حاول مرة أخرى");
+      toast.error("تعذّر فتح واجهة تصدير PDF، حاول مرة أخرى");
     } finally {
       setPdfBusy(false);
     }

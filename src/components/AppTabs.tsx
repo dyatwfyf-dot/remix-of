@@ -710,10 +710,10 @@ background:#0b3d6d; color:white !important; font-weight:700 !important; -webkit-
   const handlePdf = async () => {
     try {
       await downloadReportDocumentPdf(buildAllMonthsHtml(), `سجل النفقات-${reportDate}`, 'landscape');
-      toast.success("تم تنزيل سجل النفقات بصيغة PDF");
+      toast.success("تم فتح واجهة الطباعة؛ اختر «حفظ كملف PDF» لإتمام التصدير");
     } catch (error) {
       console.error(error);
-      toast.error("تعذر تنزيل سجل النفقات");
+      toast.error("تعذر فتح واجهة تصدير سجل النفقات");
     }
   };
 
@@ -747,7 +747,7 @@ background:#0b3d6d; color:white !important; font-weight:700 !important; -webkit-
                 actions={[
                   { label: "استيراد Excel", icon: Upload, onSelect: handleImportClick },
                   { label: "تصدير Excel", icon: Download, onSelect: handleExportExcel },
-                  { label: "تحويل PDF", icon: FileText, onSelect: handlePdf },
+                  { label: "تصدير PDF", icon: FileText, onSelect: handlePdf },
                   { label: "طباعة", icon: Printer, onSelect: handlePrint },
                   { label: "مسح الكل", icon: Eraser, onSelect: handleClearAll, destructive: true },
                 ]}

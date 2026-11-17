@@ -356,7 +356,7 @@ export default function RevenueTab() {
                 onSelect: printRevenue,
               },
               {
-                label: "تنزيل PDF",
+                label: "تصدير PDF",
                 icon: FileText,
                 onSelect: () => revenuePdf(revenue, year, month, reportDate),
               },

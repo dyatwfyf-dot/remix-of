@@ -199,7 +199,7 @@ export default function TraineeAccountStatement({
               className="flex-1 flex items-center justify-center gap-2 px-3 py-2 sm:py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors shadow-sm"
             >
               <Download className="w-4 h-4" />
-              <span className="hidden sm:inline">تنزيل PDF</span>
+              <span className="hidden sm:inline">تصدير PDF</span>
               <span className="sm:hidden">📥</span>
             </button>
           </div>

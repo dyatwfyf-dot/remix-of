@@ -161,7 +161,7 @@ const INSTALLMENTS_SUMMARY_REPORT_CSS = `
   .report-page-content table.installments-summary-2026 tbody tr.total-row > td, .report-page-content table.installments-summary-2026 tbody tr.total-row > td * { background: #e0f2fe !important; color: #000000 !important; border: 1px solid #000000 !important; border-color: #000000 !important; font-weight: 900 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 `;
 
-// All PDF reports use the same paper layout and measured row pagination.
+// All PDF reports use the shared native vector-print engine and physical paper layout.
 const downloadDetailedHtmlPdf =
   downloadReportPdf;
 
@@ -1615,7 +1615,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         padding-top: 3px;
       }
       ${settings.colored ? noteRowCss : ""}
-      /* تنسيق موحد لصفحات التقرير الإجمالي والتفصيلي عند الطباعة أو تنزيل PDF */
+      /* تنسيق موحد لصفحات التقرير الإجمالي والتفصيلي عند الطباعة أو تصدير PDF */
       .doc-header {
         width: 100%;
         display: flex;
@@ -1825,7 +1825,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
             fileName: `${safePdfFileName(`اقساط-${year}-تفصيلي-${reportDate}`)}.pdf`,
           });
         toast.success(
-          `تم تنزيل تقرير الأقساط التفصيلي لعام ${year}`
+          `تم فتح واجهة تصدير PDF لتقرير الأقساط لعام ${year}`
           );
         return;
       }
@@ -2942,10 +2942,10 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         marginMm: 0,
         fitToContent: true,
       });
-      toast.success("تم تنزيل كشف الحساب بصيغة PDF بنجاح");
+      toast.success("تم فتح واجهة الطباعة؛ اختر «حفظ كملف PDF» لإتمام التصدير");
     } catch (error) {
       console.error("Account statement PDF error:", error);
-      toast.error("تعذّر تنزيل كشف الحساب");
+      toast.error("تعذّر فتح واجهة تصدير كشف الحساب");
     }
   };
 
@@ -3269,7 +3269,7 @@ async () => {
         label: detailedPdfBusy2026 ?
           
           "جارٍ التحضير…" :
-          "تنزيل PDF التفصيلي",
+          "تصدير PDF التفصيلي",
         icon: Download,
         onSelect: handleDetailedPdf2026,
         disabled: detailedPdfBusy2026,
@@ -3510,7 +3510,7 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
                                 <button
                                   onClick={() => handleExportPdf(r, 2025)}
                                   className="p-1 bg-emerald-50 text-emerald-600 rounded border border-emerald-200 hover:bg-emerald-500 hover:text-white transition-colors"
-                                  title="تنزيل PDF (متوافق مع شاومي)"
+                                  title="تصدير PDF (متوافق مع شاومي)"
                                 >
                                   <FileText className={ICON_MOBILE} />
                                 </button>
@@ -3703,20 +3703,20 @@ className="installments-summary-actions col-span-full grid grid-cols-2 gap-2 w-f
 [&>button]:py-1.5 [&>button]:text-xs [&>button]:font-bold [&>button]:rounded-md [&>button]:shadow"
       />
 
-      {/* السطر 6: زر تنزيل PDF تفصيلي (يمتد عبر العرض الكامل لختام المجموعة) */}
+      {/* السطر 6: زر تصدير PDF تفصيلي (يمتد عبر العرض الكامل لختام المجموعة) */}
       <button
         className="apk-only-actions installment-action-btn installment-action-pdf min-w-auto flex-items-center justify-center gap-1 px-3 py-2 bg-[#10528e] text-white rounded-md text-sm font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all disabled:opacity-50"
         type="button"
         onClick={handleDetailedPdf2026}
         disabled={detailedPdfBusy2026}
-        title="تنزيل تقرير الأقساط التفصيلي لعام 2026"
+        title="تصدير تقرير الأقساط التفصيلي لعام 2026"
       >
         <Download
           className={`${ICON_MOBILE} ${
             detailedPdfBusy2026 ? "animate-pulse" : ""
           }`}
         />
-        <span>{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تنزيل PDF تفصيلي"}</span>
+        <span>{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تصدير PDF تفصيلي"}</span>
       </button>
     </div>
   </div>
