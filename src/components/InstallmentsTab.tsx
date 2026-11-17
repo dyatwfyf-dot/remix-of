@@ -2,7 +2,7 @@
    ملاحظة: التغييرات تنسيقية فقط (CSS / classNames / ثوابت أحجام)
 */
 import "./InstallmentsTab.css";
-import React, { useDeferredValue, useMemo,
+import React, { useDeferredValue, useEffect, useMemo,
   useState } from "react";
 import { useStore,
   type InstallmentCustomColumn } from "@/lib/store";
@@ -41,7 +41,7 @@ import PrintSettingsModal, {
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import { useReportDate } from "@/lib/reportDate";
 import { reportLetterheadHtml } from "@/lib/printTableHtml";
-import { downloadReportPdf } from "@/lib/reportPdf";
+import { downloadReportPdf, reportDocumentCss } from "@/lib/reportPdf";
 import {
   addReportHeader,
   appendRows,
@@ -312,7 +312,18 @@ export default function InstallmentsTab() {
   const [feeDemandIncludeOralClinical, setFeeDemandIncludeOralClinical] = useState(false);
   const [feeDemandRegistrationAmount, setFeeDemandRegistrationAmount] = useState(10000);
   const [feeDemandExamAmount, setFeeDemandExamAmount] = useState(30000);
-  const [feeDemandSignatures, setFeeDemandSignatures] = useState<{ department: string; director: string; signer: string }>(() => ({ department: "الشؤون المالية", director: "", signer: "" }));
+  const [feeDemandSignatures, setFeeDemandSignatures] = useState<{ department: string; director: string; signer: string }>(() => {
+    try {
+      const saved = localStorage.getItem("reports-fee-demand-signatures-v1");
+      if (saved) return { department: "الشؤون المالية", director: "", signer: "", ...JSON.parse(saved) };
+    } catch {}
+    return { department: "الشؤون المالية", director: "", signer: "" };
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem("reports-fee-demand-signatures-v1", JSON.stringify(feeDemandSignatures));
+    } catch {}
+  }, [feeDemandSignatures]);
   
   const [search2025, setSearch2025] =
   useState("");
@@ -1754,6 +1765,23 @@ td.t-fees { background: ${colorTokens.fees} !important; }
        table.installments-report-table tbody tr.total-row > td * {
          color: #000000 !important;
        }
+        table.installments-report-table.installments-screen-parity thead th,
+        table.installments-report-table.installments-screen-parity tbody td {
+          border: 1px solid #000000 !important;
+          border-color: #000000 !important;
+        }
+        table.installments-report-table.installments-screen-parity tbody tr.total-row > th,
+        table.installments-report-table.installments-screen-parity tbody tr.total-row > td,
+        table.installments-report-table.installments-screen-parity tbody tr.total-row > th *,
+        table.installments-report-table.installments-screen-parity tbody tr.total-row > td * {
+          background: #e0f2fe !important;
+          color: #000000 !important;
+          border: 1px solid #000000 !important;
+          border-color: #000000 !important;
+          font-weight: 900 !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
     `;
       
       const body = `
@@ -1849,6 +1877,21 @@ td.t-fees { background: ${colorTokens.fees} !important; }
           #tableContainer table.installments-report-table tbody tr.total-row > th *,
           #tableContainer table.installments-report-table tbody tr.total-row > td * {
             color: #000000 !important;
+          }
+          #tableContainer table.installments-report-table.installments-screen-parity thead th,
+          #tableContainer table.installments-report-table.installments-screen-parity tbody td {
+            border: 1px solid #000000 !important;
+            border-color: #000000 !important;
+          }
+          #tableContainer table.installments-report-table.installments-screen-parity tbody tr.total-row > th,
+          #tableContainer table.installments-report-table.installments-screen-parity tbody tr.total-row > td,
+          #tableContainer table.installments-report-table.installments-screen-parity tbody tr.total-row > th *,
+          #tableContainer table.installments-report-table.installments-screen-parity tbody tr.total-row > td * {
+            background: #e0f2fe !important;
+            color: #000000 !important;
+            border: 1px solid #000000 !important;
+            border-color: #000000 !important;
+            font-weight: 900 !important;
           }
           @media print {
             #tableContainer table.installments-report-table th,
