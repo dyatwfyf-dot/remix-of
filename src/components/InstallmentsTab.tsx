@@ -3932,11 +3932,11 @@ className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transit
                               <Printer className={ICON_MOBILE} />
                             </button>
                             <button
-                              onClick={() => handleExportPdf(r, 2026)}
-                              className="p-1 bg-emerald-50 text-emerald-600 rounded border border-emerald-200 hover:bg-emerald-500 hover:text-white transition-colors"
-                              title="تنزيل PDF (متوافق مع شاومي)"
+                              onClick={() => openFeeDemand(r)}
+                              className="p-1 bg-sky-50 text-sky-700 rounded border border-sky-200 hover:bg-sky-600 hover:text-white transition-colors"
+                              title="إعداد مطالبة مالية للمتدرب"
                             >
-                              <FileText className={ICON_MOBILE} />
+                              <ClipboardList className={ICON_MOBILE} />
                             </button>
                             <button
                               onClick={() => printExamFeesStatement(r)}
