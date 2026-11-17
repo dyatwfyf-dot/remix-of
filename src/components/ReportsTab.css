@@ -60,9 +60,11 @@
 
 
 /* Arabic report typography: only report tables use IBM Plex; app tabs remain on Cairo. */
+.mizan-reports-tab .reports-table-scroll table.reports-data-table,
+.mizan-reports-tab .reports-table-scroll table.reports-data-table *,
 .mizan-reports-tab #tableContainer table.reports-data-table,
 .mizan-reports-tab #tableContainer table.reports-data-table *,
 .mizan-reports-tab .reports-print-heading,
 .mizan-reports-tab .reports-print-heading * {
-  font-family: "IBM Plex Sans Arabic", "Noto Sans Arabic", "Noto Naskh Arabic", Cairo, Tahoma, Arial, sans-serif !important;
+  font-family: var(--font-report) !important;
 }
