@@ -1263,14 +1263,20 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       function printOnce() {
         if (printInProgress) return;
         printInProgress = true;
-        // Reapply the toolbar's selected page size/orientation immediately before printing.
-        updatePageSettings();
-        // updatePageSettings performs a second-frame fit calculation; wait for it
-        // so the preview and the actual @page print rule use the same selection.
-        window.requestAnimationFrame(function() {
+        // Wait for locally bundled Arabic font files before opening the native print dialog.
+        var fontsReady = document.fonts && document.fonts.ready
+          ? document.fonts.ready.catch(function() {})
+          : Promise.resolve();
+        fontsReady.then(function() {
+          // Reapply the toolbar's selected page size/orientation immediately before printing.
+          updatePageSettings();
+          // updatePageSettings performs a second-frame fit calculation; wait for it
+          // so the preview and the actual @page print rule use the same selection.
           window.requestAnimationFrame(function() {
-            window.print();
-            window.setTimeout(function() { printInProgress = false; }, 1000);
+            window.requestAnimationFrame(function() {
+              window.print();
+              window.setTimeout(function() { printInProgress = false; }, 1000);
+            });
           });
         });
       }
