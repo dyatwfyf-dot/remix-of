@@ -26,6 +26,7 @@ import {
   Settings,
   FileSpreadsheet,
   FileText,
+  ClipboardList,
   Image as ImageIcon,
   Download,
 } from "lucide-react";
@@ -303,6 +304,15 @@ export default function InstallmentsTab() {
   const [detailedPdfBusy2026,
     setDetailedPdfBusy2026
   ] = useState(false);
+  const [feeDemandTrainee, setFeeDemandTrainee] = useState<{ name: string; registrationPaid: number; examPaid: number } | null>(null);
+  const [feeDemandIncludeRegistration, setFeeDemandIncludeRegistration] = useState(false);
+  const [feeDemandIncludeExam, setFeeDemandIncludeExam] = useState(true);
+  const [feeDemandIncludeFinalWritten, setFeeDemandIncludeFinalWritten] = useState(false);
+  const [feeDemandIncludeOralScientific, setFeeDemandIncludeOralScientific] = useState(false);
+  const [feeDemandIncludeOralClinical, setFeeDemandIncludeOralClinical] = useState(false);
+  const [feeDemandRegistrationAmount, setFeeDemandRegistrationAmount] = useState(10000);
+  const [feeDemandExamAmount, setFeeDemandExamAmount] = useState(30000);
+  const [feeDemandSignatures, setFeeDemandSignatures] = useState<{ department: string; director: string; signer: string }>(() => ({ department: "الشؤون المالية", director: "", signer: "" }));
   
   const [search2025, setSearch2025] =
   useState("");
@@ -2780,6 +2790,82 @@ td.t-fees { background: ${colorTokens.fees} !important; }
 
     const downloadTraineeStatementPdf = downloadReportPdf;
 
+
+  const openFeeDemand = (row: any) => {
+    const normalizeName = (value: unknown) => String(value ?? "").trim()
+      .replace(/[ًٌٍَُِّْـ]/g, "").replace(/[إأآ]/g, "ا").replace(/ى/g, "ي")
+      .replace(/ة/g, "ه").replace(/\s+/g, " ").toLocaleLowerCase("ar");
+    const targetName = normalizeName(row.name);
+    let registrationPaid = 0;
+    let examPaid = 0;
+    (hafiza || []).forEach((record: any) => {
+      if (normalizeName(record.name) !== targetName) return;
+      const paymentDate = new Date(record.notifyDate || record.date || "");
+      if (!Number.isFinite(paymentDate.getTime()) || paymentDate.getFullYear() < 2022) return;
+      const notifyAmount = cleanNumber(record.notifyAmount);
+      const hasReceipt = Boolean(String(record.hafizaNo || "").trim()) && cleanNumber(record.hafizaAmount) > 0;
+      const paidAmount = notifyAmount > 0 ? notifyAmount : hasReceipt ? cleanNumber(record.hafizaAmount) : 0;
+      if (paidAmount <= 0) return;
+      if (isRegistrationFeeDescription(record.description)) registrationPaid += paidAmount;
+      else if (/امتحان|اختبار/.test(String(record.description || ""))) examPaid += paidAmount;
+    });
+    setFeeDemandIncludeRegistration(false);
+    setFeeDemandIncludeExam(true);
+    setFeeDemandIncludeFinalWritten(false);
+    setFeeDemandIncludeOralScientific(false);
+    setFeeDemandIncludeOralClinical(false);
+    setFeeDemandRegistrationAmount(10000);
+    setFeeDemandExamAmount(30000);
+    setFeeDemandTrainee({ name: String(row.name || ""), registrationPaid, examPaid });
+  };
+
+  const printFeeDemand = () => {
+    if (!feeDemandTrainee) return;
+    const esc = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+    })[char] || char);
+    const traineeName = feeDemandTrainee.name.trim();
+    const outstandingFees = [
+      { label: "رسوم القيد والتسجيل", amount: feeDemandIncludeRegistration && feeDemandTrainee.registrationPaid <= 0 ? Math.max(0, feeDemandRegistrationAmount) : 0 },
+      { label: "رسوم امتحان الكتابي الأول", amount: feeDemandIncludeExam && feeDemandTrainee.examPaid <= 0 ? Math.max(0, feeDemandExamAmount) : 0 },
+      { label: "رسوم امتحان الكتابي النهائي", amount: feeDemandIncludeFinalWritten ? 30000 : 0 },
+      { label: "رسوم امتحان العلمي الشفوي", amount: feeDemandIncludeOralScientific ? 100000 : 0 },
+      { label: "رسوم امتحان شفوي/سريري", amount: feeDemandIncludeOralClinical ? 30000 : 0 },
+    ].filter((fee) => fee.amount > 0);
+    if (!outstandingFees.length) {
+      toast.info("لا توجد رسوم مستحقة غير مسددة لهذا المتدرب");
+      return;
+    }
+    const outstandingFeeText = outstandingFees.map((fee) => fee.label + " (" + fee.amount.toLocaleString("en-US") + " ريال)").join(" و");
+    const title = "مطالبة مالية بسداد الرسوم - " + traineeName;
+    const tableHtml = '<article class="fee-demand-letter" dir="rtl"><h1>مطالبة مالية بسداد الرسوم</h1>' +
+      '<p class="letter-date">التاريخ: ' + esc(reportDateLabel) + '</p>' +
+      '<p class="salutation">الأخ-الدكتور// <strong>' + esc(traineeName) + '</strong> المحتــرم</p>' +
+      '<p>تحية طيبة وبعد،</p><p class="subject"><strong>الموضوع: مطالبة بسداد ' + esc(outstandingFeeText) + '</strong></p>' +
+      '<p>بالإشارة إلى الموضوع أعلاه، نرجو منكم المبادرة إلى سداد الرسوم المحددة في هذه المطالبة وغير المسددة، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>' +
+      '<p class="emphasis">نأمل منكم سرعة سداد المستحقات المالية التي عليكم. وفي حال عدم السداد، سيتم اتخاذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>' +
+      '<p class="thanks">شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير،،،،</p>' +
+      '<div class="letter-signatures"><div><label>الصندوق</label><strong>' + esc(feeDemandSignatures.department) + '</strong><span></span></div>' +
+      '<div><label>الشؤون المالية</label><strong>' + esc(feeDemandSignatures.director) + '</strong><span></span></div>' +
+      '<div><label>رئيس فرع المجلس</label><strong>' + esc(feeDemandSignatures.signer) + '</strong><span></span></div></div></article>';
+    const finalCss = '@page { size:A4 portrait; margin:18mm; }' +
+      '#tableContainer .fee-demand-letter { width:100%; min-height:245mm; margin:0 auto; color:#111; font-family:Cairo,Tahoma,Arial,sans-serif; font-size:16px; line-height:2; text-align:center; }' +
+      '#tableContainer .fee-demand-letter h1 { margin:0 0 10mm; padding:0 0 4mm; border-bottom:2px solid #17324d; color:#17324d; font-size:22px; font-weight:900; }' +
+      '#tableContainer .fee-demand-letter p { margin:0 0 5mm; text-align:justify; }' +
+      '#tableContainer .fee-demand-letter .letter-date { text-align:left; }' +
+      '#tableContainer .fee-demand-letter .salutation { margin-top:10mm; text-align:right; font-size:20px; }' +
+      '#tableContainer .fee-demand-letter .subject { text-align:center; color:#b91c1c; text-decoration:underline; }' +
+      '#tableContainer .fee-demand-letter .emphasis { font-weight:900; }' +
+      '#tableContainer .fee-demand-letter .thanks { margin-top:8mm; text-align:center; }' +
+      '#tableContainer .letter-signatures { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8mm; margin-top:22mm; text-align:center; }' +
+      '#tableContainer .letter-signatures > div { display:flex; min-height:32mm; flex-direction:column; align-items:center; gap:3mm; }' +
+      '#tableContainer .letter-signatures label { font-weight:800; }' +
+      '#tableContainer .letter-signatures strong { min-height:8mm; }' +
+      '#tableContainer .letter-signatures span { width:75%; height:8mm; margin-top:2mm; border-bottom:1px dotted #333; }';
+    const opened = openBrowserPrintPreview({ title, reportDateLabel, tableHtml, finalCss, defaultOrientation: "portrait", defaultPageSize: "A4", defaultMarginMm: 18 });
+    if (!opened) toast.error("تم منع فتح نافذة المعاينة، يرجى السماح بالنوافذ المنبثقة ثم إعادة المحاولة");
+  };
+
   const handleExportPdf = async (row: any, year: number) => {
     const { title, body, css } = generateAccountStatement(row, year);
     try {
@@ -3846,11 +3932,11 @@ className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transit
                               <Printer className={ICON_MOBILE} />
                             </button>
                             <button
-                              onClick={() => handleExportPdf(r, 2026)}
-                              className="p-1 bg-emerald-50 text-emerald-600 rounded border border-emerald-200 hover:bg-emerald-500 hover:text-white transition-colors"
-                              title="تنزيل PDF (متوافق مع شاومي)"
+                              onClick={() => openFeeDemand(r)}
+                              className="p-1 bg-sky-50 text-sky-700 rounded border border-sky-200 hover:bg-sky-600 hover:text-white transition-colors"
+                              title="إعداد مطالبة مالية للمتدرب"
                             >
-                              <FileText className={ICON_MOBILE} />
+                              <ClipboardList className={ICON_MOBILE} />
                             </button>
                             <button
                               onClick={() => printExamFeesStatement(r)}
@@ -4536,6 +4622,63 @@ className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transit
         )}
       </Modal>
 
+
+      {feeDemandTrainee && (() => {
+        const registrationUnpaid = feeDemandTrainee.registrationPaid <= 0;
+        const examUnpaid = feeDemandTrainee.examPaid <= 0;
+        const unpaidItems = [
+          { label: "رسوم القيد والتسجيل", amount: feeDemandIncludeRegistration && registrationUnpaid ? Math.max(0, feeDemandRegistrationAmount) : 0 },
+          { label: "رسوم امتحان الكتابي الأول", amount: feeDemandIncludeExam && examUnpaid ? Math.max(0, feeDemandExamAmount) : 0 },
+          { label: "رسوم امتحان الكتابي النهائي", amount: feeDemandIncludeFinalWritten ? 30000 : 0 },
+          { label: "رسوم امتحان العلمي الشفوي", amount: feeDemandIncludeOralScientific ? 100000 : 0 },
+          { label: "رسوم امتحان شفوي/سريري", amount: feeDemandIncludeOralClinical ? 30000 : 0 },
+        ].filter((fee) => fee.amount > 0);
+        return (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setFeeDemandTrainee(null); }}>
+            <section className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-4 shadow-2xl sm:p-6" role="dialog" aria-modal="true" aria-labelledby="installment-fee-demand-title" dir="rtl">
+              <div className="mb-4 flex items-center justify-between gap-3 border-b border-slate-200 pb-3">
+                <h2 id="installment-fee-demand-title" className="text-lg font-black text-slate-900">مطالبة مالية للمتدرب</h2>
+                <button type="button" onClick={() => setFeeDemandTrainee(null)} className="rounded-lg p-2 text-slate-600 hover:bg-slate-100" aria-label="إغلاق"><X className="h-5 w-5" /></button>
+              </div>
+              <div className="mb-4 rounded-xl border border-sky-200 bg-sky-50 p-3 text-right">
+                <h3 className="mb-2 font-black text-slate-800">تحديد الرسوم المطلوب إدراجها في المطالبة</h3>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {registrationUnpaid && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800"><input type="checkbox" checked={feeDemandIncludeRegistration} onChange={(event) => setFeeDemandIncludeRegistration(event.target.checked)} /><span className="flex-1">رسوم القيد والتسجيل</span><input type="number" min="0" value={feeDemandRegistrationAmount} onChange={(event) => setFeeDemandRegistrationAmount(Math.max(0, Number(event.target.value) || 0))} className="w-24 rounded border border-slate-300 px-2 py-1 text-center" aria-label="مبلغ رسوم القيد والتسجيل" /><span>ريال</span></label>}
+                  {examUnpaid && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800"><input type="checkbox" checked={feeDemandIncludeExam} onChange={(event) => setFeeDemandIncludeExam(event.target.checked)} /><span className="flex-1">رسوم امتحان الكتابي الأول</span><input type="number" min="0" value={feeDemandExamAmount} onChange={(event) => setFeeDemandExamAmount(Math.max(0, Number(event.target.value) || 0))} className="w-24 rounded border border-slate-300 px-2 py-1 text-center" aria-label="مبلغ رسوم امتحان الكتابي الأول" /><span>ريال</span></label>}
+                  <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800"><input type="checkbox" checked={feeDemandIncludeFinalWritten} onChange={(event) => setFeeDemandIncludeFinalWritten(event.target.checked)} /><span className="flex-1">رسوم امتحان الكتابي النهائي</span><strong className="whitespace-nowrap">30,000 ريال</strong></label>
+                  <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800"><input type="checkbox" checked={feeDemandIncludeOralScientific} onChange={(event) => setFeeDemandIncludeOralScientific(event.target.checked)} /><span className="flex-1">رسوم امتحان العلمي الشفوي</span><strong className="whitespace-nowrap">100,000 ريال</strong></label>
+                  <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800"><input type="checkbox" checked={feeDemandIncludeOralClinical} onChange={(event) => setFeeDemandIncludeOralClinical(event.target.checked)} /><span className="flex-1">رسوم امتحان شفوي/سريري</span><strong className="whitespace-nowrap">30,000 ريال</strong></label>
+                </div>
+                <p className="mt-2 text-xs text-slate-600">يُدرج في المطالبة ما تختاره فقط من الرسوم غير المسددة، ويمكن تعديل مبلغ كل رسم قبل الطباعة. الخيار الافتراضي هو رسوم امتحان الكتابي الأول فقط.</p>
+              </div>
+              <div className="space-y-3 text-sm leading-8 text-slate-900 text-center">
+                <p className="text-left">التاريخ: {reportDateLabel}</p>
+                <p>الأخ الدكتور/ <strong>{feeDemandTrainee.name}</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;المحترم،</p>
+                <p>تحية طيبة وبعد،</p>
+                {unpaidItems.length ? <><p><strong>الموضوع: مطالبة بسداد الرسوم غير المسددة</strong></p><ul className="list-disc space-y-1 pr-6">{unpaidItems.map((fee) => <li key={fee.label}>{fee.label}: <strong>{fee.amount.toLocaleString("en-US")} ريال</strong></li>)}</ul><p>نرجو المبادرة إلى سداد الرسوم المستحقة المحددة أعلاه وغير المسددة أو المتأخرة، ومراجعة الإدارة المالية بالمجلس اليمني للاختصاصات الطبية – فرع صعدة لتوثيق السداد.</p><p>وفي حال عدم السداد، سيتم اتخاذ الإجراءات اللازمة وفقاً للوائح والأنظمة المعمول بها.</p></> : <p className="rounded-lg bg-emerald-50 p-3 font-bold text-emerald-800">لا توجد رسوم مستحقة غير مسددة على هذا المتدرب، لذا لا يمكن إصدار مطالبة مالية له.</p>}
+                <p>شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير.</p>
+              </div>
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                {([["department", "الصندوق"], ["director", "الشؤون المالية"], ["signer", "رئيس المجلس اليمني للاختصاصات الطبية / فرع صعدة"]] as const).map(([key, label]) => (
+                  <label key={key} className="flex flex-col gap-1 text-xs font-bold text-slate-700 text-center">
+                    {label}
+                    <input type="text" value={feeDemandSignatures[key]} onChange={(event) => {
+                      const next = { ...feeDemandSignatures, [key]: event.target.value };
+                      setFeeDemandSignatures(next);
+                      try { localStorage.setItem("reports-fee-demand-signatures-v1", JSON.stringify(next)); } catch {}
+                    }} className="min-h-10 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-600 text-center" placeholder={"أدخل " + label} />
+                    <span className="mt-3 h-5 border-b border-dotted border-slate-500" />
+                  </label>
+                ))}
+              </div>
+              <div className="mt-5 flex flex-wrap justify-end gap-2 border-t border-slate-200 pt-4">
+                <button type="button" onClick={() => setFeeDemandTrainee(null)} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50">إغلاق</button>
+                <button type="button" disabled={!unpaidItems.length} onClick={printFeeDemand} className="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 text-sm font-bold text-white hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-400"><Printer className="h-4 w-4" /> معاينة وطباعة المطالبة</button>
+              </div>
+            </section>
+          </div>
+        );
+      })()}
       <PrintSettingsModal
         open={printSettingsYear !== null}
         year={printSettingsYear ?? 2026}
