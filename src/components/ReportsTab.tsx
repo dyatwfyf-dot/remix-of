@@ -286,6 +286,9 @@ const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "ot
 };
 
 const reportsTabPrintCss = `
+@font-face{font-family:"Reports Noto Sans Arabic";src:url("/NotoSansArabic-Regular.ttf") format("truetype");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"Reports Noto Sans Arabic";src:url("/NotoSansArabic-SemiBold.ttf") format("truetype");font-style:normal;font-weight:600 900;font-display:swap}
+#tableContainer table.reports-custody-font-trial,#tableContainer table.reports-custody-font-trial th,#tableContainer table.reports-custody-font-trial td,#tableContainer table.reports-custody-font-trial .pdf-cell-text,#tableContainer .reports-custody-font-trial{font-family:"Reports Noto Sans Arabic",Cairo,Tahoma,Arial,sans-serif!important}
 #tableContainer .reports-print-heading{margin:0 auto 4mm!important;padding:2mm 0!important;text-align:center!important;direction:rtl!important;color:#142b3d!important;page-break-after:avoid!important}
 #tableContainer .reports-print-heading h1{margin:0!important;color:#142b3d!important;font-weight:900!important;font-size:18px!important;font-family:Cairo,Tahoma,Arial,sans-serif!important}
 #tableContainer .reports-print-heading .reports-print-sub{margin-top:1.5mm!important;color:#334b5e!important;font:800 15px/1.4 Cairo,Tahoma,Arial,sans-serif!important}
@@ -2384,7 +2387,7 @@ export default function ReportsTab() {
         
         <div className="reports-table-panel p-3 sm:p-4">
           <div className="reports-table-scroll">
-            <table id="reports-table" className={`reports-data-table text-center text-xs ${source === "trainee" ? "reports-trainee-payment-table" : ""} ${source === "traineeFeeStatus" ? "reports-fee-status-table" : ""}`} style={{ tableLayout: "auto" }}>
+            <table id="reports-table" className={`reports-data-table text-center text-xs ${source === "trainee" ? "reports-trainee-payment-table" : ""} ${source === "traineeFeeStatus" ? "reports-fee-status-table" : ""} ${source === "youssefLoan" || source === "tawfiqCustody" ? "reports-custody-font-trial" : ""}`} style={{ tableLayout: "auto" }}>
               <thead>
                 <>
                   <tr className="reports-custody-title-row">
