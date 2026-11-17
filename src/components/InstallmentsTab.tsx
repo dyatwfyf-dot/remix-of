@@ -2942,10 +2942,10 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         marginMm: 0,
         fitToContent: true,
       });
-      toast.success("تم تنزيل كشف الحساب بصيغة PDF بنجاح");
+      toast.success("تم فتح واجهة الطباعة؛ اختر «حفظ كملف PDF» لإتمام التصدير");
     } catch (error) {
       console.error("Account statement PDF error:", error);
-      toast.error("تعذّر تنزيل كشف الحساب");
+      toast.error("تعذّر فتح واجهة تصدير كشف الحساب");
     }
   };
 
@@ -3703,20 +3703,20 @@ className="installments-summary-actions col-span-full grid grid-cols-2 gap-2 w-f
 [&>button]:py-1.5 [&>button]:text-xs [&>button]:font-bold [&>button]:rounded-md [&>button]:shadow"
       />
 
-      {/* السطر 6: زر تنزيل PDF تفصيلي (يمتد عبر العرض الكامل لختام المجموعة) */}
+      {/* السطر 6: زر تصدير PDF تفصيلي (يمتد عبر العرض الكامل لختام المجموعة) */}
       <button
         className="apk-only-actions installment-action-btn installment-action-pdf min-w-auto flex-items-center justify-center gap-1 px-3 py-2 bg-[#10528e] text-white rounded-md text-sm font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all disabled:opacity-50"
         type="button"
         onClick={handleDetailedPdf2026}
         disabled={detailedPdfBusy2026}
-        title="تنزيل تقرير الأقساط التفصيلي لعام 2026"
+        title="تصدير تقرير الأقساط التفصيلي لعام 2026"
       >
         <Download
           className={`${ICON_MOBILE} ${
             detailedPdfBusy2026 ? "animate-pulse" : ""
           }`}
         />
-        <span>{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تنزيل PDF تفصيلي"}</span>
+        <span>{detailedPdfBusy2026 ? "جارٍ التحضير…" : "تصدير PDF تفصيلي"}</span>
       </button>
     </div>
   </div>
