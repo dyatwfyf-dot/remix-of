@@ -8,6 +8,7 @@ export type ReportPaperSize = 'A4' | 'A3' | 'Letter';
 export type ReportOrientation = 'portrait' | 'landscape';
 
 export const reportDocumentCss = `
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap");
   :root { 
     --report-paper: #ffffff; 
     --report-ink: #000000; 
@@ -189,6 +190,10 @@ table.reports-data-table tbody tr.reports-trainee-total-row:not(.total-row):not(
 table.reports-data-table tbody tr.reports-trainee-summary-row:not(.total-row):not(.report-grand-total-row)>td{background:#fff4d9!important;color:#211b0c!important;font-weight:850!important}
 table.reports-data-table tbody tr.reports-fee-row:not(.total-row):not(.report-grand-total-row)>td{background:#e8f1f7!important;color:#142b3d!important;font-weight:900!important}
 table.reports-data-table tbody tr.reports-period-row:not(.total-row):not(.report-grand-total-row)>td{background:#e9eef3!important;color:#17212b!important;font-weight:900!important}
+  /* IBM Plex Sans Arabic trial is restricted to custody and loan report tables. */
+  .report-page-content table.reports-custody-font-trial,
+  .report-page-content table.reports-custody-font-trial * { font-family: "IBM Plex Sans Arabic", Cairo, Tahoma, Arial, sans-serif !important; }
+
 `;
 
 export const reportContainmentCss = `
