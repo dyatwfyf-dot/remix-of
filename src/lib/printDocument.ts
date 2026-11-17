@@ -1,5 +1,6 @@
 import { reportLetterheadHtml } from "@/lib/printTableHtml";
 import { printReportHtmlAsync } from "@/lib/nativePrinter";
+import { reportArabicFontFacesCss, reportArabicFontStack } from "./reportArabicFonts";
 
 export type PrintOrientation = "portrait" | "landscape";
 
@@ -26,12 +27,13 @@ const baseCss = (
   orientation: PrintOrientation,
   margin: string
 ) => `
+  ${reportArabicFontFacesCss}
   /* وصف الطباعة العام */
   @page { size: ${pageSize} ${orientation}; margin: ${margin}; }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: #fff; }
   body {
-    font-family: Cairo;
+    font-family: ${reportArabicFontStack};
     direction: rtl;
     font-weight: 800;
     font-size: 18px;
@@ -96,7 +98,7 @@ font-size: 19px !important;
     word-break: keep-all !important; 
     overflow-wrap: normal !important; 
     hyphens: none !important;
-    font-family: Cairo, sans-serif !important
+    font-family: ${reportArabicFontStack} !important
     color: #000 !important; 
     font-weight: 900 !important; 
     direction: ltr; 
@@ -216,9 +218,6 @@ export async function openPrintDocument(options: PrintDocumentOptions): Promise<
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${title}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>${baseCss(pageSize, orientation, margin)}${css}</style>
 </head>
 <body>
