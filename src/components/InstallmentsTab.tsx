@@ -161,7 +161,7 @@ const INSTALLMENTS_SUMMARY_REPORT_CSS = `
   .report-page-content table.installments-summary-2026 tbody tr.total-row > td, .report-page-content table.installments-summary-2026 tbody tr.total-row > td * { background: #e0f2fe !important; color: #000000 !important; border: 1px solid #000000 !important; border-color: #000000 !important; font-weight: 900 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 `;
 
-// All PDF reports use the same paper layout and measured row pagination.
+// All PDF reports use the shared native vector-print engine and physical paper layout.
 const downloadDetailedHtmlPdf =
   downloadReportPdf;
 
