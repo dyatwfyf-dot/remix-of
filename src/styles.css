@@ -1048,3 +1048,11 @@ table:has(> tbody tr:first-child th:first-child:is(.serial-number-column, [data-
   word-break: keep-all !important;
   font-variant-numeric: tabular-nums !important;
 }
+
+/* Trial typography: limited to custody and loan reports only. */
+@font-face { font-family: "Reports Noto Sans Arabic"; src: url("/NotoSansArabic-Regular.ttf") format("truetype"); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: "Reports Noto Sans Arabic"; src: url("/NotoSansArabic-SemiBold.ttf") format("truetype"); font-style: normal; font-weight: 600 900; font-display: swap; }
+.mizan-reports-tab #reports-table.reports-custody-font-trial,
+.mizan-reports-tab #reports-table.reports-custody-font-trial th,
+.mizan-reports-tab #reports-table.reports-custody-font-trial td,
+.mizan-reports-tab #reports-table.reports-custody-font-trial .pdf-cell-text { font-family: "Reports Noto Sans Arabic", Cairo, Tahoma, Arial, sans-serif !important; }
