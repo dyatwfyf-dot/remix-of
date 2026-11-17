@@ -1615,7 +1615,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         padding-top: 3px;
       }
       ${settings.colored ? noteRowCss : ""}
-      /* تنسيق موحد لصفحات التقرير الإجمالي والتفصيلي عند الطباعة أو تنزيل PDF */
+      /* تنسيق موحد لصفحات التقرير الإجمالي والتفصيلي عند الطباعة أو تصدير PDF */
       .doc-header {
         width: 100%;
         display: flex;
@@ -3269,7 +3269,7 @@ async () => {
         label: detailedPdfBusy2026 ?
           
           "جارٍ التحضير…" :
-          "تنزيل PDF التفصيلي",
+          "تصدير PDF التفصيلي",
         icon: Download,
         onSelect: handleDetailedPdf2026,
         disabled: detailedPdfBusy2026,
@@ -3510,7 +3510,7 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
                                 <button
                                   onClick={() => handleExportPdf(r, 2025)}
                                   className="p-1 bg-emerald-50 text-emerald-600 rounded border border-emerald-200 hover:bg-emerald-500 hover:text-white transition-colors"
-                                  title="تنزيل PDF (متوافق مع شاومي)"
+                                  title="تصدير PDF (متوافق مع شاومي)"
                                 >
                                   <FileText className={ICON_MOBILE} />
                                 </button>
