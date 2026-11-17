@@ -638,18 +638,18 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
   const styles = Array.from(doc.querySelectorAll("style"))
     .map((style) => style.textContent || "")
     .filter(Boolean)
-    .join("\\n");
+    .join("\n");
   const linkedStyles = Array.from(doc.querySelectorAll('link[rel="stylesheet"]'))
     .map((link) => (link as HTMLLinkElement).outerHTML)
-    .join("\\n");
+    .join("\n");
 
   const safeMargin = Number.isFinite(marginMm)
     ? Math.max(0, Math.min(30, marginMm))
     : 3;
   // fitToContent يحتفظ بهامش المستخدم المختار، لكنه لا ينشئ صفحة طويلة
   // غير قياسية؛ يظل الملف على ورق A4/A3/Letter مع ترقيم وتجزئة طبيعيين.
-  const pageMargin = fitToContent ? safeMargin : safeMargin;
-  const title = fileName.replace(/\\.pdf$/i, "").replace(/[\\\\/:*?"<>|]/g, "-");
+  const pageMargin = fitToContent ? Math.min(safeMargin, 3) : safeMargin;
+  const title = fileName.replace(/\.pdf$/i, "").replace(/[\\\\/:*?"<>|]/g, "-");
 
   const vectorPrintCss = `
     @page {
@@ -728,7 +728,7 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>${escapeHtml(title)}</title>
         ${linkedStyles}
-        <style>${styles}\\n${vectorPrintCss}</style>
+        <style>${styles}\n${vectorPrintCss}</style>
       </head>
       <body>${source.outerHTML}</body>
     </html>`;
