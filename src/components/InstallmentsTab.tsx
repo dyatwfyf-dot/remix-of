@@ -2790,6 +2790,82 @@ td.t-fees { background: ${colorTokens.fees} !important; }
 
     const downloadTraineeStatementPdf = downloadReportPdf;
 
+
+  const openFeeDemand = (row: any) => {
+    const normalizeName = (value: unknown) => String(value ?? "").trim()
+      .replace(/[ًٌٍَُِّْـ]/g, "").replace(/[إأآ]/g, "ا").replace(/ى/g, "ي")
+      .replace(/ة/g, "ه").replace(/\s+/g, " ").toLocaleLowerCase("ar");
+    const targetName = normalizeName(row.name);
+    let registrationPaid = 0;
+    let examPaid = 0;
+    (hafiza || []).forEach((record: any) => {
+      if (normalizeName(record.name) !== targetName) return;
+      const paymentDate = new Date(record.notifyDate || record.date || "");
+      if (!Number.isFinite(paymentDate.getTime()) || paymentDate.getFullYear() < 2022) return;
+      const notifyAmount = cleanNumber(record.notifyAmount);
+      const hasReceipt = Boolean(String(record.hafizaNo || "").trim()) && cleanNumber(record.hafizaAmount) > 0;
+      const paidAmount = notifyAmount > 0 ? notifyAmount : hasReceipt ? cleanNumber(record.hafizaAmount) : 0;
+      if (paidAmount <= 0) return;
+      if (isRegistrationFeeDescription(record.description)) registrationPaid += paidAmount;
+      else if (/امتحان|اختبار/.test(String(record.description || ""))) examPaid += paidAmount;
+    });
+    setFeeDemandIncludeRegistration(false);
+    setFeeDemandIncludeExam(true);
+    setFeeDemandIncludeFinalWritten(false);
+    setFeeDemandIncludeOralScientific(false);
+    setFeeDemandIncludeOralClinical(false);
+    setFeeDemandRegistrationAmount(10000);
+    setFeeDemandExamAmount(30000);
+    setFeeDemandTrainee({ name: String(row.name || ""), registrationPaid, examPaid });
+  };
+
+  const printFeeDemand = () => {
+    if (!feeDemandTrainee) return;
+    const esc = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+    })[char] || char);
+    const traineeName = feeDemandTrainee.name.trim();
+    const outstandingFees = [
+      { label: "رسوم القيد والتسجيل", amount: feeDemandIncludeRegistration && feeDemandTrainee.registrationPaid <= 0 ? Math.max(0, feeDemandRegistrationAmount) : 0 },
+      { label: "رسوم امتحان الكتابي الأول", amount: feeDemandIncludeExam && feeDemandTrainee.examPaid <= 0 ? Math.max(0, feeDemandExamAmount) : 0 },
+      { label: "رسوم امتحان الكتابي النهائي", amount: feeDemandIncludeFinalWritten ? 30000 : 0 },
+      { label: "رسوم امتحان العلمي الشفوي", amount: feeDemandIncludeOralScientific ? 100000 : 0 },
+      { label: "رسوم امتحان شفوي/سريري", amount: feeDemandIncludeOralClinical ? 30000 : 0 },
+    ].filter((fee) => fee.amount > 0);
+    if (!outstandingFees.length) {
+      toast.info("لا توجد رسوم مستحقة غير مسددة لهذا المتدرب");
+      return;
+    }
+    const outstandingFeeText = outstandingFees.map((fee) => fee.label + " (" + fee.amount.toLocaleString("en-US") + " ريال)").join(" و");
+    const title = "مطالبة مالية بسداد الرسوم - " + traineeName;
+    const tableHtml = '<article class="fee-demand-letter" dir="rtl"><h1>مطالبة مالية بسداد الرسوم</h1>' +
+      '<p class="letter-date">التاريخ: ' + esc(reportDateLabel) + '</p>' +
+      '<p class="salutation">الأخ-الدكتور// <strong>' + esc(traineeName) + '</strong> المحتــرم</p>' +
+      '<p>تحية طيبة وبعد،</p><p class="subject"><strong>الموضوع: مطالبة بسداد ' + esc(outstandingFeeText) + '</strong></p>' +
+      '<p>بالإشارة إلى الموضوع أعلاه، نرجو منكم المبادرة إلى سداد الرسوم المحددة في هذه المطالبة وغير المسددة، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>' +
+      '<p class="emphasis">نأمل منكم سرعة سداد المستحقات المالية التي عليكم. وفي حال عدم السداد، سيتم اتخاذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>' +
+      '<p class="thanks">شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير،،،،</p>' +
+      '<div class="letter-signatures"><div><label>الصندوق</label><strong>' + esc(feeDemandSignatures.department) + '</strong><span></span></div>' +
+      '<div><label>الشؤون المالية</label><strong>' + esc(feeDemandSignatures.director) + '</strong><span></span></div>' +
+      '<div><label>رئيس فرع المجلس</label><strong>' + esc(feeDemandSignatures.signer) + '</strong><span></span></div></div></article>';
+    const finalCss = '@page { size:A4 portrait; margin:18mm; }' +
+      '#tableContainer .fee-demand-letter { width:100%; min-height:245mm; margin:0 auto; color:#111; font-family:Cairo,Tahoma,Arial,sans-serif; font-size:16px; line-height:2; text-align:center; }' +
+      '#tableContainer .fee-demand-letter h1 { margin:0 0 10mm; padding:0 0 4mm; border-bottom:2px solid #17324d; color:#17324d; font-size:22px; font-weight:900; }' +
+      '#tableContainer .fee-demand-letter p { margin:0 0 5mm; text-align:justify; }' +
+      '#tableContainer .fee-demand-letter .letter-date { text-align:left; }' +
+      '#tableContainer .fee-demand-letter .salutation { margin-top:10mm; text-align:right; font-size:20px; }' +
+      '#tableContainer .fee-demand-letter .subject { text-align:center; color:#b91c1c; text-decoration:underline; }' +
+      '#tableContainer .fee-demand-letter .emphasis { font-weight:900; }' +
+      '#tableContainer .fee-demand-letter .thanks { margin-top:8mm; text-align:center; }' +
+      '#tableContainer .letter-signatures { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8mm; margin-top:22mm; text-align:center; }' +
+      '#tableContainer .letter-signatures > div { display:flex; min-height:32mm; flex-direction:column; align-items:center; gap:3mm; }' +
+      '#tableContainer .letter-signatures label { font-weight:800; }' +
+      '#tableContainer .letter-signatures strong { min-height:8mm; }' +
+      '#tableContainer .letter-signatures span { width:75%; height:8mm; margin-top:2mm; border-bottom:1px dotted #333; }';
+    const opened = openBrowserPrintPreview({ title, reportDateLabel, tableHtml, finalCss, defaultOrientation: "portrait", defaultPageSize: "A4", defaultMarginMm: 18 });
+    if (!opened) toast.error("تم منع فتح نافذة المعاينة، يرجى السماح بالنوافذ المنبثقة ثم إعادة المحاولة");
+  };
+
   const handleExportPdf = async (row: any, year: number) => {
     const { title, body, css } = generateAccountStatement(row, year);
     try {
