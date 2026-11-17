@@ -1825,7 +1825,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
             fileName: `${safePdfFileName(`اقساط-${year}-تفصيلي-${reportDate}`)}.pdf`,
           });
         toast.success(
-          `تم تنزيل تقرير الأقساط التفصيلي لعام ${year}`
+          `تم فتح واجهة تصدير PDF لتقرير الأقساط لعام ${year}`
           );
         return;
       }
