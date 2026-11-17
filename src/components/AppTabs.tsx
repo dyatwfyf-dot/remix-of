@@ -621,7 +621,7 @@ const AppTabs: React.FC = () => {
     return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
     <title>سجل مفردات الاستخدامات والنفقات العامة - ${reportDateLabel}</title>
     <style>
-      @font-face { font-family: "Cairo"; src: url("/Cairo-Regular.ttf") format("truetype"); font-style: normal; font-weight: 400; font-display: swap; }
+      @font-face { font-family: "Cairo"; src: url("/fonts/Cairo-Variable.ttf") format("truetype"); font-style: normal; font-weight: 100 900; font-display: swap; }
     </style>
     <style>
       @page { size: A4 landscape; margin: 3mm; }
