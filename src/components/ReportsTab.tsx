@@ -683,7 +683,7 @@ export default function ReportsTab() {
   const [month, setMonth] = useState < number > (new Date().getMonth());
   
   const [selectedTrainee, setSelectedTrainee] = useState < string > ("all");
-  const [selectedFee, setSelectedFee] = useState < string > ("all");
+  const [selectedFees, setSelectedFees] = useState<string[]>([]);
   const [selectedBatches, setSelectedBatches] = useState<string[]>([]);
   const [selectedTraineeFeeStatus, setSelectedTraineeFeeStatus] = useState < string > ("all");
   const [feeDemandTrainee, setFeeDemandTrainee] = useState < ReportRow | null > (null);
@@ -1106,7 +1106,7 @@ export default function ReportsTab() {
         date.getFullYear() < TRAINEE_REPORT_START_YEAR ||
         !trainee ||
         (selectedTrainee !== "all" && trainee !== selectedTrainee) ||
-        (selectedFee !== "all" && category !== selectedFee) ||
+        (selectedFees.length > 0 && !selectedFees.includes(category)) ||
         (selectedBatches.length > 0 && !selectedBatches.includes(batch))
       ) {
         return [];
@@ -1132,51 +1132,58 @@ export default function ReportsTab() {
       }, ];
     });
     
-    // عند اختيار نوع رسم محدد، نعرض عمليات السداد بتفاصيلها كاملة،
-    // ثم نضيف في نهاية الكشف أسماء غير المسددين فقط من بيانات المتدربين.
-    if (selectedFee !== "all") {
-      const paidNames = new Set(payments.map((row) => String(row.trainee || "").trim()));
-      const unpaidNames = Array.from(traineeRosterByName.values())
-        .filter((trainee) =>
-          !paidNames.has(trainee.name) &&
-          (selectedTrainee === "all" || trainee.name === selectedTrainee) &&
-          (selectedBatches.length === 0 || selectedBatches.includes(trainee.batch)) &&
-          !deletedUnpaidFeeNames.has(`${selectedFee}|${traineeNameKey(trainee.name)}`)
-        )
-        .map((trainee) => trainee.name)
-        .sort((a, b) => a.localeCompare(b, "ar"));
-      const unpaidNameRows = Array.from({ length: Math.ceil(unpaidNames.length / 2) }, (_, index) => ({
-        id: `unpaid-fee-name-${selectedFee}-${selectedBatches.join("-") || "all"}-${index}`,
-        trainee: unpaidNames[index * 2],
-        unpaidTrainee2: unpaidNames[index * 2 + 1] || "",
-        summaryLevel: "fee-unpaid-name" as const,
-      }));
-      return [
-        ...payments.map((row) => ({ ...row, displayType: "تفصيلي", summaryLevel: "detail" as const })),
-        {
-          id: `unpaid-fee-heading-${selectedFee}`,
-          trainee: `المتدربون الذين لم يسددوا: ${selectedFee}`,
-          summaryLevel: "fee-unpaid-heading" as const,
-        },
-        ...(unpaidNames.length
-          ? unpaidNameRows
-          : [{
-              id: `unpaid-fee-empty-${selectedFee}`,
-              trainee: "لا يوجد متدربون غير مسددين لهذا الرسم",
-              unpaidTrainee2: "",
-              summaryLevel: "fee-unpaid-name" as const,
-            }]),
-      ];
+    // عند اختيار رسم أو أكثر، نعرض تفاصيل السداد للرسوم المحددة.
+    // لا تظهر قوائم غير المسددين إلا عند اختيار كل المتدربين.
+    if (selectedFees.length > 0) {
+      const paidRows = payments.map((row) => ({ ...row, displayType: "تفصيلي", summaryLevel: "detail" as const }));
+      if (selectedTrainee !== "all") return paidRows;
+
+      const unpaidSections: ReportRow[] = selectedFees.flatMap((category) => {
+        const paidNames = new Set(
+          payments.filter((row) => row.category === category).map((row) => String(row.trainee || "").trim())
+        );
+        const unpaidNames = Array.from(traineeRosterByName.values())
+          .filter((trainee) =>
+            !paidNames.has(trainee.name) &&
+            (selectedBatches.length === 0 || selectedBatches.includes(trainee.batch)) &&
+            !deletedUnpaidFeeNames.has(`${category}|${traineeNameKey(trainee.name)}`)
+          )
+          .map((trainee) => trainee.name)
+          .sort((x, y) => x.localeCompare(y, "ar"));
+        const unpaidNameRows: ReportRow[] = Array.from({ length: Math.ceil(unpaidNames.length / 2) }, (_, index) => ({
+          id: `unpaid-fee-name-${category}-${selectedBatches.join("-") || "all"}-${index}`,
+          trainee: unpaidNames[index * 2],
+          unpaidTrainee2: unpaidNames[index * 2 + 1] || "",
+          category,
+          summaryLevel: "fee-unpaid-name" as const,
+        }));
+        return [
+          {
+            id: `unpaid-fee-heading-${category}`,
+            trainee: `المتدربون الذين لم يسددوا: ${category}`,
+            category,
+            summaryLevel: "fee-unpaid-heading" as const,
+          },
+          ...(unpaidNames.length ? unpaidNameRows : [{
+            id: `unpaid-fee-empty-${category}`,
+            trainee: "لا يوجد متدربون غير مسددين لهذا الرسم",
+            unpaidTrainee2: "",
+            category,
+            summaryLevel: "fee-unpaid-name" as const,
+          }]),
+        ];
+      });
+      return [...paidRows, ...unpaidSections];
     }
 
     // إظهار كل متدرب من القائمة الأساسية لم يظهر اسمه مطلقاً في حوافظ التوريد كغير مسدد.
     const traineesWithAnyHafizaData = new Set(
       matchedTraineeHafiza.map(({ trainee }) => trainee.name)
     );
-    const unpaidTraineeRows: ReportRow[] = Array.from(traineeRosterByName.values())
+    const unpaidTraineeRows: ReportRow[] = selectedTrainee === "all"
+      ? Array.from(traineeRosterByName.values())
       .filter((trainee) =>
         !traineesWithAnyHafizaData.has(trainee.name) &&
-        (selectedTrainee === "all" || trainee.name === selectedTrainee) &&
         (selectedBatches.length === 0 || selectedBatches.includes(trainee.batch))
       )
       .map((trainee) => ({
@@ -1191,7 +1198,8 @@ export default function ReportsTab() {
         displayType: "لم يسدد أي رسوم",
         notes: "لا توجد أي بيانات لهذا المتدرب في حوافظ التوريد",
         summaryLevel: "unpaid",
-      }));
+      }))
+      : [];
     
     const categories = Array.from(new Set(payments.map((row) => String(row.category)))).sort((a, b) => a.localeCompare(b, "ar"));
     const result: ReportRow[] = [...unpaidTraineeRows];
@@ -1255,7 +1263,7 @@ export default function ReportsTab() {
       const isExamFee = row.category === "رسوم الامتحانات";
       const isTuitionFee = row.category === "الأقساط الدراسية السنوية";
       const isRegistrationFee = row.category === "رسوم القيد والتسجيل";
-      const isSelectedFee = selectedFee !== "all" && row.category === selectedFee;
+      const isSelectedFee = selectedFees.includes(row.category);
       if (!isExamFee && !isTuitionFee && !isRegistrationFee && !isSelectedFee) return;
       const key = `${row.trainee}|${row.batch}|${row.year}|${row.period}|${row.category}`;
       const existing = traineeFeeTotals.get(key);
@@ -1323,7 +1331,7 @@ export default function ReportsTab() {
 
     // قائمة ختامية لكل نوع رسم، والأسماء من قاعدة بيانات المتدربين
     // مع إثبات السداد من سجلات حوافظ التوريد المطابقة.
-    const feeRosterCategories = selectedFee === "all" ? TRAINEE_PAYMENT_FEE_CATEGORIES : [selectedFee];
+    const feeRosterCategories = selectedFees.length === 0 ? TRAINEE_PAYMENT_FEE_CATEGORIES : selectedFees;
     feeRosterCategories.forEach((category, index) => {
       const categoryPayments = payments.filter((row) => row.category === category);
       const paidNames = Array.from(new Set(categoryPayments.map((row) => String(row.trainee || "").trim()).filter(Boolean)))
@@ -1340,7 +1348,7 @@ export default function ReportsTab() {
     });
     
     return result;
-  }, [matchedTraineeHafiza, selectedTrainee, selectedFee, selectedBatches, traineeGrouping, traineeDisplayMode, traineeRosterByName, deletedUnpaidFeeNames]);
+  }, [matchedTraineeHafiza, selectedTrainee, selectedFees, selectedBatches, traineeGrouping, traineeDisplayMode, traineeRosterByName, deletedUnpaidFeeNames]);
   
   const feeTotalsRows = useMemo < ReportRow[] > (() => {
     const totals = new Map < string,
@@ -1919,7 +1927,7 @@ export default function ReportsTab() {
   
   const title =
     source === "trainee" ?
-    `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFee === "all" ? "كل الرسوم" : selectedFee}${selectedBatches.length ? ` — الدفعات ${selectedBatches.join("، ")}` : " — كل الدفعات"} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}` :
+    `كشف مدفوعات ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — ${selectedFees.length === 0 ? "كل الرسوم" : selectedFees.join("، ")}${selectedBatches.length ? ` — الدفعات ${selectedBatches.join("، ")}` : " — كل الدفعات"} — ${traineeDisplayMode === "detail" ? "تفصيلي" : traineeDisplayMode === "summary" ? "إجمالي" : "تفصيلي وإجمالي"} — تجميع ${traineeGrouping === "month" ? "شهري" : "سنوي"}` :
     source === "feeTotals" ?
     `إجماليات الرسوم حسب النوع — ${selectedTrainee === "all" ? "جميع المتدربين" : selectedTrainee} — من ${TRAINEE_REPORT_START_YEAR}` :
     source === "traineeFeeStatus" ?
@@ -2247,17 +2255,25 @@ export default function ReportsTab() {
                     <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
                       نوع الرسم
                       <select
-                        value={selectedFee}
-                        onChange={(e) => setSelectedFee(e.target.value)}
-                        className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
+                        multiple
+                        size={4}
+                        value={selectedFees}
+                        onChange={(e) => {
+                          const values = Array.from(e.target.selectedOptions, (option) => option.value);
+                          setSelectedFees(values.filter((value) => value !== "__all__"));
+                        }}
+                        aria-label="اختيار رسم أو أكثر لعرضها في كشف المدفوعات"
+                        title="يمكن اختيار أكثر من رسم"
+                        className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
                       >
-                        <option value="all">كل الرسوم</option>
+                        <option value="__all__">كل الرسوم</option>
                         {feeCategoryOptions.map((fee) => (
                           <option key={fee} value={fee}>
                             {fee}
                           </option>
                         ))}
                       </select>
+                      <span className="text-[11px] font-semibold text-slate-500">اترك الاختيار فارغاً لعرض كل الرسوم، ويمكن تحديد أكثر من رسم.</span>
                     </label>
 
                     <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
@@ -2517,7 +2533,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                                 {names.map((name) => (
                                   <div key={name} className="reports-unpaid-name-item">
                                     <span className="reports-unpaid-name-text">{name}</span>
-                                    <button type="button" onClick={() => setDeletedUnpaidFeeNames((previous) => { const next = new Set(previous); next.add(`${selectedFee}|${traineeNameKey(name)}`); return next; })} className="reports-unpaid-name-delete print:hidden" title={`حذف ${name} من قائمة غير المسددين`} aria-label={`حذف ${name} من قائمة غير المسددين`}>
+                                    <button type="button" onClick={() => setDeletedUnpaidFeeNames((previous) => { const next = new Set(previous); next.add(`${String(row.category || "")}|${traineeNameKey(name)}`); return next; })} className="reports-unpaid-name-delete print:hidden" title={`حذف ${name} من قائمة غير المسددين`} aria-label={`حذف ${name} من قائمة غير المسددين`}>
                                       <Trash2 className="h-3.5 w-3.5" /> حذف
                                     </button>
                                   </div>
