@@ -655,13 +655,14 @@ const AppTabs: React.FC = () => {
 
     return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
     <title>سجل مفردات الاستخدامات والنفقات العامة - ${reportDateLabel}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Tajawal:wght@400;500;700&display=swap">
+    <style>
+      @font-face { font-family: "Cairo"; src: url("/Cairo-Regular.ttf") format("truetype"); font-style: normal; font-weight: 400; font-display: swap; }
+    </style>
     <style>
       @page { size: A4 landscape; margin: 3mm; }
       * { box-sizing: border-box; }
       html, body { margin:0; padding:0; }
-      body { font-family:'Cairo','Tajawal','Segoe UI',Tahoma,Arial,sans-serif; direction:rtl; color:#000 !important; padding:0 1px; width:100%; font-weight:700 !important; }
+      body { font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif; direction:rtl; color:#000 !important; padding:0 1px; width:100%; font-weight:700 !important; }
 .report-letterhead-block { display:flex; width:100%; max-width:none; height:30mm; min-height:30mm; max-height:30mm; overflow:hidden; align-items:stretch; justify-content:center; margin:0 0 3mm; page-break-before:avoid; page-break-after:avoid; }
       h2 { text-align:center; color:#000 !important; margin:0 0 3mm; font-weight:800; }
 .report-date { text-align:center; color:#000 !important; margin:0 0 5px; font-size:18px; font-weight:700; }
