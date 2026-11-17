@@ -42,7 +42,7 @@ import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import { useReportDate } from "@/lib/reportDate";
 import { reportLetterheadHtml } from "@/lib/printTableHtml";
 import { downloadReportPdf, reportDocumentCss } from "@/lib/reportPdf";
-import { reportArabicFontStack } from "@/lib/reportArabicFonts";
+import { reportArabicFontFacesCss, reportArabicFontStack } from "@/lib/reportArabicFonts";
 import {
   addReportHeader,
   appendRows,
@@ -2540,7 +2540,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
 
     // تنسيقات CSS لقص الصفحة على حدود كشف المتدرب وتوحيد خط Cairo
     const statementCss = `
-      @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+      ${reportArabicFontFacesCss}
       * { 
         box-sizing: border-box; 
         font-family: 'Cairo', sans-serif !important; 
