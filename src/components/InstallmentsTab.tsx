@@ -42,6 +42,7 @@ import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import { useReportDate } from "@/lib/reportDate";
 import { reportLetterheadHtml } from "@/lib/printTableHtml";
 import { downloadReportPdf, reportDocumentCss } from "@/lib/reportPdf";
+import { reportArabicFontStack } from "@/lib/reportArabicFonts";
 import {
   addReportHeader,
   appendRows,
