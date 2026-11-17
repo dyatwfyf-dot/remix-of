@@ -8,6 +8,12 @@ export type ReportPaperSize = 'A4' | 'A3' | 'Letter';
 export type ReportOrientation = 'portrait' | 'landscape';
 
 export const reportDocumentCss = `
+  @font-face { font-family: "Reports Noto Sans Arabic"; src: url("/NotoSansArabic-Regular.ttf") format("truetype"); font-style: normal; font-weight: 400; font-display: swap; }
+  @font-face { font-family: "Reports Noto Sans Arabic"; src: url("/NotoSansArabic-SemiBold.ttf") format("truetype"); font-style: normal; font-weight: 600 900; font-display: swap; }
+  .report-page-content table.reports-custody-font-trial,
+  .report-page-content table.reports-custody-font-trial th,
+  .report-page-content table.reports-custody-font-trial td,
+  .report-page-content table.reports-custody-font-trial .pdf-cell-text { font-family: "Reports Noto Sans Arabic", Cairo, Tahoma, Arial, sans-serif !important; }
   :root { 
     --report-paper: #ffffff; 
     --report-ink: #000000; 
