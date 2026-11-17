@@ -58,6 +58,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       --print-cell-font-size: 16px;
       --print-header-font-size: 16px;
       --print-cell-padding: 4px 5px;
+      --print-cell-line-height: 1.45;
     }
 
     *, *::before, *::after {
@@ -340,7 +341,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       color: #000000 !important;
       font-weight: 800;
       font-size: 16px !important;
-      line-height: 1.45 !important;
+      line-height: var(--print-cell-line-height, 1.45) !important;
     }
 
     thead th {
@@ -572,7 +573,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       vertical-align: middle !important;
       text-align: center !important;
       font-size: 16px !important;
-      line-height: 1.45 !important;
+      line-height: var(--print-cell-line-height, 1.45) !important;
     }
     .sheet-paper table th > *,
     .sheet-paper table td > * {
@@ -582,7 +583,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       display: inline-block !important;
       vertical-align: middle !important;
       font-size: 16px !important;
-      line-height: 1.45 !important;
+      line-height: var(--print-cell-line-height, 1.45) !important;
     }
 
   html body table tr.report-grand-total-row > td, html body table tr.total-row > td,
@@ -677,7 +678,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       white-space: normal !important;
       overflow-wrap: anywhere !important;
       word-break: normal !important;
-      line-height: 1.3 !important;
+      line-height: var(--print-cell-line-height, 1.45) !important;
       font-size: var(--print-cell-font-size, 12px) !important;
       padding: var(--print-cell-padding, 3px 4px) !important;
     }
@@ -764,7 +765,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       padding: 4px 5px !important;
       font-family: Cairo, Tahoma, Arial, sans-serif !important;
       font-size: 16px !important;
-      line-height: 1.4 !important;
+      line-height: var(--print-cell-line-height, 1.45) !important;
       text-align: center !important;
       vertical-align: middle !important;
       white-space: normal !important;
@@ -1006,6 +1007,19 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       </div>
 
       <div class="toolbar-control">
+        <label>تباعد الأسطر:</label>
+        <select id="selLineSpacing" title="تحديد المسافة بين أسطر النص داخل خلايا الجدول">
+          <option value="1">متقارب جداً (1.0)</option>
+          <option value="1.2">ضيق (1.2)</option>
+          <option value="1.35">متوسط (1.35)</option>
+          <option value="1.45" selected>عادي (1.45)</option>
+          <option value="1.6">واسع (1.6)</option>
+          <option value="1.8">واسع جداً (1.8)</option>
+          <option value="2">مزدوج (2.0)</option>
+        </select>
+      </div>
+
+      <div class="toolbar-control">
         <label>الملاءمة:</label>
         <select id="selScale">
           <option value="1">100% (تلقائي)</option>
@@ -1069,6 +1083,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       const selPageSize = document.getElementById('selPageSize');
       const selMargin = document.getElementById('selMargin');
       const selScale = document.getElementById('selScale');
+      const selLineSpacing = document.getElementById('selLineSpacing');
       const paperContainer = document.getElementById('paperContainer');
       const dynamicRule = document.getElementById('dynamic-page-rule');
       const btnPrint = document.getElementById('btnPrint');
@@ -1266,6 +1281,8 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         const pageSize = selPageSize.value;
       const margin = selMargin.value;
       const scale = parseFloat(selScale.value) || 1;
+      const lineSpacing = parseFloat(selLineSpacing.value) || 1.45;
+      paperContainer.style.setProperty('--print-cell-line-height', String(lineSpacing));
 
         paperContainer.classList.remove('portrait', 'landscape');
         paperContainer.classList.add(orientation);
@@ -1380,6 +1397,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       selPageSize.addEventListener('change', updatePageSettings);
       selMargin.addEventListener('change', updatePageSettings);
       selScale.addEventListener('change', updatePageSettings);
+      selLineSpacing.addEventListener('change', updatePageSettings);
 
       btnPrint.addEventListener('click', printOnce);
       btnDownloadPdf.addEventListener('click', downloadDirectPdf);
