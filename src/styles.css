@@ -8,28 +8,70 @@
   margin:2mm;
 }
 
-/* خط العناوين ورؤوس الأعمدة (غامق) */
+/* الخطوط العربية المحلية: Cairo للواجهة، وخطوط احترافية لمخرجات التقارير */
 @font-face {
-  font-family: "Al Qabas Bold";
-  src: url("/AlQabas-Bold.ttf") format("truetype");
+  font-family: "Cairo";
+  src: url("/Cairo-Regular.ttf") format("truetype");
   font-style: normal;
-  font-weight: 700 900;
+  font-weight: 400;
   font-display: swap;
 }
-
 @font-face {
-  font-family: "Mohammad Bold Art";
-  src: url("/MohammadBoldArt-Regular.ttf") format("truetype");
+  font-family: "IBM Plex Sans Arabic";
+  src: url("/fonts/IBMPlexSansArabic-Regular.woff2") format("woff2");
   font-style: normal;
-  font-weight: 800 900;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Sans Arabic";
+  src: url("/fonts/IBMPlexSansArabic-Medium.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Sans Arabic";
+  src: url("/fonts/IBMPlexSansArabic-SemiBold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Sans Arabic";
+  src: url("/fonts/IBMPlexSansArabic-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Noto Sans Arabic";
+  src: url("/NotoSansArabic-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Noto Sans Arabic";
+  src: url("/NotoSansArabic-SemiBold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Noto Naskh Arabic";
+  src: url("/fonts/NotoNaskhArabic-Variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400 700;
   font-display: swap;
 }
 
 :root {
   --font-ui: "Cairo";
-  --font-display: "Cairo", "Noto Sans Arabic", sans-serif;
+  --font-display: "IBM Plex Sans Arabic", "Noto Sans Arabic", "Noto Naskh Arabic", "Cairo", sans-serif;
   --font-heading: "Cairo";
   --font-data: "Cairo";
+  --font-report: "IBM Plex Sans Arabic", "Noto Sans Arabic", "Noto Naskh Arabic", "Cairo", Tahoma, Arial, sans-serif;
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -1047,4 +1089,13 @@ table:has(> tbody tr:first-child th:first-child:is(.serial-number-column, [data-
   overflow-wrap: normal !important;
   word-break: keep-all !important;
   font-variant-numeric: tabular-nums !important;
+}
+
+
+/* الخط الاحترافي لمخرجات التقارير المالية والإدارية دون تغيير خط بقية التبويبات. */
+#tableContainer table.reports-data-table,
+#tableContainer table.reports-data-table *,
+.mizan-reports-tab .reports-print-heading,
+.mizan-reports-tab .reports-print-heading * {
+  font-family: var(--font-report) !important;
 }
