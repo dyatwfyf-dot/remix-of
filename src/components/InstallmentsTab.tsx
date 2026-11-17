@@ -2886,7 +2886,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     }
     const outstandingFeeText = outstandingFees.map((fee) => fee.label + " (" + fee.amount.toLocaleString("en-US") + " ريال)").join(" و");
     const title = "مطالبة مالية بسداد الرسوم - " + traineeName;
-    const tableHtml = '<article class="fee-demand-letter" dir="rtl" style="text-align: center; font-size: 18px; line-height: 2.2; font-family: 'IBM Plex Sans Arabic', 'Noto Sans Arabic', 'Noto Naskh Arabic', Cairo, sans-serif;">' +
+    const tableHtml = '<article class="fee-demand-letter" dir="rtl" style="text-align: center; font-size: 18px; line-height: 2.2; font-family: &quot;IBM Plex Sans Arabic&quot;, &quot;Noto Sans Arabic&quot;, &quot;Noto Naskh Arabic&quot;, Cairo, sans-serif;">' +
       '<h1 style="font-size: 20px; font-weight: bold; margin-bottom: 25px;">مطالبة مالية بسداد الرسوم</h1>' +
       '<p class="letter-date" style="text-align: right; font-size: 16px;">التاريخ: ' + escapeHtml(reportDateLabel) + '</p>' +
       '<p class="salutation" style="margin: 18px 0; font-size: 20px; text-align: right;">الأخ-الدكتور// <strong>' + escapeHtml(traineeName) + '</strong>' +
@@ -2904,7 +2904,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       '</div></article>';
     const finalCss = [
       "@page { size:A4 portrait; margin:18mm; }",
-      "#tableContainer .fee-demand-letter { width:100%; min-height:245mm; margin:0 auto; color:#111; font-family:Cairo,Tahoma,Arial,sans-serif; font-size:16px; line-height:2; }",
+      "#tableContainer .fee-demand-letter { width:100%; min-height:245mm; margin:0 auto; color:#111; font-family:'IBM Plex Sans Arabic','Noto Sans Arabic','Noto Naskh Arabic',Cairo,Tahoma,Arial,sans-serif; font-size:16px; line-height:2; }",
       "#tableContainer .fee-demand-letter h1 { margin:0 0 10mm; padding:0 0 4mm; border-bottom:2px solid #17324d; color:#17324d; text-align:center; font-size:22px; font-weight:900; }",
       "#tableContainer .fee-demand-letter p { margin:0 0 5mm; text-align:justify; }",
       "#tableContainer .fee-demand-letter .letter-date { text-align:left; }",
@@ -3081,7 +3081,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     ).join("");
 
     const statementCss = [
-      '* { box-sizing: border-box; font-family: ${reportArabicFontStack} !important; }',
+      ' * { box-sizing: border-box; font-family: "IBM Plex Sans Arabic", "Noto Sans Arabic", "Noto Naskh Arabic", Cairo, Tahoma, Arial, sans-serif !important; }',
       'html, body { margin: 0; padding: 0; width: 100%; background: #fff; color: #000; direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact; }',
       '.container { width: 100%; margin: 0; padding: 0; }',
       '.page-frame { width: 100%; border: 2px solid #0f766e; background: #fff; padding: 4mm; }',
