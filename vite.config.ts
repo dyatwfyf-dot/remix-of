@@ -32,6 +32,7 @@ export default defineConfig({
           "icon-192.png",
           "icon-512.png",
           "Cairo-Regular.ttf",
+          "fonts/Cairo-Variable.ttf",
           "NotoSansArabic-Regular.ttf",
           "NotoSansArabic-SemiBold.ttf",
           "fonts/IBMPlexSansArabic-Regular.woff2",
