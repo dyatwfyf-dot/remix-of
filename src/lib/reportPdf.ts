@@ -375,6 +375,59 @@ border: 1px solid #000000 !important;
   }
   .report-page-content table tr { height: auto !important; }
 
+  /* Universal Excel-like PDF cell behaviour: wrap descriptive text, never
+     clip it; keep true numeric/date/reference values atomic on one line. */
+  .report-page-content table th,
+  .report-page-content table td {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    min-height: 0 !important;
+    height: auto !important;
+    box-sizing: border-box !important;
+  }
+  .report-page-content table td:not(.num):not(.numeric-cell):not(.date-cell):not(.compact-cell):not(.ref-cell):not(.idx):not(.reports-numeric-cell):not(.reports-no-wrap-cell),
+  .report-page-content table td:not(.num):not(.numeric-cell):not(.date-cell):not(.compact-cell):not(.ref-cell):not(.idx):not(.reports-numeric-cell):not(.reports-no-wrap-cell) .pdf-cell-text {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+  }
+  .report-page-content table td.num,
+  .report-page-content table td.numeric-cell,
+  .report-page-content table td.date-cell,
+  .report-page-content table td.compact-cell,
+  .report-page-content table td.ref-cell,
+  .report-page-content table td.idx,
+  .report-page-content table td.reports-numeric-cell,
+  .report-page-content table td.reports-no-wrap-cell,
+  .report-page-content table td.num .pdf-cell-text,
+  .report-page-content table td.numeric-cell .pdf-cell-text,
+  .report-page-content table td.date-cell .pdf-cell-text,
+  .report-page-content table td.compact-cell .pdf-cell-text,
+  .report-page-content table td.ref-cell .pdf-cell-text,
+  .report-page-content table td.idx .pdf-cell-text,
+  .report-page-content table td.reports-numeric-cell .pdf-cell-text,
+  .report-page-content table td.reports-no-wrap-cell .pdf-cell-text {
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
+  }
+  .report-page-content table .pdf-cell-text {
+    border: 0 !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    -webkit-line-clamp: unset !important;
+    line-clamp: unset !important;
+  }
+  .report-page-content table tr.pdf-oversized-row td {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    font-size: 12px !important;
+    line-height: 1.25 !important;
+  }
+
   .report-page-content tbody td:not(.desc-cell):not(.details-cell):not(.description-cell):not([data-col-key="description"]),
   .report-page-content tbody td:not(.desc-cell):not(.details-cell):not(.description-cell):not([data-col-key="description"]) .pdf-cell-text {
     white-space: nowrap !important;
@@ -579,9 +632,11 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
   const holder = doc.createElement('div');
   holder.style.cssText = 'position:absolute;left:-20000px;top:0;pointer-events:none;';
   const paper = doc.createElement('div');
+  // Render each PDF page on a fixed physical sheet. The content is measured and
+  // paginated before capture, so html2canvas cannot silently extend/crop a page.
   paper.style.cssText = fitToContent
-    ? `width:${widthMm}mm;height:auto;min-height:0;padding:0;box-sizing:border-box;background:var(--report-paper,#fff);display:flex;flex-direction:column;`
-    : `width:${widthMm}mm;min-height:${heightMm}mm;padding:${marginMm}mm;box-sizing:border-box;background:var(--report-paper,#fff);display:flex;flex-direction:column;`;
+    ? `width:${widthMm}mm;height:auto;min-height:0;padding:0;box-sizing:border-box;background:#fff;display:flex;flex-direction:column;overflow:visible;`
+    : `width:${widthMm}mm;height:${heightMm}mm;min-height:${heightMm}mm;max-height:${heightMm}mm;padding:${marginMm}mm;box-sizing:border-box;background:#fff;display:flex;flex-direction:column;overflow:hidden;`;
   const content = source.cloneNode(true) as HTMLElement;
   content.classList.add('report-page-content');
   // Keep the scale selected by the browser preview; do not apply a second fit scale.
@@ -606,12 +661,19 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
     
     if (body) body.replaceChildren();
     
-    const maxHeight = (heightMm - marginMm * 2) * pxPerMm - 35;
-    // The preview already computes the correct scale for the selected paper size.
-    
+    // Measure the printable content area from the actual rendered sheet instead
+    // of estimating it from the paper size. This includes the report heading,
+    // letterhead, table header and footer reservation.
+    const paperStyle = doc.defaultView?.getComputedStyle(paper);
+    const verticalPadding = (parseFloat(paperStyle?.paddingTop || '0') || 0) +
+      (parseFloat(paperStyle?.paddingBottom || '0') || 0);
+    const footerReservation = fitToContent ? 0 : Math.max(28, footer.getBoundingClientRect().height + 12);
+    const maxHeight = fitToContent
+      ? Number.POSITIVE_INFINITY
+      : Math.max(80, paper.clientHeight - verticalPadding - footerReservation);
     const overflows = () => {
-      const h = content.offsetHeight || content.getBoundingClientRect().height;
-      return h > maxHeight;
+      const h = Math.max(content.scrollHeight, content.getBoundingClientRect().height);
+      return h > maxHeight + 1;
     };
     
     const groups: HTMLTableRowElement[][] = [];
@@ -630,10 +692,16 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
       for (const row of rows) {
         body?.append(row);
         if (overflows() && group.length > 0) {
+          // Finish the previous sheet before moving this complete row to the
+          // next one. Never split a row across pages.
           row.remove();
           groups.push(group);
           group = [];
           body?.replaceChildren(row);
+        } else if (overflows() && group.length === 0) {
+          // A single unusually tall row must remain intact. Allow it its own
+          // sheet rather than clipping its text at the page boundary.
+          row.classList.add('pdf-oversized-row');
         }
         group.push(row);
       }
@@ -655,6 +723,10 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
       if (body) body.replaceChildren(...currentRows);
       footer.textContent = `صفحة ${index + 1} من ${groups.length}`;
       
+      // Recalculate after inserting the page's rows and wait for fonts/layout
+      // before rasterizing this fixed-size sheet.
+      await ready(doc);
+      await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
       const canvas = await html2canvas(paper, {
         scale: 2,
         useCORS: true,
