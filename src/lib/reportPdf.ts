@@ -631,6 +631,17 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
   } = options;
 
   const doc = source.ownerDocument;
+  tagReportCells(source);
+  tagSerialColumns(source);
+
+  // Preserve numbers, dates and reference identifiers as atomic values.
+  const numericOrDate = /^[\\s\\u200e\\u200f]*[+-]?(?:(?:[0-9٠-٩۰-۹]+)(?:[,.٬٫][0-9٠-٩۰-۹]+)*|[0-9٠-٩۰-۹]{1,4}[-/.][0-9٠-٩۰-۹]{1,2}[-/.][0-9٠-٩۰-۹]{1,4})(?:\\s*(?:ر\\.?\\s*ي|ريال|ر\\.?\\s*س))?[\\s\\u200e\\u200f]*$/;
+  source.querySelectorAll("table th, table td").forEach((cell) => {
+    if (numericOrDate.test((cell.textContent || "").trim())) {
+      cell.classList.add("numeric-cell");
+    }
+  });
+
   await ready(doc);
 
   // الاحتفاظ بجميع الأنماط التي كوّنت نسخة المعاينة، بما فيها خطوط Cairo
