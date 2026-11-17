@@ -31,11 +31,14 @@ export default defineConfig({
           "favicon.ico",
           "icon-192.png",
           "icon-512.png",
-          "Cairo-Regular.ttf",
+          "fonts/Cairo-Variable.ttf",
           "NotoSansArabic-Regular.ttf",
           "NotoSansArabic-SemiBold.ttf",
-          "NotoKufiArabic-Medium.ttf",
-          "NotoKufiArabic-ExtraBold.ttf",
+          "fonts/IBMPlexSansArabic-Regular.woff2",
+          "fonts/IBMPlexSansArabic-Medium.woff2",
+          "fonts/IBMPlexSansArabic-SemiBold.woff2",
+          "fonts/IBMPlexSansArabic-Bold.woff2",
+          "fonts/NotoNaskhArabic-Variable.ttf",
           "manifest.json",
           "report-letterhead.png",
           "robots.txt",
@@ -70,18 +73,6 @@ export default defineConfig({
                     },
                   },
                 ],
-              },
-            },
-            {
-              // خطوط جوجل: تعمل بدون إنترنت بعد أول تحميل
-              urlPattern: ({ url }) =>
-                url.origin === "https://fonts.googleapis.com" ||
-                url.origin === "https://fonts.gstatic.com",
-              handler: "StaleWhileRevalidate",
-              options: {
-                cacheName: "google-fonts",
-                expiration: { maxEntries: 40, maxAgeSeconds: 60 * 60 * 24 * 365 },
-                cacheableResponse: { statuses: [0, 200] },
               },
             },
             {

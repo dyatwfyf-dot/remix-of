@@ -3,11 +3,13 @@ import { deliverBlobToUser, isNativeFileStorageAvailable } from './nativeFileSto
 import { escapeHtml, reportLetterheadHtml } from './printTableHtml';
 import { reportTableThemeCss } from './reportTheme';
 import { excelLikePrintTablesCss } from "./excelLikePrintTablesCss";
+import { reportArabicFontFacesCss, reportArabicFontStack } from "./reportArabicFonts";
 
 export type ReportPaperSize = 'A4' | 'A3' | 'Letter';
 export type ReportOrientation = 'portrait' | 'landscape';
 
 export const reportDocumentCss = `
+  ${reportArabicFontFacesCss}
   :root { 
     --report-paper: #ffffff; 
     --report-ink: #000000; 
@@ -24,7 +26,7 @@ export const reportDocumentCss = `
     direction: rtl; 
     background: var(--report-paper);
     color: #000000; 
-    font-family: Cairo !important; 
+    font-family: ${reportArabicFontStack} !important; 
     font-size: 16px; 
     line-height: 1.4; 
     font-weight: 800;
@@ -107,21 +109,21 @@ background: #0437bb !important;
     direction: rtl;
   }
   .letterhead-title-ar {
-    font-family: Cairo !important;
+    font-family: ${reportArabicFontStack} !important;
     font-size: 13.5px;
     font-weight: 900;
     line-height: 1.3;
     color: #000000;
   }
   .letterhead-sub-ar {
-    font-family: Cairo !important;
+    font-family: ${reportArabicFontStack} !important;
     font-size: 12px;
     font-weight: 800;
     line-height: 1.3;
     color: #000000;
   }
   .letterhead-branch-ar {
-    font-family: Cairo !important;
+    font-family: ${reportArabicFontStack} !important;
     font-size: 12.5px;
     font-weight: 900;
     line-height: 1.3;
@@ -137,7 +139,7 @@ background: #0437bb !important;
     padding: 0 4px;
   }
   .letterhead-bismillah {
-    font-family: Cairo !important;
+    font-family: ${reportArabicFontStack} !important;
     font-size: 14.5px;
     font-weight: 900;
     color: #000000;
@@ -154,21 +156,21 @@ background: #0437bb !important;
     direction: ltr;
   }
   .letterhead-title-en {
-    font-family: Arial, Cairo !important;
+    font-family: Arial, ${reportArabicFontStack} !important;
     font-size: 12px;
     font-weight: 900;
     line-height: 1.25;
     color: #000000;
   }
   .letterhead-sub-en {
-    font-family: Arial, Cairo !important;
+    font-family: Arial, ${reportArabicFontStack} !important;
     font-size: 10.5px;
     font-weight: 800;
     line-height: 1.25;
     color: #000000;
   }
   .letterhead-branch-en {
-    font-family: Arial, Cairo !important;
+    font-family: Arial, ${reportArabicFontStack} !important;
     font-size: 11px;
     font-weight: 900;
     line-height: 1.25;
@@ -180,7 +182,7 @@ background: #0437bb !important;
 
 /* Unified report table theme shared by the downloaded PDF renderer. */
 table.reports-data-table{width:100%!important;max-width:100%!important;border-collapse:collapse!important;table-layout:auto!important;direction:rtl!important;text-align:center!important}
-table.reports-data-table th,table.reports-data-table td{box-sizing:border-box!important;border:1px solid #17212b!important;text-align:center!important;vertical-align:middle!important;font-family:Cairo,Tahoma,Arial,sans-serif!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+table.reports-data-table th,table.reports-data-table td{box-sizing:border-box!important;border:1px solid #17212b!important;text-align:center!important;vertical-align:middle!important;font-family:${reportArabicFontStack}!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 table.reports-data-table thead th{background:linear-gradient(180deg,#fff8d9,#f5d978 48%,#d7a92e)!important;color:#111!important;font-weight:900!important;white-space:normal!important;overflow-wrap:anywhere!important}
 table.reports-data-table tbody td{background:#fff!important;color:#111!important;font-weight:750!important}
 table.reports-data-table tbody tr.total-row>td,table.reports-data-table tbody tr.report-grand-total-row>td{background:#0871ce!important;color:#fff!important;font-weight:900!important}
@@ -192,6 +194,7 @@ table.reports-data-table tbody tr.reports-period-row:not(.total-row):not(.report
 `;
 
 export const reportContainmentCss = `
+  ${reportArabicFontFacesCss}
   .report-page-content { 
     width: 100%; 
     max-width: auto; 
@@ -203,7 +206,7 @@ padding: 6px 7px!important;
 margin: 0 !important;
 text-align: center !important;
 vertical-align: middle !important;
-font-family: Cairo !important;
+font-family: ${reportArabicFontStack} !important;
 font-size: 16px !important;
 font-weight: 800!important;
 line-height: 1.35!important;
@@ -216,7 +219,7 @@ border: 1px solid #000000 !important;
     margin: 0 !important;
 text-align: center !important;
 vertical-align: middle !important; 
-font-family: Cairo !important;
+font-family: ${reportArabicFontStack} !important;
 font-size: 16px !important;
 font-weight: 800 !important;
 line-height: 1.35 !important;
@@ -282,7 +285,7 @@ border: 1px solid #000000 !important;
     align-items: end !important;
   }
   .report-page-content .sig-title {
-    font-family: Cairo, sans-serif !important;
+    font-family: ${reportArabicFontStack} !important;
     font-weight: 900 !important;
     font-size: 16px !important;
     color: #000000 !important;
@@ -294,7 +297,7 @@ border: 1px solid #000000 !important;
     overflow-wrap: anywhere !important;
   }
   .report-page-content .sig-name {
-    font-family: Cairo, sans-serif !important;
+    font-family: ${reportArabicFontStack} !important;
     font-weight: 800 !important;
     font-size: 16px !important;
     color: #000000 !important;
@@ -405,7 +408,7 @@ border: 1px solid #000000 !important;
   }
   .report-page-content .pdf-cell-text {
   border: 1px solid #000000 !important;
-    font-family: Cairo !important;
+    font-family: ${reportArabicFontStack} !important;
     font-size: 16px !important;
     text-align: center !important;
     vertical-align: middle !important;
@@ -527,7 +530,7 @@ border: 1px solid #000000 !important;
 
 /* Unified report table theme shared by the downloaded PDF renderer. */
 table.reports-data-table{width:100%!important;max-width:100%!important;border-collapse:collapse!important;table-layout:auto!important;direction:rtl!important;text-align:center!important}
-table.reports-data-table th,table.reports-data-table td{box-sizing:border-box!important;border:1px solid #17212b!important;text-align:center!important;vertical-align:middle!important;font-family:Cairo,Tahoma,Arial,sans-serif!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+table.reports-data-table th,table.reports-data-table td{box-sizing:border-box!important;border:1px solid #17212b!important;text-align:center!important;vertical-align:middle!important;font-family:${reportArabicFontStack}!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 table.reports-data-table thead th{background:linear-gradient(180deg,#fff8d9,#f5d978 48%,#d7a92e)!important;color:#111!important;font-weight:900!important;white-space:normal!important;overflow-wrap:anywhere!important}
 table.reports-data-table tbody td{background:#fff!important;color:#111!important;font-weight:750!important}
 table.reports-data-table tbody tr.total-row>td,table.reports-data-table tbody tr.report-grand-total-row>td{background:#0871ce!important;color:#fff!important;font-weight:900!important}
@@ -725,16 +728,13 @@ export async function downloadReportPdf(options: {
 }) {
   const frame = document.createElement('iframe');
   frame.setAttribute('aria-hidden', 'true');
-  frame.style.cssText = 'position:fixed;left:-20000px;top:20000px;width:2800px;height:2800px;border:0;pointer-events:none;font-family:Cairo';
+  frame.style.cssText = 'position:fixed;left:-20000px;top:20000px;width:2800px;height:2800px;border:0;pointer-events:none;font-family:"IBM Plex Sans Arabic","Noto Sans Arabic","Noto Naskh Arabic",Cairo,Tahoma,Arial,sans-serif';
   document.body.append(frame);
   try {
     const doc = frame.contentDocument;
     if (!doc) throw new Error('تعذر تجهيز التقرير');
     doc.open();
     doc.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>${escapeHtml(options.title)}</title>
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
       <style>${reportDocumentCss}
       ${reportContainmentCss}
       ${options.css || ''}

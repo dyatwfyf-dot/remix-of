@@ -8,6 +8,7 @@ import {
 import { downloadReportPdf } from "@/lib/reportPdf";
 import { reportTableThemeCss } from "@/lib/reportTheme";
 import { printReportHtml } from "@/lib/nativePrinter";
+import { reportArabicFontFacesCss, reportArabicFontStack } from "./reportArabicFonts";
 
 async function htmlToPdf(opts: { html: string; css: string; fileName: string; orientation?: 'portrait' | 'landscape'; pageWidthPx?: number }): Promise<void> {
   await downloadReportPdf({ title: opts.fileName, body: opts.html, css: opts.css, fileName: opts.fileName, orientation: opts.orientation });
@@ -18,7 +19,7 @@ const statementCss = `
   ${reportTableThemeCss}
   body, .pdf-page { 
 font-size: 24px; 
-font-family: Cairo !important;
+font-family: ${reportArabicFontStack} !important;
     font-weight: 900; 
     margin: 0;
     padding: 0;
@@ -37,7 +38,7 @@ table-layout: auto
  font-weight: 900 !important;; 
 height:100% !important;
 min-height: auto !important;
-font-family: Cairo !important;
+font-family: ${reportArabicFontStack} !important;
 
   }
     th { 
@@ -63,7 +64,7 @@ border-bottom: solid 4px green;
     padding: 6px 8px; 
     text-align: center; 
 font-size: 24px !important;
-font-family: Cairo;
+font-family: ${reportArabicFontStack};
     font-weight: 900; 
   }
   .info td.lbl { 
@@ -162,7 +163,7 @@ export function printHtmlContent(htmlContent: string): void {
         * { margin: 0; padding: 0; box-sizing: border-box; }
 @page { size: A4 portrait; margin: 3mm; }
         body {
-font-family: Cairo !important;
+font-family: ${reportArabicFontStack} !important;
           direction: rtl;
           color: #000 !important;
           background: white;
@@ -201,7 +202,7 @@ font-family: Cairo !important;
           font-weight: 900 !important;
           white-space: normal !important;
           font-size: 14px;
-font-family: AlQabas-Bold;
+font-family: ${reportArabicFontStack};
 
 
         }
@@ -220,7 +221,7 @@ font-family: AlQabas-Bold;
           width: 1% !important;
         }
         .num {
-          font-family: Cairo, sans-serif !important;
+          font-family: ${reportArabicFontStack} !important;
           color: #000 !important;
           font-weight: 900 !important;
           direction: ltr;
@@ -440,16 +441,13 @@ export function revenuePdf(revenue: Record<string, number>, year: number, month:
 
   const head = `<meta charset="utf-8"><title>${REV_SCHEMA.title} - ${MONTHS_PDF[month - 1]} ${year}م</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=Cairo
-  :wght@400;500;700;900&display=swap">
-  <style>
+  <style>${reportArabicFontFacesCss}
     * { margin: 0; padding: 0; box-sizing: border-box; }
     @page { size: A4 landscape; margin: 5mm; padding: 0; }
     @page :first { margin-top: 5mm; }
     html { margin: 0; padding: 0; }
     body { 
-      font-family: Cairo'; 
+      font-family: ${reportArabicFontStack}; 
       direction: rtl; 
       color: #000 !important; 
       margin: 0; 
@@ -479,7 +477,7 @@ font-weight: 900 !important;
       font-size: 15px;
     }
     table { 
- font-family: Cairo !important;
+ font-family: ${reportArabicFontStack} !important;
       width: 100% !important;
   max-width: 100% !important;
       border: solid 1px black; 
@@ -521,13 +519,13 @@ color: #000 !important;
       width: 1% !important;
     }
     .num {
-      font-family: Cairo, sans-serif !important;
+      font-family: ${reportArabicFontStack} !important;
       color: #000 !important;
       font-weight: 900 !important;
       direction: ltr;
     }
     td.acc { 
-      font-family: Cairo !important;
+      font-family: ${reportArabicFontStack} !important;
       text-align: center; 
       font-weight: 900 !important; 
       color: #000 !important;
@@ -553,7 +551,7 @@ color: #000 !important;
       * { margin: 0; padding: 0; } 
       body { margin: 0; padding: 0; width: 100%; background: white; }
       table {
-  font-family: Cairo !important;
+  font-family: ${reportArabicFontStack} !important;
     width: 100% !important; max-width: 100% !important; }
       @page { margin: 5mm; }
     }

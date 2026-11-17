@@ -42,6 +42,7 @@ import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import { useReportDate } from "@/lib/reportDate";
 import { reportLetterheadHtml } from "@/lib/printTableHtml";
 import { downloadReportPdf, reportDocumentCss } from "@/lib/reportPdf";
+import { reportArabicFontFacesCss, reportArabicFontStack } from "@/lib/reportArabicFonts";
 import {
   addReportHeader,
   appendRows,
@@ -128,7 +129,7 @@ const INSTALLMENTS_SUMMARY_REPORT_CSS = `
   html, body { margin: 0 !important; padding: 0 !important; }
   .report-page-content { width: 100% !important; min-width: 0 !important; }
   .report-page-content table { width: 100% !important; max-width: 100% !important; table-layout: fixed !important; border-collapse: collapse !important; }
-  .report-page-content, .report-page-content table, .report-page-content th, .report-page-content td { font-family: Cairo, Arial, sans-serif !important; font-weight: 900 !important; }
+  .report-page-content, .report-page-content table, .report-page-content th, .report-page-content td { font-family: ${reportArabicFontStack} !important; font-weight: 900 !important; }
   .report-page-content table th, .report-page-content table td, .report-page-content table th *, .report-page-content table td * { font-size: 8px !important; }
   .report-page-content th, .report-page-content td { box-sizing: border-box !important; padding: 1px 2px !important; margin: 0 !important; vertical-align: middle !important; text-align: center !important; white-space: normal !important; line-height: 1.1 !important; overflow: hidden !important; }
   .report-page-content th { background: #0f766e !important; color: #000 !important; }
@@ -1448,7 +1449,7 @@ const reportCss = `
         background: #0f766e;
         color: #fff;
         cursor: pointer;
-        font-family: Cairo, Arial, sans-serif;
+        font-family: ${reportArabicFontStack};
         font-size: 13px;
         font-weight: 800;
         padding: 4px 10px;
@@ -1468,12 +1469,12 @@ const reportCss = `
       }
       .doc-header.title {
       text-align:center;
-       font-family:cairo; }
+       font-family:${reportArabicFontStack}; }
       .doc-header h1 { 
   font-size: 18px; 
  font-weight: 1000; 
  text-align: center;
- font-family:cairo; 
+ font-family:${reportArabicFontStack}; 
 }
 .doc-header h2 { 
 font-size: 16px; 
@@ -1561,7 +1562,7 @@ white-space: normal!important;
         word-break: normal !important;
       }
       td.numeric-cell, th.numeric-cell, td.date-cell, th.date-cell, td.compact-cell, th.compact-cell {
-        font-family: Cairo, sans-serif !important;
+        font-family: ${reportArabicFontStack} !important;
         font-size: ${fontSizePx}px !important;
         line-height: 1.15 !important;
         white-space: nowrap !important;
@@ -1581,7 +1582,7 @@ white-space: normal!important;
       th {
 background: ${colorTokens.head} !important;
         color: ${colorTokens.headText} !important;
-font-family: AlQabas-Bold !important;
+font-family: ${reportArabicFontStack} !important;
 font-size: ${headerFontSizePx}px !important;
 font-weight: 800;
 padding: 5px 5px !important;
@@ -1651,9 +1652,9 @@ td.t-fees { background: ${colorTokens.fees} !important; }
           word-break: break-word !important;
         }
       }
-      /* قواعد PDF النهائية: Cairo، حجم 16px، أسود غامق، وبدون حشو رأسي */
+      /* قواعد PDF النهائية: خط التقرير المحلي، حجم 16px، أسود غامق، وبدون حشو رأسي */
       html, body, table, th, td, .cell-content, .doc-header, .doc-foot {
-        font-family: Cairo, Arial, sans-serif !important;
+        font-family: ${reportArabicFontStack} !important;
         font-weight: 900 !important;
         color: #000 !important;
       }
@@ -1682,7 +1683,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         word-break: break-word !important;
         line-height: 1.2 !important;
       }
-      th *, td * { font-family: Cairo, Arial, sans-serif !important; font-size: inherit !important; font-weight: 900 !important; color: #000 !important; }
+      th *, td * { font-family: ${reportArabicFontStack} !important; font-size: inherit !important; font-weight: 900 !important; color: #000 !important; }
       table.installments-report-table td.numeric-cell, table.installments-report-table th.numeric-cell,
        table.installments-report-table td.numeric-cell .cell-content, table.installments-report-table th.numeric-cell .cell-content {
          white-space: nowrap !important; overflow-wrap: normal !important; word-break: keep-all !important;
@@ -1852,7 +1853,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
           #tableContainer table.installments-table tr.total-row td { background: #0871ce !important; color: #fff !important; font-weight: 900 !important; }
           #tableContainer table.installments-table tr.total-row td * { color: #fff !important; }
           #tableContainer table.installments-table tr { break-inside: avoid !important; page-break-inside: avoid !important; }
-          #tableContainer .doc-header, #tableContainer .doc-foot { font-family: Cairo, Arial, sans-serif !important; }
+          #tableContainer .doc-header, #tableContainer .doc-foot { font-family: ${reportArabicFontStack} !important; }
           /* Match the actual detailed report class (not the live screen table class). */
           #tableContainer table.installments-report-table th,
           #tableContainer table.installments-report-table td {
@@ -2537,12 +2538,12 @@ td.t-fees { background: ${colorTokens.fees} !important; }
           ? "الرصيد الإضافي (له)"
           : "الحالة: تم السداد بالكامل";
 
-    // تنسيقات CSS لقص الصفحة على حدود كشف المتدرب وتوحيد خط Cairo
+    // تنسيقات CSS محلية لقص الصفحة على حدود كشف المتدرب وتوحيد خط التقرير
     const statementCss = `
-      @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+      ${reportArabicFontFacesCss}
       * { 
         box-sizing: border-box; 
-        font-family: 'Cairo', sans-serif !important; 
+        font-family: ${reportArabicFontStack} !important; 
       }
       html, body { 
         margin: 0; 
@@ -2674,7 +2675,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       }
       .report-page-content .page-frame th,
       .report-page-content .page-frame td {
-        font-family: 'Cairo', sans-serif !important;
+        font-family: ${reportArabicFontStack} !important;
         font-size: 20px !important;
         line-height: 1.4 !important;
       }
@@ -2682,7 +2683,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       .report-page-content .page-frame .info-val,
       .report-page-content .page-frame .statement-title,
       .report-page-content .page-frame .foot {
-        font-family: 'Cairo', sans-serif !important;
+        font-family: ${reportArabicFontStack} !important;
         font-size: 20px !important;
       }
       .lbl {
@@ -2731,7 +2732,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         text-align: center !important;
         vertical-align: middle !important;
         padding: 8px 12px !important;
-        font-family: Cairo, sans-serif !important;
+        font-family: ${reportArabicFontStack} !important;
         font-size: 20px !important;
         line-height: 1.4 !important;
         white-space: normal !important;
@@ -2885,7 +2886,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     }
     const outstandingFeeText = outstandingFees.map((fee) => fee.label + " (" + fee.amount.toLocaleString("en-US") + " ريال)").join(" و");
     const title = "مطالبة مالية بسداد الرسوم - " + traineeName;
-    const tableHtml = '<article class="fee-demand-letter" dir="rtl" style="text-align: center; font-size: 18px; line-height: 2.2; font-family: cairo;">' +
+    const tableHtml = '<article class="fee-demand-letter" dir="rtl" style="text-align: center; font-size: 18px; line-height: 2.2; font-family: &quot;IBM Plex Sans Arabic&quot;, &quot;Noto Sans Arabic&quot;, &quot;Noto Naskh Arabic&quot;, Cairo, sans-serif;">' +
       '<h1 style="font-size: 20px; font-weight: bold; margin-bottom: 25px;">مطالبة مالية بسداد الرسوم</h1>' +
       '<p class="letter-date" style="text-align: right; font-size: 16px;">التاريخ: ' + escapeHtml(reportDateLabel) + '</p>' +
       '<p class="salutation" style="margin: 18px 0; font-size: 20px; text-align: right;">الأخ-الدكتور// <strong>' + escapeHtml(traineeName) + '</strong>' +
@@ -2903,7 +2904,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       '</div></article>';
     const finalCss = [
       "@page { size:A4 portrait; margin:18mm; }",
-      "#tableContainer .fee-demand-letter { width:100%; min-height:245mm; margin:0 auto; color:#111; font-family:Cairo,Tahoma,Arial,sans-serif; font-size:16px; line-height:2; }",
+      "#tableContainer .fee-demand-letter { width:100%; min-height:245mm; margin:0 auto; color:#111; font-family:'IBM Plex Sans Arabic','Noto Sans Arabic','Noto Naskh Arabic',Cairo,Tahoma,Arial,sans-serif; font-size:16px; line-height:2; }",
       "#tableContainer .fee-demand-letter h1 { margin:0 0 10mm; padding:0 0 4mm; border-bottom:2px solid #17324d; color:#17324d; text-align:center; font-size:22px; font-weight:900; }",
       "#tableContainer .fee-demand-letter p { margin:0 0 5mm; text-align:justify; }",
       "#tableContainer .fee-demand-letter .letter-date { text-align:left; }",
@@ -2962,7 +2963,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       finalCss: `
         html body #tableContainer table.trainee-account-statement { width:100% !important; max-width:100% !important; table-layout:fixed !important; border-collapse:collapse !important; }
         html body #tableContainer table.trainee-account-statement th,
-        html body #tableContainer table.trainee-account-statement td { border:1.5px solid #0f766e !important; padding:8px 12px !important; font-family:Cairo,sans-serif !important; font-size:20px !important; line-height:1.4 !important; text-align:center !important; vertical-align:middle !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+        html body #tableContainer table.trainee-account-statement td { border:1.5px solid #0f766e !important; padding:8px 12px !important; font-family:${reportArabicFontStack} !important; font-size:20px !important; line-height:1.4 !important; text-align:center !important; vertical-align:middle !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
         html body #tableContainer table.trainee-account-statement thead th { background:#0f766e !important; background-image:none !important; color:#fff !important; font-size:17px !important; font-weight:900 !important; }
         html body #tableContainer table.trainee-account-statement tbody tr.row-fees > td { background:#eff6ff !important; color:#000 !important; }
         html body #tableContainer table.trainee-account-statement tbody tr.row-due-old > td { background:#fef3c7 !important; color:#000 !important; }
@@ -3080,7 +3081,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     ).join("");
 
     const statementCss = [
-      '* { box-sizing: border-box; font-family: Cairo, Tahoma, Arial, sans-serif !important; }',
+      ' * { box-sizing: border-box; font-family: "IBM Plex Sans Arabic", "Noto Sans Arabic", "Noto Naskh Arabic", Cairo, Tahoma, Arial, sans-serif !important; }',
       'html, body { margin: 0; padding: 0; width: 100%; background: #fff; color: #000; direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact; }',
       '.container { width: 100%; margin: 0; padding: 0; }',
       '.page-frame { width: 100%; border: 2px solid #0f766e; background: #fff; padding: 4mm; }',

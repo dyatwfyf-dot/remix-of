@@ -5,6 +5,7 @@ import { downloadRenderedReportPdf } from "./reportPdf";
 import { reportTableThemeCss } from "./reportTheme";
 import { printReportHtmlAsync } from "./nativePrinter";
 import { excelLikePrintTablesCss } from "./excelLikePrintTablesCss";
+import { reportArabicFontFacesCss, reportArabicFontStack } from "./reportArabicFonts";
 
 interface OpenBrowserPrintPreviewOptions {
   title: string;
@@ -44,9 +45,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
 <head>
   <meta charset="UTF-8">
   <title>معاينة الطباعة - ${title}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style id="arabic-font-faces">${reportArabicFontFacesCss}</style>
   <style id="dynamic-page-rule">
     @page {
       size: ${paperSize} ${defaultOrientation};
@@ -68,7 +67,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     body {
-      font-family: Cairo, Tahoma, Arial, sans-serif !important;
+      font-family: ${reportArabicFontStack} !important;
       direction: rtl;
       background: #525659;
       color: #000000 !important;
@@ -240,7 +239,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-title-ar {
-      font-family: Cairo, sans-serif !important;
+      font-family: ${reportArabicFontStack} !important;
       font-size: 13.5px !important;
       font-weight: 900 !important;
       line-height: 1.3 !important;
@@ -248,7 +247,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-sub-ar {
-      font-family: Cairo, sans-serif !important;
+      font-family: ${reportArabicFontStack} !important;
       font-size: 12px !important;
       font-weight: 800 !important;
       line-height: 1.3 !important;
@@ -256,7 +255,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-branch-ar {
-      font-family: Cairo, sans-serif !important;
+      font-family: ${reportArabicFontStack} !important;
       font-size: 12.5px !important;
       font-weight: 900 !important;
       line-height: 1.3 !important;
@@ -274,7 +273,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-bismillah {
-      font-family: Cairo, sans-serif !important;
+      font-family: ${reportArabicFontStack} !important;
       font-size: 14.5px !important;
       font-weight: 900 !important;
       color: #000000 !important;
@@ -295,7 +294,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-title-en {
-      font-family: Arial, Cairo, sans-serif !important;
+      font-family: ${reportArabicFontStack} !important;
       font-size: 12px !important;
       font-weight: 900 !important;
       line-height: 1.25 !important;
@@ -303,7 +302,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-sub-en {
-      font-family: Arial, Cairo, sans-serif !important;
+      font-family: ${reportArabicFontStack} !important;
       font-size: 10.5px !important;
       font-weight: 800 !important;
       line-height: 1.25 !important;
@@ -311,7 +310,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-branch-en {
-      font-family: Arial, Cairo, sans-serif !important;
+      font-family: ${reportArabicFontStack} !important;
       font-size: 11px !important;
       font-weight: 900 !important;
       line-height: 1.25 !important;
@@ -403,7 +402,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
 
     .num, .numeric-cell, .date-cell, .compact-cell, .ref-cell, .idx {
       direction: ltr !important;
-      font-family: Cairo !important;
+      font-family: ${reportArabicFontStack} !important;
       font-weight: 800 !important;
       white-space: nowrap !important;
       word-break: keep-all !important;
@@ -524,7 +523,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       align-items: end !important;
     }
     #tableContainer .sig-title {
-      font-family: Cairo, sans-serif !important;
+      font-family: ${reportArabicFontStack} !important;
       font-weight: 900 !important;
       font-size: 16px !important;
       color: #000000 !important;
@@ -536,7 +535,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       overflow-wrap: anywhere !important;
     }
     #tableContainer .sig-name {
-      font-family: Cairo, sans-serif !important;
+      font-family: ${reportArabicFontStack} !important;
       font-weight: 800 !important;
       font-size: 16px !important;
       color: #000000 !important;
@@ -763,7 +762,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       min-width: 0 !important;
       max-width: none !important;
       padding: 4px 5px !important;
-      font-family: Cairo, Tahoma, Arial, sans-serif !important;
+      font-family: ${reportArabicFontStack} !important;
       font-size: 16px !important;
       line-height: var(--print-cell-line-height, 1.45) !important;
       text-align: center !important;
@@ -1264,14 +1263,20 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       function printOnce() {
         if (printInProgress) return;
         printInProgress = true;
-        // Reapply the toolbar's selected page size/orientation immediately before printing.
-        updatePageSettings();
-        // updatePageSettings performs a second-frame fit calculation; wait for it
-        // so the preview and the actual @page print rule use the same selection.
-        window.requestAnimationFrame(function() {
+        // Wait for locally bundled Arabic font files before opening the native print dialog.
+        var fontsReady = document.fonts && document.fonts.ready
+          ? document.fonts.ready.catch(function() {})
+          : Promise.resolve();
+        fontsReady.then(function() {
+          // Reapply the toolbar's selected page size/orientation immediately before printing.
+          updatePageSettings();
+          // updatePageSettings performs a second-frame fit calculation; wait for it
+          // so the preview and the actual @page print rule use the same selection.
           window.requestAnimationFrame(function() {
-            window.print();
-            window.setTimeout(function() { printInProgress = false; }, 1000);
+            window.requestAnimationFrame(function() {
+              window.print();
+              window.setTimeout(function() { printInProgress = false; }, 1000);
+            });
           });
         });
       }

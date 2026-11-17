@@ -1,6 +1,7 @@
 import { fmt } from "./format";
 import { formatReportDate } from "@/lib/reportDate";
 import { noteRowClass, noteRowCss } from "@/lib/notesColors";
+import { reportArabicFontFacesCss, reportArabicFontStack } from "./reportArabicFonts";
 export type TableCol = { key: string; label: string };
 
 /**
@@ -140,6 +141,7 @@ const buildSignatureBlockRow = (row: Record<string, any>, columns: TableCol[]): 
  * أنماط موحّدة للطباعة ومعاينة PDF وواجهة الجداول
  */
 export const tablePrintStyles = `
+  ${reportArabicFontFacesCss}
   @page {
     size: A4;
     margin: 3mm;
@@ -152,7 +154,7 @@ export const tablePrintStyles = `
   }
 
   body {
-    font-family: Cairo !important;
+    font-family: ${reportArabicFontStack} !important;
     padding: 3mm 4mm;
     color: #000000 !important;
     direction: rtl;
@@ -229,7 +231,7 @@ export const tablePrintStyles = `
     vertical-align: middle !important;
     font-size: 16px !important;
     line-height: 1.45 !important;
-    font-family: Cairo, sans-serif !important;
+    font-family: ${reportArabicFontStack} !important;
     height: auto !important;
     white-space: normal !important;
     word-break: normal !important;
@@ -397,7 +399,7 @@ background: transparent !important;
   /* الأرقام والتواريخ والأكواد تبقى في سطر واحد لسهولة قراءتها */
   .num, .numeric-cell, .date-cell, .compact-cell, .ref-cell, .idx {
     direction: ltr !important;
-    font-family: Cairo !important;
+    font-family: ${reportArabicFontStack} !important;
     font-weight: 800 !important;
     white-space: nowrap !important;
     word-break: keep-all !important;
@@ -451,7 +453,7 @@ background: transparent !important;
   .summary-card-row .summary-value-cell {
     background: #51c4ec !important;
     text-align: center !important;
-    font-family: Cairo !important;
+    font-family: ${reportArabicFontStack} !important;
     font-weight: 900 !important;
     direction: ltr !important;
   }
@@ -495,7 +497,7 @@ background: transparent !important;
     align-items: end !important;
   }
   .sig-title {
-    font-family: Cairo, sans-serif !important;
+    font-family: ${reportArabicFontStack} !important;
     font-weight: 900 !important;
     font-size: 16px !important;
     color: #000000 !important;
@@ -508,7 +510,7 @@ background: transparent !important;
     overflow-wrap: anywhere !important;
   }
   .sig-name {
-    font-family: Cairo, sans-serif !important;
+    font-family: ${reportArabicFontStack} !important;
     font-weight: 800 !important;
     font-size: 16px !important;
     color: #000000 !important;

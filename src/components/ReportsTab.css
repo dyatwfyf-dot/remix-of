@@ -12,7 +12,7 @@
 .reports-actions-panel{padding:16px 20px 8px!important;background:#fff}.reports-table-panel{padding:12px 20px 20px!important}
 .reports-table-scroll{width:100%;max-width:100%;overflow:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;border:1px solid #17212b;border-radius:14px;background:#fff;box-shadow:0 8px 24px rgba(15,41,63,.07);scrollbar-width:thin;scrollbar-color:#91a7b5 #edf2f5}
 .reports-table-scroll table.reports-data-table{width:max-content;min-width:100%;max-width:none;margin:0;border-collapse:collapse!important;border-spacing:0;table-layout:auto!important;direction:rtl;text-align:center;color:#101820;font-size:15px}
-.reports-table-scroll .reports-data-table th,.reports-table-scroll .reports-data-table td{box-sizing:border-box;border:1px solid #17212b!important;text-align:center!important;vertical-align:middle!important;font-family:Cairo,Tahoma,Arial,sans-serif;font-variant-numeric:tabular-nums;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.reports-table-scroll .reports-data-table th,.reports-table-scroll .reports-data-table td{box-sizing:border-box;border:1px solid #17212b!important;text-align:center!important;vertical-align:middle!important;font-family:var(--font-report);font-variant-numeric:tabular-nums;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .reports-table-scroll .reports-data-table thead th{position:sticky;top:0;z-index:2;min-width:72px;max-width:230px;padding:10px 9px!important;background:linear-gradient(180deg,#fff8d9 0%,#f5d978 48%,#d7a92e 100%)!important;color:#111!important;font-size:14px!important;font-weight:900!important;line-height:1.4!important;white-space:normal!important;overflow-wrap:anywhere!important}
 .reports-table-scroll .reports-data-table thead tr.reports-column-header-row th:hover{background:linear-gradient(180deg,#fff0b5,#e9c45a)!important}
 .reports-table-scroll .reports-data-table thead th[data-col-key="idx"],.reports-table-scroll .reports-data-table tbody td[data-col-key="idx"]{position:sticky;right:0;z-index:3;min-width:48px;background-clip:padding-box}
@@ -56,4 +56,15 @@
  .reports-table-scroll .reports-data-table .reports-unpaid-name-text{width:100%!important;text-align:center!important;white-space:normal!important;overflow-wrap:anywhere!important}
  .reports-table-scroll .reports-data-table .reports-unpaid-name-delete{display:none!important}
  .reports-table-scroll .reports-data-table tr.reports-bank-pending-row>td{background:#fff4cc!important;background-color:#fff4cc!important;color:#3b2f12!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+}
+
+
+/* Arabic report typography: only report tables use IBM Plex; app tabs remain on Cairo. */
+.mizan-reports-tab .reports-table-scroll table.reports-data-table,
+.mizan-reports-tab .reports-table-scroll table.reports-data-table *,
+.mizan-reports-tab #tableContainer table.reports-data-table,
+.mizan-reports-tab #tableContainer table.reports-data-table *,
+.mizan-reports-tab .reports-print-heading,
+.mizan-reports-tab .reports-print-heading * {
+  font-family: var(--font-report) !important;
 }
