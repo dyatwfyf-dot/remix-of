@@ -8,7 +8,7 @@ import {
 import { downloadReportPdf } from "@/lib/reportPdf";
 import { reportTableThemeCss } from "@/lib/reportTheme";
 import { printReportHtml } from "@/lib/nativePrinter";
-import { reportArabicFontStack } from "./reportArabicFonts";
+import { reportArabicFontFacesCss, reportArabicFontStack } from "./reportArabicFonts";
 
 async function htmlToPdf(opts: { html: string; css: string; fileName: string; orientation?: 'portrait' | 'landscape'; pageWidthPx?: number }): Promise<void> {
   await downloadReportPdf({ title: opts.fileName, body: opts.html, css: opts.css, fileName: opts.fileName, orientation: opts.orientation });
@@ -441,16 +441,13 @@ export function revenuePdf(revenue: Record<string, number>, year: number, month:
 
   const head = `<meta charset="utf-8"><title>${REV_SCHEMA.title} - ${MONTHS_PDF[month - 1]} ${year}م</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=Cairo
-  :wght@400;500;700;900&display=swap">
-  <style>
+  <style>${reportArabicFontFacesCss}
     * { margin: 0; padding: 0; box-sizing: border-box; }
     @page { size: A4 landscape; margin: 5mm; padding: 0; }
     @page :first { margin-top: 5mm; }
     html { margin: 0; padding: 0; }
     body { 
-      font-family: Cairo'; 
+      font-family: ${reportArabicFontStack}; 
       direction: rtl; 
       color: #000 !important; 
       margin: 0; 
