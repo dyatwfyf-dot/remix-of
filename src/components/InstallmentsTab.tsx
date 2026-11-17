@@ -1581,7 +1581,7 @@ white-space: normal!important;
       th {
 background: ${colorTokens.head} !important;
         color: ${colorTokens.headText} !important;
-font-family: AlQabas-Bold !important;
+font-family: ${reportArabicFontStack} !important;
 font-size: ${headerFontSizePx}px !important;
 font-weight: 800;
 padding: 5px 5px !important;
