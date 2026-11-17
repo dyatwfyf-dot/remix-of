@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap");
+
 /* Unified professional table system for the Reports tab. */
 .mizan-reports-tab{--reports-ink:#142b3d;--reports-muted:#607487;--reports-teal:#176b70;--reports-gold:#d6a827;color:var(--reports-ink)}
 .mizan-reports-tab>section{border-color:#d7e1e8;border-radius:22px;box-shadow:0 16px 42px rgba(19,49,73,.10)}
@@ -57,3 +59,7 @@
  .reports-table-scroll .reports-data-table .reports-unpaid-name-delete{display:none!important}
  .reports-table-scroll .reports-data-table tr.reports-bank-pending-row>td{background:#fff4cc!important;background-color:#fff4cc!important;color:#3b2f12!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 }
+
+
+/* Temporary IBM Plex Sans Arabic typography trial, limited to custody and loan report tables. */
+.mizan-reports-tab table.reports-custody-font-trial,.mizan-reports-tab table.reports-custody-font-trial *{font-family:"IBM Plex Sans Arabic",Cairo,Tahoma,Arial,sans-serif!important}
