@@ -216,7 +216,6 @@
   .apk-tabs-ui textarea { font-size: 0.9rem; }
 
   /* نظام الخطوط المرئي: نص عربي واضح وعناوين قوية وأرقام سهلة القراءة */
-  .font-tajawal,
   .font-cairo {
     font-family: var(--font-ui) !important;
   }
