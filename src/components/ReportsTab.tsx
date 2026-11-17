@@ -2069,7 +2069,7 @@ export default function ReportsTab() {
     }
     const outstandingFeeText = outstandingFees.map((fee) => `${fee.label} (${fee.amount.toLocaleString("en-US")} ريال)`).join(" و");
     const title = `مطالبة مالية بسداد الرسوم - ${traineeName}`;
-    const tableHtml = `<article class="fee-demand-letter" dir="rtl" style="text-align: center; font-size: 18px; line-height: 2.2; font-family: cairo;">
+    const tableHtml = `<article class="fee-demand-letter" dir="rtl" style="text-align: center; font-size: 18px; line-height: 2.2; font-family: ${reportArabicFontStack};">
    <h1 style="font-size: 20px; font-weight: bold; margin-bottom: 25px;">مطالبة مالية بسداد الرسوم</h1>
    <p class="letter-date" style="text-align: right; font-size: 16px;">التاريخ: ${escapeHtml(reportDateLabel)}</p>
    <p class="salutation" style="margin: 18px 0; font-size: 20px; text-align: right;">الأخ-الدكتور// <strong>${escapeHtml(traineeName)}</strong>
