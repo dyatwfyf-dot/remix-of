@@ -1054,7 +1054,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       </button>
 
       <button type="button" class="btn-action btn-download" id="btnDownloadPdf">
-        📥 تنزيل PDF
+        📄 تصدير PDF
       </button>
 
       <button type="button" class="btn-close" id="btnClose">
@@ -1386,7 +1386,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
 
       async function downloadDirectPdf() {
         btnDownloadPdf.disabled = true;
-        btnDownloadPdf.innerText = 'جارٍ إنشاء PDF...';
+        btnDownloadPdf.innerText = 'جارٍ فتح تصدير PDF...';
         try {
           await window.downloadReportFromPreview({
             pageSize: selPageSize.value,
@@ -1396,10 +1396,10 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
           });
         } catch (err) {
           console.error(err);
-          alert('تعذر تنزيل PDF؛ يمكنك استخدام خيار الحفظ كـ PDF من نافذة الطباعة');
+          alert('تعذر فتح واجهة تصدير PDF. أعد المحاولة ثم اختر حفظ كملف PDF من نافذة الطباعة');
         } finally {
           btnDownloadPdf.disabled = false;
-          btnDownloadPdf.innerText = '📥 تنزيل PDF';
+          btnDownloadPdf.innerText = '📄 تصدير PDF';
         }
       }
 
