@@ -12,6 +12,7 @@ import revSchema from "@/data/revenueTemplate.json";
 import { printReportHtmlAsync } from "@/lib/nativePrinter";
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import { reportDocumentCss } from "@/lib/reportPdf";
+import { reportArabicFontStack } from "./reportArabicFonts";
 
 const reportLetterheadRow = (columnCount: number) => `
   <tr class="report-letterhead-row">
@@ -59,7 +60,7 @@ ${reportLetterheadStyles}
     @page :first { margin-top: 6mm; }
     html { margin: 0; padding: 0; }
     body { 
-      font-family: Cairo; 
+      font-family: ${reportArabicFontStack}; 
       direction: rtl; 
       color: #000 !important; 
       margin: 0; 
@@ -99,7 +100,7 @@ ${reportLetterheadStyles}
       line-height: 1.50;
     }
     .num, .numeric-cell, .date-cell {
-      font-family: Cairo, sans-serif !important;
+      font-family: ${reportArabicFontStack} !important;
       font-size: 20px !important;
       color: #000 !important;
       font-weight: 1000 !important;
@@ -276,7 +277,7 @@ export async function monthlyStatementPdf(opts: {
 ${reportLetterheadStyles}
     @page { size: A4 landscape; margin: 8mm; padding: 0; }
     body { 
-      font-family: cairo; 
+      font-family: ${reportArabicFontStack}; 
       direction: rtl; 
       color: #000 !important; 
       padding: 6px; 
@@ -311,7 +312,7 @@ ${reportLetterheadStyles}
       line-height: 1.5;
     }
     .num {
-      font-family: Cairo, sans-serif !important;
+      font-family: ${reportArabicFontStack} !important;
       font-size: 16px !important;
       direction: ltr;
       unicode-bidi: embed;
@@ -372,7 +373,7 @@ text-align:center;
       overflow-wrap: normal !important;
       word-break: keep-all !important;
       hyphens: none !important;
-      font-family: Cairo, sans-serif !important;
+      font-family: ${reportArabicFontStack} !important;
       font-size: 20px !important;
       font-variant-numeric: tabular-nums;
       direction: ltr;
