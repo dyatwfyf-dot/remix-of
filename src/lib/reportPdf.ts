@@ -1,5 +1,5 @@
 import { reportsCompactColumnsCss, tagReportCells, tagSerialColumns } from "./reportsCompactColumnsCss";
-import { deliverBlobToUser, isNativeFileStorageAvailable } from './nativeFileStorage';
+import { printReportHtmlAsync } from "./nativePrinter";
 import { escapeHtml, reportLetterheadHtml } from './printTableHtml';
 import { reportTableThemeCss } from './reportTheme';
 import { excelLikePrintTablesCss } from "./excelLikePrintTablesCss";
@@ -595,11 +595,6 @@ table.reports-data-table tbody tr.reports-trainee-summary-row:not(.total-row):no
 table.reports-data-table tbody tr.reports-fee-row:not(.total-row):not(.report-grand-total-row)>td{background:#e8f1f7!important;color:#142b3d!important;font-weight:900!important}
 table.reports-data-table tbody tr.reports-period-row:not(.total-row):not(.report-grand-total-row)>td{background:#e9eef3!important;color:#17212b!important;font-weight:900!important}
 `;
-const dimensions = (size: ReportPaperSize, orientation: ReportOrientation) => {
-  const [short, long] = size === 'A3' ? [297, 420] : size === 'Letter' ? [215.9, 279.4] : [210, 297];
-  return orientation === 'landscape' ? [long, short] : [short, long];
-};
-
 async function ready(doc: Document) {
   const fontReady = doc.fonts?.ready ?? Promise.resolve();
   await Promise.race([
@@ -612,191 +607,135 @@ async function ready(doc: Document) {
   }));
 }
 
+/**
+ * يصدر محتوى HTML عبر محرك الطباعة الأصلي للمتصفح/Android.
+ *
+ * بخلاف محرك html2canvas السابق، يبقى النص نصاً حقيقياً قابلاً للتحديد والبحث،
+ * وتُرسم الحدود والألوان كعناصر متجهية. ويقوم محرك الطباعة بتقسيم الصفحات
+ * مع تكرار رؤوس الجداول واحترام قواعد منع شطر الصفوف.
+ *
+ * في Chrome اختر "حفظ كملف PDF"، وفي Android اختر "Save as PDF" من واجهة
+ * الطباعة الأصلية. واجهة الويب لا تملك API قياسياً يسمح بتنزيل PDF متجهي
+ * مباشرةً دون تشغيل محرك طباعة أو خدمة تحويل على الخادم.
+ */
 export async function downloadRenderedReportPdf(source: HTMLElement, options: {
   fileName: string; pageSize?: ReportPaperSize; orientation?: ReportOrientation; marginMm?: number;
   fitToContent?: boolean;
 }) {
-  const { fileName, pageSize = 'A4', orientation = 'portrait', marginMm = 3, fitToContent = false } = options;
+  const {
+    fileName,
+    pageSize = "A4",
+    orientation = "portrait",
+    marginMm = 3,
+    fitToContent = false,
+  } = options;
+
   const doc = source.ownerDocument;
-  tagReportCells(source);
-  tagSerialColumns(source);
-  // Preserve numbers and dates as atomic values in every exported table,
-  // including tables that do not use the reports-data-table class.
-  const numericOrDate = /^[\s\u200e\u200f]*[+-]?(?:(?:[0-9٠-٩۰-۹]+)(?:[,.٬٫][0-9٠-٩۰-۹]+)*|[0-9٠-٩۰-۹]{1,4}[-/.][0-9٠-٩۰-۹]{1,2}[-/.][0-9٠-٩۰-۹]{1,4})(?:\s*(?:ر\.?\s*ي|ريال|ر\.?\s*س))?[\s\u200e\u200f]*$/;
-  source.querySelectorAll('table th, table td').forEach((cell) => {
-    if (numericOrDate.test((cell.textContent || '').trim())) cell.classList.add('numeric-cell');
-  });
   await ready(doc);
-  const [{ default: html2canvas }, { default: JsPDF }] = await Promise.all([import('html2canvas'), import('jspdf')]);
-  const [widthMm, pageHeightMm] = dimensions(pageSize, orientation);
-  let heightMm = pageHeightMm;
-  const pxPerMm = 96 / 25.4;
-  const holder = doc.createElement('div');
-  holder.style.cssText = 'position:absolute;left:-20000px;top:0;pointer-events:none;';
-  const paper = doc.createElement('div');
-  // Render each PDF page on a fixed physical sheet. The content is measured and
-  // paginated before capture, so html2canvas cannot silently extend/crop a page.
-  paper.style.cssText = fitToContent
-    ? `width:${widthMm}mm;height:auto;min-height:0;padding:0;box-sizing:border-box;background:#fff;display:flex;flex-direction:column;overflow:visible;`
-    : `width:${widthMm}mm;height:${heightMm}mm;min-height:${heightMm}mm;max-height:${heightMm}mm;padding:${marginMm}mm;box-sizing:border-box;background:#fff;display:flex;flex-direction:column;overflow:hidden;`;
-  const content = source.cloneNode(true) as HTMLElement;
-  content.classList.add('report-page-content');
-  // Keep the scale selected by the browser preview; do not apply a second fit scale.
-  content.style.cssText = fitToContent
-    ? 'width:100%;max-width:100%;max-height:none;height:auto;min-height:0;flex:0 0 auto;padding:0;margin:0;border:1px solid #000;box-shadow:none;transform:none;'
-    : 'width:100%;max-width:100%;max-height:none;height:auto;min-height:0;flex:0 0 auto;padding:0;margin:0;border:0;box-shadow:none;transform:none;';
-  const footer = doc.createElement('div');
-  footer.style.cssText = 'margin-top:8px;padding-top:6px;text-align:center;font-size:14px;color:#000000;direction:rtl;font-weight:700;';
-  if (fitToContent) footer.style.display = 'none';
-  paper.append(content, footer);
-  holder.append(paper);
-  doc.body.append(holder);
-  
-  try {
-    const table = Array.from(content.querySelectorAll('table')).sort((a, b) => b.rows.length - a.rows.length)[0];
-    const body = table?.tBodies[0];
-    
-    // استخراج الصفوف الظاهرة فقط
-    const allRows = body ? Array.from(body.rows).filter(r => (r as HTMLElement).style.display !== 'none') : [];
-    // Keep every visible row in its original preview order, including the total row.
-    const rows = allRows.map(r => r.cloneNode(true) as HTMLTableRowElement);
-    
-    if (body) body.replaceChildren();
-    
-    // Measure the printable content area from the actual rendered sheet instead
-    // of estimating it from the paper size. This includes the report heading,
-    // letterhead, table header and footer reservation.
-    const paperStyle = doc.defaultView?.getComputedStyle(paper);
-    const verticalPadding = (parseFloat(paperStyle?.paddingTop || '0') || 0) +
-      (parseFloat(paperStyle?.paddingBottom || '0') || 0);
-    const footerReservation = fitToContent ? 0 : Math.max(28, footer.getBoundingClientRect().height + 12);
-    const maxHeight = fitToContent
-      ? Number.POSITIVE_INFINITY
-      : Math.max(80, paper.clientHeight - verticalPadding - footerReservation);
-    const overflows = () => {
-      const h = Math.max(content.scrollHeight, content.getBoundingClientRect().height);
-      return h > maxHeight + 1;
-    };
-    
-    const groups: HTMLTableRowElement[][] = [];
-    let group: HTMLTableRowElement[] = [];
-    
-    if (fitToContent) {
-      body?.replaceChildren(...rows);
-      await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
-      // قَصّ طول الصفحة إلى الارتفاع الفعلي للمحتوى بدل مساحة A4 الفارغة.
-      heightMm = Math.max(40, Math.ceil((paper.scrollHeight / pxPerMm) * 10) / 10);
-      paper.style.height = `${heightMm}mm`;
-      groups.push(rows);
-    } else if (rows.length === 0) {
-      groups.push([]);
-    } else {
-      for (const row of rows) {
-        body?.append(row);
-        if (overflows() && group.length > 0) {
-          // Finish the previous sheet before moving this complete row to the
-          // next one. Never split a row across pages.
-          row.remove();
-          groups.push(group);
-          group = [];
-          body?.replaceChildren(row);
-        } else if (overflows() && group.length === 0) {
-          // Keep an unusually tall row intact and compact its typography so
-          // the complete record can fit on its own physical page.
-          row.classList.add('pdf-oversized-row');
-          row.querySelectorAll('td, th').forEach((cell) => {
-            (cell as HTMLElement).style.setProperty('font-size', '10px', 'important');
-            (cell as HTMLElement).style.setProperty('padding', '2px', 'important');
-            (cell as HTMLElement).style.setProperty('line-height', '1.2', 'important');
-          });
-        }
-        group.push(row);
+
+  // الاحتفاظ بجميع الأنماط التي كوّنت نسخة المعاينة، بما فيها خطوط Cairo
+  // وقواعد الألوان الخاصة بكل تقرير، بدلاً من إعادة بناء الجدول برمجياً.
+  const styles = Array.from(doc.querySelectorAll("style"))
+    .map((style) => style.textContent || "")
+    .filter(Boolean)
+    .join("\\n");
+  const linkedStyles = Array.from(doc.querySelectorAll('link[rel="stylesheet"]'))
+    .map((link) => (link as HTMLLinkElement).outerHTML)
+    .join("\\n");
+
+  const safeMargin = Number.isFinite(marginMm)
+    ? Math.max(0, Math.min(30, marginMm))
+    : 3;
+  // fitToContent يحتفظ بهامش المستخدم المختار، لكنه لا ينشئ صفحة طويلة
+  // غير قياسية؛ يظل الملف على ورق A4/A3/Letter مع ترقيم وتجزئة طبيعيين.
+  const pageMargin = fitToContent ? safeMargin : safeMargin;
+  const title = fileName.replace(/\\.pdf$/i, "").replace(/[\\\\/:*?"<>|]/g, "-");
+
+  const vectorPrintCss = `
+    @page {
+      size: ${pageSize} ${orientation};
+      margin: ${pageMargin}mm;
+    }
+    @media print {
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        box-sizing: border-box !important;
       }
-      if (group.length > 0) {
-        groups.push(group);
+      html, body {
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        height: auto !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        background: #fff !important;
+      }
+      body {
+        direction: rtl !important;
+        color: #000 !important;
+        font-family: ${reportArabicFontStack} !important;
+      }
+      #report-source, .report-page-content, #paperContainer, .sheet-paper,
+      .sheet-viewport, #tableContainer, .preview-report-content {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        margin: 0 !important;
+        overflow: visible !important;
+        transform: none !important;
+        zoom: 1 !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+      }
+      table, table.reports-data-table {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        height: auto !important;
+        border-collapse: collapse !important;
+        break-inside: auto !important;
+        page-break-inside: auto !important;
+      }
+      thead { display: table-header-group !important; }
+      tfoot { display: table-footer-group !important; }
+      tr, .signature-block-row, .signature-spacer-row {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+      th, td {
+        height: auto !important;
+        vertical-align: middle !important;
+      }
+      img, svg, canvas {
+        max-width: 100% !important;
+      }
+      .no-print, .preview-toolbar, .btn-close {
+        display: none !important;
       }
     }
-    
-    const pdf = new JsPDF({
-      unit: 'mm',
-      format: fitToContent ? [widthMm, heightMm] : pageSize.toLowerCase(),
-      orientation,
-      compress: true,
-    });
-    pdf.setProperties({ title: fileName.replace(/\.pdf$/i, ''), subject: 'تقرير مالي', creator: 'المجلس اليمني للاختصاصات الطبية' });
-    
-    for (let index = 0; index < groups.length; index++) {
-      const currentRows = [...groups[index]];
-      if (body) body.replaceChildren(...currentRows);
-      footer.textContent = `صفحة ${index + 1} من ${groups.length}`;
-      
-      // Recalculate after inserting the page's rows and wait for fonts/layout
-      // before rasterizing this fixed-size sheet.
-      await ready(doc);
-      await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
-      const canvas = await html2canvas(paper, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: '#ffffff',
-        logging: false,
-        windowWidth: Math.ceil(widthMm * pxPerMm),
-        scrollX: 0,
-        scrollY: 0,
-      });
-      if (!canvas.width || !canvas.height) throw new Error('تعذر تجهيز صورة التقرير');
-      const pngBlob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob((blob) => {
-          if (blob) resolve(blob);
-          else reject(new Error('تعذر ترميز صفحة التقرير'));
-        }, 'image/png');
-      });
-      const pngBytes = new Uint8Array(await pngBlob.arrayBuffer());
-      if (index > 0) pdf.addPage();
-      pdf.addImage(pngBytes, 'PNG', 0, 0, widthMm, heightMm, undefined, 'FAST');
-      canvas.width = 0;
-      canvas.height = 0;
-    }
-    
-    const blob = pdf.output('blob');
-    const downloadName = fileName.toLowerCase().endsWith('.pdf') ? fileName : `${fileName}.pdf`;
-    if (!blob.size) throw new Error('تم إنشاء ملف PDF فارغ');
+  `;
 
-    // Android WebView لا ينفذ تنزيل blob كمتصفح عادي؛ سلّم الملف للمشاركة.
-    if (isNativeFileStorageAvailable()) {
-      const delivered = await deliverBlobToUser(blob, downloadName);
-      if (!delivered) throw new Error('تعذر تسليم ملف PDF إلى Android');
-      return;
-    }
+  const printableHtml = `<!doctype html>
+    <html lang="ar" dir="rtl">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>${escapeHtml(title)}</title>
+        ${linkedStyles}
+        <style>${styles}\\n${vectorPrintCss}</style>
+      </head>
+      <body>${source.outerHTML}</body>
+    </html>`;
 
-    const url = URL.createObjectURL(blob);
-    // أنشئ رابط التنزيل في النافذة العليا، لا داخل iframe إنشاء التقرير.
-    let downloadDocument = doc;
-    try {
-      downloadDocument = doc.defaultView?.top?.document ?? window.document;
-    } catch {
-      downloadDocument = window.document;
-    }
-    const anchor = downloadDocument.createElement('a');
-    anchor.href = url;
-    anchor.download = downloadName;
-    anchor.rel = 'noopener';
-    anchor.style.position = 'fixed';
-    anchor.style.left = '-10000px';
-    anchor.style.top = '0';
-    downloadDocument.body.append(anchor);
-    try {
-      anchor.click();
-    } catch (error) {
-      console.warn('[PDF] Anchor download failed; opening the generated file', error);
-      const opened = window.open(url, '_blank');
-      if (!opened) throw new Error('تعذر فتح ملف PDF الناتج');
-    } finally {
-      anchor.remove();
-    }
-    window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
-  } finally {
-    holder.remove();
+  const opened = await printReportHtmlAsync(printableHtml, title);
+  if (!opened) {
+    throw new Error("تعذر فتح محرك تصدير PDF. تحقق من إعدادات الطباعة ثم أعد المحاولة.");
   }
 }
 
