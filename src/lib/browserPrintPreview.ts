@@ -1283,6 +1283,11 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       const scale = parseFloat(selScale.value) || 1;
       const lineSpacing = parseFloat(selLineSpacing.value) || 1.45;
       paperContainer.style.setProperty('--print-cell-line-height', String(lineSpacing));
+      // Apply directly to cells and their text wrappers so report-specific
+      // selectors or inline styles cannot override the toolbar selection.
+      paperContainer.querySelectorAll('table th, table td, table th *, table td *').forEach((element) => {
+        element.style.setProperty('line-height', String(lineSpacing), 'important');
+      });
 
         paperContainer.classList.remove('portrait', 'landscape');
         paperContainer.classList.add(orientation);
