@@ -3716,7 +3716,7 @@ className="installments-summary-actions col-span-full grid grid-cols-2 gap-2 w-f
             </div>
           </div>
           <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
-<table className="installments-table w-auto min-w-auto table-auto text-xs sm:text-base font-semibold">
+<table className="installments-table installments-table-2026 w-auto min-w-auto table-auto text-xs sm:text-base font-semibold">
 <thead className="bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500 font-extrabold border-b-2 border-sky-700 text-black sticky top-0 z-20 shadow-md">
                 <tr>
  <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-xl sm:!text-base text-white border-l border-sky-700/30">#</th>
