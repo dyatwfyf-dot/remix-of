@@ -9,9 +9,9 @@ export const reportArabicFontStack =
 export const reportArabicFontFacesCss = `
   @font-face {
     font-family: "Cairo";
-    src: url("/Cairo-Regular.ttf") format("truetype");
+    src: url("/fonts/Cairo-Variable.ttf") format("truetype");
     font-style: normal;
-    font-weight: 400;
+    font-weight: 100 900;
     font-display: swap;
   }
 
