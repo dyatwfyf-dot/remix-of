@@ -68,7 +68,7 @@
 
 :root {
   --font-ui: "Cairo";
-  --font-display: "IBM Plex Sans Arabic", "Noto Sans Arabic", "Noto Naskh Arabic", "Cairo", sans-serif;
+  --font-display: "Cairo";
   --font-heading: "Cairo";
   --font-data: "Cairo";
   --font-report: "IBM Plex Sans Arabic", "Noto Sans Arabic", "Noto Naskh Arabic", "Cairo", Tahoma, Arial, sans-serif;
