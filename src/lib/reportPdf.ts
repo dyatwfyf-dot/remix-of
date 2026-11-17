@@ -375,6 +375,8 @@ border: 1px solid #000000 !important;
   }
   .report-page-content table tr { height: auto !important; }
 
+
+
   /* Universal Excel-like PDF cell behaviour: wrap descriptive text, never
      clip it; keep true numeric/date/reference values atomic on one line. */
   .report-page-content table th,
@@ -699,9 +701,14 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
           group = [];
           body?.replaceChildren(row);
         } else if (overflows() && group.length === 0) {
-          // A single unusually tall row must remain intact. Allow it its own
-          // sheet rather than clipping its text at the page boundary.
+          // Keep an unusually tall row intact and compact its typography so
+          // the complete record can fit on its own physical page.
           row.classList.add('pdf-oversized-row');
+          row.querySelectorAll('td, th').forEach((cell) => {
+            (cell as HTMLElement).style.setProperty('font-size', '10px', 'important');
+            (cell as HTMLElement).style.setProperty('padding', '2px', 'important');
+            (cell as HTMLElement).style.setProperty('line-height', '1.2', 'important');
+          });
         }
         group.push(row);
       }
