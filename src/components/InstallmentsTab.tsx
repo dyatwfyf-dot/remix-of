@@ -2,7 +2,7 @@
    ملاحظة: التغييرات تنسيقية فقط (CSS / classNames / ثوابت أحجام)
 */
 import "./InstallmentsTab.css";
-import React, { useDeferredValue, useMemo,
+import React, { useDeferredValue, useEffect, useMemo,
   useState } from "react";
 import { useStore,
   type InstallmentCustomColumn } from "@/lib/store";
@@ -41,7 +41,7 @@ import PrintSettingsModal, {
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import { useReportDate } from "@/lib/reportDate";
 import { reportLetterheadHtml } from "@/lib/printTableHtml";
-import { downloadReportPdf } from "@/lib/reportPdf";
+import { downloadReportPdf, reportDocumentCss } from "@/lib/reportPdf";
 import {
   addReportHeader,
   appendRows,
@@ -148,16 +148,16 @@ const INSTALLMENTS_SUMMARY_REPORT_CSS = `
   .report-page-content h1, .report-page-content h2 { margin: 0 0 5px !important; text-align: center !important; }
   /* Summary print style for installments 2026 mirrors visible screen table. */
   .report-page-content table.installments-summary-2026 { border-collapse: collapse !important; direction: rtl !important; }
-  .report-page-content table.installments-summary-2026 thead th { background: linear-gradient(180deg,#7dd3fc 0%,#38bdf8 52%,#0ea5e9 100%) !important; color: #000 !important; border: 1px solid #0369a1 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .report-page-content table.installments-summary-2026 thead th { background: linear-gradient(180deg,#7dd3fc 0%,#38bdf8 52%,#0ea5e9 100%) !important; color: #000 !important; border: 1px solid #000000 !important; border-color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   .report-page-content table.installments-summary-2026 thead th[data-col-key="idx"], .report-page-content table.installments-summary-2026 thead th[data-col-key="name"] { color: #fff !important; }
-  .report-page-content table.installments-summary-2026 tbody td { border: 1px solid #cbd5e1 !important; color: #000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .report-page-content table.installments-summary-2026 tbody td { border: 1px solid #000000 !important; border-color: #000000 !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   .report-page-content table.installments-summary-2026 tbody td[data-col-key="name"] { background: #fdf4ff !important; }
   .report-page-content table.installments-summary-2026 tbody td[data-col-key="batch"], .report-page-content table.installments-summary-2026 tbody td[data-col-key="specialty"], .report-page-content table.installments-summary-2026 tbody td[data-col-key="fees"] { background: #f0f9ff !important; }
   .report-page-content table.installments-summary-2026 tbody td[data-col-key="prevDue"] { background: #f8fcff !important; }
   .report-page-content table.installments-summary-2026 tbody td[data-col-key="totalPaid"] { background: #ecfdf5 !important; }
   .report-page-content table.installments-summary-2026 tbody td[data-col-key="remaining"] { background: #fff1f2 !important; }
   .report-page-content table.installments-summary-2026 tbody td[data-col-key="notes"] { background: #fffbeb !important; }
-  .report-page-content table.installments-summary-2026 tbody tr.total-row td { background: #e0f2fe !important; color: #000 !important; border-color: #7dd3fc !important; font-weight: 900 !important; }
+  .report-page-content table.installments-summary-2026 tbody tr.total-row > td, .report-page-content table.installments-summary-2026 tbody tr.total-row > td * { background: #e0f2fe !important; color: #000000 !important; border: 1px solid #000000 !important; border-color: #000000 !important; font-weight: 900 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 `;
 
 // All PDF reports use the same paper layout and measured row pagination.
@@ -312,7 +312,18 @@ export default function InstallmentsTab() {
   const [feeDemandIncludeOralClinical, setFeeDemandIncludeOralClinical] = useState(false);
   const [feeDemandRegistrationAmount, setFeeDemandRegistrationAmount] = useState(10000);
   const [feeDemandExamAmount, setFeeDemandExamAmount] = useState(30000);
-  const [feeDemandSignatures, setFeeDemandSignatures] = useState<{ department: string; director: string; signer: string }>(() => ({ department: "الشؤون المالية", director: "", signer: "" }));
+  const [feeDemandSignatures, setFeeDemandSignatures] = useState<{ department: string; director: string; signer: string }>(() => {
+    try {
+      const saved = localStorage.getItem("reports-fee-demand-signatures-v1");
+      if (saved) return { department: "الشؤون المالية", director: "", signer: "", ...JSON.parse(saved) };
+    } catch {}
+    return { department: "الشؤون المالية", director: "", signer: "" };
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem("reports-fee-demand-signatures-v1", JSON.stringify(feeDemandSignatures));
+    } catch {}
+  }, [feeDemandSignatures]);
   
   const [search2025, setSearch2025] =
   useState("");
@@ -1707,7 +1718,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
          -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
        }
        table.installments-screen-parity thead th[data-col-key="idx"], table.installments-screen-parity thead th[data-col-key="name"] { color: #fff !important; }
-       table.installments-screen-parity tbody td { border: 1px solid #cbd5e1 !important; color: #000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        table.installments-screen-parity tbody td { border: 1px solid #000000 !important; border-color: #000000 !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
        table.installments-screen-parity tbody td.screen-name-cell { background: #fdf4ff !important; }
        table.installments-screen-parity tbody td.screen-batch-cell, table.installments-screen-parity tbody td.screen-specialty-cell, table.installments-screen-parity tbody td.screen-fees-cell { background: #f0f9ff !important; }
        table.installments-screen-parity tbody td.screen-prevdue-cell { background: #f8fcff !important; }
@@ -1715,7 +1726,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
        table.installments-screen-parity tbody td.screen-totalpaid-cell { background: #ecfdf5 !important; }
        table.installments-screen-parity tbody td.screen-remaining-cell { background: #fff1f2 !important; }
        table.installments-screen-parity tbody td.screen-notes-cell { background: #fffbeb !important; }
-       table.installments-screen-parity tbody tr.total-row > td { background: #e0f2fe !important; color: #000 !important; border-color: #7dd3fc !important; font-weight: 900 !important; }
+        table.installments-screen-parity tbody tr.total-row > td, table.installments-screen-parity tbody tr.total-row > td * { background: #e0f2fe !important; color: #000000 !important; border: 1px solid #000000 !important; border-color: #000000 !important; font-weight: 900 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
        table.installments-screen-parity tbody tr.notes-status-red > td { background: #fecaca !important; }
        table.installments-screen-parity tbody tr.notes-status-yellow > td { background: #fef08a !important; }
        table.installments-screen-parity tbody tr.notes-status-green > td { background: #bbf7d0 !important; }
@@ -1754,6 +1765,23 @@ td.t-fees { background: ${colorTokens.fees} !important; }
        table.installments-report-table tbody tr.total-row > td * {
          color: #000000 !important;
        }
+        table.installments-report-table.installments-screen-parity thead th,
+        table.installments-report-table.installments-screen-parity tbody td {
+          border: 1px solid #000000 !important;
+          border-color: #000000 !important;
+        }
+        table.installments-report-table.installments-screen-parity tbody tr.total-row > th,
+        table.installments-report-table.installments-screen-parity tbody tr.total-row > td,
+        table.installments-report-table.installments-screen-parity tbody tr.total-row > th *,
+        table.installments-report-table.installments-screen-parity tbody tr.total-row > td * {
+          background: #e0f2fe !important;
+          color: #000000 !important;
+          border: 1px solid #000000 !important;
+          border-color: #000000 !important;
+          font-weight: 900 !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
     `;
       
       const body = `
@@ -1849,6 +1877,21 @@ td.t-fees { background: ${colorTokens.fees} !important; }
           #tableContainer table.installments-report-table tbody tr.total-row > th *,
           #tableContainer table.installments-report-table tbody tr.total-row > td * {
             color: #000000 !important;
+          }
+          #tableContainer table.installments-report-table.installments-screen-parity thead th,
+          #tableContainer table.installments-report-table.installments-screen-parity tbody td {
+            border: 1px solid #000000 !important;
+            border-color: #000000 !important;
+          }
+          #tableContainer table.installments-report-table.installments-screen-parity tbody tr.total-row > th,
+          #tableContainer table.installments-report-table.installments-screen-parity tbody tr.total-row > td,
+          #tableContainer table.installments-report-table.installments-screen-parity tbody tr.total-row > th *,
+          #tableContainer table.installments-report-table.installments-screen-parity tbody tr.total-row > td * {
+            background: #e0f2fe !important;
+            color: #000000 !important;
+            border: 1px solid #000000 !important;
+            border-color: #000000 !important;
+            font-weight: 900 !important;
           }
           @media print {
             #tableContainer table.installments-report-table th,
@@ -2821,10 +2864,14 @@ td.t-fees { background: ${colorTokens.fees} !important; }
 
   const printFeeDemand = () => {
     if (!feeDemandTrainee) return;
-    const esc = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+    const escapeHtml = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
     })[char] || char);
-    const traineeName = feeDemandTrainee.name.trim();
+    const traineeName = String(feeDemandTrainee.name || "").trim();
     const outstandingFees = [
       { label: "رسوم القيد والتسجيل", amount: feeDemandIncludeRegistration && feeDemandTrainee.registrationPaid <= 0 ? Math.max(0, feeDemandRegistrationAmount) : 0 },
       { label: "رسوم امتحان الكتابي الأول", amount: feeDemandIncludeExam && feeDemandTrainee.examPaid <= 0 ? Math.max(0, feeDemandExamAmount) : 0 },
@@ -2838,32 +2885,47 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     }
     const outstandingFeeText = outstandingFees.map((fee) => fee.label + " (" + fee.amount.toLocaleString("en-US") + " ريال)").join(" و");
     const title = "مطالبة مالية بسداد الرسوم - " + traineeName;
-    const tableHtml = '<article class="fee-demand-letter" dir="rtl"><h1>مطالبة مالية بسداد الرسوم</h1>' +
-      '<p class="letter-date">التاريخ: ' + esc(reportDateLabel) + '</p>' +
-      '<p class="salutation">الأخ-الدكتور// <strong>' + esc(traineeName) + '</strong> المحتــرم</p>' +
-      '<p>تحية طيبة وبعد،</p><p class="subject"><strong>الموضوع: مطالبة بسداد ' + esc(outstandingFeeText) + '</strong></p>' +
-      '<p>بالإشارة إلى الموضوع أعلاه، نرجو منكم المبادرة إلى سداد الرسوم المحددة في هذه المطالبة وغير المسددة، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>' +
-      '<p class="emphasis">نأمل منكم سرعة سداد المستحقات المالية التي عليكم. وفي حال عدم السداد، سيتم اتخاذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>' +
-      '<p class="thanks">شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير،،،،</p>' +
-      '<div class="letter-signatures"><div><label>الصندوق</label><strong>' + esc(feeDemandSignatures.department) + '</strong><span></span></div>' +
-      '<div><label>الشؤون المالية</label><strong>' + esc(feeDemandSignatures.director) + '</strong><span></span></div>' +
-      '<div><label>رئيس فرع المجلس</label><strong>' + esc(feeDemandSignatures.signer) + '</strong><span></span></div></div></article>';
-    const finalCss = '@page { size:A4 portrait; margin:18mm; }' +
-      '#tableContainer .fee-demand-letter { width:100%; min-height:245mm; margin:0 auto; color:#111; font-family:Cairo,Tahoma,Arial,sans-serif; font-size:16px; line-height:2; text-align:center; }' +
-      '#tableContainer .fee-demand-letter h1 { margin:0 0 10mm; padding:0 0 4mm; border-bottom:2px solid #17324d; color:#17324d; font-size:22px; font-weight:900; }' +
-      '#tableContainer .fee-demand-letter p { margin:0 0 5mm; text-align:justify; }' +
-      '#tableContainer .fee-demand-letter .letter-date { text-align:left; }' +
-      '#tableContainer .fee-demand-letter .salutation { margin-top:10mm; text-align:right; font-size:20px; }' +
-      '#tableContainer .fee-demand-letter .subject { text-align:center; color:#b91c1c; text-decoration:underline; }' +
-      '#tableContainer .fee-demand-letter .emphasis { font-weight:900; }' +
-      '#tableContainer .fee-demand-letter .thanks { margin-top:8mm; text-align:center; }' +
-      '#tableContainer .letter-signatures { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8mm; margin-top:22mm; text-align:center; }' +
-      '#tableContainer .letter-signatures > div { display:flex; min-height:32mm; flex-direction:column; align-items:center; gap:3mm; }' +
-      '#tableContainer .letter-signatures label { font-weight:800; }' +
-      '#tableContainer .letter-signatures strong { min-height:8mm; }' +
-      '#tableContainer .letter-signatures span { width:75%; height:8mm; margin-top:2mm; border-bottom:1px dotted #333; }';
-    const opened = openBrowserPrintPreview({ title, reportDateLabel, tableHtml, finalCss, defaultOrientation: "portrait", defaultPageSize: "A4", defaultMarginMm: 18 });
-    if (!opened) toast.error("تم منع فتح نافذة المعاينة، يرجى السماح بالنوافذ المنبثقة ثم إعادة المحاولة");
+    const tableHtml = '<article class="fee-demand-letter" dir="rtl" style="text-align: center; font-size: 18px; line-height: 2.2; font-family: cairo;">' +
+      '<h1 style="font-size: 20px; font-weight: bold; margin-bottom: 25px;">مطالبة مالية بسداد الرسوم</h1>' +
+      '<p class="letter-date" style="text-align: right; font-size: 16px;">التاريخ: ' + escapeHtml(reportDateLabel) + '</p>' +
+      '<p class="salutation" style="margin: 18px 0; font-size: 20px; text-align: right;">الأخ-الدكتور// <strong>' + escapeHtml(traineeName) + '</strong>' +
+      '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+      '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; المحتــرم</p>' +
+      '<p style="margin: 15px 0; text-align: center;">تحية طيبة وبعد،</p>' +
+      '<p style="margin: 15px 0;text-align: center;text-decoration: underline; font-weight: bold; color: red;"><strong>الموضوع: مطالبة بسداد ' + escapeHtml(outstandingFeeText) + '</strong></p>' +
+      '<p style="margin: 15px 0; text-align: center;font-size: 18px">بالإشارة إلى الموضوع أعلاه، نرجو منكم المبادرة إلى سداد الرسوم المحددة في هذه المطالبة وغير المسددة، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>' +
+      '<p style="margin: 15px 0;text-align: center;font-weight: bold; color: #000;">نأمل منكم سرعة سداد المستحقات المالية التي عليكم. وفي حال عدم السداد، سيتم اتخاذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>' +
+      '<p class="thanks" style="margin: 30px 0;text-align: center">شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير،،،،</p>' +
+      '<div class="letter-signatures" style="display: flex; justify-content: space-between; margin-top: 60px; text-align: center; font-size: 16px;">' +
+      '<div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">الصندوق</label><strong style="display: block; margin-bottom: 15px;">' + escapeHtml(feeDemandSignatures.department) + '</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>' +
+      '<div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">الشؤون المالية</label><strong style="display: block; margin-bottom: 15px;">' + escapeHtml(feeDemandSignatures.director) + '</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>' +
+      '<div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">رئيس فرع المجلس </label><strong style="display: block; margin-bottom: 15px;">' + escapeHtml(feeDemandSignatures.signer) + '</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>' +
+      '</div></article>';
+    const finalCss = [
+      "@page { size:A4 portrait; margin:18mm; }",
+      "#tableContainer .fee-demand-letter { width:100%; min-height:245mm; margin:0 auto; color:#111; font-family:Cairo,Tahoma,Arial,sans-serif; font-size:16px; line-height:2; }",
+      "#tableContainer .fee-demand-letter h1 { margin:0 0 10mm; padding:0 0 4mm; border-bottom:2px solid #17324d; color:#17324d; text-align:center; font-size:22px; font-weight:900; }",
+      "#tableContainer .fee-demand-letter p { margin:0 0 5mm; text-align:justify; }",
+      "#tableContainer .fee-demand-letter .letter-date { text-align:left; }",
+      "#tableContainer .fee-demand-letter .salutation { margin-top:10mm; }",
+      "#tableContainer .fee-demand-letter .thanks { margin-top:8mm; }",
+      "#tableContainer .letter-signatures { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8mm; margin-top:22mm; text-align:center; }",
+      "#tableContainer .letter-signatures > div { display:flex; min-height:32mm; flex-direction:column; align-items:center; gap:3mm; }",
+      "#tableContainer .letter-signatures label { font-weight:800; }",
+      "#tableContainer .letter-signatures strong { min-height:8mm; }",
+      "#tableContainer .letter-signatures span { width:75%; height:8mm; margin-top:2mm; border-bottom:1px dotted #333; }"
+    ].join("\n");
+    const opened = openBrowserPrintPreview({
+      title,
+      reportDateLabel,
+      tableHtml,
+      contentCss: reportDocumentCss,
+      finalCss,
+      defaultOrientation: "portrait",
+      defaultPageSize: "A4",
+      defaultMarginMm: 18,
+    });
+    if (!opened) toast.error("تعذر فتح معاينة المطالبة، تحقق من السماح بالنوافذ المنبثقة");
   };
 
   const handleExportPdf = async (row: any, year: number) => {
@@ -3614,6 +3676,21 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
         pdfOrientation="landscape"
         pdfMarginMm={1}
         pdfCss={INSTALLMENTS_SUMMARY_REPORT_CSS}
+        pdfFinalCss={`
+          #tableContainer table.installments-summary-2026 thead th,
+          #tableContainer table.installments-summary-2026 tbody td {
+            border: 1px solid #000000 !important;
+            border-color: #000000 !important;
+          }
+          #tableContainer table.installments-summary-2026 tbody tr.total-row > td,
+          #tableContainer table.installments-summary-2026 tbody tr.total-row > td * {
+            color: #000000 !important;
+            background: #e0f2fe !important;
+            border: 1px solid #000000 !important;
+            border-color: #000000 !important;
+            font-weight: 900 !important;
+          }
+        `}
         printRowStyle={getConditionalRowPrintStyle}
         printTableClassName="installments-summary-2026"
         additionalWebActions={installments2026WebActions}
@@ -3654,7 +3731,7 @@ className="installments-summary-actions col-span-full grid grid-cols-2 gap-2 w-f
             </div>
           </div>
           <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
-<table className="installments-table w-auto min-w-auto table-auto text-xs sm:text-base font-semibold">
+<table className="installments-table installments-table-2026 w-auto min-w-auto table-auto text-xs sm:text-base font-semibold">
 <thead className="bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500 font-extrabold border-b-2 border-sky-700 text-black sticky top-0 z-20 shadow-md">
                 <tr>
  <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-xl sm:!text-base text-white border-l border-sky-700/30">#</th>
@@ -3956,7 +4033,7 @@ className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transit
                         </tr>
                       );
                     })}
-                    <tr className="border-t-2 border-sky-700 bg-sky-100 font-extrabold">
+                    <tr className="total-row border-t-2 border-black bg-sky-100 font-extrabold !text-black">
                       <td className="text-center text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base border-l border-sky-300" colSpan={4}>
                         الإجماليات
                       </td>

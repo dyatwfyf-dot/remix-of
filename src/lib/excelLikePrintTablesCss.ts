@@ -242,7 +242,7 @@ export const excelLikePrintTablesCss = `
   #tableContainer table.installments-summary-2026 thead th,
   #report-source table.installments-summary-2026 thead th {
     background: linear-gradient(180deg,#7dd3fc 0%,#38bdf8 52%,#0ea5e9 100%) !important;
-    color: #000 !important; border: 1px solid #0369a1 !important;
+    color: #000 !important; border: 1px solid #000000 !important; border-color: #000000 !important;
     -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
   }
   #tableContainer table.installments-summary-2026 thead th[data-col-key="idx"],
@@ -253,7 +253,7 @@ export const excelLikePrintTablesCss = `
   #tableContainer table.installments-screen-parity thead th,
   #report-source table.installments-screen-parity thead th {
     background: linear-gradient(180deg,#7dd3fc 0%,#38bdf8 52%,#0ea5e9 100%) !important;
-    color: #000 !important; border: 1px solid #0369a1 !important;
+    color: #000 !important; border: 1px solid #000000 !important; border-color: #000000 !important;
     -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
   }
   #tableContainer table.installments-screen-parity thead th[data-col-key="idx"],
@@ -265,8 +265,9 @@ export const excelLikePrintTablesCss = `
   #tableContainer table.installments-screen-parity tbody td,
   #report-source table.installments-summary-2026 tbody td,
   #report-source table.installments-screen-parity tbody td {
-    border: 1px solid #cbd5e1 !important;
-    color: #000 !important;
+    border: 1px solid #000000 !important;
+    border-color: #000000 !important;
+    color: #000000 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -314,8 +315,28 @@ export const excelLikePrintTablesCss = `
   #tableContainer table.installments-screen-parity tbody tr.total-row > td,
   #report-source table.installments-summary-2026 tbody tr.total-row > td,
   #report-source table.installments-screen-parity tbody tr.total-row > td {
-    background: #e0f2fe !important; color: #000 !important;
-    border-color: #7dd3fc !important; font-weight: 900 !important;
+    background: #e0f2fe !important;
+    color: #000000 !important;
+    border: 1px solid #000000 !important;
+    border-color: #000000 !important;
+    font-weight: 900 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Keep 2026 installment total-row text and cell outlines black after shared themes. */
+  #tableContainer table.installments-summary-2026 tbody tr.total-row > td,
+  #tableContainer table.installments-screen-parity tbody tr.total-row > td,
+  #report-source table.installments-summary-2026 tbody tr.total-row > td,
+  #report-source table.installments-screen-parity tbody tr.total-row > td,
+  #tableContainer table.installments-summary-2026 tbody tr.total-row > td *,
+  #tableContainer table.installments-screen-parity tbody tr.total-row > td *,
+  #report-source table.installments-summary-2026 tbody tr.total-row > td *,
+  #report-source table.installments-screen-parity tbody tr.total-row > td * {
+    color: #000000 !important;
+    border: 1px solid #000000 !important;
+    border-color: #000000 !important;
+    font-weight: 900 !important;
   }
 
   /* Preserve all semantic row highlighting after shared white-cell themes. */
