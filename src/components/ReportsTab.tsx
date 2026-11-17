@@ -286,6 +286,9 @@ const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "ot
 };
 
 const reportsTabPrintCss = `
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap");
+#tableContainer table.reports-custody-font-trial,#tableContainer table.reports-custody-font-trial *{font-family:"IBM Plex Sans Arabic",Cairo,Tahoma,Arial,sans-serif!important}
+#tableContainer:has(table.reports-custody-font-trial) .reports-print-heading{font-family:"IBM Plex Sans Arabic",Cairo,Tahoma,Arial,sans-serif!important}
 #tableContainer .reports-print-heading{margin:0 auto 4mm!important;padding:2mm 0!important;text-align:center!important;direction:rtl!important;color:#142b3d!important;page-break-after:avoid!important}
 #tableContainer .reports-print-heading h1{margin:0!important;color:#142b3d!important;font-weight:900!important;font-size:18px!important;font-family:Cairo,Tahoma,Arial,sans-serif!important}
 #tableContainer .reports-print-heading .reports-print-sub{margin-top:1.5mm!important;color:#334b5e!important;font:800 15px/1.4 Cairo,Tahoma,Arial,sans-serif!important}
@@ -2384,7 +2387,7 @@ export default function ReportsTab() {
         
         <div className="reports-table-panel p-3 sm:p-4">
           <div className="reports-table-scroll">
-            <table id="reports-table" className={`reports-data-table text-center text-xs ${source === "trainee" ? "reports-trainee-payment-table" : ""} ${source === "traineeFeeStatus" ? "reports-fee-status-table" : ""}`} style={{ tableLayout: "auto" }}>
+            <table id="reports-table" className={`reports-data-table text-center text-xs ${(source === "youssefLoan" || source === "tawfiqCustody") ? "reports-custody-font-trial" : ""} ${source === "trainee" ? "reports-trainee-payment-table" : ""} ${source === "traineeFeeStatus" ? "reports-fee-status-table" : ""}`} style={{ tableLayout: "auto" }}>
               <thead>
                 <>
                   <tr className="reports-custody-title-row">
