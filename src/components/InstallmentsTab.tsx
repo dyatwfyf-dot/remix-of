@@ -1717,6 +1717,33 @@ td.t-fees { background: ${colorTokens.fees} !important; }
        table.installments-screen-parity tbody tr.notes-status-blue > td, table.installments-screen-parity tbody tr.notes-status-emerald > td {
          -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
        }
+       /* Detailed installments report: enforce black cell borders and black text
+          in browser preview, direct printing, and standalone PDF output. */
+       table.installments-report-table,
+       table.installments-report-table th,
+       table.installments-report-table td {
+         border: 1px solid #000000 !important;
+         border-color: #000000 !important;
+         color: #000000 !important;
+       }
+       table.installments-report-table th *,
+       table.installments-report-table td * {
+         color: #000000 !important;
+       }
+       table.installments-report-table tbody tr.total-row > th,
+       table.installments-report-table tbody tr.total-row > td {
+         background: #e0f2fe !important;
+         border: 1px solid #000000 !important;
+         border-color: #000000 !important;
+         color: #000000 !important;
+         font-weight: 900 !important;
+         -webkit-print-color-adjust: exact !important;
+         print-color-adjust: exact !important;
+       }
+       table.installments-report-table tbody tr.total-row > th *,
+       table.installments-report-table tbody tr.total-row > td * {
+         color: #000000 !important;
+       }
     `;
       
       const body = `
@@ -1788,6 +1815,44 @@ td.t-fees { background: ${colorTokens.fees} !important; }
           #tableContainer table.installments-table tr.total-row td * { color: #fff !important; }
           #tableContainer table.installments-table tr { break-inside: avoid !important; page-break-inside: avoid !important; }
           #tableContainer .doc-header, #tableContainer .doc-foot { font-family: Cairo, Arial, sans-serif !important; }
+          /* Match the actual detailed report class (not the live screen table class). */
+          #tableContainer table.installments-report-table th,
+          #tableContainer table.installments-report-table td {
+            border: 1px solid #000000 !important;
+            border-color: #000000 !important;
+            color: #000000 !important;
+          }
+          #tableContainer table.installments-report-table th *,
+          #tableContainer table.installments-report-table td * {
+            color: #000000 !important;
+          }
+          #tableContainer table.installments-report-table tbody tr.total-row > th,
+          #tableContainer table.installments-report-table tbody tr.total-row > td {
+            background: #e0f2fe !important;
+            border: 1px solid #000000 !important;
+            border-color: #000000 !important;
+            color: #000000 !important;
+            font-weight: 900 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          #tableContainer table.installments-report-table tbody tr.total-row > th *,
+          #tableContainer table.installments-report-table tbody tr.total-row > td * {
+            color: #000000 !important;
+          }
+          @media print {
+            #tableContainer table.installments-report-table th,
+            #tableContainer table.installments-report-table td {
+              border: 1px solid #000000 !important;
+              color: #000000 !important;
+            }
+            #tableContainer table.installments-report-table tbody tr.total-row > th,
+            #tableContainer table.installments-report-table tbody tr.total-row > td {
+              border: 1px solid #000000 !important;
+              color: #000000 !important;
+              background: #e0f2fe !important;
+            }
+          }
         `,
         defaultOrientation: settings.orientation,
         defaultPageSize: settings.pageSize,
