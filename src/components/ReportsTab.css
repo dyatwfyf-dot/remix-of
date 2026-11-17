@@ -57,3 +57,12 @@
  .reports-table-scroll .reports-data-table .reports-unpaid-name-delete{display:none!important}
  .reports-table-scroll .reports-data-table tr.reports-bank-pending-row>td{background:#fff4cc!important;background-color:#fff4cc!important;color:#3b2f12!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 }
+
+
+/* Arabic report typography: only report tables use IBM Plex; app tabs remain on Cairo. */
+.mizan-reports-tab #tableContainer table.reports-data-table,
+.mizan-reports-tab #tableContainer table.reports-data-table *,
+.mizan-reports-tab .reports-print-heading,
+.mizan-reports-tab .reports-print-heading * {
+  font-family: "IBM Plex Sans Arabic", "Noto Sans Arabic", "Noto Naskh Arabic", Cairo, Tahoma, Arial, sans-serif !important;
+}
