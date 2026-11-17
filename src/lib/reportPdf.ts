@@ -728,16 +728,13 @@ export async function downloadReportPdf(options: {
 }) {
   const frame = document.createElement('iframe');
   frame.setAttribute('aria-hidden', 'true');
-  frame.style.cssText = 'position:fixed;left:-20000px;top:20000px;width:2800px;height:2800px;border:0;pointer-events:none;font-family:${reportArabicFontStack}';
+  frame.style.cssText = 'position:fixed;left:-20000px;top:20000px;width:2800px;height:2800px;border:0;pointer-events:none;font-family:"IBM Plex Sans Arabic","Noto Sans Arabic","Noto Naskh Arabic",Cairo,Tahoma,Arial,sans-serif';
   document.body.append(frame);
   try {
     const doc = frame.contentDocument;
     if (!doc) throw new Error('تعذر تجهيز التقرير');
     doc.open();
     doc.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>${escapeHtml(options.title)}</title>
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
       <style>${reportDocumentCss}
       ${reportContainmentCss}
       ${options.css || ''}
