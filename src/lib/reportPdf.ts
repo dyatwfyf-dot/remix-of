@@ -156,21 +156,21 @@ background: #0437bb !important;
     direction: ltr;
   }
   .letterhead-title-en {
-    font-family: ${reportArabicFontStack} !important;
+    font-family: Arial, ${reportArabicFontStack} !important;
     font-size: 12px;
     font-weight: 900;
     line-height: 1.25;
     color: #000000;
   }
   .letterhead-sub-en {
-    font-family: ${reportArabicFontStack} !important;
+    font-family: Arial, ${reportArabicFontStack} !important;
     font-size: 10.5px;
     font-weight: 800;
     line-height: 1.25;
     color: #000000;
   }
   .letterhead-branch-en {
-    font-family: ${reportArabicFontStack} !important;
+    font-family: Arial, ${reportArabicFontStack} !important;
     font-size: 11px;
     font-weight: 900;
     line-height: 1.25;
