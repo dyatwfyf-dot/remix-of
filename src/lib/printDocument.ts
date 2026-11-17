@@ -98,7 +98,7 @@ font-size: 19px !important;
     word-break: keep-all !important; 
     overflow-wrap: normal !important; 
     hyphens: none !important;
-    font-family: ${reportArabicFontStack} !important
+    font-family: ${reportArabicFontStack} !important;
     color: #000 !important; 
     font-weight: 900 !important; 
     direction: ltr; 
