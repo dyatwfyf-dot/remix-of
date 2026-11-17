@@ -19,7 +19,7 @@ const statementCss = `
   ${reportTableThemeCss}
   body, .pdf-page { 
 font-size: 24px; 
-font-family: Cairo !important;
+font-family: ${reportArabicFontStack} !important;
     font-weight: 900; 
     margin: 0;
     padding: 0;
@@ -38,7 +38,7 @@ table-layout: auto
  font-weight: 900 !important;; 
 height:100% !important;
 min-height: auto !important;
-font-family: Cairo !important;
+font-family: ${reportArabicFontStack} !important;
 
   }
     th { 
@@ -64,7 +64,7 @@ border-bottom: solid 4px green;
     padding: 6px 8px; 
     text-align: center; 
 font-size: 24px !important;
-font-family: Cairo;
+font-family: ${reportArabicFontStack};
     font-weight: 900; 
   }
   .info td.lbl { 
@@ -163,7 +163,7 @@ export function printHtmlContent(htmlContent: string): void {
         * { margin: 0; padding: 0; box-sizing: border-box; }
 @page { size: A4 portrait; margin: 3mm; }
         body {
-font-family: Cairo !important;
+font-family: ${reportArabicFontStack} !important;
           direction: rtl;
           color: #000 !important;
           background: white;
@@ -221,7 +221,7 @@ font-family: ${reportArabicFontStack};
           width: 1% !important;
         }
         .num {
-          font-family: Cairo, sans-serif !important;
+          font-family: ${reportArabicFontStack} !important;
           color: #000 !important;
           font-weight: 900 !important;
           direction: ltr;
@@ -477,7 +477,7 @@ font-weight: 900 !important;
       font-size: 15px;
     }
     table { 
- font-family: Cairo !important;
+ font-family: ${reportArabicFontStack} !important;
       width: 100% !important;
   max-width: 100% !important;
       border: solid 1px black; 
@@ -519,13 +519,13 @@ color: #000 !important;
       width: 1% !important;
     }
     .num {
-      font-family: Cairo, sans-serif !important;
+      font-family: ${reportArabicFontStack} !important;
       color: #000 !important;
       font-weight: 900 !important;
       direction: ltr;
     }
     td.acc { 
-      font-family: Cairo !important;
+      font-family: ${reportArabicFontStack} !important;
       text-align: center; 
       font-weight: 900 !important; 
       color: #000 !important;
@@ -551,7 +551,7 @@ color: #000 !important;
       * { margin: 0; padding: 0; } 
       body { margin: 0; padding: 0; width: 100%; background: white; }
       table {
-  font-family: Cairo !important;
+  font-family: ${reportArabicFontStack} !important;
     width: 100% !important; max-width: 100% !important; }
       @page { margin: 5mm; }
     }
