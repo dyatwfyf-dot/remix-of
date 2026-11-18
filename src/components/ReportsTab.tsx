@@ -2772,7 +2772,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                                 <div className="reports-cell-content whitespace-normal break-words leading-snug" title={String(val)}>{String(val)}</div>
                               ) : col.key === "amount" && source === "trainee" && row.amountDisplay ? (
                                 <span className="reports-cell-content font-bold text-amber-800" title={String(row.amountDisplay)}>{String(row.amountDisplay)}</span>
-                              ) : isNumeric ? (isCustodyReport && col.key === "amount" ? formatCustodyCurrency(val) : formatCurrency(val)) : (
+                              ) : isNumeric ? (isLoanOrCustody && col.key === "amount" ? formatCustodyCurrency(val) : formatCurrency(val)) : (
                                 <span className="reports-cell-content" title={String(val)}>{String(val)}</span>
                               )}
                             </td>
