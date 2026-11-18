@@ -1,9 +1,8 @@
 import { reportsCompactColumnsCss, tagReportCellsScript, tagSerialColumnsScript } from "./reportsCompactColumnsCss";
 import { Capacitor } from "@capacitor/core";
 import { reportLetterheadHtml } from "./printTableHtml";
-import { downloadRenderedReportPdf } from "./reportPdf";
 import { reportTableThemeCss } from "./reportTheme";
-import { printReportHtmlAsync, type NativePrintProgress } from "./nativePrinter";
+import { printReportHtmlAsync } from "./nativePrinter";
 import { excelLikePrintTablesCss } from "./excelLikePrintTablesCss";
 import { reportArabicFontFacesCss, reportArabicFontStack } from "./reportArabicFonts";
 
@@ -22,10 +21,6 @@ interface OpenBrowserPrintPreviewOptions {
   fitToContent?: boolean;
   autoDownloadPdf?: boolean;
   downloadFileName?: string;
-  /** Use the browser/Android native print engine for PDF fidelity instead of rasterizing the page. */
-  useBrowserPrintForPdf?: boolean;
-  /** Reports actual document-preparation stages before the native print service takes over. */
-  onNativePrintProgress?: (progress: NativePrintProgress) => void;
 }
 
 export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions) {
@@ -1082,7 +1077,6 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       const fitToContent = ${fitToContent ? "true" : "false"};
       if (fitToContent) document.body.classList.add('fit-content-mode');
       const autoDownloadPdf = ${options.autoDownloadPdf ? "true" : "false"};
-      const useBrowserPrintForPdf = ${options.useBrowserPrintForPdf ? "true" : "false"};
       const selOrientation = document.getElementById('selOrientation');
       const selPageSize = document.getElementById('selPageSize');
       const selMargin = document.getElementById('selMargin');
@@ -1265,25 +1259,61 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         applyDateFilter();
       });
 
-      function printOnce() {
-        if (printInProgress) return;
-        printInProgress = true;
-        // Wait for locally bundled Arabic font files before opening the native print dialog.
-        var fontsReady = document.fonts && document.fonts.ready
-          ? document.fonts.ready.catch(function() {})
-          : Promise.resolve();
-        fontsReady.then(function() {
-          // Reapply the toolbar's selected page size/orientation immediately before printing.
-          updatePageSettings();
-          // updatePageSettings performs a second-frame fit calculation; wait for it
-          // so the preview and the actual @page print rule use the same selection.
-          window.requestAnimationFrame(function() {
-            window.requestAnimationFrame(function() {
-              window.print();
-              window.setTimeout(function() { printInProgress = false; }, 1000);
-            });
-          });
+      function waitForPreviewResources() {
+        var resources = [];
+        if (document.fonts && document.fonts.ready) resources.push(document.fonts.ready.catch(function() {}));
+        Array.from(document.images).forEach(function(image) {
+          if (image.complete) return;
+          resources.push(new Promise(function(resolve) {
+            var finished = false;
+            var timeoutId = window.setTimeout(finish, 8000);
+            function finish() {
+              if (finished) return;
+              finished = true;
+              window.clearTimeout(timeoutId);
+              image.removeEventListener('load', finish);
+              image.removeEventListener('error', finish);
+              resolve();
+            }
+            image.addEventListener('load', finish, { once: true });
+            image.addEventListener('error', finish, { once: true });
+          }));
         });
+        return Promise.race([Promise.all(resources), new Promise(function(resolve) { window.setTimeout(resolve, 10000); })]);
+      }
+
+      function ensureMultiPagePrintLayout() {
+        if (document.getElementById('multi-page-print-layout')) return;
+        var style = document.createElement('style');
+        style.id = 'multi-page-print-layout';
+        style.textContent = [
+          '@media print {',
+          'html, body { height:auto!important; min-height:0!important; overflow:visible!important; }',
+          '.sheet-viewport, .sheet-paper, #paperContainer, #tableContainer, .preview-report-content { display:block!important; position:static!important; width:100%!important; min-width:0!important; max-width:100%!important; height:auto!important; min-height:0!important; max-height:none!important; margin:0!important; overflow:visible!important; transform:none!important; box-shadow:none!important; }',
+          'table, table.reports-data-table { display:table!important; width:100%!important; min-width:0!important; max-width:100%!important; height:auto!important; border-collapse:collapse!important; break-inside:auto!important; page-break-inside:auto!important; }',
+          'thead { display:table-header-group!important; }',
+          'tfoot { display:table-footer-group!important; }',
+          'tbody { display:table-row-group!important; }',
+          'tr { break-inside:avoid-page!important; page-break-inside:avoid!important; }',
+          '.preview-toolbar { display:none!important; }',
+          '}'
+        ].join('\n');
+        document.head.appendChild(style);
+      }
+
+      async function printOnce() {
+        if (printInProgress) return false;
+        printInProgress = true;
+        try {
+          await waitForPreviewResources();
+          ensureMultiPagePrintLayout();
+          updatePageSettings();
+          await new Promise(function(resolve) { window.requestAnimationFrame(function() { window.requestAnimationFrame(resolve); }); });
+          window.print();
+          return true;
+        } finally {
+          window.setTimeout(function() { printInProgress = false; }, 1000);
+        }
       }
 
       function updatePageSettings() {
@@ -1293,11 +1323,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       const scale = parseFloat(selScale.value) || 1;
       const lineSpacing = parseFloat(selLineSpacing.value) || 1.45;
       paperContainer.style.setProperty('--print-cell-line-height', String(lineSpacing));
-      // Apply directly to cells and their text wrappers so report-specific
-      // selectors or inline styles cannot override the toolbar selection.
-      paperContainer.querySelectorAll('table th, table td, table th *, table td *').forEach((element) => {
-        element.style.setProperty('line-height', String(lineSpacing), 'important');
-      });
+      // CSS variables update line-height without traversing every cell in large reports.
 
         paperContainer.classList.remove('portrait', 'landscape');
         paperContainer.classList.add(orientation);
@@ -1321,11 +1347,6 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         const table = paperContainer.querySelector('table');
         const headerRow = table && table.tHead && table.tHead.rows[table.tHead.rows.length - 1];
         const columnCount = headerRow ? headerRow.cells.length : 1;
-        const pageWidthMm = pageSize === 'A3'
-          ? (orientation === 'portrait' ? 297 : 420)
-          : pageSize === 'Letter'
-            ? (orientation === 'portrait' ? 215.9 : 279.4)
-            : (orientation === 'portrait' ? 210 : 297);
         // Maintain readable physical print text while allowing dense tables to fit A4.
         const fontSize = columnCount > 16 ? 9 : columnCount > 13 ? 10 : columnCount > 10 ? 11 : columnCount > 7 ? 12 : 14;
         const headerFontSize = columnCount > 16 ? 9 : columnCount > 13 ? 10 : columnCount > 10 ? 11 : columnCount > 7 ? 12 : 14;
@@ -1338,36 +1359,39 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         const tableContainer = document.getElementById('tableContainer');
         tableContainer.style.zoom = '1';
         tableContainer.style.width = '100%';
-        if (!fitToContent) {
-          // Keep the selected physical page, orientation and margins identical in preview and print.
-          dynamicRule.innerHTML = '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + margin + '; }';
-        }
+        // Keep a standard physical page size for all exports. Fit-to-content removes margins;
+        // it must not turn a long report into one oversized PDF page.
+        const pageMargin = fitToContent ? '0mm' : margin;
+        dynamicRule.innerHTML = '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargin + '; }';
 
         window.requestAnimationFrame(function() {
           const table = tableContainer.querySelector('table');
           if (!table) return;
 
-          // Detect pure numeric and date cells so values remain intact on one line.
-          const numericOrDate = /^[\\s\\u200e\\u200f]*[+-]?(?:(?:[0-9٠-٩۰-۹]+)(?:[,.٬٫][0-9٠-٩۰-۹]+)*|[0-9٠-٩۰-۹]{1,4}[-/.][0-9٠-٩۰-۹]{1,2}[-/.][0-9٠-٩۰-۹]{1,4})(?:\\s*(?:ر\\.?\\s*ي|ريال|ر\\.?\\s*س))?[\\s\\u200e\\u200f]*$/;
-          tableContainer.querySelectorAll('table').forEach(function(currentTable) {
-            currentTable.querySelectorAll('th,td').forEach(function(cell) {
-              const value = (cell.textContent || '').trim();
-              if (numericOrDate.test(value)) cell.classList.add('numeric-cell');
+          if (tableContainer.dataset.printCellsTagged !== 'true') {
+            // Detect pure numeric and date cells so values remain intact on one line.
+            const numericOrDate = /^[\\s\\u200e\\u200f]*[+-]?(?:(?:[0-9٠-٩۰-۹]+)(?:[,.٬٫][0-9٠-٩۰-۹]+)*|[0-9٠-٩۰-۹]{1,4}[-/.][0-9٠-٩۰-۹]{1,2}[-/.][0-9٠-٩۰-۹]{1,4})(?:\\s*(?:ر\\.?\\s*ي|ريال|ر\\.?\\s*س))?[\\s\\u200e\\u200f]*$/;
+            tableContainer.querySelectorAll('table').forEach(function(currentTable) {
+              currentTable.querySelectorAll('th,td').forEach(function(cell) {
+                const value = (cell.textContent || '').trim();
+                if (numericOrDate.test(value)) cell.classList.add('numeric-cell');
+              });
             });
-          });
-
-          const serialHeader = /^(?:م|#|المسلسل|مسلسل|التسلسل|تسلسل|no|sno)$/i;
-          tableContainer.querySelectorAll('table').forEach(function(currentTable) {
-            const headerCells = Array.from(currentTable.querySelectorAll('thead tr:first-child th, thead tr:first-child td, tr:first-child th, tr:first-child td'));
-            const serialIndex = headerCells.findIndex(function(cell) {
-              return serialHeader.test((cell.textContent || '').replace(/[\\s.]/g, '').trim());
+  
+            const serialHeader = /^(?:م|#|المسلسل|مسلسل|التسلسل|تسلسل|no|sno)$/i;
+            tableContainer.querySelectorAll('table').forEach(function(currentTable) {
+              const headerCells = Array.from(currentTable.querySelectorAll('thead tr:first-child th, thead tr:first-child td, tr:first-child th, tr:first-child td'));
+              const serialIndex = headerCells.findIndex(function(cell) {
+                return serialHeader.test((cell.textContent || '').replace(/[\\s.]/g, '').trim());
+              });
+              if (serialIndex < 0) return;
+              currentTable.querySelectorAll('tr').forEach(function(row) {
+                const cell = row.children.item(serialIndex);
+                if (cell) cell.classList.add('serial-number-column');
+              });
             });
-            if (serialIndex < 0) return;
-            currentTable.querySelectorAll('tr').forEach(function(row) {
-              const cell = row.children.item(serialIndex);
-              if (cell) cell.classList.add('serial-number-column');
-            });
-          });
+            tableContainer.dataset.printCellsTagged = 'true';
+          }
 
           const availableWidth = Math.max(1, paperContainer.clientWidth -
             parseFloat(getComputedStyle(paperContainer).paddingLeft || '0') -
@@ -1379,108 +1403,19 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
           table.classList.toggle('a4-dense-table', denseTable);
           tableContainer.style.width = '100%';
           tableContainer.style.zoom = String(scale);
-          if (fitToContent) {
-            tableContainer.style.width = '100%';
-            tableContainer.style.zoom = String(scale);
-            const heightMm = Math.max(40, Math.ceil((paperContainer.scrollHeight * 25.4 / 96) * 10) / 10);
-            paperContainer.style.height = heightMm + 'mm';
-            dynamicRule.innerHTML = '@page { size: ' + pageWidthMm + 'mm ' + heightMm + 'mm; margin: 0; }';
-          }
         });
       }
 
       async function downloadDirectPdf() {
+        if (printInProgress) return;
         btnDownloadPdf.disabled = true;
-        btnDownloadPdf.innerText = 'جارٍ تجهيز PDF...';
-        if (useBrowserPrintForPdf) {
-          // Track the Chromium-native path used by custody/loan reports too.
-          var pdfStartedAt = Date.now();
-          var pdfResources = [];
-          var pdfResourceCount = 0;
-          var pdfTracking = true;
-          var emitPdfProgress = function(phase, progress, message, pages) {
-            if (!window.updatePdfExportProgress) return;
-            window.updatePdfExportProgress({
-              phase: phase,
-              progress: progress,
-              message: message,
-              completedResources: pdfResourceCount,
-              totalResources: pdfResources.length,
-              estimatedPages: pages || 0,
-              elapsedMs: Date.now() - pdfStartedAt
-            });
-          };
-          if (document.fonts && document.fonts.ready) {
-            pdfResources.push(document.fonts.ready.catch(function() {}));
-          }
-          Array.from(document.images).forEach(function(img) {
-            if (img.complete) return;
-            pdfResources.push(new Promise(function(resolve) {
-              var finished = false;
-              var timeoutId = window.setTimeout(finish, 12000);
-              function finish() {
-                if (finished) return;
-                finished = true;
-                window.clearTimeout(timeoutId);
-                img.removeEventListener('load', finish);
-                img.removeEventListener('error', finish);
-                resolve();
-              }
-              img.addEventListener('load', finish, { once: true });
-              img.addEventListener('error', finish, { once: true });
-            }));
-          });
-          emitPdfProgress('preparing', 3, 'بدء تجهيز التقرير للطباعة', 0);
-          var trackedPdfResources = pdfResources.map(function(resource) {
-            return Promise.resolve(resource).catch(function() {}).then(function() {
-              pdfResourceCount += 1;
-              if (pdfTracking) {
-                var percent = pdfResources.length ? 8 + Math.round((pdfResourceCount / pdfResources.length) * 64) : 72;
-                emitPdfProgress('resources', percent, 'تحميل الخطوط والصور (' + pdfResourceCount + ' من ' + pdfResources.length + ')', 0);
-              }
-            });
-          });
-          Promise.race([
-            Promise.all(trackedPdfResources),
-            new Promise(function(resolve) { window.setTimeout(resolve, 20000); })
-          ]).then(function() {
-            pdfTracking = false;
-            var selectedSize = selPageSize.value;
-            var selectedOrientation = selOrientation.value;
-            var pageHeights = selectedSize === 'A3' ? [420, 297] : selectedSize === 'Letter' ? [279.4, 215.9] : [297, 210];
-            var marginValue = fitToContent ? 0 : (parseFloat(selMargin.value) || 0) * 2;
-            var usableHeightMm = Math.max(40, pageHeights[selectedOrientation === 'portrait' ? 0 : 1] - marginValue);
-            var pageHeightPx = usableHeightMm * 96 / 25.4;
-            var contentHeightPx = Math.max(paperContainer.scrollHeight || 0, paperContainer.offsetHeight || 0);
-            var estimatedPages = Math.max(1, Math.ceil(contentHeightPx / Math.max(1, pageHeightPx)));
-            emitPdfProgress('layout', 84, 'اكتمل تجهيز الموارد؛ عدد الصفحات المتوقع ' + estimatedPages, estimatedPages);
-            window.requestAnimationFrame(function() {
-              window.requestAnimationFrame(function() {
-                emitPdfProgress('opening', 95, 'فتح محرك الطباعة في المتصفح', estimatedPages);
-                printOnce();
-                window.setTimeout(function() {
-                  emitPdfProgress('ready', 100, 'تم فتح واجهة الطباعة؛ أكمل الحفظ كملف PDF', estimatedPages);
-                }, 1600);
-              });
-            });
-          });
-          window.setTimeout(function() {
-            btnDownloadPdf.disabled = false;
-            btnDownloadPdf.innerText = '📄 تصدير PDF';
-          }, 1200);
-          return;
-        }
-        btnDownloadPdf.innerText = 'جارٍ فتح تصدير PDF...';
+        btnDownloadPdf.innerText = 'جارٍ فتح حفظ PDF...';
         try {
-          await window.downloadReportFromPreview({
-            pageSize: selPageSize.value,
-            orientation: selOrientation.value,
-            marginMm: parseFloat(selMargin.value),
-            fitToContent: fitToContent
-          });
+          const opened = await printOnce();
+          if (!opened) return;
         } catch (err) {
-          console.error(err);
-          alert('تعذر فتح واجهة تصدير PDF. أعد المحاولة ثم اختر حفظ كملف PDF من نافذة الطباعة');
+          console.error('[PDF] Browser print failed:', err);
+          alert('تعذر فتح واجهة حفظ PDF. أعد المحاولة وتحقق من خدمة الطباعة في المتصفح.');
         } finally {
           btnDownloadPdf.disabled = false;
           btnDownloadPdf.innerText = '📄 تصدير PDF';
@@ -1493,7 +1428,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       selScale.addEventListener('change', updatePageSettings);
       selLineSpacing.addEventListener('change', updatePageSettings);
 
-      btnPrint.addEventListener('click', printOnce);
+      btnPrint.addEventListener('click', function() { void printOnce().catch(function(error) { console.error('[Print] Failed:', error); }); });
       btnDownloadPdf.addEventListener('click', downloadDirectPdf);
       btnClose.addEventListener('click', function() { window.close(); });
 
@@ -1506,7 +1441,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       window.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
           e.preventDefault();
-          printOnce();
+          void printOnce().catch(function(error) { console.error('[Print] Failed:', error); });
         } else if (e.key === 'Escape') {
           window.close();
         }
@@ -1536,7 +1471,6 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       void printReportHtmlAsync(
         `<!DOCTYPE html>${parsed.documentElement.outerHTML}`,
         title,
-        options.onNativePrintProgress,
       ).then((printed) => {
         if (!printed) window.alert("تعذر فتح خدمة الطباعة في Android. تحقق من تثبيت خدمة الطباعة ثم أعد المحاولة.");
       }).catch((error) => {
@@ -1557,100 +1491,9 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     return false;
   }
 
-  (newWin as any).downloadReportFromPreview = async (settings: any) => {
-    const paper = newWin.document.getElementById("paperContainer");
-    if (!paper) throw new Error("تعذر تحديد الورقة");
-    await downloadRenderedReportPdf(paper, {
-      ...settings,
-      fileName: options.downloadFileName || `${title.replace(/[\\/:*?"<>|]/g, "-")}.pdf`,
-      onProgress: (progress) => {
-        options.onNativePrintProgress?.(progress);
-        (newWin as any).updatePdfExportProgress?.(progress);
-      },
-    });
-  };
   newWin.document.open();
   newWin.document.write(html);
   newWin.document.close();
 
-  // Show progress in the preview window itself, which stays in the foreground.
-  const progressOverlay = newWin.document.createElement("div");
-  progressOverlay.id = "pdf-export-progress-overlay";
-  progressOverlay.dir = "rtl";
-  progressOverlay.style.cssText = "display:none;position:fixed;inset:0;z-index:2147483647;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.62);font-family:Arial,sans-serif;";
-  progressOverlay.innerHTML = `
-    <section style="width:min(100%,440px);border:1px solid #cbd5e1;border-radius:18px;background:#fff;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.28);text-align:right;color:#0f172a">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
-        <div style="width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:#e0f2fe;color:#075985;font-size:23px">▤</div>
-        <div style="flex:1;min-width:0">
-          <div id="pdf-progress-title" style="font-size:16px;font-weight:900">جارٍ تجهيز ملف PDF</div>
-          <div id="pdf-progress-message" style="font-size:13px;color:#475569;margin-top:4px">تجهيز التقرير</div>
-        </div>
-      </div>
-      <div style="height:12px;border-radius:20px;background:#e2e8f0;overflow:hidden">
-        <div id="pdf-progress-bar" style="height:100%;width:3%;border-radius:20px;background:#0284c7;transition:width .25s ease"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:12px;font-weight:800;color:#334155">
-        <span id="pdf-progress-percent">3%</span><span id="pdf-progress-elapsed">الوقت المنقضي: 0 ثانية</span>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
-        <div style="background:#f8fafc;border-radius:10px;padding:10px;text-align:center">
-          <div style="font-size:12px;color:#64748b">الصفحات المتوقعة</div>
-          <strong id="pdf-progress-pages" style="display:block;font-size:19px;margin-top:4px">جارٍ الحساب</strong>
-        </div>
-        <div style="background:#f8fafc;border-radius:10px;padding:10px;text-align:center">
-          <div style="font-size:12px;color:#64748b">الموارد الجاهزة</div>
-          <strong id="pdf-progress-resources" style="display:block;font-size:19px;margin-top:4px">0/—</strong>
-        </div>
-      </div>
-      <p id="pdf-progress-note" style="margin:12px 0 0;padding:10px;border-radius:9px;background:#eff6ff;color:#1e3a8a;font-size:12px;line-height:1.7">المؤشر يتابع تجهيز التقرير وفتحه في خدمة الطباعة. بعد ذلك يتولى المتصفح أو Android حفظ الملف.</p>
-      <button id="pdf-progress-close" type="button" style="display:none;margin-top:14px;background:#0f172a;color:#fff;border:0;border-radius:9px;padding:9px 18px;font-weight:800">إغلاق</button>
-    </section>`;
-  newWin.document.body.appendChild(progressOverlay);
-
-  let pdfProgressStartedAt = 0;
-  let pdfProgressTimer: number | undefined;
-  const updatePdfExportProgress = (progress: NativePrintProgress) => {
-    if (!pdfProgressStartedAt || progress.phase === "preparing") {
-      pdfProgressStartedAt = Date.now() - progress.elapsedMs;
-    }
-    const get = (id: string) => progressOverlay.querySelector<HTMLElement>("#" + id);
-    progressOverlay.style.display = "flex";
-    const titleNode = get("pdf-progress-title");
-    const messageNode = get("pdf-progress-message");
-    const bar = get("pdf-progress-bar");
-    const percent = get("pdf-progress-percent");
-    const pages = get("pdf-progress-pages");
-    const resources = get("pdf-progress-resources");
-    const note = get("pdf-progress-note");
-    const closeButton = get("pdf-progress-close") as HTMLButtonElement | null;
-    const value = Math.max(0, Math.min(100, progress.progress));
-    if (titleNode) titleNode.textContent = progress.phase === "ready" ? "تم تجهيز التقرير" : progress.phase === "error" ? "تعذر تجهيز التقرير" : "جارٍ تجهيز ملف PDF";
-    if (messageNode) messageNode.textContent = progress.message;
-    if (bar) bar.style.width = value + "%";
-    if (percent) percent.textContent = Math.round(value) + "%";
-    if (pages) pages.textContent = progress.estimatedPages ? String(progress.estimatedPages) : "جارٍ الحساب";
-    if (resources) resources.textContent = progress.completedResources + "/" + (progress.totalResources || "—");
-    if (note && progress.phase === "ready") note.textContent = "تم فتح واجهة الطباعة. اختر «حفظ كملف PDF» وأكمل الحفظ من نظام Android أو المتصفح.";
-    if (note && progress.phase === "error") note.textContent = "لم يكتمل تجهيز التقرير. أغلق الرسالة ثم أعد المحاولة.";
-    if (closeButton) closeButton.style.display = progress.phase === "ready" || progress.phase === "error" ? "inline-block" : "none";
-
-    const elapsedNode = get("pdf-progress-elapsed");
-    const updateElapsed = () => {
-      if (elapsedNode) elapsedNode.textContent = "الوقت المنقضي: " + Math.floor((Date.now() - pdfProgressStartedAt) / 1000) + " ثانية";
-    };
-    updateElapsed();
-    if (progress.phase !== "ready" && progress.phase !== "error" && pdfProgressTimer === undefined) {
-      pdfProgressTimer = newWin.setInterval(updateElapsed, 1000);
-    }
-    if (progress.phase === "ready" || progress.phase === "error") {
-      if (pdfProgressTimer !== undefined) newWin.clearInterval(pdfProgressTimer);
-      pdfProgressTimer = undefined;
-    }
-  };
-  (newWin as any).updatePdfExportProgress = updatePdfExportProgress;
-  progressOverlay.querySelector<HTMLButtonElement>("#pdf-progress-close")?.addEventListener("click", () => {
-    progressOverlay.style.display = "none";
-  });
   return true;
 }
