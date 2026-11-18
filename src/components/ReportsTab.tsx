@@ -23,8 +23,6 @@ import PrintSettingsModal, { type InstallmentsPrintSettings } from "./PrintSetti
 import { toast } from "sonner";
 import { useReportDate } from "@/lib/reportDate";
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
-import { Capacitor } from "@capacitor/core";
-import type { NativePrintProgress } from "@/lib/nativePrinter";
 import { reportDocumentCss } from "@/lib/reportPdf";
 import { reportArabicFontFacesCss, reportArabicFontStack } from "@/lib/reportArabicFonts";
 import revenueSchema from "@/data/revenueTemplate.json";
@@ -668,26 +666,6 @@ export default function ReportsTab() {
   const { reportDate, reportDateLabel } = useReportDate();
   const [printSettingsOpen, setPrintSettingsOpen] = useState(false);
   const [printSettingsIntent, setPrintSettingsIntent] = useState<"print" | "pdf">("print");
-  const [nativePrintProgress, setNativePrintProgress] = useState<(NativePrintProgress & { startedAt: number }) | null>(null);
-  const [printElapsedSeconds, setPrintElapsedSeconds] = useState(0);
-
-  useEffect(() => {
-    if (!nativePrintProgress || nativePrintProgress.phase === "ready" || nativePrintProgress.phase === "error") return;
-    const startedAt = nativePrintProgress.startedAt;
-    const updateElapsed = () => setPrintElapsedSeconds(Math.floor((Date.now() - startedAt) / 1000));
-    updateElapsed();
-    const intervalId = window.setInterval(updateElapsed, 1000);
-    return () => window.clearInterval(intervalId);
-  }, [nativePrintProgress?.phase, nativePrintProgress?.startedAt]);
-
-  useEffect(() => {
-    if (nativePrintProgress?.phase !== "ready") return;
-    const timeoutId = window.setTimeout(() => {
-      setNativePrintProgress(null);
-      setPrintElapsedSeconds(0);
-    }, 9000);
-    return () => window.clearTimeout(timeoutId);
-  }, [nativePrintProgress?.phase, nativePrintProgress?.startedAt]);
   const hafiza = useStore((state) => state.hafiza);
   const trainees = useStore((state) => state.trainees);
   const traineeFinancialRecords = useStore((state) => state.traineeFinancialRecords);
@@ -2101,24 +2079,6 @@ export default function ReportsTab() {
    ` : ""}
    #tableContainer table.reports-data-table tr.signature-block-row, #tableContainer table.reports-data-table tr.signature-block-row td { page-break-inside:avoid!important; break-inside:avoid!important; }
   `;
-    const nativePrinting = Capacitor.isNativePlatform();
-    const progressStartedAt = Date.now();
-    if (nativePrinting) {
-      setPrintElapsedSeconds(0);
-      setNativePrintProgress({
-        phase: "preparing",
-        progress: 3,
-        message: "بدء تجهيز التقرير للطباعة",
-        completedResources: 0,
-        totalResources: 0,
-        estimatedPages: 0,
-        elapsedMs: 0,
-        startedAt: progressStartedAt,
-      });
-    } else {
-      setNativePrintProgress(null);
-    }
-
     const opened = openBrowserPrintPreview({
       title,
       reportDateLabel: settings.showHeader ? reportDateLabel : "",
@@ -2128,33 +2088,16 @@ export default function ReportsTab() {
       defaultOrientation: printOrientation,
       defaultPageSize: printPageSize,
       defaultMarginMm: marginMm,
-      useBrowserPrintForPdf: printSettingsIntent === "pdf" && (isCustodyReport || source === "trainee"),
-      onNativePrintProgress: (progress) => {
-        const callbackStartedAt = nativePrinting
-          ? progressStartedAt
-          : (progress.phase === "preparing" ? Date.now() - progress.elapsedMs : Date.now() - progress.elapsedMs);
-        setNativePrintProgress({ ...progress, startedAt: callbackStartedAt });
-      },
     });
     if (!opened) {
-      setNativePrintProgress(nativePrinting ? {
-        phase: "error",
-        progress: 0,
-        message: "تعذر فتح نافذة المعاينة؛ تحقق من السماح بالنوافذ المنبثقة",
-        completedResources: 0,
-        totalResources: 0,
-        estimatedPages: 0,
-        elapsedMs: Date.now() - progressStartedAt,
-        startedAt: progressStartedAt,
-      } : null);
       toast.error("تم منع فتح نافذة المعاينة، يرجى السماح بالنوافذ المنبثقة في كروم");
       return;
     }
-    if (printSettingsIntent === "pdf" && !nativePrinting) {
+    if (printSettingsIntent === "pdf") {
       toast.success("تم تجهيز التقرير للتصدير؛ أكمل الحفظ بصيغة PDF من نافذة المعاينة");
     }
   };
-  
+
   const printFeeDemand = () => {
     if (!feeDemandTrainee) return;
     const escapeHtml = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
@@ -2985,84 +2928,6 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
         </div>
           );
         })()
-      )}
-
-      {nativePrintProgress && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/60 p-4" role="status" aria-live="polite">
-          <section className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 text-right shadow-2xl" dir="rtl">
-            <div className="mb-3 flex items-center gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-sky-800">
-                <FileText className="h-6 w-6" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h3 className="text-base font-black text-slate-900">
-                  {nativePrintProgress.phase === "ready" ? "تم تجهيز التقرير" : nativePrintProgress.phase === "error" ? "تعذر تجهيز التقرير" : "جارٍ تجهيز التقرير للطباعة"}
-                </h3>
-                <p className="mt-1 text-sm font-semibold text-slate-600">{nativePrintProgress.message}</p>
-              </div>
-            </div>
-
-            <div
-              className="h-3 w-full overflow-hidden rounded-full bg-slate-200"
-              role="progressbar"
-              aria-label="مؤشر تجهيز التقرير"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={nativePrintProgress.progress}
-            >
-              <div
-                className="h-full rounded-full bg-sky-600 transition-all duration-300"
-                style={{ width: `${Math.max(0, Math.min(100, nativePrintProgress.progress))}%` }}
-              />
-            </div>
-            <div className="mt-2 flex items-center justify-between text-xs font-bold text-slate-700">
-              <span>{Math.round(nativePrintProgress.progress)}%</span>
-              <span>الوقت المنقضي: {printElapsedSeconds} ثانية</span>
-            </div>
-
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              <div className="rounded-lg bg-slate-50 p-3 text-center">
-                <div className="text-xs font-semibold text-slate-500">الصفحات المتوقعة</div>
-                <div className="mt-1 text-lg font-black tabular-nums text-slate-900">{nativePrintProgress.estimatedPages || "جارٍ الحساب"}</div>
-              </div>
-              <div className="rounded-lg bg-slate-50 p-3 text-center">
-                <div className="text-xs font-semibold text-slate-500">الموارد الجاهزة</div>
-                <div className="mt-1 text-lg font-black tabular-nums text-slate-900">
-                  {nativePrintProgress.completedResources}/{nativePrintProgress.totalResources || "—"}
-                </div>
-              </div>
-            </div>
-
-            {nativePrintProgress.phase === "ready" ? (
-              <p className="mt-4 rounded-lg bg-emerald-50 p-3 text-sm font-bold leading-6 text-emerald-900">
-                تم إرسال التقرير إلى واجهة الطباعة. اختر «حفظ كملف PDF» وأكمل الحفظ من نظام Android.
-              </p>
-            ) : nativePrintProgress.phase === "error" ? (
-              <p className="mt-4 rounded-lg bg-rose-50 p-3 text-sm font-bold leading-6 text-rose-900">
-                لم يكتمل تجهيز التقرير. أغلق هذه الرسالة ثم أعد المحاولة، وتحقق من مساحة الجهاز وخدمة الطباعة.
-              </p>
-            ) : (
-              <p className="mt-4 text-xs leading-5 text-slate-500">
-                هذا المؤشر يقيس تجهيز التقرير وتحميل موارده قبل تسليمه للطباعة. بعد فتح نافذة Android، يتولى النظام كتابة ملف PDF ويعرض حالة الحفظ في واجهة الطباعة؛ لا تتيح إضافة الطباعة الحالية للتطبيق قراءة نسبة كتابة الملف نفسها.
-              </p>
-            )}
-
-            {(nativePrintProgress.phase === "ready" || nativePrintProgress.phase === "error") && (
-              <div className="mt-4 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setNativePrintProgress(null);
-                    setPrintElapsedSeconds(0);
-                  }}
-                  className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-bold text-white"
-                >
-                  إغلاق
-                </button>
-              </div>
-            )}
-          </section>
-        </div>
       )}
 
       <PrintSettingsModal
