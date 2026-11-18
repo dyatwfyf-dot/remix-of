@@ -37,6 +37,9 @@ export async function exportFinancialReportPdf(options: DirectReportPdfOptions):
   // the generated file independent of network access after it has been created.
   doc.addFileToVFS("CairoSubset.ttf", CAIRO_FONT_BASE64);
   doc.addFont("CairoSubset.ttf", "CairoSubset", "normal");
+  // Register the same embedded glyph set for bold runs so jsPDF never falls back
+  // to a Latin-only built-in font when autoTable requests bold cell text.
+  doc.addFont("CairoSubset.ttf", "CairoSubset", "bold");
   doc.setFont("CairoSubset", "normal");
   doc.setR2L(true);
 
