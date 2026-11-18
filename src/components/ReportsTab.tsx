@@ -2129,9 +2129,12 @@ export default function ReportsTab() {
       defaultPageSize: printPageSize,
       defaultMarginMm: marginMm,
       useBrowserPrintForPdf: printSettingsIntent === "pdf" && (isCustodyReport || source === "trainee"),
-      onNativePrintProgress: nativePrinting
-        ? (progress) => setNativePrintProgress({ ...progress, startedAt: progressStartedAt })
-        : undefined,
+      onNativePrintProgress: (progress) => {
+        const callbackStartedAt = nativePrinting
+          ? progressStartedAt
+          : (progress.phase === "preparing" ? Date.now() - progress.elapsedMs : Date.now() - progress.elapsedMs);
+        setNativePrintProgress({ ...progress, startedAt: callbackStartedAt });
+      },
     });
     if (!opened) {
       setNativePrintProgress(nativePrinting ? {
