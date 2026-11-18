@@ -525,7 +525,8 @@ const buildReportsScreenPrintHtml = (
       const isNumericCell = printCell.classList.contains("rc-num") ||
         printCell.classList.contains("reports-numeric-cell") ||
         printCell.classList.contains("reports-no-wrap-cell") ||
-        printCell.dataset.colKey === "idx";
+        printCell.dataset.colKey === "idx" ||
+        (isCustodyReport && printCell.dataset.colKey === "amount");
       if (
         source === "traineeFeeStatus" &&
         printCell.tagName === "TH" &&
@@ -2669,10 +2670,34 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                           </td>
                           <td
                             data-col-key="amount"
-                            className="border border-black px-2 py-2 text-center font-black text-white font-mono"
-                            style={totalCellStyle}
+                            className="border border-black px-2 py-2 text-center font-black text-white font-mono reports-numeric-cell reports-no-wrap-cell"
+                            style={{
+                              ...totalCellStyle,
+                              whiteSpace: "nowrap",
+                              wordBreak: "keep-all",
+                              overflowWrap: "normal",
+                              direction: "ltr",
+                              unicodeBidi: "isolate",
+                              fontVariantNumeric: "tabular-nums",
+                            }}
                           >
-                            {formatCustodyCurrency(row.amount)}
+                            <span
+                              className="reports-grand-total-amount"
+                              style={{
+                                display: "inline-block",
+                                width: "max-content",
+                                minWidth: "max-content",
+                                maxWidth: "none",
+                                whiteSpace: "nowrap",
+                                wordBreak: "keep-all",
+                                overflowWrap: "normal",
+                                direction: "ltr",
+                                unicodeBidi: "isolate",
+                                fontVariantNumeric: "tabular-nums",
+                              }}
+                            >
+                              {formatCustodyCurrency(row.amount)}
+                            </span>
                           </td>
                           <td
                             data-col-key="actions"
