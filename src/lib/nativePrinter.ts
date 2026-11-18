@@ -102,59 +102,205 @@ function mountNativeReportFrame(html: string): HTMLIFrameElement {
   return frame;
 }
 
-async function waitForNativeReportFrame(frame: HTMLIFrameElement): Promise<void> {
+export interface NativePrintProgress {
+  phase: "preparing" | "resources" | "layout" | "opening" | "ready" | "error";
+  progress: number;
+  message: string;
+  completedResources: number;
+  totalResources: number;
+  estimatedPages: number;
+  elapsedMs: number;
+}
+
+type NativePrintProgressHandler = (progress: NativePrintProgress) => void;
+
+function reportNativePrintProgress(
+  handler: NativePrintProgressHandler | undefined,
+  startedAt: number,
+  update: Omit<NativePrintProgress, "elapsedMs">,
+): void {
+  if (!handler) return;
+  try {
+    handler({ ...update, elapsedMs: Date.now() - startedAt });
+  } catch (error) {
+    console.warn("[Print] Progress listener failed:", error);
+  }
+}
+
+function estimateNativePrintPages(doc: Document): number {
+  const styleText = Array.from(doc.querySelectorAll("style"))
+    .map((style) => style.textContent || "")
+    .join("\n");
+  const pageRule = styleText.match(/@page\s*\{([^}]*)\}/i)?.[1] || "";
+  const sizeMatch = pageRule.match(/\bsize\s*:\s*(A4|A3|Letter)(?:\s+(portrait|landscape))?/i);
+  const pageSize = sizeMatch?.[1]?.toLowerCase() || "a4";
+  const orientation = sizeMatch?.[2]?.toLowerCase() || "portrait";
+  const margin = Number(pageRule.match(/\bmargin\s*:\s*([0-9.]+)mm/i)?.[1] || 0);
+  const pageHeightMm = pageSize === "a3"
+    ? (orientation === "landscape" ? 297 : 420)
+    : pageSize === "letter"
+      ? (orientation === "landscape" ? 215.9 : 279.4)
+      : (orientation === "landscape" ? 210 : 297);
+  const usablePageHeightMm = Math.max(40, pageHeightMm - margin * 2);
+  const contentHeightPx = Math.max(
+    doc.body?.scrollHeight || 0,
+    doc.documentElement?.scrollHeight || 0,
+    doc.body?.offsetHeight || 0,
+  );
+  const contentHeightMm = contentHeightPx * 25.4 / 96;
+  const measuredPages = Math.ceil(contentHeightMm / usablePageHeightMm);
+  const rowCount = doc.querySelectorAll("table tbody tr").length;
+  const rowEstimate = Math.ceil(rowCount / 32);
+  return Math.max(1, measuredPages || rowEstimate || 1);
+}
+
+function waitForElementLoad(
+  element: HTMLLinkElement | HTMLImageElement,
+): Promise<void> {
+  return new Promise((resolve) => {
+    let finished = false;
+    let timeoutId = 0;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      window.clearTimeout(timeoutId);
+      element.removeEventListener("load", finish);
+      element.removeEventListener("error", finish);
+      resolve();
+    };
+    timeoutId = window.setTimeout(finish, 12000);
+    element.addEventListener("load", finish, { once: true });
+    element.addEventListener("error", finish, { once: true });
+  });
+}
+
+async function waitForNativeReportFrame(
+  frame: HTMLIFrameElement,
+  onProgress: NativePrintProgressHandler | undefined,
+  startedAt: number,
+): Promise<number> {
   const doc = frame.contentDocument;
   if (!doc) throw new Error("تعذر قراءة محتوى التقرير");
 
-  const resourcePromises: Promise<unknown>[] = [];
-  if (doc.fonts?.ready) resourcePromises.push(doc.fonts.ready.catch(() => undefined));
-
+  const resources: Promise<unknown>[] = [];
+  if (doc.fonts?.ready) resources.push(doc.fonts.ready.catch(() => undefined));
   Array.from(doc.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')).forEach((link) => {
-    if (link.sheet) return;
-    resourcePromises.push(new Promise<void>((resolve) => {
-      const finish = () => resolve();
-      link.addEventListener("load", finish, { once: true });
-      link.addEventListener("error", finish, { once: true });
-      window.setTimeout(finish, 12000);
-    }));
+    if (!link.sheet) resources.push(waitForElementLoad(link));
+  });
+  Array.from(doc.images).forEach((image) => {
+    if (!image.complete) resources.push(waitForElementLoad(image));
   });
 
-  Array.from(doc.images).forEach((image) => {
-    if (image.complete) return;
-    resourcePromises.push(new Promise<void>((resolve) => {
-      const finish = () => resolve();
-      image.addEventListener("load", finish, { once: true });
-      image.addEventListener("error", finish, { once: true });
-      window.setTimeout(finish, 12000);
-    }));
+  let completedResources = 0;
+  let listening = true;
+  const totalResources = resources.length;
+  reportNativePrintProgress(onProgress, startedAt, {
+    phase: "resources",
+    progress: totalResources ? 8 : 70,
+    message: totalResources
+      ? `تحميل الخطوط والصور وملفات التنسيق (0 من ${totalResources})`
+      : "لا توجد ملفات إضافية؛ يجري تجهيز تخطيط الصفحات",
+    completedResources: 0,
+    totalResources,
+    estimatedPages: 0,
   });
+
+  const trackedResources = resources.map((resource) =>
+    Promise.resolve(resource).catch(() => undefined).then(() => {
+      completedResources += 1;
+      if (!listening) return;
+      reportNativePrintProgress(onProgress, startedAt, {
+        phase: "resources",
+        progress: totalResources
+          ? 8 + Math.round((completedResources / totalResources) * 62)
+          : 70,
+        message: `تحميل موارد التقرير (${completedResources} من ${totalResources})`,
+        completedResources,
+        totalResources,
+        estimatedPages: 0,
+      });
+    }),
+  );
 
   // A bounded wait prevents a missing external asset from blocking printing forever.
   await Promise.race([
-    Promise.all(resourcePromises),
+    Promise.all(trackedResources),
     new Promise<void>((resolve) => window.setTimeout(resolve, 20000)),
   ]);
+  listening = false;
+
+  const estimatedPagesBeforePaint = estimateNativePrintPages(doc);
+  reportNativePrintProgress(onProgress, startedAt, {
+    phase: "layout",
+    progress: 82,
+    message: "حساب عدد الصفحات وتجهيز تخطيط الطباعة",
+    completedResources,
+    totalResources,
+    estimatedPages: estimatedPagesBeforePaint,
+  });
 
   await new Promise<void>((resolve) => {
     window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
   });
+
+  const estimatedPages = estimateNativePrintPages(doc);
+  reportNativePrintProgress(onProgress, startedAt, {
+    phase: "layout",
+    progress: 90,
+    message: `اكتمل تجهيز التخطيط؛ عدد الصفحات المتوقع ${estimatedPages}`,
+    completedResources,
+    totalResources,
+    estimatedPages,
+  });
+  return estimatedPages;
 }
 
-async function printWithNativePrinter(name: string, html: string): Promise<void> {
+async function printWithNativePrinter(
+  name: string,
+  html: string,
+  onProgress?: NativePrintProgressHandler,
+): Promise<void> {
+  const startedAt = Date.now();
+  reportNativePrintProgress(onProgress, startedAt, {
+    phase: "preparing",
+    progress: 3,
+    message: "إنشاء نسخة الطباعة وتجهيز التقرير",
+    completedResources: 0,
+    totalResources: 0,
+    estimatedPages: 0,
+  });
+
   const frame = mountNativeReportFrame(html);
-  await waitForNativeReportFrame(frame);
+  const estimatedPages = await waitForNativeReportFrame(frame, onProgress, startedAt);
 
   const { Printer } = await import("@capgo/capacitor-printer");
+  reportNativePrintProgress(onProgress, startedAt, {
+    phase: "opening",
+    progress: 95,
+    message: "إرسال التقرير إلى خدمة الطباعة في Android",
+    completedResources: 0,
+    totalResources: 0,
+    estimatedPages,
+  });
+
   if (typeof Printer.printIframe === "function") {
     await Printer.printIframe({
       selector: `#${NATIVE_REPORT_FRAME_ID}`,
       name,
     });
-    return;
+  } else {
+    // Compatibility fallback for an older printer plugin build.
+    await Printer.printHtml({ name, html });
   }
 
-  // Compatibility fallback for an older printer plugin build.
-  await Printer.printHtml({ name, html });
+  reportNativePrintProgress(onProgress, startedAt, {
+    phase: "ready",
+    progress: 100,
+    message: "تم تجهيز التقرير وفتح واجهة الطباعة؛ أكمل الحفظ من النظام",
+    completedResources: 0,
+    totalResources: 0,
+    estimatedPages,
+  });
 }
 
 /** يحذف سكربتات الطباعة التلقائية المضمنة لمنع الطباعة المزدوجة */
@@ -225,13 +371,25 @@ export function printReportHtml(html: string, name: string): boolean {
   return true;
 }
 
-export async function printReportHtmlAsync(html: string, name: string): Promise<boolean> {
+export async function printReportHtmlAsync(
+  html: string,
+  name: string,
+  onProgress?: NativePrintProgressHandler,
+): Promise<boolean> {
   if (isNativePrintingAvailable()) {
     try {
-      await printWithNativePrinter(name, stripAutoPrintScripts(ensurePrintLetterhead(html)));
+      await printWithNativePrinter(name, stripAutoPrintScripts(ensurePrintLetterhead(html)), onProgress);
       return true;
     } catch (error) {
       console.error("[Print] Native Android printing failed", error);
+      reportNativePrintProgress(onProgress, Date.now(), {
+        phase: "error",
+        progress: 0,
+        message: error instanceof Error ? error.message : "تعذر تجهيز التقرير للطباعة",
+        completedResources: 0,
+        totalResources: 0,
+        estimatedPages: 0,
+      });
       return false;
     }
   }
