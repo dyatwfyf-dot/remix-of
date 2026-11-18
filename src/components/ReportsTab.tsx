@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { useReportDate } from "@/lib/reportDate";
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import { reportDocumentCss } from "@/lib/reportPdf";
+import { exportFinancialReportPdf } from "@/lib/directFinancialReportPdf";
 import { reportArabicFontFacesCss, reportArabicFontStack } from "@/lib/reportArabicFonts";
 import revenueSchema from "@/data/revenueTemplate.json";
 
@@ -1993,7 +1994,7 @@ export default function ReportsTab() {
     setPrintSettingsIntent(intent);
     setPrintSettingsOpen(true);
   };
-  const printReportWithSettings = (settings: InstallmentsPrintSettings) => {
+  const printReportWithSettings = async (settings: InstallmentsPrintSettings) => {
     const isCustodyReport = source === "youssefLoan" || source === "tawfiqCustody";
     const printOrientation = isCustodyReport ? "portrait" : source === "traineeFeeStatus" ? "landscape" : settings.orientation;
     const printPageSize = isCustodyReport ? "A4" : settings.pageSize;
@@ -2015,6 +2016,25 @@ export default function ReportsTab() {
       Math.max(12, Math.min(14, configuredFontSize + 3)) :
       configuredFontSize;
     const tableHtml = buildReportsScreenPrintHtml(source, settings.showHeader ? reportDateLabel : "", reportRecordCount, settings);
+    if (printSettingsIntent === "pdf" && isCustodyReport) {
+      try {
+        await exportFinancialReportPdf({
+          title,
+          html: tableHtml,
+          fileName: `${source === "youssefLoan" ? "كشف-سلفة-د-يوسف" : "كشف-عهدة-توفيق-الداعي"}-${reportDateLabel.replace(/[^0-9\\u0600-\\u06FF-]+/g, "-")}`,
+          orientation: "portrait",
+          pageSize: "A4",
+          marginMm,
+          fontSize: fontSizePx,
+          colored: settings.colored,
+        });
+        toast.success("تم إنشاء ملف PDF وحفظه مباشرة");
+      } catch (error) {
+        console.error("Direct financial PDF export failed:", error);
+        toast.error(error instanceof Error ? error.message : "تعذر إنشاء ملف PDF؛ تحقق من توفر الخط العربي ثم أعد المحاولة");
+      }
+      return;
+    }
     const finalCss = `
    #tableContainer .reports-print-table-shell { width:100%!important; min-width:0!important; 
    max-width: auto!important; overflow:visible!important; }
