@@ -3,7 +3,7 @@ import { Capacitor } from "@capacitor/core";
 import { reportLetterheadHtml } from "./printTableHtml";
 import { downloadRenderedReportPdf } from "./reportPdf";
 import { reportTableThemeCss } from "./reportTheme";
-import { printReportHtmlAsync } from "./nativePrinter";
+import { printReportHtmlAsync, type NativePrintProgress } from "./nativePrinter";
 import { excelLikePrintTablesCss } from "./excelLikePrintTablesCss";
 import { reportArabicFontFacesCss, reportArabicFontStack } from "./reportArabicFonts";
 
@@ -24,6 +24,8 @@ interface OpenBrowserPrintPreviewOptions {
   downloadFileName?: string;
   /** Use the browser/Android native print engine for PDF fidelity instead of rasterizing the page. */
   useBrowserPrintForPdf?: boolean;
+  /** Reports actual document-preparation stages before the native print service takes over. */
+  onNativePrintProgress?: (progress: NativePrintProgress) => void;
 }
 
 export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions) {
@@ -1463,7 +1465,11 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         @media print { html, body { background: #fff !important; } }
       `;
       parsed.head.appendChild(printOverrides);
-      void printReportHtmlAsync(`<!DOCTYPE html>${parsed.documentElement.outerHTML}`, title).then((printed) => {
+      void printReportHtmlAsync(
+        `<!DOCTYPE html>${parsed.documentElement.outerHTML}`,
+        title,
+        options.onNativePrintProgress,
+      ).then((printed) => {
         if (!printed) window.alert("تعذر فتح خدمة الطباعة في Android. تحقق من تثبيت خدمة الطباعة ثم أعد المحاولة.");
       }).catch((error) => {
         console.error("[Print] Android printing failed", error);
