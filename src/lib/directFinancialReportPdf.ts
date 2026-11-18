@@ -1,4 +1,5 @@
 import { jsPDF } from "jspdf";
+import { CAIRO_FONT_BASE64 } from "./cairo-font";
 import autoTable, { type CellHookData } from "jspdf-autotable";
 
 export type DirectReportPdfOptions = {
@@ -12,30 +13,6 @@ export type DirectReportPdfOptions = {
   colored?: boolean;
 };
 
-let arabicFontPromise: Promise<string> | null = null;
-
-async function loadArabicFontBase64(): Promise<string> {
-  if (!arabicFontPromise) {
-    arabicFontPromise = fetch("/NotoSansArabic-Regular.ttf", { cache: "force-cache" })
-      .then(async (response) => {
-        if (!response.ok) throw new Error("تعذر تحميل خط Noto Sans Arabic");
-        const buffer = await response.arrayBuffer();
-        const bytes = new Uint8Array(buffer);
-        let binary = "";
-        const chunkSize = 0x8000;
-        for (let offset = 0; offset < bytes.length; offset += chunkSize) {
-          binary += String.fromCharCode(...bytes.subarray(offset, offset + chunkSize));
-        }
-        return btoa(binary);
-      })
-      .catch((error) => {
-        arabicFontPromise = null;
-        throw error;
-      });
-  }
-  return arabicFontPromise;
-}
-
 function normalizeArabic(doc: jsPDF, value: string): string {
   const processArabic = (doc as unknown as { processArabic?: (text: string) => string }).processArabic;
   return typeof processArabic === "function" ? processArabic.call(doc, value) : value;
@@ -47,7 +24,6 @@ function rowClass(data: CellHookData): string {
 }
 
 export async function exportFinancialReportPdf(options: DirectReportPdfOptions): Promise<void> {
-  const fontBase64 = await loadArabicFontBase64();
   const doc = new jsPDF({
     orientation: options.orientation ?? "portrait",
     unit: "mm",
@@ -56,9 +32,12 @@ export async function exportFinancialReportPdf(options: DirectReportPdfOptions):
     putOnlyUsedFonts: true,
   });
 
-  doc.addFileToVFS("NotoSansArabic-Regular.ttf", fontBase64);
-  doc.addFont("NotoSansArabic-Regular.ttf", "NotoArabic", "normal");
-  doc.setFont("NotoArabic", "normal");
+  // Embed the repository's locally bundled Cairo subset directly in the PDF.
+  // This avoids a request to a font URL that is not present in public/ and makes
+  // the generated file independent of network access after it has been created.
+  doc.addFileToVFS("CairoSubset.ttf", CAIRO_FONT_BASE64);
+  doc.addFont("CairoSubset.ttf", "CairoSubset", "normal");
+  doc.setFont("CairoSubset", "normal");
   doc.setR2L(true);
 
   const parsed = new DOMParser().parseFromString(options.html, "text/html");
@@ -71,7 +50,7 @@ export async function exportFinancialReportPdf(options: DirectReportPdfOptions):
   const usableWidth = pageWidth - margin * 2;
   const titleText = options.title.split("\n")[0]?.trim() || "التقرير المالي";
 
-  doc.setFont("NotoArabic", "normal");
+  doc.setFont("CairoSubset", "normal");
   doc.setFontSize(15);
   doc.setTextColor(15, 35, 55);
   doc.text(normalizeArabic(doc, titleText), pageWidth / 2, margin + 3, { align: "center", maxWidth: usableWidth });
@@ -92,7 +71,7 @@ export async function exportFinancialReportPdf(options: DirectReportPdfOptions):
     tableWidth: "auto" as const,
     theme: "grid" as const,
     styles: {
-      font: "NotoArabic",
+      font: "CairoSubset",
       fontStyle: "normal" as const,
       fontSize,
       cellPadding: 1.7,
@@ -160,7 +139,7 @@ export async function exportFinancialReportPdf(options: DirectReportPdfOptions):
   const pageHeight = doc.internal.pageSize.getHeight();
   for (let page = 1; page <= totalPages; page += 1) {
     doc.setPage(page);
-    doc.setFont("NotoArabic", "normal");
+    doc.setFont("CairoSubset", "normal");
     doc.setFontSize(8);
     doc.setTextColor(90, 90, 90);
     doc.text(
