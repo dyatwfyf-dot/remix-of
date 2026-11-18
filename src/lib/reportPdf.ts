@@ -635,7 +635,7 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
   tagSerialColumns(source);
 
   // Preserve numbers, dates and reference identifiers as atomic values.
-  const numericOrDate = new RegExp(String.raw`^[\s\u200e\u200f]*[+-]?(?:(?:[0-9٠-٩۰-۹]+)(?:[,.٬٫][0-9٠-٩۰-۹]+)*|[0-9٠-٩۰-۹]{1,4}[-/.][0-9٠-٩۰-۹]{1,2}[-/.][0-9٠-٩۰-۹]{1,4})(?:\s*(?:ر\.?\s*ي|ريال|ر\.?\s*س))?[\s\u200e\u200f]*import { reportsCompactColumnsCss, tagReportCells, tagSerialColumns } from "./reportsCompactColumnsCss";
+  const numericOrDate = new RegExp("^[\\s\\u200e\\u200f]*[+-]?(?:(?:[0-9٠-٩۰-۹]+)(?:[,.٬٫][0-9٠-٩۰-۹]+)*|[0-9٠-٩۰-۹]{1,4}[-/.][0-9٠-٩۰-۹]{1,2}[-/.][0-9٠-٩۰-۹]{1,4})(?:\\s*(?:ر\\.?\\s*ي|ريال|ر\\.?\\s*س))?[\\s\\u200e\\u200f]*$");
 import { printReportHtmlAsync } from "./nativePrinter";
 import { escapeHtml, reportLetterheadHtml } from './printTableHtml';
 import { reportTableThemeCss } from './reportTheme';
@@ -1247,7 +1247,7 @@ async function ready(doc: Document) {
 /**
  * يصدر محتوى HTML عبر محرك الطباعة الأصلي للمتصفح/Android.
  *
- * بخلاف محرك html2canvas السابق، يبقى النص نصاً حقيقياً قابلاً للتحديد والبحث،
+ * بخلاف محرك التصوير السابق، يبقى النص نصاً حقيقياً قابلاً للتحديد والبحث،
  * وتُرسم الحدود والألوان كعناصر متجهية. ويقوم محرك الطباعة بتقسيم الصفحات
  * مع تكرار رؤوس الجداول واحترام قواعد منع شطر الصفوف.
  *
