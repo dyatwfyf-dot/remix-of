@@ -105,7 +105,7 @@ export async function exportFinancialReportPdf(options: DirectReportPdfOptions):
       textColor: [15, 15, 15] as [number, number, number],
     },
     headStyles: {
-      fillColor: options.colored === false ? [235, 235, 235] : [238, 197, 70],
+      fillColor: (options.colored === false ? [235, 235, 235] : [238, 197, 70]) as [number, number, number],
       textColor: [0, 0, 0],
       fontStyle: "normal" as const,
       halign: "center" as const,
