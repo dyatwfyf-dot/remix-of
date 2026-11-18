@@ -1,5 +1,6 @@
 import { reportsCompactColumnsCss, tagReportCells, tagSerialColumns } from "./reportsCompactColumnsCss";
-import { printReportHtmlAsync } from "./nativePrinter";
+import { Capacitor } from "@capacitor/core";
+import { printReportHtmlAsync, type NativePrintProgress } from "./nativePrinter";
 import { escapeHtml, reportLetterheadHtml } from './printTableHtml';
 import { reportTableThemeCss } from './reportTheme';
 import { excelLikePrintTablesCss } from "./excelLikePrintTablesCss";
@@ -595,16 +596,104 @@ table.reports-data-table tbody tr.reports-trainee-summary-row:not(.total-row):no
 table.reports-data-table tbody tr.reports-fee-row:not(.total-row):not(.report-grand-total-row)>td{background:#e8f1f7!important;color:#142b3d!important;font-weight:900!important}
 table.reports-data-table tbody tr.reports-period-row:not(.total-row):not(.report-grand-total-row)>td{background:#e9eef3!important;color:#17212b!important;font-weight:900!important}
 `;
-async function ready(doc: Document) {
-  const fontReady = doc.fonts?.ready ?? Promise.resolve();
+function emitPdfProgress(
+  onProgress: ((progress: NativePrintProgress) => void) | undefined,
+  startedAt: number,
+  update: Omit<NativePrintProgress, "elapsedMs">,
+): void {
+  if (!onProgress) return;
+  try {
+    onProgress({ ...update, elapsedMs: Date.now() - startedAt });
+  } catch (error) {
+    console.warn("[PDF] Progress listener failed:", error);
+  }
+}
+
+async function ready(
+  doc: Document,
+  onProgress: ((progress: NativePrintProgress) => void) | undefined,
+  startedAt: number,
+): Promise<void> {
+  const resources: Promise<unknown>[] = [];
+  if (doc.fonts?.ready) resources.push(doc.fonts.ready.catch(() => undefined));
+
+  Array.from(doc.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')).forEach((link) => {
+    if (link.sheet) return;
+    resources.push(new Promise<void>((resolve) => {
+      let finished = false;
+      let timeoutId = 0;
+      const finish = () => {
+        if (finished) return;
+        finished = true;
+        window.clearTimeout(timeoutId);
+        link.removeEventListener("load", finish);
+        link.removeEventListener("error", finish);
+        resolve();
+      };
+      timeoutId = window.setTimeout(finish, 12000);
+      link.addEventListener("load", finish, { once: true });
+      link.addEventListener("error", finish, { once: true });
+    }));
+  });
+
+  Array.from(doc.images).forEach((image) => {
+    if (image.complete && (!image.decode || image.naturalWidth === 0)) return;
+    resources.push((async () => {
+      if (!image.complete) {
+        await new Promise<void>((resolve) => {
+          let finished = false;
+          let timeoutId = 0;
+          const finish = () => {
+            if (finished) return;
+            finished = true;
+            window.clearTimeout(timeoutId);
+            image.removeEventListener("load", finish);
+            image.removeEventListener("error", finish);
+            resolve();
+          };
+          timeoutId = window.setTimeout(finish, 12000);
+          image.addEventListener("load", finish, { once: true });
+          image.addEventListener("error", finish, { once: true });
+        });
+      }
+      if (image.decode) await image.decode().catch(() => undefined);
+    })());
+  });
+
+  let completedResources = 0;
+  let listening = true;
+  const totalResources = resources.length;
+  emitPdfProgress(onProgress, startedAt, {
+    phase: "resources",
+    progress: totalResources ? 8 : 72,
+    message: totalResources
+      ? "تحميل الخطوط والصور وملفات التنسيق (0 من " + totalResources + ")"
+      : "تم تحميل الموارد؛ يجري تجهيز تخطيط الصفحات",
+    completedResources: 0,
+    totalResources,
+    estimatedPages: 0,
+  });
+
+  const trackedResources = resources.map((resource) =>
+    Promise.resolve(resource).catch(() => undefined).then(() => {
+      completedResources += 1;
+      if (!listening) return;
+      emitPdfProgress(onProgress, startedAt, {
+        phase: "resources",
+        progress: totalResources ? 8 + Math.round((completedResources / totalResources) * 64) : 72,
+        message: "تحميل موارد التقرير (" + completedResources + " من " + totalResources + ")",
+        completedResources,
+        totalResources,
+        estimatedPages: 0,
+      });
+    }),
+  );
+
   await Promise.race([
-    fontReady,
-    new Promise<void>((resolve) => window.setTimeout(resolve, 2500)),
+    Promise.all(trackedResources),
+    new Promise<void>((resolve) => window.setTimeout(resolve, 20000)),
   ]);
-  await Promise.all(Array.from(doc.images).map(image => {
-    if (image.complete) return Promise.resolve();
-    return image.decode().catch(() => undefined);
-  }));
+  listening = false;
 }
 
 /**
@@ -621,6 +710,7 @@ async function ready(doc: Document) {
 export async function downloadRenderedReportPdf(source: HTMLElement, options: {
   fileName: string; pageSize?: ReportPaperSize; orientation?: ReportOrientation; marginMm?: number;
   fitToContent?: boolean;
+  onProgress?: (progress: NativePrintProgress) => void;
 }) {
   const {
     fileName,
@@ -628,7 +718,18 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
     orientation = "portrait",
     marginMm = 3,
     fitToContent = false,
+    onProgress,
   } = options;
+
+  const startedAt = Date.now();
+  emitPdfProgress(onProgress, startedAt, {
+    phase: "preparing",
+    progress: 3,
+    message: "بدء تجهيز نسخة PDF من التقرير",
+    completedResources: 0,
+    totalResources: 0,
+    estimatedPages: 0,
+  });
 
   const doc = source.ownerDocument;
   tagReportCells(source);
@@ -642,7 +743,24 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
     }
   });
 
-  await ready(doc);
+  await ready(doc, onProgress, startedAt);
+
+  const pageHeightMm = pageSize === "A3"
+    ? (orientation === "landscape" ? 297 : 420)
+    : pageSize === "Letter"
+      ? (orientation === "landscape" ? 215.9 : 279.4)
+      : (orientation === "landscape" ? 210 : 297);
+  const usablePageHeightMm = Math.max(40, pageHeightMm - marginMm * 2);
+  const contentHeightPx = Math.max(source.scrollHeight || 0, source.offsetHeight || 0);
+  const estimatedPages = Math.max(1, Math.ceil((contentHeightPx * 25.4 / 96) / usablePageHeightMm));
+  emitPdfProgress(onProgress, startedAt, {
+    phase: "layout",
+    progress: 84,
+    message: "اكتمل تحميل الموارد؛ عدد الصفحات المتوقع " + estimatedPages,
+    completedResources: 0,
+    totalResources: 0,
+    estimatedPages,
+  });
 
   // الاحتفاظ بجميع الأنماط التي كوّنت نسخة المعاينة، بما فيها خطوط Cairo
   // وقواعد الألوان الخاصة بكل تقرير، بدلاً من إعادة بناء الجدول برمجياً.
@@ -744,10 +862,40 @@ export async function downloadRenderedReportPdf(source: HTMLElement, options: {
       <body>${source.outerHTML}</body>
     </html>`;
 
-  const opened = await printReportHtmlAsync(printableHtml, title);
+  emitPdfProgress(onProgress, startedAt, {
+    phase: "opening",
+    progress: 95,
+    message: "إرسال التقرير إلى محرك الطباعة",
+    completedResources: 0,
+    totalResources: 0,
+    estimatedPages,
+  });
+
+  const opened = await printReportHtmlAsync(printableHtml, title, onProgress);
   if (!opened) {
+    emitPdfProgress(onProgress, startedAt, {
+      phase: "error",
+      progress: 0,
+      message: "تعذر فتح محرك تصدير PDF؛ تحقق من إعدادات الطباعة ثم أعد المحاولة",
+      completedResources: 0,
+      totalResources: 0,
+      estimatedPages,
+    });
     throw new Error("تعذر فتح محرك تصدير PDF. تحقق من إعدادات الطباعة ثم أعد المحاولة.");
   }
+
+  // The web iframe helper opens the print dialog after its resource settling window.
+  if (!Capacitor.isNativePlatform()) {
+    await new Promise<void>((resolve) => window.setTimeout(resolve, 2800));
+  }
+  emitPdfProgress(onProgress, startedAt, {
+    phase: "ready",
+    progress: 100,
+    message: "اكتمل تجهيز التقرير وفتح واجهة الطباعة؛ أكمل حفظ PDF من النظام",
+    completedResources: 0,
+    totalResources: 0,
+    estimatedPages,
+  });
 }
 
 export async function downloadReportPdf(options: {
