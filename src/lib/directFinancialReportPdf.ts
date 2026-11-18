@@ -153,21 +153,22 @@ export async function exportFinancialReportPdf(options: DirectReportPdfOptions):
         data.cell.styles.fontStyle = "bold";
       }
     },
-    didDrawPage: () => {
-      const pageCount = doc.getNumberOfPages();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      doc.setFont("NotoArabic", "normal");
-      doc.setFontSize(8);
-      doc.setTextColor(90, 90, 90);
-      doc.text(
-        normalizeArabic(doc, `صفحة ${pageCount} من ${pageCount}`),
-        pageWidth / 2,
-        pageHeight - 4,
-        { align: "center" },
-      );
-    },
   };
 
   autoTable(doc, tableOptions);
+  const totalPages = doc.getNumberOfPages();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  for (let page = 1; page <= totalPages; page += 1) {
+    doc.setPage(page);
+    doc.setFont("NotoArabic", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(90, 90, 90);
+    doc.text(
+      normalizeArabic(doc, `صفحة ${page} من ${totalPages}`),
+      pageWidth / 2,
+      pageHeight - 4,
+      { align: "center" },
+    );
+  }
   doc.save(options.fileName.endsWith(".pdf") ? options.fileName : `${options.fileName}.pdf`);
 }
