@@ -211,6 +211,14 @@ const formatCurrency = (val ? : number | string | null): string => {
   return (Number(val) || 0).toLocaleString("en-US");
 };
 
+// Display custody and loan amounts with an explicit two-digit decimal fraction.
+const formatCustodyCurrency = (val?: number | string | null): string => {
+  return (Number(val) || 0).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
 const normalizeFeeDescription = (value: unknown) =>
   String(value || "")
   .trim()
@@ -2664,7 +2672,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                             className="border border-black px-2 py-2 text-center font-black text-white font-mono"
                             style={totalCellStyle}
                           >
-                            {formatCurrency(row.amount)}
+                            {formatCustodyCurrency(row.amount)}
                           </td>
                           <td
                             data-col-key="actions"
@@ -2764,7 +2772,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                                 <div className="reports-cell-content whitespace-normal break-words leading-snug" title={String(val)}>{String(val)}</div>
                               ) : col.key === "amount" && source === "trainee" && row.amountDisplay ? (
                                 <span className="reports-cell-content font-bold text-amber-800" title={String(row.amountDisplay)}>{String(row.amountDisplay)}</span>
-                              ) : isNumeric ? formatCurrency(val) : (
+                              ) : isNumeric ? (isCustodyReport && col.key === "amount" ? formatCustodyCurrency(val) : formatCurrency(val)) : (
                                 <span className="reports-cell-content" title={String(val)}>{String(val)}</span>
                               )}
                             </td>
