@@ -86,7 +86,7 @@ export async function exportFinancialReportPdf(options: DirectReportPdfOptions):
   }
 
   const tableOptions = {
-    html: table,
+    html: table as HTMLTableElement,
     startY: tableStartY,
     margin: { top: margin, right: margin, bottom: margin + 8, left: margin },
     tableWidth: "auto" as const,
@@ -160,7 +160,7 @@ export async function exportFinancialReportPdf(options: DirectReportPdfOptions):
       doc.setFontSize(8);
       doc.setTextColor(90, 90, 90);
       doc.text(
-        normalizeArabic(doc, `صفحة ${doc.internal.getCurrentPageInfo().pageNumber} من ${pageCount}`),
+        normalizeArabic(doc, `صفحة ${pageCount} من ${pageCount}`),
         pageWidth / 2,
         pageHeight - 4,
         { align: "center" },
