@@ -22,6 +22,8 @@ interface OpenBrowserPrintPreviewOptions {
   fitToContent?: boolean;
   autoDownloadPdf?: boolean;
   downloadFileName?: string;
+  /** Use the browser/Android native print engine for PDF fidelity instead of rasterizing the page. */
+  useBrowserPrintForPdf?: boolean;
 }
 
 export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions) {
@@ -1078,6 +1080,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       const fitToContent = ${fitToContent ? "true" : "false"};
       if (fitToContent) document.body.classList.add('fit-content-mode');
       const autoDownloadPdf = ${options.autoDownloadPdf ? "true" : "false"};
+      const useBrowserPrintForPdf = ${options.useBrowserPrintForPdf ? "true" : "false"};
       const selOrientation = document.getElementById('selOrientation');
       const selPageSize = document.getElementById('selPageSize');
       const selMargin = document.getElementById('selMargin');
@@ -1386,6 +1389,17 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
 
       async function downloadDirectPdf() {
         btnDownloadPdf.disabled = true;
+        btnDownloadPdf.innerText = 'جارٍ تجهيز PDF...';
+        if (useBrowserPrintForPdf) {
+          // Let Chromium render the live HTML/CSS directly into the system PDF
+          // print pipeline. This preserves the same fonts, layout and colors.
+          printOnce();
+          window.setTimeout(function() {
+            btnDownloadPdf.disabled = false;
+            btnDownloadPdf.innerText = '📄 تصدير PDF';
+          }, 1200);
+          return;
+        }
         btnDownloadPdf.innerText = 'جارٍ فتح تصدير PDF...';
         try {
           await window.downloadReportFromPreview({
