@@ -400,7 +400,8 @@ className="w-full text-center px-3 py-2 hover:bg-sky-50 text-xs sm:text-xs flex 
         </CardHeader>
 
   <CardContent className="p-0">
-<div className="w-auto overflow-auto max-h-[72vh]">
+<div className="w-auto
+min-w-auto overflow-auto max-h-[72vh]">
 <Table className="hafiza-ledger-table w-full table-auto text-center border-collapse border border-black">
  <TableHeader className="sticky top-0 z-10 border-b border-slate-200 whitespace-normal">
                 <TableRow>
