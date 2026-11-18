@@ -656,6 +656,7 @@ export default function ReportsTab() {
   const { year: fiscalYear } = useFiscalYear();
   const { reportDate, reportDateLabel } = useReportDate();
   const [printSettingsOpen, setPrintSettingsOpen] = useState(false);
+  const [printSettingsIntent, setPrintSettingsIntent] = useState<"print" | "pdf">("print");
   const hafiza = useStore((state) => state.hafiza);
   const trainees = useStore((state) => state.trainees);
   const traineeFinancialRecords = useStore((state) => state.traineeFinancialRecords);
@@ -1984,11 +1985,12 @@ export default function ReportsTab() {
     }
     setDeletedRows((prev) => new Set([...prev, rowKey]));
   };
-  const openReportsPrintSettings = () => {
+  const openReportsPrintSettings = (intent: "print" | "pdf" = "print") => {
     if (!displayRows.length) {
-      toast.error("لا توجد بيانات للطباعة");
+      toast.error(intent === "pdf" ? "لا توجد بيانات للتصدير" : "لا توجد بيانات للطباعة");
       return;
     }
+    setPrintSettingsIntent(intent);
     setPrintSettingsOpen(true);
   };
   const printReportWithSettings = (settings: InstallmentsPrintSettings) => {
@@ -2043,7 +2045,13 @@ export default function ReportsTab() {
       defaultPageSize: printPageSize,
       defaultMarginMm: marginMm,
     });
-    if (!opened) toast.error("تم منع فتح نافذة المعاينة، يرجى السماح بالنوافذ المنبثقة في كروم");
+    if (!opened) {
+      toast.error("تم منع فتح نافذة المعاينة، يرجى السماح بالنوافذ المنبثقة في كروم");
+      return;
+    }
+    if (printSettingsIntent === "pdf") {
+      toast.success("تم تجهيز التقرير للتصدير؛ أكمل الحفظ بصيغة PDF من نافذة المعاينة");
+    }
   };
   
   const printFeeDemand = () => {
@@ -2372,7 +2380,8 @@ export default function ReportsTab() {
             numericKeys={numericKeys}
             pdfFinalCss={`${reportsTabPrintCss}\n${isLoanOrCustody ? custodyPortraitPrintCss : ""}`}
             renderPrintTableHtml={(reportDateLabel) => buildReportsScreenPrintHtml(source, reportDateLabel, reportRecordCount)}
-            onPrintRequest={openReportsPrintSettings}
+            onPrintRequest={() => openReportsPrintSettings("print")}
+            onPdfExportRequest={() => openReportsPrintSettings("pdf")}
             pdfOrientation={source === "traineeFeeStatus" ? "landscape" : "portrait"}
             pdfMarginMm={isLoanOrCustody ? 5 : undefined}
             includeTotalRow={!isLoanOrCustody && source !== "traineeFeeStatus"}
@@ -2860,7 +2869,8 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
         onClose={() => setPrintSettingsOpen(false)}
         onPrint={printReportWithSettings}
         storageKey="reports-print-settings"
-        contextLabel="إعدادات تقارير العام"
+        contextLabel={printSettingsIntent === "pdf" ? "إعدادات تصدير تقارير العام" : "إعدادات طباعة تقارير العام"}
+        confirmLabel={printSettingsIntent === "pdf" ? "متابعة تصدير PDF" : "معاينة وطباعة التقرير"}
         manualFontMax={14}
       />
     </div>

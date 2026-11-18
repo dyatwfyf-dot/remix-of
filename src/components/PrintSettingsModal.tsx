@@ -59,6 +59,7 @@ type Props = {
   storageKey?: string;
   contextLabel?: string;
   manualFontMax?: number;
+  confirmLabel?: string;
 };
 
 const Segmented = <T extends string | number>({
@@ -126,6 +127,7 @@ export default function PrintSettingsModal({
   storageKey = STORAGE_PREFIX,
   contextLabel = "تقرير أقساط العام",
   manualFontMax,
+  confirmLabel = "طباعة وتصدير PDF",
 }: Props) {
   const [s, setS] = useState<InstallmentsPrintSettings>(DEFAULT_PRINT_SETTINGS);
 
@@ -308,7 +310,7 @@ export default function PrintSettingsModal({
             onClick={handlePrint}
             className="flex-1 min-h-[48px] rounded-xl bg-gradient-to-l from-sky-700 to-sky-600 text-white text-sm font-extrabold shadow-lg hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-2"
           >
-            <Printer className="w-4 h-4" /> طباعة وتصدير PDF
+            <Printer className="w-4 h-4" /> {confirmLabel}
           </button>
         </div>
       </div>
