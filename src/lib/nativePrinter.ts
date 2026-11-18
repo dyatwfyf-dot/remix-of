@@ -130,12 +130,12 @@ function reportNativePrintProgress(
 function estimateNativePrintPages(doc: Document): number {
   const styleText = Array.from(doc.querySelectorAll("style"))
     .map((style) => style.textContent || "")
-    .join("\\n");
-  const pageRule = styleText.match(/@page\\s*\\{([^}]*)\\}/i)?.[1] || "";
-  const sizeMatch = pageRule.match(/\\bsize\\s*:\\s*(A4|A3|Letter)(?:\\s+(portrait|landscape))?/i);
+    .join("\n");
+  const pageRule = styleText.match(/@page\s*\{([^}]*)\}/i)?.[1] || "";
+  const sizeMatch = pageRule.match(/\bsize\s*:\s*(A4|A3|Letter)(?:\s+(portrait|landscape))?/i);
   const pageSize = sizeMatch?.[1]?.toLowerCase() || "a4";
   const orientation = sizeMatch?.[2]?.toLowerCase() || "portrait";
-  const margin = Number(pageRule.match(/\\bmargin\\s*:\\s*([0-9.]+)mm/i)?.[1] || 0);
+  const margin = Number(pageRule.match(/\bmargin\s*:\s*([0-9.]+)mm/i)?.[1] || 0);
   const pageHeightMm = pageSize === "a3"
     ? (orientation === "landscape" ? 297 : 420)
     : pageSize === "letter"
