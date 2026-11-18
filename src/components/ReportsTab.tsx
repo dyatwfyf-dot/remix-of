@@ -2033,6 +2033,41 @@ export default function ReportsTab() {
    ${source === "trainee" ? `#tableContainer table.reports-trainee-payment-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:auto!important; } #tableContainer table.reports-trainee-payment-table thead tr.reports-column-header-row th { font-size:${fontSizePx}px!important; white-space:normal!important; overflow-wrap:anywhere!important; } #tableContainer table.reports-trainee-payment-table tbody tr > td { font-size:${fontSizePx}px!important; white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important; } #tableContainer table.reports-trainee-payment-table tbody td.reports-numeric-cell { white-space:nowrap!important; overflow-wrap:normal!important; }` : ""}
    ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:fixed!important; border-collapse:collapse!important; direction:rtl!important; text-align:center!important; font-family:${reportArabicFontStack}!important; } #tableContainer table.reports-fee-status-table thead th { background:linear-gradient(180deg,#fff7d7 0%,#f3d778 100%)!important; background-color:#f3d778!important; color:#000!important; border:1px solid #000!important; font-size:14px!important; font-weight:900!important; line-height:1.4!important; padding:6px 4px!important; text-align:center!important; vertical-align:middle!important; white-space:normal!important; overflow-wrap:anywhere!important; -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; } #tableContainer table.reports-fee-status-table tbody td { background:#fff!important; background-color:#fff!important; color:#000!important; border:1px solid #000!important; font-family:${reportArabicFontStack}!important; font-size:16px!important; font-weight:850!important; line-height:1.45!important; padding:5px 4px!important; text-align:center!important; vertical-align:middle!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; } #tableContainer table.reports-fee-status-table tbody tr:hover td { background:inherit!important; }` : ""}
    ${isCustodyReport ? custodyPortraitPrintCss : ""}
+   ${isCustodyReport ? `
+     /* Keep the grand-total amount intact on one line in preview and printed output. */
+     #tableContainer table.reports-custody-print-table tbody tr.total-row > td.reports-numeric-cell,
+     #tableContainer table.reports-custody-print-table tbody tr.report-grand-total-row > td.reports-numeric-cell,
+     #tableContainer table.reports-custody-print-table tbody tr.total-row > td.numeric-cell,
+     #tableContainer table.reports-custody-print-table tbody tr.report-grand-total-row > td.numeric-cell,
+     #tableContainer table.reports-custody-print-table tbody tr.total-row > td[data-col-key="amount"],
+     #tableContainer table.reports-custody-print-table tbody tr.report-grand-total-row > td[data-col-key="amount"],
+     #tableContainer table.reports-custody-print-table tbody tr.total-row > td.financial-amount-cell,
+     #tableContainer table.reports-custody-print-table tbody tr.report-grand-total-row > td.financial-amount-cell {
+       white-space:nowrap!important;
+       word-break:keep-all!important;
+       overflow-wrap:normal!important;
+       hyphens:none!important;
+       font-variant-numeric:tabular-nums!important;
+     }
+     #tableContainer table.reports-custody-print-table tbody tr.total-row > td.reports-numeric-cell *,
+     #tableContainer table.reports-custody-print-table tbody tr.report-grand-total-row > td.reports-numeric-cell *,
+     #tableContainer table.reports-custody-print-table tbody tr.total-row > td.numeric-cell *,
+     #tableContainer table.reports-custody-print-table tbody tr.report-grand-total-row > td.numeric-cell *,
+     #tableContainer table.reports-custody-print-table tbody tr.total-row > td[data-col-key="amount"] *,
+     #tableContainer table.reports-custody-print-table tbody tr.report-grand-total-row > td[data-col-key="amount"] *,
+     #tableContainer table.reports-custody-print-table tbody tr.total-row > td.financial-amount-cell *,
+     #tableContainer table.reports-custody-print-table tbody tr.report-grand-total-row > td.financial-amount-cell * {
+       display:inline-block!important;
+       width:max-content!important;
+       min-width:max-content!important;
+       max-width:none!important;
+       white-space:nowrap!important;
+       word-break:keep-all!important;
+       overflow-wrap:normal!important;
+       hyphens:none!important;
+       font-variant-numeric:tabular-nums!important;
+     }
+   ` : ""}
    #tableContainer table.reports-data-table tr.signature-block-row, #tableContainer table.reports-data-table tr.signature-block-row td { page-break-inside:avoid!important; break-inside:avoid!important; }
   `;
     const opened = openBrowserPrintPreview({
@@ -2044,7 +2079,7 @@ export default function ReportsTab() {
       defaultOrientation: printOrientation,
       defaultPageSize: printPageSize,
       defaultMarginMm: marginMm,
-      useBrowserPrintForPdf: printSettingsIntent === "pdf" && isCustodyReport,
+      useBrowserPrintForPdf: printSettingsIntent === "pdf" && (isCustodyReport || source === "trainee"),
     });
     if (!opened) {
       toast.error("تم منع فتح نافذة المعاينة، يرجى السماح بالنوافذ المنبثقة في كروم");
