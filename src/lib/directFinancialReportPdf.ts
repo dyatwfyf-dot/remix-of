@@ -110,7 +110,7 @@ export async function exportFinancialReportPdf(options: DirectReportPdfOptions):
       fontStyle: "normal" as const,
       halign: "center" as const,
     },
-    alternateRowStyles: { fillColor: [255, 255, 255] },
+    alternateRowStyles: { fillColor: [255, 255, 255] as [number, number, number] },
     showHead: "everyPage" as const,
     rowPageBreak: "avoid" as const,
     didParseCell: (data: CellHookData) => {
