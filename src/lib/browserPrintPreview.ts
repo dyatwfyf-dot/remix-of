@@ -1259,29 +1259,6 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         applyDateFilter();
       });
 
-      function waitForPreviewResources() {
-        var resources = [];
-        if (document.fonts && document.fonts.ready) resources.push(document.fonts.ready.catch(function() {}));
-        Array.from(document.images).forEach(function(image) {
-          if (image.complete) return;
-          resources.push(new Promise(function(resolve) {
-            var finished = false;
-            var timeoutId = window.setTimeout(finish, 8000);
-            function finish() {
-              if (finished) return;
-              finished = true;
-              window.clearTimeout(timeoutId);
-              image.removeEventListener('load', finish);
-              image.removeEventListener('error', finish);
-              resolve();
-            }
-            image.addEventListener('load', finish, { once: true });
-            image.addEventListener('error', finish, { once: true });
-          }));
-        });
-        return Promise.race([Promise.all(resources), new Promise(function(resolve) { window.setTimeout(resolve, 10000); })]);
-      }
-
       function ensureMultiPagePrintLayout() {
         if (document.getElementById('multi-page-print-layout')) return;
         var style = document.createElement('style');
@@ -1301,18 +1278,21 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         document.head.appendChild(style);
       }
 
-      async function printOnce() {
+      // IMPORTANT: call window.print() synchronously in the original click handler.
+      // Awaiting fonts/images or requestAnimationFrame first can consume transient user
+      // activation and cause Chrome/Android to silently ignore the print request.
+      function printOnce() {
         if (printInProgress) return false;
         printInProgress = true;
         try {
-          await waitForPreviewResources();
           ensureMultiPagePrintLayout();
           updatePageSettings();
-          await new Promise(function(resolve) { window.requestAnimationFrame(function() { window.requestAnimationFrame(resolve); }); });
           window.print();
           return true;
         } finally {
-          window.setTimeout(function() { printInProgress = false; }, 1000);
+          // Chrome's print dialog is modal on desktop; Android may return immediately.
+          // Reset shortly afterwards so a second export remains possible.
+          window.setTimeout(function() { printInProgress = false; }, 1200);
         }
       }
 
@@ -1364,61 +1344,63 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         const pageMargin = fitToContent ? '0mm' : margin;
         dynamicRule.innerHTML = '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargin + '; }';
 
-        window.requestAnimationFrame(function() {
-          const table = tableContainer.querySelector('table');
-          if (!table) return;
+        const contentTable = tableContainer.querySelector('table');
+        if (!contentTable) return;
+        const denseTable = columnCount > 9;
+        contentTable.classList.toggle('a4-dense-table', denseTable);
+        tableContainer.style.width = '100%';
+        tableContainer.style.zoom = String(scale);
 
-          if (tableContainer.dataset.printCellsTagged !== 'true') {
-            // Detect pure numeric and date cells so values remain intact on one line.
-            const numericOrDate = /^[\\s\\u200e\\u200f]*[+-]?(?:(?:[0-9٠-٩۰-۹]+)(?:[,.٬٫][0-9٠-٩۰-۹]+)*|[0-9٠-٩۰-۹]{1,4}[-/.][0-9٠-٩۰-۹]{1,2}[-/.][0-9٠-٩۰-۹]{1,4})(?:\\s*(?:ر\\.?\\s*ي|ريال|ر\\.?\\s*س))?[\\s\\u200e\\u200f]*$/;
-            tableContainer.querySelectorAll('table').forEach(function(currentTable) {
-              currentTable.querySelectorAll('th,td').forEach(function(cell) {
-                const value = (cell.textContent || '').trim();
-                if (numericOrDate.test(value)) cell.classList.add('numeric-cell');
-              });
-            });
+        if (tableContainer.dataset.printCellsTagged !== 'true' && tableContainer.dataset.printCellsTagging !== 'true') {
+          tableContainer.dataset.printCellsTagging = 'true';
+          // Tagging thousands of cells is not part of the user-activation critical path.
+          // Run it after the preview has painted; printing itself remains synchronous.
+          window.requestAnimationFrame(function() {
+            if (tableContainer.dataset.printCellsTagged === 'true') return;
   
-            const serialHeader = /^(?:م|#|المسلسل|مسلسل|التسلسل|تسلسل|no|sno)$/i;
-            tableContainer.querySelectorAll('table').forEach(function(currentTable) {
-              const headerCells = Array.from(currentTable.querySelectorAll('thead tr:first-child th, thead tr:first-child td, tr:first-child th, tr:first-child td'));
-              const serialIndex = headerCells.findIndex(function(cell) {
-                return serialHeader.test((cell.textContent || '').replace(/[\\s.]/g, '').trim());
+              // Detect pure numeric and date cells so values remain intact on one line.
+              const numericOrDate = /^[\\s\\u200e\\u200f]*[+-]?(?:(?:[0-9٠-٩۰-۹]+)(?:[,.٬٫][0-9٠-٩۰-۹]+)*|[0-9٠-٩۰-۹]{1,4}[-/.][0-9٠-٩۰-۹]{1,2}[-/.][0-9٠-٩۰-۹]{1,4})(?:\\s*(?:ر\\.?\\s*ي|ريال|ر\\.?\\s*س))?[\\s\\u200e\\u200f]*$/;
+              tableContainer.querySelectorAll('table').forEach(function(currentTable) {
+                currentTable.querySelectorAll('th,td').forEach(function(cell) {
+                  const value = (cell.textContent || '').trim();
+                  if (numericOrDate.test(value)) cell.classList.add('numeric-cell');
+                });
               });
-              if (serialIndex < 0) return;
-              currentTable.querySelectorAll('tr').forEach(function(row) {
-                const cell = row.children.item(serialIndex);
-                if (cell) cell.classList.add('serial-number-column');
+    
+              const serialHeader = /^(?:م|#|المسلسل|مسلسل|التسلسل|تسلسل|no|sno)$/i;
+              tableContainer.querySelectorAll('table').forEach(function(currentTable) {
+                const headerCells = Array.from(currentTable.querySelectorAll('thead tr:first-child th, thead tr:first-child td, tr:first-child th, tr:first-child td'));
+                const serialIndex = headerCells.findIndex(function(cell) {
+                  return serialHeader.test((cell.textContent || '').replace(/[\\s.]/g, '').trim());
+                });
+                if (serialIndex < 0) return;
+                currentTable.querySelectorAll('tr').forEach(function(row) {
+                  const cell = row.children.item(serialIndex);
+                  if (cell) cell.classList.add('serial-number-column');
+                });
               });
-            });
-            tableContainer.dataset.printCellsTagged = 'true';
-          }
+              tableContainer.dataset.printCellsTagged = 'true';
+          });
+        }
 
-          const availableWidth = Math.max(1, paperContainer.clientWidth -
-            parseFloat(getComputedStyle(paperContainer).paddingLeft || '0') -
-            parseFloat(getComputedStyle(paperContainer).paddingRight || '0'));
-
-          // Keep the report at the selected physical page width. Reflow columns and wrap text
-          // instead of shrinking the entire report with CSS zoom.
-          const denseTable = columnCount > 9;
-          table.classList.toggle('a4-dense-table', denseTable);
-          tableContainer.style.width = '100%';
-          tableContainer.style.zoom = String(scale);
-        });
+        // All print-critical geometry and scaling above is synchronous.
       }
 
-      async function downloadDirectPdf() {
+      function downloadDirectPdf() {
         if (printInProgress) return;
         btnDownloadPdf.disabled = true;
         btnDownloadPdf.innerText = 'جارٍ فتح حفظ PDF...';
         try {
-          const opened = await printOnce();
-          if (!opened) return;
+          // Keep the print invocation in this click's user-activation context.
+          printOnce();
         } catch (err) {
           console.error('[PDF] Browser print failed:', err);
           alert('تعذر فتح واجهة حفظ PDF. أعد المحاولة وتحقق من خدمة الطباعة في المتصفح.');
         } finally {
-          btnDownloadPdf.disabled = false;
-          btnDownloadPdf.innerText = '📄 تصدير PDF';
+          window.setTimeout(function() {
+            btnDownloadPdf.disabled = false;
+            btnDownloadPdf.innerText = '📄 تصدير PDF';
+          }, 1200);
         }
       }
 
@@ -1428,7 +1410,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       selScale.addEventListener('change', updatePageSettings);
       selLineSpacing.addEventListener('change', updatePageSettings);
 
-      btnPrint.addEventListener('click', function() { void printOnce().catch(function(error) { console.error('[Print] Failed:', error); }); });
+      btnPrint.addEventListener('click', function() { try { printOnce(); } catch (error) { console.error('[Print] Failed:', error); alert('تعذرت الطباعة. أعد المحاولة.'); } });
       btnDownloadPdf.addEventListener('click', downloadDirectPdf);
       btnClose.addEventListener('click', function() { window.close(); });
 
@@ -1441,7 +1423,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       window.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
           e.preventDefault();
-          void printOnce().catch(function(error) { console.error('[Print] Failed:', error); });
+          try { printOnce(); } catch (error) { console.error('[Print] Failed:', error); }
         } else if (e.key === 'Escape') {
           window.close();
         }
