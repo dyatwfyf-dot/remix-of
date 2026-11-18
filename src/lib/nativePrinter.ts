@@ -61,8 +61,99 @@ export function isNativePrintingAvailable(): boolean {
   return typeof window !== "undefined" && Capacitor.isNativePlatform();
 }
 
+const NATIVE_REPORT_FRAME_ID = "app-native-report-print-frame";
+
+/**
+ * Put the report in the current WebView and print that frame directly.
+ * This avoids sending a very large HTML string through the Capacitor bridge
+ * and creating a second WebView for long, multi-page reports.
+ *
+ * Keep the frame mounted after opening the print dialog: Android's print
+ * adapter renders the WebView content lazily and may still need it while
+ * pages are being generated.
+ */
+function mountNativeReportFrame(html: string): HTMLIFrameElement {
+  document.getElementById(NATIVE_REPORT_FRAME_ID)?.remove();
+
+  const frame = document.createElement("iframe");
+  frame.id = NATIVE_REPORT_FRAME_ID;
+  frame.title = "معاينة التقرير للطباعة";
+  Object.assign(frame.style, {
+    position: "fixed",
+    left: "-10000px",
+    top: "0",
+    width: "100vw",
+    height: "100vh",
+    border: "0",
+    pointerEvents: "none",
+    background: "#fff",
+  });
+  document.body.appendChild(frame);
+
+  const frameDocument = frame.contentDocument;
+  if (!frameDocument) {
+    frame.remove();
+    throw new Error("تعذر إنشاء إطار تجهيز التقرير للطباعة");
+  }
+
+  frameDocument.open();
+  frameDocument.write(html);
+  frameDocument.close();
+  return frame;
+}
+
+async function waitForNativeReportFrame(frame: HTMLIFrameElement): Promise<void> {
+  const doc = frame.contentDocument;
+  if (!doc) throw new Error("تعذر قراءة محتوى التقرير");
+
+  const resourcePromises: Promise<unknown>[] = [];
+  if (doc.fonts?.ready) resourcePromises.push(doc.fonts.ready.catch(() => undefined));
+
+  Array.from(doc.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')).forEach((link) => {
+    if (link.sheet) return;
+    resourcePromises.push(new Promise<void>((resolve) => {
+      const finish = () => resolve();
+      link.addEventListener("load", finish, { once: true });
+      link.addEventListener("error", finish, { once: true });
+      window.setTimeout(finish, 12000);
+    }));
+  });
+
+  Array.from(doc.images).forEach((image) => {
+    if (image.complete) return;
+    resourcePromises.push(new Promise<void>((resolve) => {
+      const finish = () => resolve();
+      image.addEventListener("load", finish, { once: true });
+      image.addEventListener("error", finish, { once: true });
+      window.setTimeout(finish, 12000);
+    }));
+  });
+
+  // A bounded wait prevents a missing external asset from blocking printing forever.
+  await Promise.race([
+    Promise.all(resourcePromises),
+    new Promise<void>((resolve) => window.setTimeout(resolve, 20000)),
+  ]);
+
+  await new Promise<void>((resolve) => {
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
+  });
+}
+
 async function printWithNativePrinter(name: string, html: string): Promise<void> {
+  const frame = mountNativeReportFrame(html);
+  await waitForNativeReportFrame(frame);
+
   const { Printer } = await import("@capgo/capacitor-printer");
+  if (typeof Printer.printIframe === "function") {
+    await Printer.printIframe({
+      selector: `#${NATIVE_REPORT_FRAME_ID}`,
+      name,
+    });
+    return;
+  }
+
+  // Compatibility fallback for an older printer plugin build.
   await Printer.printHtml({ name, html });
 }
 
