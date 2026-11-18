@@ -1631,7 +1631,7 @@ export default function ReportsTab() {
       return [
         ...visibleSummaryRows.map((summary) => ({
           ...summary,
-          statusSummaryCount: allTraineeRows.filter((row) => row.statusKey === summary.statusKey).length,
+          statusSummaryCount: new Set(allTraineeRows.filter((row) => row.statusKey === summary.statusKey).map((row) => traineeNameKey(String(row.trainee || "")))).size,
         })),
         ...sortedTraineeRows,
       ];
