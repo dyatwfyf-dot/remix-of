@@ -1344,10 +1344,10 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         const pageMargin = fitToContent ? '0mm' : margin;
         dynamicRule.innerHTML = '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargin + '; }';
 
-        const table = tableContainer.querySelector('table');
-        if (!table) return;
+        const contentTable = tableContainer.querySelector('table');
+        if (!contentTable) return;
         const denseTable = columnCount > 9;
-        table.classList.toggle('a4-dense-table', denseTable);
+        contentTable.classList.toggle('a4-dense-table', denseTable);
         tableContainer.style.width = '100%';
         tableContainer.style.zoom = String(scale);
 
