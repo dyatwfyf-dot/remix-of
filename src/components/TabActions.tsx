@@ -121,6 +121,8 @@ type Props = {
   /** Optional maximum visible wrapped lines for Excel cells. */
   excelMaxTextLines?: number;
   onPrintRequest?: () => void;
+  /** Optional tab-specific PDF export workflow (e.g. report settings before preview). */
+  onPdfExportRequest?: () => void;
   additionalWebActions ? : WebActionItem[];
   webClassName ? : string;
 };
@@ -147,6 +149,7 @@ export default function TabActions({
   excelCellFontSize,
   excelMaxTextLines,
   onPrintRequest,
+  onPdfExportRequest,
   additionalWebActions = [],
   webClassName = "",
 }: Props) {
@@ -190,6 +193,14 @@ export default function TabActions({
   };
   
   const handleDownloadPdf = async () => {
+    if (onPdfExportRequest) {
+      if (!printData.length) {
+        toast.error("لا توجد بيانات للتصدير");
+        return;
+      }
+      onPdfExportRequest();
+      return;
+    }
     if (!printData.length) {
       toast.error("لا توجد بيانات للتصدير");
       return;
@@ -334,7 +345,7 @@ export default function TabActions({
     ...additionalWebActions,
     { label: printLabel, icon: Printer, onSelect: handlePrint },
     {
-      label: pdfBusy ? "جارٍ التحضير…" : "تنزيل PDF",
+      label: pdfBusy ? "جارٍ التحضير…" : onPdfExportRequest ? "تصدير PDF" : "تنزيل PDF",
       icon: pdfBusy ? Loader2 : Download,
       onSelect: handleDownloadPdf,
       disabled: pdfBusy,
@@ -362,7 +373,7 @@ export default function TabActions({
           onClick={handleDownloadPdf}
           disabled={pdfBusy}
           className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10528e] text-white rounded-lg text-xs font-bold shadow-sm hover:bg-[#0d4272] active:scale-95 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-wait"
-          title="تنزيل PDF بنفس تنسيق الطباعة"
+          title={onPdfExportRequest ? "تصدير التقرير وفق إعدادات التقارير" : "تنزيل PDF بنفس تنسيق الطباعة"}
         >
           {pdfBusy ? (
             <>
@@ -370,7 +381,7 @@ export default function TabActions({
             </>
           ) : (
             <>
-              <Download className="w-4 h-4" /> تنزيل PDF
+              <Download className="w-4 h-4" /> {onPdfExportRequest ? "تصدير PDF" : "تنزيل PDF"}
             </>
           )}
         </button>
