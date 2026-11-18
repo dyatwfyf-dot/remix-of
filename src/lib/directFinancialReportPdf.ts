@@ -115,7 +115,7 @@ export async function exportFinancialReportPdf(options: DirectReportPdfOptions):
     rowPageBreak: "avoid" as const,
     didParseCell: (data: CellHookData) => {
       const cls = rowClass(data);
-      const isTotal = /(^|\\s)(total-row|report-grand-total-row)(\\s|$)/.test(cls);
+      const isTotal = /(^|\s)(total-row|report-grand-total-row)(\s|$)/.test(cls);
       const isTitle = /reports-custody-title-row/.test(cls);
       const isDate = /reports-custody-date-row/.test(cls);
       const isSignature = /signature-block-row/.test(cls);
