@@ -2124,7 +2124,7 @@ export default function ReportsTab() {
       reportDateLabel: settings.showHeader ? reportDateLabel : "",
       tableHtml,
       contentCss: reportDocumentCss,
-      finalCss: `${reportsTabPrintCss}\\n${finalCss}`,
+      finalCss: `${reportsTabPrintCss}\n${finalCss}`,
       defaultOrientation: printOrientation,
       defaultPageSize: printPageSize,
       defaultMarginMm: marginMm,
