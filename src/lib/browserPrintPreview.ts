@@ -43,7 +43,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>معاينة الطباعة - ${title}</title>
+  <title>${title}</title>
   <style id="arabic-font-faces">${reportArabicFontFacesCss}</style>
   <style id="dynamic-page-rule">
     @page {
@@ -1476,6 +1476,9 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   newWin.document.open();
   newWin.document.write(html);
   newWin.document.close();
+  // Explicitly set the document title after writing the preview. This ensures
+  // Android Chrome uses the report name instead of displaying "about:blank".
+  newWin.document.title = title;
 
   return true;
 }
