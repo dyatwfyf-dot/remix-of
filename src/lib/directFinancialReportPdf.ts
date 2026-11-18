@@ -141,7 +141,7 @@ export async function exportFinancialReportPdf(options: DirectReportPdfOptions):
   doc.setR2L(true);
 
   const parsed = new DOMParser().parseFromString(options.html, "text/html");
-  const table = parsed.querySelector("table.reports-data-table") ?? parsed.querySelector("table");
+  const table = (parsed.querySelector("table.reports-data-table") ?? parsed.querySelector("table")) as HTMLTableElement | null;
   if (!table) throw new Error("لم يتم العثور على جدول التقرير المطلوب تصديره");
 
   const headRows = extractRows(doc, table.tHead);
