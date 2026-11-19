@@ -91,7 +91,6 @@
 }
 
 /* 2025: أزرار الاستيراد والتصدير والطباعة داخل أغلفة مستقلة */
-.mizan-installments-tab .installments-controls-2025 > .apk-only-actions:has(> button),
 .mizan-installments-tab .installments-controls-2025 > .col-span-2.apk-only-actions {
   grid-column: 1 / -1 !important;
   display: grid !important;
