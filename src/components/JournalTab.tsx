@@ -512,7 +512,7 @@ export default function JournalTab() {
       pdfCss={greenPrintHeaderCss}
       onClear={clearJournal}
       additionalWebActions={journalWebActions}
-      className="!flex !flex-nowrap !flex-1 !min-w-0 !gap-1 [&>button]:!min-w-0 [&>button]:!flex-1 [&>button]:!justify-center [&>button]:!rounded-lg [&>button]:!px-1 [&>button]:!py-2 [&>button]:!text-[10px] [&>button]:!font-bold [&>button]:!shadow-sm [&>button>svg]:!h-3 [&>button>svg]:!w-3"
+      className="!flex !flex-nowrap !min-w-0 !gap-1 [&>button]:!min-w-0 [&>button]:!flex-1 [&>button]:!justify-center [&>button]:!rounded-lg [&>button]:!px-1 [&>button]:!py-2 [&>button]:!text-[10px] [&>button]:!font-bold [&>button]:!shadow-sm [&>button>svg]:!h-3 [&>button>svg]:!w-3"
     />
   );
 
