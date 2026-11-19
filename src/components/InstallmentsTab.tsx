@@ -725,16 +725,16 @@ export default function InstallmentsTab() {
   ]);
 
   const originalIndex2025 = useMemo(() => {
-    const indices = new Map<string, number>();
+    const indices = new Map<any, number>();
     (installments2025 || []).forEach((row: any, index: number) => {
-      if (!indices.has(row.name)) indices.set(row.name, index);
+      if (!indices.has(row)) indices.set(row, index);
     });
     return indices;
   }, [installments2025]);
   const originalIndex2026 = useMemo(() => {
-    const indices = new Map<string, number>();
+    const indices = new Map<any, number>();
     (installments || []).forEach((row: any, index: number) => {
-      if (!indices.has(row.name)) indices.set(row.name, index);
+      if (!indices.has(row)) indices.set(row, index);
     });
     return indices;
   }, [installments]);
@@ -2241,8 +2241,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     const list = [...(installments ||
       [])];
     const updated = list.map((s) => {
-      if (s.name !== paymentModal
-        .row.name) return s;
+      if (s !== paymentModal.row) return s;
       const payments = {
         ...s.payments,
         [paymentModal.month]: (
@@ -2368,8 +2367,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     const list = [...(installments ||
       [])];
     const updated = list.map((s) => {
-      if (s.name !==
-        editPaymentModal.row.name)
+      if (s !== editPaymentModal.row)
         return s;
       const payments = { ...s
         .payments, [
@@ -2404,7 +2402,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     const list = [...(installments ||
       [])];
     const updated = list.map((s) => {
-      if (s.name !== row.name)
+      if (s !== row)
         return s;
       const payments = { ...s
         .payments, [month]: 0 };
@@ -3461,7 +3459,7 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
                 ) : (
                   <>
                     {pageRows2025.map((r: any, i: number) => {
-                      const originalIndex = originalIndex2025.get(r.name) ?? -1;
+                      const originalIndex = originalIndex2025.get(r) ?? -1;
                       return (
                         <tr
                           key={i}
@@ -3872,7 +3870,7 @@ className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transit
                   <>
                     {pageRows2026.map((r: any, i: number) => {
                       const status = getStatusText(r.remaining);
-                      const originalIndex = originalIndex2026.get(r.name) ?? -1;
+                      const originalIndex = originalIndex2026.get(r) ?? -1;
                       const rowBgClass = getConditionalRowClass(r);
                       const notesStatusTone = getNotesStatusTone(r.notes);
 
