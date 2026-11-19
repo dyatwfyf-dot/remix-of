@@ -331,48 +331,38 @@ ${reportArabicFontFacesCss}
 #tableContainer .signature-person .signature-dotted-line{display:block!important;width:72%!important;height:2mm!important;margin:0 auto!important;background-image:radial-gradient(circle,#222 .45px,transparent .65px)!important;background-size:3px 2px!important;background-repeat:repeat-x!important;background-position:center bottom!important}
 `;
 
-
 const custodyPortraitPrintCss = `
   /* Page size, orientation and margins are controlled by the preview toolbar. */
   #tableContainer .reports-print-table-shell { width:100%!important; min-width:0!important; max-width:auto!important; overflow:visible!important; }
-  #paperContainer[data-page-orientation="portrait"] #tableContainer .reports-print-table-shell.reports-custody-short-report-shell {
+  #paperContainer #tableContainer .reports-print-table-shell.reports-custody-short-report-shell {
     display:flex!important;
     flex-direction:column!important;
-    min-height:190mm!important;
     break-inside:avoid!important;
     page-break-inside:avoid!important;
   }
   #tableContainer table.reports-custody-print-table {
-  width:100%!important;
-  min-width:0!important; 
-  max-width:auto!important; 
-  table-layout:auto!important;
-border-collapse:collapse!important; 
-    
+    width:100%!important;
+    min-width:0!important; 
+    max-width:auto!important; 
+    table-layout:auto!important;
+    border-collapse:collapse!important; 
   }
   #tableContainer table.reports-custody-print-table th,
   #tableContainer table.reports-custody-print-table td { 
-box-sizing:borde-box!important; 
-  min-width:0!important; 
-  max-width:auto!important; padding:3px 3px!important; text-align:center!important; vertical-align:middle!important; 
-white-space:nowrap!important; 
-  word-break:normal!important;
-overflow-wrap
-:anywhere!important; overflow:visible!important; text-overflow:clip!important; 
-  font-size:18px!important; line-height:1.9!important; }
-  #tableContainer table.reports-custody-print-table th[data-col-key="idx"],
-  #tableContainer table.reports-custody-print-table td[data-col-key="idx"],
-  #tableContainer table.reports-custody-print-table td.reports-numeric-cell,
-  #tableContainer table.reports-custody-print-table td.rc-num { 
-width: auto!important;
-min-width:auto!important;
-white-space:nowrap!important; 
-word-break:keep-all!important;
-overflow-wrap:normal!important; }
-  #tableContainer table.reports-custody-print-table thead tr.reports-custody-title-row > th { padding:7px 4px 3px!important; 
-  font-size:20px!important; 
-  white-space:normal!important; }
-  #tableContainer table.reports-custody-print-table thead tr.reports-custody-date-row > th { padding:3px 4px 7px!important; font-size:16px!important; white-space:normal!important; }
+    box-sizing:border-box!important; 
+    min-width:0!important; 
+    max-width:auto!important; 
+    padding:var(--print-cell-padding, 3px 4px)!important; 
+    text-align:center!important; 
+    vertical-align:middle!important; 
+    white-space:normal!important; 
+    word-break:normal!important;
+    overflow-wrap:anywhere!important; 
+    overflow:visible!important; 
+    font-size:var(--print-cell-font-size, 16px)!important; 
+    line-height:var(--print-cell-line-height, 1.45)!important; 
+  }
+
   #tableContainer table.reports-custody-print-table thead tr.reports-column-header-row > th { padding:4px 3px!important; font-size:15px!important; 
   white-space:normal!important; overflow-wrap
 :anywhere!important; }
@@ -2002,13 +1992,12 @@ export default function ReportsTab() {
     setPrintSettingsIntent(intent);
     setPrintSettingsOpen(true);
   };
-  const printReportWithSettings = async (settings: InstallmentsPrintSettings) => {
+  
+    const printReportWithSettings = async (settings: InstallmentsPrintSettings) => {
     const isCustodyReport = source === "youssefLoan" || source === "tawfiqCustody";
-    const printOrientation = isCustodyReport ? "portrait" : source === "traineeFeeStatus" ? "landscape" : settings.orientation;
-    const printPageSize = isCustodyReport ? "A4" : settings.pageSize;
-    const marginMm = isCustodyReport ? 5 : settings.margin === "narrow" ? 2 : settings.margin === "wide" ? 10 : 6;
-    const pageWidthMm = printPageSize === "A3" ?
-      (printOrientation === "landscape" ? 420 : 297) :
+    const printOrientation = settings.orientation || (source === "traineeFeeStatus" ? "landscape" : "portrait");
+    const printPageSize = settings.pageSize || "A4";
+    const marginMm = settings.margin === "narrow" ? 2 : settings.margin === "wide" ? 10 : settings.margin === "normal" ? 6 : (isCustodyReport ? 5 : 6);
       (printOrientation === "landscape" ? 297 : 210);
     const visibleColumnCount = Math.max(1,
       sourceConfig.columns.filter((column) => !settings.hiddenColumns.includes(column.key)).length +
@@ -2028,7 +2017,8 @@ export default function ReportsTab() {
    #tableContainer .reports-print-table-shell { width:100%!important; min-width:0!important; 
    max-width: auto!important; overflow:visible!important; }
    #tableContainer table.reports-data-table { width:100%!important; min-width:0!important;
-   max-width:auto!important; table-layout:auto!important; border-collapse:collapse!important; }
+   #tableContainer table.reports-data-table tr, #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td, #tableContainer table.reports-data-table .pdf-cell-text { page-break-inside:avoid!important; break-inside:avoid!important; font-size:var(--print-cell-font-size, ${fontSizePx}px)!important; line-height:var(--print-cell-line-height, 1.45)!important; }
+
    #tableContainer table.reports-data-table thead { display:table-header-group!important; }
    #tableContainer table.reports-data-table tbody { display:table-row-group!important; }
    #tableContainer table.reports-data-table tr, #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td, #tableContainer table.reports-data-table .pdf-cell-text { page-break-inside:avoid!important; break-inside:avoid!important; font-size:${fontSizePx}px!important; }
