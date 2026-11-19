@@ -4,6 +4,7 @@
 import "./InstallmentsTab.css";
 import React, { useDeferredValue, useEffect, useMemo,
   useState } from "react";
+import { Capacitor } from "@capacitor/core";
 import { useStore,
   type InstallmentCustomColumn } from "@/lib/store";
 import { isRegistrationFeeDescription } from "@/lib/feeClassification";
@@ -1080,6 +1081,18 @@ export default function InstallmentsTab() {
     options: { download ? :
     boolean } = {},
   ): Promise < void > => {
+    // Reserve the browser tab directly inside the user's click handler.
+    // Building large installment tables can take long enough for Chrome/Android
+    // to expire transient user activation and block a later window.open().
+    const previewWindow = !options.download && !Capacitor.isNativePlatform()
+      ? window.open("about:blank", "_blank")
+      : null;
+
+    if (!options.download && !Capacitor.isNativePlatform() && !previewWindow) {
+      toast.error("تعذّر فتح نافذة المعاينة؛ اسمح بالنوافذ المنبثقة لهذا الموقع ثم أعد المحاولة");
+      return;
+    }
+
     try {
       const monthsList = year ===
         2025 ? MONTHS_2025 :
@@ -1927,6 +1940,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         defaultPageSize: settings.pageSize,
         defaultMarginMm: settings.margin === "narrow" ? 1 : settings.margin === "wide" ? 12 : 6,
         fitToContent: false,
+        preopenedWindow: previewWindow,
       });
 
       if (ok) {
@@ -1935,8 +1949,9 @@ td.t-fees { background: ${colorTokens.fees} !important; }
         toast.error("تعذّر فتح نافذة معاينة الطباعة، يرجى السماح بالنوافذ المنبثقة");
       }
     } catch (error) {
-      toast.error(
-        "فشل إنشاء التقرير");
+      if (previewWindow && !previewWindow.closed) previewWindow.close();
+      console.error("Installments print preview error:", error);
+      toast.error("فشل إنشاء معاينة الطباعة؛ أعد المحاولة");
     }
   };
   
