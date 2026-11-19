@@ -368,19 +368,22 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
 
     }
 
+    /* Let each column use its natural content width; never force a fixed
+       minimum that makes wide ledgers overflow or squeezes neighboring cells. */
     tbody td:not(.desc-cell):not(.details-cell):not(.description-cell):not([data-col-key="description"]) {
       white-space: normal !important;
-      word-break: keep-all !important;
-      overflow-wrap: normal !important;
-  min-width: 100px !important;
+      word-break: normal !important;
+      overflow-wrap: anywhere !important;
+      min-width: 0 !important;
     }
 
     tbody td:not(.desc-cell):not(.details-cell):not(.description-cell):not([data-col-key="description"]) .pdf-cell-text {
-      white-space: normal !important;
-      word-break: keep-all !important;
-      overflow-wrap: normal !important;
-  min-width: 100px !important;
-
+      display: inline-block !important;
+      max-width: 100% !important;
+      white-space: inherit !important;
+      word-break: inherit !important;
+      overflow-wrap: inherit !important;
+      min-width: 0 !important;
     }
 
     tbody td.desc-cell,
@@ -392,11 +395,12 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     tbody td.description-cell .pdf-cell-text,
     tbody td[data-col-key="description"] .pdf-cell-text {
       white-space: normal !important;
-      word-break: break-word !important;
-      overflow-wrap: normal !important;
+      word-break: normal !important;
+      overflow-wrap: anywhere !important;
       text-align: center !important;
-      direction: rtl;
-      min-width: 180px;
+      direction: rtl !important;
+      min-width: 0 !important;
+      max-width: 28ch !important;
     }
 
     .num, .numeric-cell, .date-cell, .compact-cell, .ref-cell, .idx {
