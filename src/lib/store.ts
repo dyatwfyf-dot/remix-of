@@ -781,7 +781,7 @@ export const useStore = create<State>()(
         }),
       clearInstallments: (year) => {
         if (year === "2025") set({ installments2025: [] });
-        else set({ installments: [], installments2025: [] });
+        else set({ installments: [] });
       },
       recalcAllInstallments: () =>
         set((s) => ({
