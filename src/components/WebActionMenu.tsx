@@ -48,7 +48,11 @@ export default function WebActionMenu({
         type="button"
         aria-haspopup="menu"
         aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          setOpen((value) => !value);
+        }}
         className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#10528e]/25 bg-white px-3 py-2 text-sm font-bold text-[#10528e] shadow-sm transition-colors hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-[#10528e]/30 active:scale-[0.98]"
       >
         <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
@@ -89,9 +93,23 @@ export default function WebActionMenu({
                 type="button"
                 role="menuitem"
                 disabled={action.disabled}
-                onClick={() => {
-                  setOpen(false);
-                  void action.onSelect();
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  // Run the action while this click still owns the browser's
+                  // user activation (needed for print windows and native dialogs).
+                  try {
+                    const result = action.onSelect();
+                    setOpen(false);
+                    if (result && typeof (result as Promise<void>).then === "function") {
+                      void (result as Promise<void>).catch((error) => {
+                        console.error("Tab action failed:", error);
+                      });
+                    }
+                  } catch (error) {
+                    console.error("Tab action failed:", error);
+                    setOpen(false);
+                  }
                 }}
                 className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                   action.destructive
