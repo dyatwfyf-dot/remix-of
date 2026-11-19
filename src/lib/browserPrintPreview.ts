@@ -1328,8 +1328,11 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         const headerRow = table && table.tHead && table.tHead.rows[table.tHead.rows.length - 1];
         const columnCount = headerRow ? headerRow.cells.length : 1;
         // Maintain readable physical print text while allowing dense tables to fit A4.
-        const fontSize = columnCount > 16 ? 9 : columnCount > 13 ? 10 : columnCount > 10 ? 11 : columnCount > 7 ? 12 : 14;
-        const headerFontSize = columnCount > 16 ? 9 : columnCount > 13 ? 10 : columnCount > 10 ? 11 : columnCount > 7 ? 12 : 14;
+        const isReportsTabTable = table?.id === 'reports-table';
+        const fontSize = isReportsTabTable
+          ? (columnCount > 16 ? 10 : columnCount > 13 ? 11 : columnCount > 10 ? 12 : columnCount > 7 ? 13 : 14)
+          : (columnCount > 16 ? 9 : columnCount > 13 ? 10 : columnCount > 10 ? 11 : columnCount > 7 ? 12 : 14);
+        const headerFontSize = isReportsTabTable ? Math.min(fontSize + 1, 15) : fontSize;
         const horizontalPadding = columnCount > 13 ? 1.5 : columnCount > 9 ? 2.5 : 4;
 
         paperContainer.style.setProperty('--print-cell-font-size', fontSize + 'px');
