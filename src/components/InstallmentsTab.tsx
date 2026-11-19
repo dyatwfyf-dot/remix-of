@@ -514,17 +514,24 @@ export default function InstallmentsTab() {
   const getNotesStatusTone = (value: unknown): NotesStatusTone | null => {
     const status = normalizeNotesStatus(value);
     if (!status) return null;
-    if (["منسحب", "منسحبه", "انسحب", "انسحبت", "منقطع", "منقطعه", "مستقيل", "مستقيله"].includes(status))
+
+    // Match status keywords anywhere in the notes text, not only when the
+    // entire notes cell equals the status word. This keeps screen and print
+    // row coloring consistent when notes include dates or extra explanations.
+    const containsAny = (keywords: string[]) =>
+      keywords.some((keyword) => status.includes(normalizeNotesStatus(keyword)));
+
+    if (containsAny(["منسحب", "منسحبه", "انسحب", "انسحبت", "منقطع", "منقطعه", "مستقيل", "مستقيله"]))
       return "red";
-    if (["مفصول", "مفصوله", "فصل", "راسب", "راسبه"].includes(status))
+    if (containsAny(["مفصول", "مفصوله", "فصل", "راسب", "راسبه"]))
       return "yellow";
-    if (["متخرج", "متخرجه", "خريج", "خريجه"].includes(status))
+    if (containsAny(["متخرج", "متخرجه", "خريج", "خريجه"]))
       return "green";
-    if (["موقوف", "موقوفه", "معتذر", "معتذره"].includes(status))
+    if (containsAny(["موقوف", "موقوفه", "معتذر", "معتذره"]))
       return "orange";
-    if (["مؤجل", "مؤجله"].includes(status))
+    if (containsAny(["مؤجل", "مؤجله"]))
       return "blue";
-    if (["مستمر", "مستمره", "منتظم", "منتظمه", "على راس العمل"].includes(status))
+    if (containsAny(["مستمر", "مستمره", "منتظم", "منتظمه", "على راس العمل"]))
       return "emerald";
     return null;
   };
