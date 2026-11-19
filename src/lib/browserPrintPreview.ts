@@ -1083,7 +1083,28 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       const selScale = document.getElementById('selScale');
       const selLineSpacing = document.getElementById('selLineSpacing');
       const paperContainer = document.getElementById('paperContainer');
+      const tableContainer = document.getElementById('tableContainer');
       const dynamicRule = document.getElementById('dynamic-page-rule');
+      // Apply live controls after all report-specific CSS so no fixed !important rule can cancel them.
+      const liveSettingsStyle = document.createElement('style');
+      liveSettingsStyle.id = 'live-print-settings';
+      liveSettingsStyle.textContent = `
+        #paperContainer #tableContainer table th,
+        #paperContainer #tableContainer table td {
+          font-size: var(--print-cell-font-size, 14px) !important;
+          line-height: var(--print-cell-line-height, 1.45) !important;
+          padding: var(--print-cell-padding, 3px 4px) !important;
+        }
+        #paperContainer #tableContainer table thead th {
+          font-size: var(--print-header-font-size, 14px) !important;
+        }
+        #paperContainer #tableContainer table th .pdf-cell-text,
+        #paperContainer #tableContainer table td .pdf-cell-text {
+          font-size: inherit !important;
+          line-height: inherit !important;
+        }
+      `;
+      document.head.appendChild(liveSettingsStyle);
       const btnPrint = document.getElementById('btnPrint');
       const btnDownloadPdf = document.getElementById('btnDownloadPdf');
       const btnClose = document.getElementById('btnClose');
@@ -1303,6 +1324,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       const scale = parseFloat(selScale.value) || 1;
       const lineSpacing = parseFloat(selLineSpacing.value) || 1.45;
       paperContainer.style.setProperty('--print-cell-line-height', String(lineSpacing));
+      tableContainer.style.setProperty('--print-cell-line-height', String(lineSpacing));
       // CSS variables update line-height without traversing every cell in large reports.
 
         paperContainer.classList.remove('portrait', 'landscape');
@@ -1338,21 +1360,22 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         paperContainer.style.setProperty('--print-cell-font-size', fontSize + 'px');
         paperContainer.style.setProperty('--print-header-font-size', headerFontSize + 'px');
         paperContainer.style.setProperty('--print-cell-padding', '3px ' + horizontalPadding + 'px');
+        tableContainer.style.setProperty('--print-cell-font-size', fontSize + 'px');
+        tableContainer.style.setProperty('--print-header-font-size', headerFontSize + 'px');
+        tableContainer.style.setProperty('--print-cell-padding', '3px ' + horizontalPadding + 'px');
 
-        const tableContainer = document.getElementById('tableContainer');
-        tableContainer.style.zoom = '1';
         tableContainer.style.width = '100%';
         // Keep a standard physical page size for all exports. Fit-to-content removes margins;
         // it must not turn a long report into one oversized PDF page.
         const pageMargin = fitToContent ? '0mm' : margin;
-        dynamicRule.innerHTML = '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargin + '; }';
+        dynamicRule.textContent = '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargin + '; }';
 
         const contentTable = tableContainer.querySelector('table');
         if (!contentTable) return;
         const denseTable = columnCount > 9;
         contentTable.classList.toggle('a4-dense-table', denseTable);
         tableContainer.style.width = '100%';
-        tableContainer.style.zoom = String(scale);
+        tableContainer.style.setProperty('zoom', String(scale), 'important');
 
         if (tableContainer.dataset.printCellsTagged !== 'true' && tableContainer.dataset.printCellsTagging !== 'true') {
           tableContainer.dataset.printCellsTagging = 'true';
