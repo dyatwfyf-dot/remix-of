@@ -370,7 +370,6 @@ export default function RevenueTab() {
         </div>
 
       </div>
-      </div>
 
       {/* لوحة وعاء الجدول الكبيرة الزجاجية بحدود سوداء */}
       <div id="revenue-report-content" className="bg-white rounded-2xl shadow-xl shadow-slate-100/50 border-2 border-black overflow-hidden">
