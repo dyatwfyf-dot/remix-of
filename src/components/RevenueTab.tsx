@@ -639,7 +639,7 @@ export default function RevenueTab() {
                   colSpan={5}
                   className="text-center font-cairo bg-slate-200/50 text-slate-900 border-l border-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
                 >
-                  ملخص وعصارة مجاميع الحسابات والأبواب
+ ملخص  مجاميع الحسابات والأبواب
                 </td>
                 <td colSpan={6} className="border border-black px-0.5 py-1 sm:px-1 sm:py-1 !text-[10px] sm:!text-xs !whitespace-nowrap"></td>
               </tr>
@@ -655,7 +655,7 @@ export default function RevenueTab() {
                       colSpan={5}
                       className="border border-black text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
                     >
-                      جملة ميرادات الباب {order[ch.no - 1]} : {ch.title}
+                      جملة ايرادات الباب {order[ch.no - 1]} : {ch.title}
                     </td>
                     <td className="border border-black !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base whitespace-nowrap"></td>
                     <td className="border border-black numeric-cell font-mono text-center text-sky-700 whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
