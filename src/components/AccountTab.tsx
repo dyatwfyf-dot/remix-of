@@ -633,7 +633,7 @@ const isOpeningRow = (row: any) => String(row.description ?? "").includes("ال�
             title="استيراد سجلات الحساب الجاري من Excel"
           >
             <FileSpreadsheet className={ICON_MOBILE} />
-            <span>استيراد من Excel</span>
+            <span>استيراد Excel</span>
             <input
               type="file"
               accept=".xlsx, .xls, .csv"
