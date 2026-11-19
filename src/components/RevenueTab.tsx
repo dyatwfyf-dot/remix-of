@@ -3,13 +3,13 @@ import { useStore } from "@/lib/store";
 import { fmt } from "@/lib/format";
 import schema from "@/data/revenueTemplate.json";
 import { exportRevenueStatement } from "@/lib/exportImport";
-import { revenuePdf } from "@/lib/exportPdf";
 import { useReportDate } from "@/lib/reportDate";
 
 // استيراد الأيقونات لإضفاء لمسة بصرية حديثة متناسقة مع الهوية الجديدة
 import { Calendar, FileSpreadsheet, FileText, LayoutGrid, DollarSign, Printer } from "lucide-react";
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
-import WebActionMenu from "@/components/WebActionMenu";
+import WebActionMenu, { type WebActionItem } from "@/components/WebActionMenu";
+import { reportArabicFontFacesCss, reportArabicFontStack } from "@/lib/reportArabicFonts";
 
 const MONTH_NAMES = [
   "يناير",
@@ -129,12 +129,12 @@ export default function RevenueTab() {
     const sourceRows = Array.from(source.querySelectorAll("tr"));
     const printRows = Array.from(printContent.querySelectorAll("tr"));
     const visualProperties = [
-      "background-color", "background-image", "color", "border-top-color", "border-right-color",
+      "background-color", "background-image", "background-repeat", "background-position", "background-size", "color", "border-top-color", "border-right-color",
       "border-bottom-color", "border-left-color", "border-top-width", "border-right-width",
       "border-bottom-width", "border-left-width", "border-top-style", "border-right-style",
       "border-bottom-style", "border-left-style", "font-family", "font-size", "font-weight",
       "font-style", "line-height", "text-align", "vertical-align", "padding-top", "padding-right",
-      "padding-bottom", "padding-left", "white-space", "word-break", "overflow-wrap", "border-radius",
+      "padding-bottom", "padding-left", "white-space", "word-break", "overflow-wrap", "border-radius", "box-shadow", "opacity", "letter-spacing",
     ];
     const sourceElements = [source, ...Array.from(source.querySelectorAll<HTMLElement>("*"))];
     const targetElements = [printContent, ...Array.from(printContent.querySelectorAll<HTMLElement>("*"))];
@@ -151,27 +151,18 @@ export default function RevenueTab() {
     });
     const printHeading = printContent.querySelector<HTMLElement>(".revenue-report-heading");
     if (printHeading) {
-      ["background", "background-image", "background-color", "border", "border-radius", "box-shadow"].forEach((property) =>
-        printHeading.style.setProperty(property, "none", "important"),
-      );
+      // Preserve the screen header gradient and its foreground styling in print.
       printHeading.style.setProperty("display", "block", "important");
       printHeading.style.setProperty("width", "100%", "important");
       printHeading.style.setProperty("margin", "0 auto 4mm", "important");
       printHeading.style.setProperty("padding", "2mm 0", "important");
-      printHeading.style.setProperty("text-align", "center", "important");
-      printHeading.style.setProperty("color", "#142b3d", "important");
+      printHeading.style.setProperty("text-align", "right", "important");
+      printHeading.style.setProperty("font-family", reportArabicFontStack, "important");
       printHeading.style.setProperty("page-break-after", "avoid", "important");
-      printHeading.querySelectorAll<HTMLElement>("*").forEach((child) => {
-        child.style.setProperty("background", "#fff", "important");
-        child.style.setProperty("background-image", "none", "important");
-        child.style.setProperty("color", "#334b5e", "important");
-        child.style.setProperty("border", "0", "important");
-        child.style.setProperty("box-shadow", "none", "important");
-        child.style.setProperty("text-align", "center", "important");
-      });
       const heading = printHeading.querySelector<HTMLElement>("h2");
       if (heading) {
-        heading.style.setProperty("color", "#142b3d", "important");
+        heading.style.setProperty("color", "#ffffff", "important");
+        heading.style.setProperty("font-family", reportArabicFontStack, "important");
         heading.style.setProperty("font-size", "18px", "important");
         heading.style.setProperty("font-weight", "900", "important");
       }
@@ -220,7 +211,7 @@ export default function RevenueTab() {
         if (cellStyle.backgroundColor === "rgba(0, 0, 0, 0)" && rowStyle.backgroundColor !== "rgba(0, 0, 0, 0)") {
           targetCell.style.setProperty("background-color", rowStyle.backgroundColor, "important");
         }
-        targetCell.style.setProperty("font-family", "Cairo, Tahoma, Arial, sans-serif", "important");
+        targetCell.style.setProperty("font-family", reportArabicFontStack, "important");
         if (!targetCell.classList.contains("numeric-cell")) {
           targetCell.style.setProperty("white-space", "normal", "important");
           targetCell.style.setProperty("overflow-wrap", "break-word", "important");
@@ -231,30 +222,31 @@ export default function RevenueTab() {
       });
     });
     const title = "كشف الإيرادات - " + MONTH_NAMES[month - 1] + " - " + year;
-    const css = '@page { size: A4 landscape; margin: 5mm; }' +
+    const css = reportArabicFontFacesCss +
+      '@page { size: A4 landscape; margin: 5mm; }' +
       '* { box-sizing:border-box; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }' +
-      'html,body { margin:0; padding:0; direction:rtl; color:#000; font-family:Cairo,Arial,sans-serif; }' +
+      'html,body { margin:0; padding:0; direction:rtl; color:#000; font-family:' + reportArabicFontStack + '; }' +
       '#revenue-print { width:100%; }' +
-      '#revenue-print .revenue-report-heading { display:block !important; width:100% !important; margin:0 auto 3mm !important; padding:1.5mm 0 !important; border:0 !important; border-bottom:1.5px solid #334b5e !important; border-radius:0 !important; background:#fff !important; color:#142b3d !important; text-align:right !important; page-break-after:avoid !important; box-shadow:none !important; font-family:Cairo,Tahoma,Arial,sans-serif !important; }' +
+      '#revenue-print .revenue-report-heading { display:block !important; width:100% !important; margin:0 auto 3mm !important; padding:1.5mm 0 !important; border:0 !important; border-bottom:1.5px solid #334b5e !important; border-radius:0 !important; background:#fff !important; color:#142b3d !important; text-align:right !important; page-break-after:avoid !important; box-shadow:none !important; font-family:' + reportArabicFontStack + ' !important; }' +
       '#revenue-print .revenue-heading-layout { display:flex !important; flex-wrap:wrap !important; align-items:center !important; justify-content:space-between !important; gap:2px 12px !important; }' +
       '#revenue-print .revenue-heading-main { display:flex !important; flex-wrap:wrap !important; align-items:center !important; gap:2px 8px !important; }' +
       '#revenue-print .revenue-heading-copy { display:flex !important; flex-wrap:wrap !important; align-items:baseline !important; gap:2px 9px !important; }' +
-      '#revenue-print .revenue-heading-copy p { margin:0 !important; color:#334b5e !important; font-size:11px !important; font-weight:800 !important; }' +
-      '#revenue-print .revenue-report-heading h2 { margin:0 !important; color:#142b3d !important; font-size:17px !important; line-height:1.4 !important; font-weight:900 !important; }' +
+      '#revenue-print .revenue-heading-copy p { margin:0 !important; color:#334b5e !important; font-family:' + reportArabicFontStack + ' !important; font-size:12px !important; font-weight:700 !important; }' +
+      '#revenue-print .revenue-report-heading h2 { margin:0 !important; color:#142b3d !important; font-family:' + reportArabicFontStack + ' !important; font-size:18px !important; line-height:1.4 !important; font-weight:800 !important; }' +
       '#revenue-print .revenue-heading-meta { display:flex !important; flex-wrap:wrap !important; align-items:center !important; gap:2px 8px !important; }' +
       '#revenue-print .revenue-heading-meta > div { padding:0 !important; border:0 !important; background:#fff !important; color:#334b5e !important; box-shadow:none !important; font-size:10px !important; }' +
       '#revenue-print .revenue-report-heading svg { display:none !important; }' +
       '#revenue-print .overflow-auto,#revenue-print .overflow-x-auto { overflow:visible !important; max-height:none !important; }' +
       '#revenue-print .sticky { position:static !important; }' +
-      '#revenue-print table { width:100% !important; min-width:0 !important; table-layout:fixed !important; border-collapse:collapse !important; font-family:Cairo,Tahoma,Arial,sans-serif !important; }' +
+      '#revenue-print table { width:100% !important; min-width:0 !important; table-layout:fixed !important; border-collapse:collapse !important; font-family:' + reportArabicFontStack + ' !important; }' +
       '#revenue-print table col.revenue-resource-col { width:24% !important; }' +
       '#revenue-print table col.revenue-code-col { width:7% !important; }' +
       '#revenue-print table col.revenue-value-col { width:8% !important; }' +
-      '#revenue-print table th,#revenue-print table td,#revenue-print table input { font-family:Cairo,Tahoma,Arial,sans-serif !important; }' +
+      '#revenue-print table th,#revenue-print table td,#revenue-print table input { font-family:' + reportArabicFontStack + ' !important; }' +
       '#revenue-print table td:first-child { text-align:right !important; padding-right:6px !important; line-height:1.5 !important; }' +
       '#revenue-print th:nth-child(2),#revenue-print th:nth-child(3),#revenue-print th:nth-child(4),#revenue-print th:nth-child(5),#revenue-print td.numeric-cell { direction:ltr !important; font-variant-numeric:tabular-nums !important; }' +
       '#revenue-print td:first-child { white-space:normal !important; overflow-wrap:break-word !important; word-break:normal !important; font-weight:800 !important; }' +
-      '#revenue-print th,#revenue-print td { border:1px solid #000 !important; text-align:center !important; vertical-align:middle !important; padding:4px 3px !important; font-size:10px !important; line-height:1.4 !important; }' +
+      '#revenue-print th,#revenue-print td { border:1px solid #000 !important; text-align:center !important; vertical-align:middle !important; padding:4px 3px !important; font-family:' + reportArabicFontStack + ' !important; font-size:11.5px !important; line-height:1.45 !important; }' +
       '#revenue-print th { white-space:normal !important; overflow-wrap:break-word !important; word-break:normal !important; font-weight:900 !important; }' +
       '#revenue-print td { white-space:normal !important; overflow-wrap:break-word !important; word-break:normal !important; font-weight:700 !important; }' +
       '#revenue-print td.numeric-cell { white-space:nowrap !important; overflow-wrap:normal !important; word-break:keep-all !important; }' +
@@ -276,22 +268,37 @@ export default function RevenueTab() {
     if (!opened) alert("تم منع فتح نافذة معاينة الطباعة، يرجى السماح بالنوافذ المنبثقة");
   };
 
+  const triggerRevenueAction = (id: string) => {
+    (document.getElementById(id) as HTMLButtonElement | null)?.click();
+  };
+
+  const revenueWebActions: WebActionItem[] = [
+    { label: "طباعة التقرير / حفظ PDF", onSelect: () => triggerRevenueAction("revenue-print-action") },
+    { label: "تصدير Excel", onSelect: () => triggerRevenueAction("revenue-excel-action") },
+    { label: "مسح بيانات الإيرادات", destructive: true, onSelect: () => triggerRevenueAction("revenue-clear-action") },
+  ];
+
   return (
     // الحاوية الخارجية: فرض الاتجاه العربي العام وضمان التباعد العمودي
     <div className="mizan-revenue-tab sheet-tabs-ui w-full space-y-3 p-1.5 text-center sm:space-y-5 sm:p-3" dir="rtl">
       <style>{`
+        ${reportArabicFontFacesCss}
+        .mizan-revenue-tab { --revenue-report-font:${reportArabicFontStack}; --revenue-body-size:14px; --revenue-header-size:14px; --revenue-mobile-size:13px; }
         .mizan-revenue-tab .revenue-main-table,
         .mizan-revenue-tab .revenue-main-table th,
         .mizan-revenue-tab .revenue-main-table td,
-        .mizan-revenue-tab .revenue-main-table input { font-family:Cairo,Tahoma,Arial,sans-serif !important; }
-        .mizan-revenue-tab .revenue-main-table { width:100%; min-width:1120px; table-layout:fixed; }
+        .mizan-revenue-tab .revenue-main-table input { font-family:var(--revenue-report-font) !important; font-variant-numeric:tabular-nums; }
+        .mizan-revenue-tab .revenue-main-table { width:100%; min-width:1120px; table-layout:fixed; font-family:var(--revenue-report-font)!important; font-size:var(--revenue-body-size)!important; }
+        .mizan-revenue-tab .revenue-main-table th { font-size:var(--revenue-header-size)!important; font-weight:700!important; }
+        .mizan-revenue-tab .revenue-main-table td { font-size:var(--revenue-body-size)!important; font-weight:500!important; line-height:1.5!important; }
+        .mizan-revenue-tab .revenue-main-table td.numeric-cell { font-variant-numeric:tabular-nums; white-space:nowrap!important; }
         .mizan-revenue-tab .revenue-main-table col.revenue-resource-col { width:24%; }
         .mizan-revenue-tab .revenue-main-table col.revenue-code-col { width:7%; }
         .mizan-revenue-tab .revenue-main-table col.revenue-value-col { width:8%; }
         .mizan-revenue-tab .revenue-main-table td:first-child { text-align:right !important; white-space:normal !important; overflow-wrap:break-word !important; word-break:normal !important; line-height:1.55 !important; padding:7px 9px !important; }
         .mizan-revenue-tab .revenue-main-table .revenue-chapter-name { white-space:normal !important; line-height:1.5 !important; }
-        .mizan-revenue-tab .revenue-main-table th { font-family:Cairo,Tahoma,Arial,sans-serif !important; font-weight:900 !important; line-height:1.4 !important; }
-        .mizan-revenue-tab .revenue-report-heading { font-family:Cairo,Tahoma,Arial,sans-serif; }
+        .mizan-revenue-tab .revenue-main-table th { font-family:var(--revenue-report-font)!important; font-weight:700!important; line-height:1.45!important; }
+        .mizan-revenue-tab .revenue-report-heading { font-family:var(--revenue-report-font)!important; }
         .mizan-revenue-tab .revenue-heading-layout { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 18px; }
         .mizan-revenue-tab .revenue-heading-main { display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; min-width:0; }
         .mizan-revenue-tab .revenue-heading-copy { display:flex; flex-wrap:wrap; align-items:baseline; gap:3px 12px; min-width:0; }
@@ -299,7 +306,8 @@ export default function RevenueTab() {
         .mizan-revenue-tab .revenue-heading-meta { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
         @media (max-width:640px) {
           .mizan-revenue-tab .revenue-main-table { min-width:1120px; }
-          .mizan-revenue-tab .revenue-main-table td:first-child { padding:6px 8px !important; font-size:13px !important; }
+          .mizan-revenue-tab { --revenue-body-size:var(--revenue-mobile-size); --revenue-header-size:13px; }
+          .mizan-revenue-tab .revenue-main-table td:first-child { padding:6px 8px !important; }
         }
       `}</style>
       {/* لوحة التحكم والتحقق: تم تغيير لون الحدود هنا أيضاً إلى أسود متناسق */}
@@ -341,59 +349,25 @@ export default function RevenueTab() {
         <div className="hidden lg:block lg:flex-1" />
 
         {/* أزرار الإجراءات والتقارير: قائمة منسدلة في الويب، وأزرارها الأصلية داخل APK */}
-        <div className="web-only-actions col-span-2 flex w-full justify-end lg:col-span-1 lg:w-auto">
-          <WebActionMenu
-            label="إجراءات الإيرادات"
-            actions={[
-              {
-                label: "تصدير Excel السنوي",
-                icon: FileSpreadsheet,
-                onSelect: () => exportRevenueStatement(revenue, year, reportDate),
-              },
-              {
-                label: "معاينة الطباعة / طباعة",
-                icon: Printer,
-                onSelect: printRevenue,
-              },
-              {
-                label: "تصدير PDF",
-                icon: FileText,
-                onSelect: () => revenuePdf(revenue, year, month, reportDate),
-              },
-              {
-                label: "مسح بيانات الإيرادات",
-                destructive: true,
-                onSelect: () => {
-                  if (!confirm("هل أنت متأكد من مسح جميع بيانات الإيرادات؟ لا يمكن التراجع.")) return;
-                  useStore.setState({ revenue: {} });
-                },
-              },
-            ]}
-          />
+        <div className="web-only-actions sm:w-auto">
+          <WebActionMenu label="إجراءات الإيرادات" actions={revenueWebActions} />
         </div>
-        <div className="apk-only-actions col-span-2 grid w-full grid-cols-2 gap-1.5 sm:flex sm:w-auto sm:gap-2 lg:col-span-1">
-          <button
-            onClick={() => exportRevenueStatement(revenue, year, reportDate)}
-            className="min-w-0 flex flex-1 items-center justify-center gap-1 px-1.5 py-1 text-sm sm:flex-initial sm:gap-1.5 sm:px-2 sm:py-1 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold rounded-lg transition-all shadow-sm hover:border-sky-500/30 hover:text-sky-700 active:scale-[0.98]"
-          >
-            <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-            <span>تصدير Excel السنوي</span>
-          </button>
-          <button onClick={printRevenue} className="min-w-0 flex flex-1 items-center justify-center gap-1 px-1.5 py-1 text-sm sm:flex-initial sm:gap-1.5 sm:px-2 sm:py-1 bg-gradient-to-r from-sky-700 to-sky-800 text-white font-bold rounded-lg shadow-md">
-            <Printer className="w-4 h-4" /><span>معاينة / طباعة</span>
-          </button>
-          <button onClick={() => revenuePdf(revenue, year, month, reportDate)} className="min-w-0 flex flex-1 items-center justify-center gap-1 px-1.5 py-1 text-sm sm:flex-initial sm:gap-1.5 sm:px-2 sm:py-1 bg-white text-slate-700 border border-slate-200 font-bold rounded-lg shadow-sm">
-            <FileText className="w-4 h-4" /><span>تنزيل PDF</span>
-          </button>
-          <button
-            onClick={() => {
+        <div className="apk-only-actions w-full min-w-0 items-center gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-sm lg:w-auto lg:shrink-0" role="group" aria-label="إجراءات الإيرادات">
+          <span className="shrink-0 px-1 text-xs font-black text-slate-600">إجراءات</span>
+          <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto">
+            <button type="button" id="revenue-print-action" onClick={printRevenue} className="flex min-h-10 items-center justify-center gap-1 rounded-lg bg-sky-700 px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-sky-800">
+              <Printer className="h-4 w-4" /><span>طباعة التقرير / PDF</span>
+            </button>
+            <button type="button" id="revenue-excel-action" onClick={() => exportRevenueStatement(revenue, year, reportDate)} className="flex min-h-10 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50">
+              <FileSpreadsheet className="h-4 w-4 text-emerald-600" /><span>تصدير Excel</span>
+            </button>
+            <button type="button" id="revenue-clear-action" onClick={() => {
               if (!confirm("هل أنت متأكد من مسح جميع بيانات الإيرادات؟ لا يمكن التراجع.")) return;
               useStore.setState({ revenue: {} });
-            }}
-            className="min-w-0 flex flex-1 items-center justify-center gap-1 px-1.5 py-1 text-sm sm:flex-initial sm:gap-1.5 sm:px-2 sm:py-1 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg transition-all shadow-md active:scale-[0.98]"
-          >
-            🗑️ <span>مسح بيانات الإيرادات</span>
-          </button>
+            }} className="flex min-h-10 items-center justify-center gap-1 rounded-lg bg-rose-600 px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-rose-700">
+              <span>مسح بيانات الإيرادات</span>
+            </button>
+          </div>
         </div>
       </div>
 
