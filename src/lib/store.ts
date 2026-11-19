@@ -283,11 +283,12 @@ if (typeof window !== "undefined") {
   });
 }
 
-const recalcInstallment = (i: Installment): Installment => {
+const recalcInstallment = (i: Installment, year: "2025" | "2026" = "2026"): Installment => {
   const totalPaid = Object.values(i.payments || {}).reduce((s, v) => s + (Number(v) || 0), 0);
   const fees = Number(i.fees) || 0;
   const prevDue = Number(i.prevDue) || 0;
-  return { ...i, fees, prevDue, totalPaid, remaining: prevDue - totalPaid };
+  const totalDue = year === "2025" ? fees : prevDue + fees;
+  return { ...i, fees, prevDue, totalPaid, remaining: Math.max(0, totalDue - totalPaid) };
 };
 
 const recalculateRevenueMap = (accounts: Account[]): RevenueMap => {
@@ -748,7 +749,7 @@ export const useStore = create<State>()(
           payments: {},
           totalPaid: 0,
           remaining: Number(i.prevDue) || 0,
-        } as Installment);
+        } as Installment, year === "2025" ? "2025" : "2026");
         set((s) => {
           const key = year === "2025" ? "installments2025" : "installments";
           return { [key]: [...s[key], newInst] };
@@ -759,7 +760,7 @@ export const useStore = create<State>()(
           const key = year === "2025" ? "installments2025" : "installments";
           return {
             [key]: s[key].map((inst, idx) =>
-              idx === index ? recalcInstallment({ ...inst, ...i }) : inst,
+              idx === index ? recalcInstallment({ ...inst, ...i }, year === "2025" ? "2025" : "2026") : inst,
             ),
           };
         }),
@@ -769,7 +770,7 @@ export const useStore = create<State>()(
           return {
             [key]: s[key].map((inst, idx) =>
               idx === index
-                ? recalcInstallment({ ...inst, payments: { ...inst.payments, [month]: amount } })
+                ? recalcInstallment({ ...inst, payments: { ...inst.payments, [month]: amount } }, year === "2025" ? "2025" : "2026")
                 : inst,
             ),
           };
@@ -785,8 +786,8 @@ export const useStore = create<State>()(
       },
       recalcAllInstallments: () =>
         set((s) => ({
-          installments: s.installments.map(recalcInstallment),
-          installments2025: s.installments2025.map(recalcInstallment),
+          installments: s.installments.map((item) => recalcInstallment(item, "2026")),
+          installments2025: s.installments2025.map((item) => recalcInstallment(item, "2025")),
         })),
       setInstallmentCustomColumns2026: (columns) => set({ installmentCustomColumns2026: columns }),
       setInstallmentConditionalRules2026: (rules) =>
@@ -868,10 +869,10 @@ export const useStore = create<State>()(
                 ? { ...s.revenue, ...d.revenue }
                 : s.revenue,
             installments: d.installments
-              ? [...s.installments, ...d.installments.map(recalcInstallment)]
+              ? [...s.installments, ...d.installments.map((item: Installment) => recalcInstallment(item, "2026"))]
               : s.installments,
             installments2025: d.installments2025
-              ? [...s.installments2025, ...d.installments2025.map(recalcInstallment)]
+              ? [...s.installments2025, ...d.installments2025.map((item: Installment) => recalcInstallment(item, "2025"))]
               : s.installments2025,
             openingBalance: d.openingBalance ?? s.openingBalance,
             installmentCustomColumns2026:
