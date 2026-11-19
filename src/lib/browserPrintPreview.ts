@@ -1103,7 +1103,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         '  font-size: inherit !important;',
         '  line-height: inherit !important;',
         '}'
-      ].join('\\n');
+      ].join('\n');
       document.head.appendChild(liveSettingsStyle);
       const btnPrint = document.getElementById('btnPrint');
       const btnDownloadPdf = document.getElementById('btnDownloadPdf');
