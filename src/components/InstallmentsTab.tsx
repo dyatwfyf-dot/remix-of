@@ -2863,9 +2863,8 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       if (normalizeName(record.name) !== targetName) return;
       const paymentDate = new Date(record.notifyDate || record.date || "");
       if (!Number.isFinite(paymentDate.getTime()) || paymentDate.getFullYear() < 2022) return;
-      const notifyAmount = cleanNumber(record.notifyAmount);
-      const hasReceipt = Boolean(String(record.hafizaNo || "").trim()) && cleanNumber(record.hafizaAmount) > 0;
-      const paidAmount = notifyAmount > 0 ? notifyAmount : hasReceipt ? cleanNumber(record.hafizaAmount) : 0;
+      // يعتمد إثبات السداد على مبلغ التوريد الفعلي فقط، لا على مبلغ الحافظة.
+      const paidAmount = cleanNumber(record.notifyAmount);
       if (paidAmount <= 0) return;
       if (isRegistrationFeeDescription(record.description)) registrationPaid += paidAmount;
       else if (/امتحان|اختبار/.test(String(record.description || ""))) examPaid += paidAmount;
