@@ -597,23 +597,6 @@ const isOpeningRow = (row: any) => String(row.description ?? "").includes("ال�
     icon: Zap,
     onSelect: handleSyncFromHafiza,
   },
-  {
-    label: "استيراد Excel",
-    icon: FileSpreadsheet,
-    onSelect: () => undefined,
-    content: (
-      <label className="flex w-full relative cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#166b4e] bg-gradient-to-r from-[#e9f7f0] to-[#d3eee2] border shadow-sm hover:from-[#dcefe5] hover:to-[#c5e6d5] transition-all duration-200">
-        <FileSpreadsheet className={`${ICON_MOBILE} text-[#000]`} />
-        <span>استيراد Excel</span>
-        <input
-          type="file"
-          accept=".xlsx, .xls, .csv"
-          onChange={handleImportExcel}
-          className="absolute h-0 w-0 opacity-0 overflow-hidden"
-        />
-      </label>
-    ),
-  },
 ];
   return (
     <div
@@ -641,6 +624,37 @@ const isOpeningRow = (row: any) => String(row.description ?? "").includes("ال�
     <span className="text-[#000] font-mono text-base tabular-nums font-black">{accounts.length}</span>
   </div>
 </div>
+      {/* إجراءات الحساب الجاري: شريط ثابت أسفل شريط التنقل أثناء التمرير */}
+      <div className="accounts-print-hide accounts-main-actions flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-2xl border border-[#9fc6d9] bg-white/95 p-2 shadow-md backdrop-blur">
+        <div className="px-2 text-sm font-black text-[#0f2f44]">إجراءات الحساب الجاري</div>
+        <div className="flex flex-wrap items-center gap-2">
+          <label
+            className={`${BTN_MOBILE} relative inline-flex items-center justify-center gap-2 rounded-xl border border-[#1f5f7a]/30 bg-[#e8f4fa] text-[#0f4c6b] font-black shadow-sm cursor-pointer hover:bg-[#d9edf7] transition-colors`}
+            title="استيراد سجلات الحساب الجاري من Excel"
+          >
+            <FileSpreadsheet className={ICON_MOBILE} />
+            <span>استيراد من Excel</span>
+            <input
+              type="file"
+              accept=".xlsx, .xls, .csv"
+              onChange={handleImportExcel}
+              className="absolute h-px w-px opacity-0 overflow-hidden"
+            />
+          </label>
+          <TabActions title="كشف الحساب 
+الجاري"
+              rows={filteredWithBalance}
+              columns={COLS.filter((c) => c.key !== "revenueKey")}
+              fileName="الحساب-الجاري"
+              numericKeys={["hafizaAmount", "income", "expense", "balance"]}
+              pdfLayout="wide-centered"
+              pdfOrientation="landscape"
+              printTableClassName="accounts-ledger-table"
+              pdfCss={greenPrintHeaderCss}
+              onClear={clearAccounts}
+            />
+        </div>
+      </div>
       {/* ===== بطاقات الإجماليات ===== */}
 <div className="accounts-print-hide grid grid-cols-3 gap-2 bg-sky-300 border border-black">
   <LedgerStat
@@ -805,19 +819,6 @@ actions={accountEntryWebActions}
 <span className="text-sm">مطابقة شاملة ٢٠٢٦</span>
       </button>
 
-      <label
-        className={`${BTN_MOBILE} relative flex items-center justify-center gap-2 rounded-full border px-3 py-2 cursor-pointer font-bold shadow-sm bg-[#8C4A32] text-[#ffffff]`}
-        style={{ borderColor: THEME.softBorder }}
-      >
-        <FileSpreadsheet className={`${ICON_MOBILE} text-[#1f5f7a]`} />
-        <span>استيراد إكسل</span>
-        <input
-          type="file"
-          accept=".xlsx, .xls, .csv"
-          onChange={handleImportExcel}
-          className="absolute h-0 w-0 opacity-0 overflow-hidden"
-        />
-      </label>
     </div>
   </div>
 
@@ -997,7 +998,7 @@ actions={accountEntryWebActions}
               سجل حركات الحساب الجاري ({accounts.length})
             </h2>
           </div>
-          <div className="grid grid-cols-2 sm:flex gap-1 sm:gap-2 w-full sm">
+          <div className="flex flex-wrap items-center gap-2">
             {Object.values(filters).some(Boolean) && (
               <button
                 onClick={clearFilters}
@@ -1006,19 +1007,6 @@ actions={accountEntryWebActions}
                 مسح مرشحات التصفية
               </button>
             )}
-<TabActions title="كشف الحساب 
-الجاري"
-              rows={filteredWithBalance}
-              columns={COLS.filter((c) => c.key !== "revenueKey")}
-              fileName="الحساب-الجاري"
-              numericKeys={["hafizaAmount", "income", "expense", "balance"]}
-              pdfLayout="wide-centered"
-              pdfOrientation="landscape"
-              printTableClassName="accounts-ledger-table"
-              pdfCss={greenPrintHeaderCss}
-              onClear={clearAccounts}
-              className="col-span-2 w-full"
-            />
           </div>
         </div>
 
