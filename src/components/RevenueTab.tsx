@@ -3,7 +3,7 @@ import { useStore } from "@/lib/store";
 import { fmt } from "@/lib/format";
 import schema from "@/data/revenueTemplate.json";
 import { exportRevenueStatement } from "@/lib/exportImport";
-import { reportArabicFontStack } from "@/lib/reportArabicFonts";
+import { reportArabicFontFacesCss, reportArabicFontStack } from "@/lib/reportArabicFonts";
 import { useReportDate } from "@/lib/reportDate";
 
 // استيراد الأيقونات لإضفاء لمسة بصرية حديثة متناسقة مع الهوية الجديدة
@@ -223,7 +223,7 @@ export default function RevenueTab() {
       });
     });
     const title = "كشف الإيرادات - " + MONTH_NAMES[month - 1] + " - " + year;
-    const css = '@page { size: A4 landscape; margin: 5mm; }' +
+    const css = reportArabicFontFacesCss + '@page { size: A4 landscape; margin: 5mm; }' +
       '* { box-sizing:border-box; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }' +
       `html,body,#revenue-print,#revenue-print * { font-family:${reportArabicFontStack} !important; }` +
       'html,body { margin:0; padding:0; direction:rtl; color:#000; font-family:Cairo,Arial,sans-serif; }' +
