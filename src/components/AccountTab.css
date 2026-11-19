@@ -1,39 +1,368 @@
-/* تنسيقات خاصة بهذا التبويب فقط. تم نقلها دون تغيير القواعد أو القيم. */
+/* تنسيق معزول لتبويب الحساب الجاري — لا يغيّر قواعد التبويبات الأخرى. */
+
+.mizan-account-tab {
+  --account-ink: #163247;
+  --account-muted: #587487;
+  --account-brand: #145b78;
+  --account-brand-deep: #103f59;
+  --account-accent: #d5a34a;
+  --account-line: #c8dce7;
+  --account-surface: #ffffff;
+  color: var(--account-ink);
+  background:
+    radial-gradient(ellipse at 8% 0%, rgba(42, 145, 174, .12), transparent 34%),
+    radial-gradient(ellipse at 100% 24%, rgba(213, 163, 74, .10), transparent 36%),
+    linear-gradient(145deg, #eef6fa 0%, #f8fbfd 52%, #e6f0f6 100%) !important;
+  border: 1px solid rgba(20, 91, 120, .12);
+  box-shadow: 0 12px 32px rgba(21, 63, 89, .07);
+}
+
+.mizan-account-tab :where(h1, h2, h3, h4) {
+  color: var(--account-ink);
+  letter-spacing: .1px;
+}
+
+.mizan-account-tab > div.accounts-print-hide.relative {
+  background: linear-gradient(112deg, #103f59 0%, #176d8b 58%, #238c91 100%) !important;
+  border: 1px solid rgba(255,255,255,.34) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 10px 24px rgba(16, 63, 89, .20) !important;
+  padding: 16px 18px !important;
+}
+.mizan-account-tab > div.accounts-print-hide.relative h1,
+.mizan-account-tab > div.accounts-print-hide.relative p,
+.mizan-account-tab > div.accounts-print-hide.relative span {
+  color: #fff !important;
+}
+.mizan-account-tab > div.accounts-print-hide.relative > div:last-child {
+  background: rgba(255,255,255,.14) !important;
+  border: 1px solid rgba(255,255,255,.24) !important;
+  border-radius: 12px !important;
+}
+.mizan-account-tab > div.accounts-print-hide.relative > div:last-child span:last-child {
+  color: #ffe3a3 !important;
+}
+
+@media screen {
+  .mizan-account-tab .accounts-main-actions {
+    position: -webkit-sticky !important;
+    position: sticky !important;
+    top: calc(env(safe-area-inset-top, 0px) + 74px) !important;
+    z-index: 50 !important;
+    isolation: isolate;
+    width: 100%;
+    border: 1px solid #bfd5e1 !important;
+    border-radius: 16px !important;
+    background: rgba(255,255,255,.97) !important;
+    box-shadow: 0 8px 22px rgba(16,63,89,.13) !important;
+    backdrop-filter: blur(12px);
+  }
+}
+.mizan-account-tab .accounts-main-actions > div:first-child {
+  color: var(--account-brand-deep) !important;
+}
+.mizan-account-tab .accounts-main-actions label {
+  border-color: #c5dce7 !important;
+  background: linear-gradient(135deg,#eaf5fa,#d9edf4) !important;
+  color: #124d68 !important;
+  box-shadow: 0 2px 7px rgba(20,91,120,.08) !important;
+}
+.mizan-account-tab .accounts-main-actions label:hover {
+  background: #d8edf5 !important;
+}
+
+.mizan-account-tab > div.accounts-print-hide.grid {
+  gap: 12px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+.mizan-account-tab > div.accounts-print-hide.grid > div {
+  min-width: 0;
+  border: 1px solid rgba(20,91,120,.15) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 6px 18px rgba(21,63,89,.08) !important;
+}
+.mizan-account-tab > div.accounts-print-hide.grid > div:nth-child(1) {
+  background: linear-gradient(135deg,#e9f8f1,#d4eee2) !important;
+}
+.mizan-account-tab > div.accounts-print-hide.grid > div:nth-child(2) {
+  background: linear-gradient(135deg,#fff0ef,#f8dddd) !important;
+}
+.mizan-account-tab > div.accounts-print-hide.grid > div:nth-child(3) {
+  background: linear-gradient(135deg,#eaf3fb,#d8e9f6) !important;
+}
+.mizan-account-tab > div.accounts-print-hide.grid > div > div:first-child > div:first-child > span {
+  color: #29485b !important;
+}
+.mizan-account-tab > div.accounts-print-hide.grid > div > div:first-child > div:first-child > div {
+  font-size: clamp(1rem, 2.8vw, 1.5rem) !important;
+}
+
+.mizan-account-tab > div.accounts-print-hide.w-full,
+.mizan-account-tab > div.accounts-print-hide.bolder {
+  border: 1px solid #c7dce6 !important;
+  border-radius: 18px !important;
+  background: linear-gradient(155deg,#ffffff 0%,#f0f7fa 100%) !important;
+  box-shadow: 0 8px 22px rgba(21,63,89,.07) !important;
+}
+.mizan-account-tab > div.accounts-print-hide.w-full > div:first-child,
+.mizan-account-tab > div.accounts-print-hide.bolder > div:first-child {
+  border: 0 !important;
+  border-bottom: 1px solid #d5e4eb !important;
+  background: linear-gradient(100deg,#e6f1f6,#f8fbfc) !important;
+}
+.mizan-account-tab > div.accounts-print-hide.w-full h2,
+.mizan-account-tab > div.accounts-print-hide.bolder h2 {
+  color: #164c68 !important;
+}
+.mizan-account-tab > div.accounts-print-hide.w-full p {
+  color: #607d8d !important;
+}
+.mizan-account-tab > div.accounts-print-hide.w-full select,
+.mizan-account-tab > div.accounts-print-hide.w-full input {
+  border: 1px solid #c4d9e4 !important;
+  background: #fff !important;
+  color: #163247 !important;
+  border-radius: 10px !important;
+  box-shadow: inset 0 1px 2px rgba(16,63,89,.04);
+}
+.mizan-account-tab > div.accounts-print-hide.w-full select:focus,
+.mizan-account-tab > div.accounts-print-hide.w-full input:focus {
+  outline: none !important;
+  border-color: #3186a2 !important;
+  box-shadow: 0 0 0 3px rgba(49,134,162,.14) !important;
+}
+.mizan-account-tab > div.accounts-print-hide.w-full > div:first-child > div > div {
+  background: #e7f0f5 !important;
+  color: #164c68 !important;
+  border: 1px solid #c7dce6 !important;
+}
+
+.mizan-account-tab > div.accounts-print-hide.bolder > div:last-child {
+  background: transparent !important;
+}
+.mizan-account-tab > div.accounts-print-hide.bolder label {
+  color: #254b61 !important;
+}
+.mizan-account-tab > div.accounts-print-hide.bolder input,
+.mizan-account-tab > div.accounts-print-hide.bolder select {
+  min-height: 42px;
+  border: 1px solid #c6dbe5 !important;
+  background: #fff !important;
+  color: #18384c !important;
+  border-radius: 11px !important;
+  box-shadow: 0 1px 3px rgba(16,63,89,.04);
+}
+.mizan-account-tab > div.accounts-print-hide.bolder input::placeholder {
+  color: #8aa0ad !important;
+}
+.mizan-account-tab > div.accounts-print-hide.bolder input:focus,
+.mizan-account-tab > div.accounts-print-hide.bolder select:focus {
+  outline: none !important;
+  border-color: #27829f !important;
+  box-shadow: 0 0 0 3px rgba(39,130,159,.14) !important;
+}
+.mizan-account-tab > div.accounts-print-hide.bolder button[type="submit"],
+.mizan-account-tab > div.accounts-print-hide.bolder button:first-child {
+  background: linear-gradient(110deg,#124d68,#197b88) !important;
+  color: #fff !important;
+  border-color: #124d68 !important;
+}
+.mizan-account-tab > div.accounts-print-hide.bolder button:last-child {
+  background: #fff4e7 !important;
+  color: #8a5630 !important;
+  border-color: #e8c9a9 !important;
+}
+
+.mizan-account-tab .accounts-print-area {
+  border: 1px solid #c6d9e3 !important;
+  border-radius: 18px !important;
+  background: #fff !important;
+  box-shadow: 0 9px 24px rgba(21,63,89,.08) !important;
+}
+.mizan-account-tab .accounts-print-area > div:first-child {
+  background: linear-gradient(100deg,#e8f2f7,#f8fbfc) !important;
+  border-bottom: 1px solid #d7e5ec !important;
+}
+.mizan-account-tab .accounts-print-area > div:first-child h2 {
+  color: #164c68 !important;
+}
+.mizan-account-tab table.accounts-ledger-table {
+  width: 100% !important;
+  min-width: 0 !important;
+  table-layout: auto !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  background: #fff !important;
+}
+.mizan-account-tab table.accounts-ledger-table thead tr:first-child th {
+  background: linear-gradient(110deg,#124d68,#176d86 58%,#238b91) !important;
+  color: #fff !important;
+  border-color: #0e4058 !important;
+  font-weight: 900 !important;
+  padding: 10px 7px !important;
+}
+.mizan-account-tab table.accounts-ledger-table thead tr:first-child th * {
+  color: #fff !important;
+}
+.mizan-account-tab table.accounts-ledger-table thead tr:nth-child(2) th {
+  background: #e7f1f6 !important;
+  color: #244b60 !important;
+  border-color: #c5d9e3 !important;
+}
+.mizan-account-tab table.accounts-ledger-table tbody td {
+  background-color: #fff !important;
+  color: #243d4d !important;
+  border-color: #d5e1e7 !important;
+  padding: 8px 7px !important;
+  font-weight: 650 !important;
+}
+.mizan-account-tab table.accounts-ledger-table tbody tr:nth-child(even) td {
+  background-color: #f4f8fa !important;
+}
+.mizan-account-tab table.accounts-ledger-table tbody tr:hover td {
+  background-color: #e8f3f7 !important;
+}
+.mizan-account-tab table.accounts-ledger-table tbody td.numeric-cell {
+  font-weight: 800 !important;
+  font-variant-numeric: tabular-nums;
+}
+.mizan-account-tab table.accounts-ledger-table tbody td:nth-last-child(4) {
+  color: #18734f !important;
+}
+.mizan-account-tab table.accounts-ledger-table tbody td:nth-last-child(3) {
+  color: #a33f43 !important;
+}
+.mizan-account-tab table.accounts-ledger-table tbody td:nth-last-child(2) {
+  background: #e5f0f8 !important;
+  color: #164c68 !important;
+  font-weight: 900 !important;
+}
+.mizan-account-tab table.accounts-ledger-table tfoot td {
+  background: #e2edf3 !important;
+  color: #173b51 !important;
+  border-color: #a9c4d2 !important;
+  font-weight: 900 !important;
+}
+.mizan-account-tab table.accounts-ledger-table tfoot td.numeric-cell {
+  font-variant-numeric: tabular-nums;
+}
+.mizan-account-tab table.accounts-ledger-table :where(th, td) {
+  vertical-align: middle !important;
+  line-height: 1.35 !important;
+}
+.mizan-account-tab table.accounts-ledger-table td.numeric-cell,
+.mizan-account-tab table.accounts-ledger-table th.numeric-cell,
+.mizan-account-tab table.accounts-ledger-table td.date-cell,
+.mizan-account-tab table.accounts-ledger-table th.date-cell {
+  white-space: nowrap !important;
+  overflow-wrap: normal !important;
+  word-break: keep-all !important;
+}
+.mizan-account-tab table.accounts-ledger-table .accounts-ledger-description {
+  min-width: 120px;
+  max-width: 180px;
+}
+.mizan-account-tab table.accounts-ledger-table .accounts-ledger-description > span {
+  -webkit-line-clamp: 2;
+}
+
+.mizan-account-tab :where(button, [role="button"], label.cursor-pointer) {
+  min-height: 40px;
+  border-radius: 11px !important;
+  font-weight: 800 !important;
+  transition: background-color .18s ease, box-shadow .18s ease, transform .12s ease;
+}
+.mizan-account-tab :where(button, [role="button"]):focus-visible {
+  outline: 3px solid rgba(39,130,159,.28);
+  outline-offset: 2px;
+}
+.mizan-account-tab :where(button, [role="button"]):active {
+  transform: translateY(1px);
+}
+.mizan-account-tab :where(input, select, textarea) {
+  color: #18384c;
+  accent-color: #197b88;
+}
+
+@media (max-width: 640px) {
+  .mizan-account-tab {
+    padding: .55rem !important;
+    border-radius: 14px !important;
+  }
+  .mizan-account-tab > div.accounts-print-hide.relative {
+    padding: 12px !important;
+    border-radius: 14px !important;
+  }
+  .mizan-account-tab > div.accounts-print-hide.grid {
+    gap: 7px !important;
+  }
+  .mizan-account-tab > div.accounts-print-hide.grid > div {
+    padding: 9px !important;
+    border-radius: 12px !important;
+  }
+  .mizan-account-tab > div.accounts-print-hide.bolder .grid.grid-cols-3 {
+    grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+  }
+  .mizan-account-tab > div.accounts-print-hide.bolder .grid.grid-cols-3 > [class~="sm:col-span-2"] {
+    grid-column: 1 / -1 !important;
+  }
+  .mizan-account-tab .accounts-main-actions {
+    gap: 7px !important;
+    padding: 8px !important;
+  }
+  .mizan-account-tab .accounts-main-actions > div:last-child {
+    display: grid !important;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 7px !important;
+  }
+  .mizan-account-tab .accounts-main-actions :where(label,button) {
+    width: 100%;
+    justify-content: center;
+    font-size: .78rem !important;
+    padding-inline: 7px !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table :where(th,td) {
+    padding: 6px 5px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* إعدادات الطباعة الحالية محفوظة مع إصلاح أخطاء CSS النحوية فقط. */
 @media print {
-  .accounts-print-scope { background:#B4CEB6 !important; }
-  .accounts-print-area, .accounts-print-area * { visibility: visible !important; }
+  .accounts-print-scope { background: #fff !important; }
+  .accounts-print-area,
+  .accounts-print-area * { visibility: visible !important; }
   .accounts-print-hide { display: none !important; }
   .accounts-print-area table {
     border-collapse: collapse !important;
     width: 100% !important;
-    min-width:auto !important;
-  table-layou: auto !important;
+    min-width: auto !important;
+    table-layout: auto !important;
   }
   .accounts-print-area thead th {
-    color: white !important;
+    color: #fff !important;
     font-weight: 1000 !important;
   }
   .accounts-print-area tbody td,
   .accounts-print-area tfoot td {
     color: #000 !important;
     font-weight: 800 !important;
-  }.accounts-print-scope label {
-    color: #f5f5dc;
   }
   .accounts-print-area th,
   .accounts-print-area td {
     border: 1px solid #000 !important;
-  white-space: normal !important;
+    white-space: normal !important;
     text-overflow: clip !important;
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
     hyphens: auto !important;
     line-height: 1.1 !important;
     padding: 0 !important;
-    line-height: 1.1 !important;
     font-size: 16px !important;
     height: auto !important;
-    max-width: auto !important;
+    max-width: none !important;
     color: #000 !important;
   }
   .accounts-print-area td.numeric-cell,
@@ -66,31 +395,5 @@
   .accounts-print-area .overflow-y-auto {
     overflow: visible !important;
     max-height: none !important;
-  }
-}
-
-/* تنسيقات الشاشة فقط: حدود وخلفيات فاتحة للجدول (الطباعة تبقى بحدود سوداء) */
-@media screen {
-  .accounts-ui-light table th,
-  .accounts-ui-light table td {
-    border-color: rgba(31, 95, 122, 0.18) !important;
-  }
-  .accounts-ui-light .accounts-print-area {
-    background: linear-gradient(180deg, #f4fafd, #e9f3fa) !important;
-  }
-}
-
-
-/* شريط إجراءات الحساب الجاري: يبقى ظاهراً أسفل شريط تبويبات التطبيق أثناء التمرير.
-   لا يُطبّق على أي تبويب آخر، ولا يدخل في الطباعة. */
-@media screen {
-  .mizan-account-tab .accounts-main-actions {
-    position: -webkit-sticky !important;
-    position: sticky !important;
-    top: calc(env(safe-area-inset-top, 0px) + 74px) !important;
-    z-index: 50 !important;
-    isolation: isolate;
-    width: 100%;
-    box-shadow: 0 4px 14px rgba(15, 47, 68, 0.14);
   }
 }
