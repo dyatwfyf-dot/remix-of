@@ -2287,14 +2287,16 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       .error("مبلغ غير صحيح");
     const list = [...(installments ||
       [])];
-    const exist = list.find((s) => s
-      .name === newStudentName);
+    const matchingStudents = list.filter((s) => s.name === newStudentName);
+    if (matchingStudents.length > 1) {
+      return toast.error(
+        "يوجد أكثر من سجل بهذا الاسم. استخدم زر إضافة دفعة من صف المتدرب المطلوب لتجنب تعديل سجل آخر.",
+      );
+    }
+    const exist = matchingStudents[0];
     if (exist) {
-      const updated = list.map((
-      s) => {
-        if (s.name !==
-          newStudentName)
-      return s;
+      const updated = list.map((s) => {
+        if (s !== exist) return s;
         const payments = {
           ...s.payments,
           [newStudentMonth]: (
