@@ -2205,9 +2205,11 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       prevDue: Number(newRowData2026
         .prevDue) || 0,
       totalPaid: 0,
-      remaining: Number(
-          newRowData2026.prevDue) ||
+      remaining: Math.max(
         0,
+        (Number(newRowData2026.prevDue) || 0) +
+          (Number(newRowData2026.fees) || 0),
+      ),
       notes: "",
       phone: "",
       payments,
