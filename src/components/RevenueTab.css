@@ -38,7 +38,7 @@
   padding: 7px 8px;
   border: 1px solid transparent;
   border-radius: 10px;
-  font-size: 12px;
+  font-size: 12px !important;
   font-weight: 800;
   line-height: 1.15;
   white-space: nowrap;
@@ -75,10 +75,10 @@
   }
   .revenue-actions-buttons { gap: 5px; }
   .revenue-actions-buttons .revenue-action-button {
-    min-height: 37px;
+    min-height: 37px !important;
     gap: 3px;
-    padding: 5px 4px;
-    font-size: clamp(9px, 2.7vw, 11px);
+    padding: 5px 4px !important;
+    font-size: clamp(9px, 2.7vw, 11px) !important;
     border-radius: 8px;
   }
   .revenue-actions-buttons .revenue-action-button svg {
