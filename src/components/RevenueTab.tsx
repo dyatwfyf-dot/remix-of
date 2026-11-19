@@ -6,7 +6,7 @@ import { exportRevenueStatement } from "@/lib/exportImport";
 import { useReportDate } from "@/lib/reportDate";
 
 // استيراد الأيقونات لإضفاء لمسة بصرية حديثة متناسقة مع الهوية الجديدة
-import { Calendar, FileSpreadsheet, FileText, LayoutGrid, DollarSign, Printer } from "lucide-react";
+import { Calendar, FileSpreadsheet, LayoutGrid, DollarSign, Printer } from "lucide-react";
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import WebActionMenu, { type WebActionItem } from "@/components/WebActionMenu";
 import { reportArabicFontFacesCss, reportArabicFontStack } from "@/lib/reportArabicFonts";
@@ -227,14 +227,14 @@ export default function RevenueTab() {
       '* { box-sizing:border-box; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }' +
       'html,body { margin:0; padding:0; direction:rtl; color:#000; font-family:' + reportArabicFontStack + '; }' +
       '#revenue-print { width:100%; }' +
-      '#revenue-print .revenue-report-heading { display:block !important; width:100% !important; margin:0 auto 3mm !important; padding:1.5mm 0 !important; border:0 !important; border-bottom:1.5px solid #334b5e !important; border-radius:0 !important; background:#fff !important; color:#142b3d !important; text-align:right !important; page-break-after:avoid !important; box-shadow:none !important; font-family:' + reportArabicFontStack + ' !important; }' +
+      '#revenue-print .revenue-report-heading { display:block !important; width:100% !important; margin:0 auto 3mm !important; padding:1.5mm 0 !important; border-bottom:1.5px solid #334b5e !important; border-radius:0 !important; text-align:right !important; page-break-after:avoid !important; box-shadow:none !important; font-family:' + reportArabicFontStack + ' !important; }' +
       '#revenue-print .revenue-heading-layout { display:flex !important; flex-wrap:wrap !important; align-items:center !important; justify-content:space-between !important; gap:2px 12px !important; }' +
       '#revenue-print .revenue-heading-main { display:flex !important; flex-wrap:wrap !important; align-items:center !important; gap:2px 8px !important; }' +
       '#revenue-print .revenue-heading-copy { display:flex !important; flex-wrap:wrap !important; align-items:baseline !important; gap:2px 9px !important; }' +
       '#revenue-print .revenue-heading-copy p { margin:0 !important; color:#334b5e !important; font-family:' + reportArabicFontStack + ' !important; font-size:12px !important; font-weight:700 !important; }' +
       '#revenue-print .revenue-report-heading h2 { margin:0 !important; color:#142b3d !important; font-family:' + reportArabicFontStack + ' !important; font-size:18px !important; line-height:1.4 !important; font-weight:800 !important; }' +
       '#revenue-print .revenue-heading-meta { display:flex !important; flex-wrap:wrap !important; align-items:center !important; gap:2px 8px !important; }' +
-      '#revenue-print .revenue-heading-meta > div { padding:0 !important; border:0 !important; background:#fff !important; color:#334b5e !important; box-shadow:none !important; font-size:10px !important; }' +
+      '#revenue-print .revenue-heading-meta > div { padding:0 !important; box-shadow:none !important; font-family:' + reportArabicFontStack + ' !important; font-size:11px !important; }' +
       '#revenue-print .revenue-report-heading svg { display:none !important; }' +
       '#revenue-print .overflow-auto,#revenue-print .overflow-x-auto { overflow:visible !important; max-height:none !important; }' +
       '#revenue-print .sticky { position:static !important; }' +
