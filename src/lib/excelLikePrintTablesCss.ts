@@ -58,11 +58,11 @@ export const excelLikePrintTablesCss = `
     min-width: 0 !important;
     max-width: none !important;
     height: auto !important;
-    padding: 3px 5px !important;
+    padding: var(--print-cell-padding, 3px 5px) !important;
     margin: 0 !important;
     text-align: center !important;
     vertical-align: middle !important;
-    line-height: 1.35 !important;
+    line-height: var(--print-cell-line-height, 1.35) !important;
     white-space: normal !important;
     overflow-wrap: break-word !important;
     word-break: normal !important;
