@@ -796,60 +796,7 @@ table td > * {
 }
 
 
-/* تنسيقات مستقلة لتبويب mizan-account-tab — القيم مطابقة للتنسيق السابق */
-/* هوية عصرية: أزرق بترولي عميق + لمسة نحاسية، واحتواء تلقائي للأعمدة بدون التفاف النصوص */
-.mizan-account-tab {
-  --sheet-ink: #0f2f44;
-  --sheet-brand: #1f5f7a;
-  --sheet-accent: #c98a3c;
-  color: var(--sheet-ink);
-  letter-spacing: 0.1px;
-}
-
-.mizan-account-tab :where(h1, h2, h3, h4) {
-  letter-spacing: 0.2px;
-  font-weight: 800;
-}
-
-/* الجداول: عرض الأعمدة يتكيّف مع أطول نص دون كسر الكلمات */
-.mizan-account-tab table {
-  table-layout: auto !important;
-  width: 100% !important;
-  min-width:auto !important;
-}
-
-.mizan-account-tab :where(table th, table td) {
-  white-space: nowrap !important;
-  overflow-wrap: normal !important;
-  word-break: keep-all !important;
-  hyphens: none !important;
-  padding: 6px 9px !important;
-  font-size: clamp(13px, 3.3vw, 14.5px) !important;
-  line-height: 1.35 !important;
-}
-
-.mizan-account-tab :where(table th, table td) * {
-  white-space: nowrap !important;
-  overflow-wrap: normal !important;
-  word-break: keep-all !important;
-}
-
-.mizan-account-tab thead th {
-  font-weight: 900 !important;
-  letter-spacing: 0.2px;
-}
-
-/* الأزرار: أحجام مريحة للمس على شاشات شاومي */
-.mizan-account-tab :where(button, [role="button"], label.cursor-pointer) {
-  border-radius: 0.75rem !important;
-  font-weight: 800 !important;
-  min-height: 40px;
-}
-
-.mizan-account-tab :where(input, select) {
-  border-radius: 0.65rem !important;
-  font-weight: 700;
-}
+/* تنسيقات الحساب الجاري محصورة في AccountTab.css لتجنب تعارض أولوية CSS. */
 
 /* إصلاح السحب والتمرير باللمس داخل WebView ونسخة الجوال */
 html,
@@ -939,7 +886,6 @@ body {
 /* خلفية مستقلة وهادئة لكل تبويب دون التأثير على محتوى التبويبات الأخرى */
 .mizan-installments-tab { background: linear-gradient(135deg, #edf4ff 0%, #f7faff 55%, #e7efff 100%) !important; }
 .mizan-hafiza-tab { background: linear-gradient(135deg, #eaf7ef 0%, #f6fcf8 55%, #e1f2e8 100%) !important; }
-.mizan-account-tab { background: linear-gradient(135deg, #e8f5f8 0%, #f5fbfc 55%, #dff0f4 100%) !important; }
 .mizan-journal-tab { background: linear-gradient(135deg, #f2ebfb 0%, #fbf8ff 55%, #e9def6 100%) !important; }
 .mizan-monthly-statement-tab { background: linear-gradient(135deg, #fff3df 0%, #fffbf4 55%, #fbe9ca 100%) !important; }
 .mizan-revenue-tab { background: linear-gradient(135deg, #eaf7e9 0%, #f7fcf5 55%, #e0f0dc 100%) !important; }
@@ -1054,7 +1000,6 @@ body {
 
 /* احتواء تلقائي لجداول الحوافظ والحساب الجاري والقيود اليومية على الشاشة */
 .mizan-hafiza-tab table.hafiza-ledger-table,
-.mizan-account-tab table.accounts-ledger-table,
 .mizan-journal-tab table.journal-ledger-table {
   width: 100% !important;
   min-width: 0 !important;
@@ -1062,8 +1007,6 @@ body {
 }
 .mizan-hafiza-tab table.hafiza-ledger-table th,
 .mizan-hafiza-tab table.hafiza-ledger-table td,
-.mizan-account-tab table.accounts-ledger-table th,
-.mizan-account-tab table.accounts-ledger-table td,
 .mizan-journal-tab table.journal-ledger-table th,
 .mizan-journal-tab table.journal-ledger-table td {
   white-space: normal !important;
