@@ -349,7 +349,7 @@ export const useStore = create<State>()(
       hafizas: [],
       accounts: [],
       journal: [],
-      installments: (seedInstallments as Installment[]).map(recalcInstallment),
+      installments: (seedInstallments as Installment[]).map((item) => recalcInstallment(item, "2026")),
       installments2025: [],
       openingBalance: 811664,
       revenue: {},
