@@ -370,12 +370,9 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       background: #174258 !important;
       color: #000 !important;
       white-space: normal !important;
-    min-width: 50%;
-
+      min-width: 50%;
     }
 
-    /* Let each column use its natural content width; never force a fixed
-       minimum that makes wide ledgers overflow or squeezes neighboring cells. */
     tbody td:not(.desc-cell):not(.details-cell):not(.description-cell):not([data-col-key="description"]) {
       white-space: normal !important;
       word-break: normal !important;
@@ -451,7 +448,6 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         border-radius: 0 !important;
         width: 100% !important;
         min-height: auto !important;
-        /* Padding is supplied by the live margin setting stylesheet. */
         transform: none !important;
       }
       .report-letterhead-block {
@@ -877,7 +873,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         min-height: 0 !important;
         height: auto !important;
         margin: 0 !important;
-        padding: 0 !important;
+        padding: var(--print-page-margin, 3mm) !important;
         overflow: visible !important;
         box-shadow: none !important;
         border-radius: 0 !important;
@@ -1102,7 +1098,8 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         // This node is always the final stylesheet, so toolbar values override
         // report-specific rules in both the preview and the browser print dialog.
         liveSettingsStyle.textContent = [
-          '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargin + '; }',
+          '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargin + ' !important; }',
+          ':root { --print-page-margin: ' + pageMargin + '; }',
           '#paperContainer.sheet-paper { padding: ' + pageMargin + ' !important; margin: 0 auto !important; }',
           '#paperContainer #tableContainer table th,',
           '#paperContainer #tableContainer table td {',
@@ -1114,6 +1111,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
           '#paperContainer #tableContainer table th .pdf-cell-text,',
           '#paperContainer #tableContainer table td .pdf-cell-text { font-size: inherit !important; line-height: inherit !important; }',
           '@media print {',
+          '  @page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargin + ' !important; }',
           '  html, body { margin: 0 !important; padding: 0 !important; }',
           '  .sheet-viewport { margin: 0 !important; padding: 0 !important; }',
           '  #paperContainer.sheet-paper { width: 100% !important; padding: ' + pageMargin + ' !important; margin: 0 auto !important; }',
@@ -1313,7 +1311,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
           '@media print {',
           'html, body { height:auto!important; min-height:0!important; overflow:visible!important; }',
           '.sheet-viewport, #tableContainer, .preview-report-content { display:block!important; position:static!important; width:100%!important; min-width:0!important; max-width:100%!important; height:auto!important; min-height:0!important; max-height:none!important; margin:0!important; overflow:visible!important; transform:none!important; box-shadow:none!important; }',
-          '.sheet-paper, #paperContainer { display:block!important; position:static!important; width:100%!important; min-width:0!important; max-width:100%!important; height:auto!important; min-height:0!important; max-height:none!important; margin:0 auto!important; overflow:visible!important; transform:none!important; box-shadow:none!important; }',
+          '.sheet-paper, #paperContainer { display:block!important; position:static!important; width:100%!important; min-width:0!important; max-width:100%!important; height:auto!important; min-height:0!important; max-height:none!important; margin:0 auto!important; padding: var(--print-page-margin, 3mm) !important; overflow:visible!important; transform:none!important; box-shadow:none!important; }',
           'table, table.reports-data-table { display:table!important; width:100%!important; min-width:0!important; max-width:100%!important; height:auto!important; border-collapse:collapse!important; break-inside:auto!important; page-break-inside:auto!important; }',
           'thead { display:table-header-group!important; }',
           'tfoot { display:table-footer-group!important; }',
@@ -1321,7 +1319,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
           'tr { break-inside:avoid-page!important; page-break-inside:avoid!important; }',
           '.preview-toolbar { display:none!important; }',
           '}'
-        ].join('\n');
+        ].join('\\n');
         document.head.appendChild(style);
       }
 
@@ -1369,13 +1367,12 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       function updatePageSettings() {
         const orientation = selOrientation.value;
         const pageSize = selPageSize.value;
-      const margin = selMargin.value;
-      const scale = parseFloat(selScale.value) || 1;
-      const lineSpacing = parseFloat(selLineSpacing.value) || 1.45;
-      paperContainer.style.setProperty('--print-cell-line-height', String(lineSpacing));
-      tableContainer.style.setProperty('--print-cell-line-height', String(lineSpacing));
-      tableContainer.style.setProperty('--print-preview-scale', String(scale));
-      // CSS variables update line-height without traversing every cell in large reports.
+        const margin = selMargin.value;
+        const scale = parseFloat(selScale.value) || 1;
+        const lineSpacing = parseFloat(selLineSpacing.value) || 1.45;
+        paperContainer.style.setProperty('--print-cell-line-height', String(lineSpacing));
+        tableContainer.style.setProperty('--print-cell-line-height', String(lineSpacing));
+        tableContainer.style.setProperty('--print-preview-scale', String(scale));
 
         paperContainer.classList.remove('portrait', 'landscape');
         paperContainer.classList.add(orientation);
@@ -1392,9 +1389,6 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
 
         paperContainer.style.padding = margin;
         paperContainer.style.setProperty('--print-page-margin', margin);
-        // The shared preview shell caps every container at viewport width. Remove that
-        // cap for the physical page itself so A4/A3/Letter and portrait/landscape
-        // remain visibly distinct in the horizontally scrollable preview.
         paperContainer.style.setProperty('max-width', 'none', 'important');
         const heights = pageSize === 'A3' ? [420, 297] : pageSize === 'Letter' ? [279.4, 215.9] : [297, 210];
         paperContainer.style.minHeight = heights[orientation === 'portrait' ? 0 : 1] + 'mm';
@@ -1404,7 +1398,6 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         const table = paperContainer.querySelector('table');
         const headerRow = table && table.tHead && table.tHead.rows[table.tHead.rows.length - 1];
         const columnCount = headerRow ? headerRow.cells.length : 1;
-        // Maintain readable physical print text while allowing dense tables to fit A4.
         const isReportsTabTable = table?.id === 'reports-table';
         const fontSize = isReportsTabTable
           ? (columnCount > 16 ? 10 : columnCount > 13 ? 11 : columnCount > 10 ? 12 : columnCount > 7 ? 13 : 14)
@@ -1424,8 +1417,6 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         tableContainer.style.setProperty('--print-cell-padding', scaledVerticalPadding + 'px ' + scaledHorizontalPadding + 'px');
 
         tableContainer.style.width = '100%';
-        // Keep the selected physical page size and selected margin for all exports;
-        // fit-to-content must not silently override the toolbar controls.
         const pageMargin = margin;
         dynamicRule.textContent = '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargin + '; }';
         document.head.appendChild(dynamicRule);
@@ -1442,12 +1433,9 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
 
         if (tableContainer.dataset.printCellsTagged !== 'true' && tableContainer.dataset.printCellsTagging !== 'true') {
           tableContainer.dataset.printCellsTagging = 'true';
-          // Tagging thousands of cells is not part of the user-activation critical path.
-          // Run it after the preview has painted; printing itself remains synchronous.
           window.requestAnimationFrame(function() {
             if (tableContainer.dataset.printCellsTagged === 'true') return;
   
-              // Detect pure numeric and date cells so values remain intact on one line.
               const numericOrDate = /^[\\s\\u200e\\u200f]*[+-]?(?:(?:[0-9٠-٩۰-۹]+)(?:[,.٬٫][0-9٠-٩۰-۹]+)*|[0-9٠-٩۰-۹]{1,4}[-/.][0-9٠-٩۰-۹]{1,2}[-/.][0-9٠-٩۰-۹]{1,4})(?:\\s*(?:ر\\.?\\s*ي|ريال|ر\\.?\\s*س))?[\\s\\u200e\\u200f]*$/;
               tableContainer.querySelectorAll('table').forEach(function(currentTable) {
                 currentTable.querySelectorAll('th,td').forEach(function(cell) {
@@ -1471,8 +1459,6 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
               tableContainer.dataset.printCellsTagged = 'true';
           });
         }
-
-        // All print-critical geometry and scaling above is synchronous.
       }
 
       function downloadDirectPdf() {
@@ -1480,7 +1466,6 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         btnDownloadPdf.disabled = true;
         btnDownloadPdf.innerText = 'جارٍ فتح حفظ PDF...';
         try {
-          // Keep the print invocation in this click's user-activation context.
           printOnce();
         } catch (err) {
           console.error('[PDF] Browser print failed:', err);
@@ -1498,7 +1483,6 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       selMargin.addEventListener('change', updatePageSettings);
       selScale.addEventListener('change', updatePageSettings);
       selLineSpacing.addEventListener('change', updatePageSettings);
-      // Re-assert the selected settings when the browser enters print mode.
       window.addEventListener('beforeprint', updatePageSettings);
 
       btnPrint.addEventListener('click', function(event) {
