@@ -21,6 +21,8 @@ interface OpenBrowserPrintPreviewOptions {
   fitToContent?: boolean;
   autoDownloadPdf?: boolean;
   downloadFileName?: string;
+  /** A popup reserved synchronously by the initiating click handler. */
+  preopenedWindow?: Window | null;
 }
 
 export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions) {
@@ -1516,18 +1518,25 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
   }
 
-  const newWin = window.open("", "_blank");
-  if (!newWin) {
+  // Reuse the tab reserved synchronously by the initiating click when
+  // supplied. This avoids popup blockers after expensive report generation.
+  const newWin = options.preopenedWindow ?? window.open("", "_blank");
+  if (!newWin || newWin.closed) {
     alert("يرجى السماح بالنوافذ المنبثقة لمعاينة الطباعة");
     return false;
   }
 
-  newWin.document.open();
-  newWin.document.write(html);
-  newWin.document.close();
-  // Explicitly set the document title after writing the preview. This ensures
-  // Android Chrome uses the report name instead of displaying "about:blank".
-  newWin.document.title = title;
-
-  return true;
+  try {
+    newWin.document.open();
+    newWin.document.write(html);
+    newWin.document.close();
+    // Explicitly set the document title after writing the preview. This ensures
+    // Android Chrome uses the report name instead of displaying "about:blank".
+    newWin.document.title = title;
+    return true;
+  } catch (error) {
+    console.error("[Print] Failed to populate preview window", error);
+    try { newWin.close(); } catch {}
+    return false;
+  }
 }
