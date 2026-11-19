@@ -106,8 +106,8 @@ export const reportTableThemeCss = `
   #tableContainer table.reports-data-table tbody td,
   .report-page-content table.reports-fee-status-table tbody td,
   #tableContainer table.reports-fee-status-table tbody td {
-    font-size: 16px !important;
-    line-height: 1.45 !important;
+    font-size: var(--print-cell-font-size, 16px) !important;
+    line-height: var(--print-cell-line-height, 1.45) !important;
     vertical-align: middle !important;
   }
 
@@ -135,8 +135,8 @@ export const reportTableThemeCss = `
 
   .report-page-content table.reports-data-table tbody td .pdf-cell-text,
   #tableContainer table.reports-data-table tbody td .pdf-cell-text {
-    font-size: 16px !important;
-    line-height: 1.45 !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
     white-space: inherit !important;
     overflow-wrap: inherit !important;
   }
