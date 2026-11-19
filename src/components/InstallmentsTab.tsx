@@ -1721,11 +1721,14 @@ td.t-fees { background: ${colorTokens.fees} !important; }
        table.installments-screen-parity thead th[data-col-key="idx"], table.installments-screen-parity thead th[data-col-key="name"] { color: #fff !important; }
         table.installments-screen-parity tbody td { border: 1px solid #000000 !important; border-color: #000000 !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
        table.installments-screen-parity tbody td.screen-name-cell { background: #fdf4ff !important; }
-       table.installments-screen-parity tbody td.screen-batch-cell, table.installments-screen-parity tbody td.screen-specialty-cell, table.installments-screen-parity tbody td.screen-fees-cell { background: #f0f9ff !important; }
-       table.installments-screen-parity tbody td.screen-prevdue-cell { background: #f8fcff !important; }
+       table.installments-screen-parity tbody td.screen-batch-cell, table.installments-screen-parity tbody td.screen-specialty-cell { background: #f0f9ff !important; }
+       /* Muted, distinct column colors for the 2026 detailed installments report.
+          Keep each financial column identifiable in preview, print, and PDF. */
+       table.installments-screen-parity tbody td[data-col-key="fees"] { background: #eaf2ff !important; }
+       table.installments-screen-parity tbody td[data-col-key="prevDue"] { background: #f3e8ff !important; }
+       table.installments-screen-parity tbody td[data-col-key="totalPaid"] { background: #e6f7ee !important; }
+       table.installments-screen-parity tbody td[data-col-key="remaining"] { background: #fff0f1 !important; }
        table.installments-screen-parity tbody td.screen-month-cell, table.installments-screen-parity tbody td.screen-extra-cell, table.installments-screen-parity tbody td.screen-status-cell, table.installments-screen-parity tbody td.screen-idx-cell { background: #ffffff !important; }
-       table.installments-screen-parity tbody td.screen-totalpaid-cell { background: #ecfdf5 !important; }
-       table.installments-screen-parity tbody td.screen-remaining-cell { background: #fff1f2 !important; }
        table.installments-screen-parity tbody td.screen-notes-cell { background: #fffbeb !important; }
         table.installments-screen-parity tbody tr.total-row > td, table.installments-screen-parity tbody tr.total-row > td * { background: #e0f2fe !important; color: #000000 !important; border: 1px solid #000000 !important; border-color: #000000 !important; font-weight: 900 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
        table.installments-screen-parity tbody tr.notes-status-red > td { background: #fecaca !important; }
