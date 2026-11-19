@@ -115,6 +115,8 @@ type Props = {
    /** Optional row-level inline style used to preserve conditional row colors in print/PDF. */
    printRowStyle?: (row: Record<string, any>) => string;
    includeTotalRow?: boolean;
+  /** Omit the generated sequence column when matching an existing screen table exactly. */
+  includeIndexColumn?: boolean;
   printTableClassName?: string;
   /** Optional larger body font for reports that need more readable Excel exports. */
   excelCellFontSize?: number;
@@ -145,6 +147,7 @@ export default function TabActions({
   renderPrintTableHtml,
    printRowStyle,
    includeTotalRow = true,
+  includeIndexColumn = true,
   printTableClassName = "",
   excelCellFontSize,
   excelMaxTextLines,
@@ -160,7 +163,7 @@ export default function TabActions({
   const printData = printRows ?? rows;
   const tableHtml = () => renderPrintTableHtml
     ? renderPrintTableHtml(reportDateLabel)
-    : buildTableHtml({ title, columns: printColumns, rows: printData, numericKeys, reportDate, includeTotalRow, tableClassName: printTableClassName, rowStyleResolver: printRowStyle });
+    : buildTableHtml({ title, columns: printColumns, rows: printData, numericKeys, reportDate, includeTotalRow, includeIndexColumn, tableClassName: printTableClassName, rowStyleResolver: printRowStyle });
   
   const handlePrint = () => {
     if (onPrintRequest) {
@@ -243,9 +246,9 @@ export default function TabActions({
     }
     
     try {
-      const headers = ["م", ...columns.map((c) => c.label)];
+      const headers = [...(includeIndexColumn ? ["م"] : []), ...columns.map((c) => c.label)];
     const dataRows = excelRows.map((r, i) => [
-      i + 1,
+      ...(includeIndexColumn ? [i + 1] : []),
       ...columns.map((c) => {
         const v = r[c.key];
         return numericKeys.includes(c.key) || typeof v === "number" ? Number(v) || 0 : v ?? "";
@@ -269,7 +272,7 @@ export default function TabActions({
               r?.total !== "نعم"
             );
     const totalRow = [
-      "الإجمالي",
+      ...(includeIndexColumn ? ["الإجمالي"] : []),
       ...columns.map((c) =>
       numericKeys.includes(c.key) ?
       totalRows.reduce((sum, r) => sum + (Number(r[c.key]) || 0), 0) :

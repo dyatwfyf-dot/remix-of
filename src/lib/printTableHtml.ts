@@ -545,10 +545,12 @@ export function buildTableHtml(opts: {
   subtitle?: string;
   reportDate?: string;
   includeTotalRow?: boolean;
+  includeIndexColumn?: boolean;
   tableClassName?: string;
   rowStyleResolver?: (row: Record<string, any>) => string;
 }) {
-  const { title, columns, rows, numericKeys = [], subtitle, reportDate, includeTotalRow = true, tableClassName, rowStyleResolver } = opts;
+  const { title, columns, rows, numericKeys = [], subtitle, reportDate, includeTotalRow = true, includeIndexColumn = true, tableClassName, rowStyleResolver } = opts;
+  const indexColumnCount = includeIndexColumn ? 1 : 0;
 
   const isDescriptionColumn = (c: TableCol) =>
     c.key === "description" || /^(البيان|بيان|تفاصيل|وصف|الشرح)$/i.test(c.label.trim());
@@ -651,9 +653,7 @@ export function buildTableHtml(opts: {
 
     const rowStyle = rowStyleResolver?.(row) || "";
     const conditionalCellStyle = rowStyle ? ` style="${escapeHtml(rowStyle)}"` : "";
-    return `<tr class="${getReportRowClass(row, index)}"${rowStyle ? ' data-installment-conditional="true"' : ""}><td class="idx numeric-cell" data-col-key="idx"${conditionalCellStyle}><span class="pdf-cell-text">${
-      row.summaryLevel === "opening" ? "—" : row.summaryLevel === "total" || row.total === "نعم" ? "★" : index + 1
-    }</span></td>${columns
+    return `<tr class="${getReportRowClass(row, index)}"${rowStyle ? ' data-installment-conditional="true"' : ""}>${includeIndexColumn ? `<td class="idx numeric-cell" data-col-key="idx"${conditionalCellStyle}><span class="pdf-cell-text">${row.summaryLevel === "opening" ? "—" : row.summaryLevel === "total" || row.total === "نعم" ? "★" : index + 1}</span></td>` : ""}${columns
       .map((column) => {
         const value = row[column.key];
         const isNumeric = numericKeys.includes(column.key) || typeof value === "number";
@@ -675,13 +675,13 @@ export function buildTableHtml(opts: {
   const titleLines = String(title || "").split(/\r?\n/);
   const reportHeading = titleLines.shift() || "";
   const custodyDateLine = titleLines.join(" ").trim();
-  const titleRow = `<tr class="doc-title-row"><td colspan="${columns.length + 1}" class="doc-title-cell">
+  const titleRow = `<tr class="doc-title-row"><td colspan="${columns.length + indexColumnCount}" class="doc-title-cell">
     <h1>${escapeHtml(reportHeading)}</h1>
     ${isCustodyReport ? "" : `<div class="sub">${escapeHtml(sub)}</div>`}
-  </td></tr>${isCustodyReport && custodyDateLine ? `<tr class="custody-date-row"><td colspan="${columns.length + 1}"><div class="custody-date-line">${escapeHtml(custodyDateLine)}</div></td></tr>` : ""}`;
+  </td></tr>${isCustodyReport && custodyDateLine ? `<tr class="custody-date-row"><td colspan="${columns.length + indexColumnCount}"><div class="custody-date-line">${escapeHtml(custodyDateLine)}</div></td></tr>` : ""}`;
 
   // بناء صف الرؤوس
-  const head = `${titleRow}<tr><th class="idx numeric-cell" data-col-key="idx" data-col-name="م">م</th>${columns
+  const head = `${titleRow}<tr>${includeIndexColumn ? '<th class="idx numeric-cell" data-col-key="idx" data-col-name="م">م</th>' : ""}${columns
     .map(
       (c) =>
         `<th class="${getCellClass(c)}" data-col-key="${escapeHtml(c.key)}" data-col-name="${escapeHtml(
@@ -715,7 +715,7 @@ export function buildTableHtml(opts: {
     }
   });
 
-  const totalRow = includeTotalRow ? `<tr class="total-row"><td class="idx numeric-cell">الإجمالي</td>${columns
+  const totalRow = includeTotalRow ? `<tr class="total-row">${includeIndexColumn ? '<td class="idx numeric-cell">الإجمالي</td>' : ""}${columns
     .map((c) =>
       numericKeys.includes(c.key)
         ? `<td class="num numeric-cell amount-cell" data-col-key="${escapeHtml(c.key)}"><span class="pdf-cell-text">${escapeHtml(
@@ -767,7 +767,7 @@ export function buildTableHtml(opts: {
     const summaryIndex = rows.findIndex((r) => r && (r.__summaryCard || r.summaryLevel === "summary-card"));
     if (summaryIndex <= 0) return body;
 
-    const spacerHtml = `<tr class="summary-spacer-row"><td colspan="${columns.length + 1}"></td></tr>`;
+    const spacerHtml = `<tr class="summary-spacer-row"><td colspan="${columns.length + indexColumnCount}"></td></tr>`;
     const beforeRows = rows.slice(0, summaryIndex);
     const afterRows = rows.slice(summaryIndex);
 

@@ -500,16 +500,9 @@ export default function JournalTab() {
   const tabActions = (
     <TabActions
       title="قيود اليومية"
-      rows={journal}
-      columns={[
-        { key: "date", label: "التاريخ" },
-        { key: "formNo", label: "رقم الاستمارة" },
-        { key: "description", label: "البيان" },
-        { key: "debitAccount", label: "الحساب المدين" },
-        { key: "debit", label: "مدين" },
-        { key: "creditAccount", label: "الحساب الدائن" },
-        { key: "credit", label: "دائن" },
-      ]}
+      rows={filteredJournal}
+      columns={JOURNAL_COLS.map((column) => ({ key: column.key, label: column.label }))}
+      includeIndexColumn={false}
       fileName="قيود-اليومية"
       numericKeys={["debit", "credit"]}
       pdfLayout="wide-centered"
