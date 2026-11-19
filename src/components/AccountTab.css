@@ -177,13 +177,13 @@
     background:linear-gradient(135deg,#e9f6fb,#d9edf5) !important;
     color:#15516b !important;
     box-shadow:0 2px 7px rgba(21,94,117,.10) !important;
-    font-size:clamp(8px,2.35vw,11px) !important;
+    font-size:clamp(9px,2.6vw,13px) !important;
     line-height:1.15 !important;
     white-space:nowrap !important;
     overflow:hidden;
   }
   .mizan-account-tab .accounts-main-actions .accounts-import-action svg {
-    width:14px !important; height:14px !important; flex:0 0 14px !important;
+    width:16px !important; height:16px !important; flex:0 0 16px !important;
   }
   .mizan-account-tab .accounts-main-actions .accounts-main-actions-buttons {
     display:flex !important;
@@ -204,7 +204,7 @@
     padding:.42rem .28rem !important;
     border:1px solid #c4d9e4 !important;
     border-radius:.7rem !important;
-    font-size:clamp(8px,2.35vw,11px) !important;
+    font-size:clamp(9px,2.6vw,13px) !important;
     line-height:1.15 !important;
     font-weight:900 !important;
     white-space:nowrap !important;
@@ -224,7 +224,7 @@
     background:linear-gradient(135deg,#fff0ed,#f9dcd7) !important; color:#a33b42 !important;
   }
   .mizan-account-tab .accounts-main-actions .accounts-main-actions-buttons > button svg {
-    width:14px !important; height:14px !important; flex:0 0 14px !important;
+    width:16px !important; height:16px !important; flex:0 0 16px !important;
   }
   .mizan-account-tab .accounts-main-actions :where(button,label) { margin:0 !important; }
   .mizan-account-tab .accounts-main-actions button:hover,
@@ -410,6 +410,22 @@
     border:1px solid #c4dbe6 !important;
     background:linear-gradient(155deg,#f8fcfe,#e8f3f8) !important;
     box-shadow:0 18px 50px rgba(12,51,72,.22) !important;
+  }
+  .mizan-account-tab .accounts-edit-modal-card button[type="submit"] {
+    border:1px solid #155e75 !important;
+    background:linear-gradient(135deg,#1b7890,#155e75) !important;
+    color:#fff !important;
+    box-shadow:0 5px 12px rgba(21,94,117,.18) !important;
+  }
+  .mizan-account-tab .accounts-edit-modal-card button[type="button"] {
+    border:1px solid #cbdce5 !important;
+    background:linear-gradient(135deg,#fff,#edf4f8) !important;
+    color:#8a4a4a !important;
+  }
+  .mizan-account-tab .accounts-entry-fields :where(input,select)::placeholder,
+  .mizan-account-tab .accounts-edit-modal-card :where(input,select)::placeholder {
+    color:#7892a3 !important;
+    opacity:1;
   }
 }
 
