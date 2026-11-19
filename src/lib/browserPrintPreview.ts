@@ -1088,22 +1088,22 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       // Apply live controls after all report-specific CSS so no fixed !important rule can cancel them.
       const liveSettingsStyle = document.createElement('style');
       liveSettingsStyle.id = 'live-print-settings';
-      liveSettingsStyle.textContent = `
-        #paperContainer #tableContainer table th,
-        #paperContainer #tableContainer table td {
-          font-size: var(--print-cell-font-size, 14px) !important;
-          line-height: var(--print-cell-line-height, 1.45) !important;
-          padding: var(--print-cell-padding, 3px 4px) !important;
-        }
-        #paperContainer #tableContainer table thead th {
-          font-size: var(--print-header-font-size, 14px) !important;
-        }
-        #paperContainer #tableContainer table th .pdf-cell-text,
-        #paperContainer #tableContainer table td .pdf-cell-text {
-          font-size: inherit !important;
-          line-height: inherit !important;
-        }
-      `;
+      liveSettingsStyle.textContent = [
+        '#paperContainer #tableContainer table th,',
+        '#paperContainer #tableContainer table td {',
+        '  font-size: var(--print-cell-font-size, 14px) !important;',
+        '  line-height: var(--print-cell-line-height, 1.45) !important;',
+        '  padding: var(--print-cell-padding, 3px 4px) !important;',
+        '}',
+        '#paperContainer #tableContainer table thead th {',
+        '  font-size: var(--print-header-font-size, 14px) !important;',
+        '}',
+        '#paperContainer #tableContainer table th .pdf-cell-text,',
+        '#paperContainer #tableContainer table td .pdf-cell-text {',
+        '  font-size: inherit !important;',
+        '  line-height: inherit !important;',
+        '}'
+      ].join('\\n');
       document.head.appendChild(liveSettingsStyle);
       const btnPrint = document.getElementById('btnPrint');
       const btnDownloadPdf = document.getElementById('btnDownloadPdf');
