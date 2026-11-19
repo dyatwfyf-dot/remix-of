@@ -1348,6 +1348,25 @@ export default function InstallmentsTab() {
           const notesStatusPrintClass = year === 2026
             ? getNotesStatusPrintClass(r.notes)
             : "";
+          const notesStatusPrintColor = year === 2026
+            ? ({
+                red: "#fecaca",
+                yellow: "#fef08a",
+                green: "#bbf7d0",
+                orange: "#fed7aa",
+                blue: "#e0f2fe",
+                emerald: "#ecfdf5",
+              } as Record<NotesStatusTone, string>)[getNotesStatusTone(r.notes) || "red"] && getNotesStatusTone(r.notes)
+                ? ({
+                    red: "#fecaca",
+                    yellow: "#fef08a",
+                    green: "#bbf7d0",
+                    orange: "#fed7aa",
+                    blue: "#e0f2fe",
+                    emerald: "#ecfdf5",
+                  } as Record<NotesStatusTone, string>)[getNotesStatusTone(r.notes)!]
+                : undefined
+            : undefined;
           const tds = cols
             .map((c) => {
               const v = c.cell(
@@ -1384,7 +1403,7 @@ export default function InstallmentsTab() {
                     return term.length > 0 && searchableValues.some((value) => value.includes(term));
                   })
                 : undefined;
-              const conditionalColor = !notesStatusPrintClass && matchedRule?.color
+              const conditionalColor = matchedRule?.color
                 ? ({
                     "bg-sky-100": "#e0f2fe", "bg-blue-100": "#dbeafe",
                     "bg-indigo-100": "#e0e7ff", "bg-violet-100": "#ede9fe",
@@ -1397,7 +1416,15 @@ export default function InstallmentsTab() {
                     "bg-slate-100": "#f1f5f9", "bg-gray-100": "#f3f4f6",
                   } as Record<string, string>)[matchedRule.color] || undefined
                 : undefined;
-              return `<td class="${c.wide ? "wrap" : ""}${numericClass}${toneClass}${statusClass} ${screenCellClass}" data-col-key="${escapeHtml(c.key)}" style="${fitStyle(v)}${conditionalColor ? `;background-color:${conditionalColor} !important` : ""}"><span class="cell-content${numericClass}">${v}</span></td>`;
+              const financialColumnColors: Record<string, string> = {
+                fees: "#eaf2ff",
+                prevDue: "#f3e8ff",
+                totalPaid: "#e6f7ee",
+                remaining: "#fff0f1",
+              };
+              // Notes status takes precedence over the financial column tint.
+              const cellBackgroundColor = notesStatusPrintColor || financialColumnColors[c.key] || conditionalColor;
+              return `<td class="${c.wide ? "wrap" : ""}${numericClass}${toneClass}${statusClass} ${screenCellClass}" data-col-key="${escapeHtml(c.key)}" style="${fitStyle(v)}${cellBackgroundColor ? `;background-color:${cellBackgroundColor} !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important` : ""}"><span class="cell-content${numericClass}">${v}</span></td>`;
             })
             .join("");
           return `<tr class="${noteRowClass(r.notes)} ${notesStatusPrintClass}">${tds}</tr>`;
