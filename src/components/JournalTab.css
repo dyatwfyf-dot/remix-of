@@ -1,0 +1,88 @@
+.mizan-journal-actions-toolbar {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 5px;
+  width: 100%;
+  min-width: 0;
+  margin-bottom: 8px;
+  padding: 6px;
+  border: 1px solid #d8d4e8;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 3px 10px rgba(49, 46, 129, .08);
+}
+
+.mizan-journal-actions-toolbar > .web-only-actions {
+  display: none !important;
+}
+
+.mizan-journal-actions-toolbar > .journal-import-action {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.mizan-journal-actions-toolbar .journal-import-action > label {
+  display: flex !important;
+  width: 100%;
+  min-width: 0;
+  min-height: 38px !important;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 3px !important;
+  border: 1px solid rgba(126, 74, 190, .38) !important;
+  border-radius: 9px !important;
+  background: linear-gradient(110deg, #7c3aed, #4338ca) !important;
+  color: #fff !important;
+  font-size: clamp(8px, 2.2vw, 10px) !important;
+  font-weight: 800 !important;
+  line-height: 1.1 !important;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.mizan-journal-actions-toolbar > .apk-only-actions {
+  display: flex !important;
+  flex: 4 1 0;
+  flex-wrap: nowrap !important;
+  align-items: stretch;
+  gap: 4px !important;
+  min-width: 0;
+}
+
+.mizan-journal-actions-toolbar > .apk-only-actions > button {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0 !important;
+  min-height: 38px !important;
+  align-items: center;
+  justify-content: center;
+  gap: 3px !important;
+  padding: 5px 3px !important;
+  border-radius: 9px !important;
+  font-size: clamp(8px, 2.2vw, 10px) !important;
+  font-weight: 800 !important;
+  line-height: 1.1 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mizan-journal-actions-toolbar > .apk-only-actions > button svg {
+  flex: 0 0 auto;
+  width: 12px !important;
+  height: 12px !important;
+}
+
+@media (min-width: 641px) {
+  .mizan-journal-actions-toolbar {
+    gap: 7px;
+    padding: 7px;
+  }
+  .mizan-journal-actions-toolbar .journal-import-action > label,
+  .mizan-journal-actions-toolbar > .apk-only-actions > button {
+    min-height: 40px !important;
+    font-size: 11px !important;
+  }
+}
