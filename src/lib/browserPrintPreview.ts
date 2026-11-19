@@ -41,7 +41,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     : options.margin === "normal" ? "8mm" : "3mm";
   const hasEmbeddedLetterhead = tableHtml.includes("report-letterhead");
   // The toolbar owns page geometry; ignore conflicting declarations from tab CSS.
-  const stripPageRules = (css: string) => css.replace(/@page\\s*[^{}]*\\{[^{}]*\\}/gi, "");
+  const stripPageRules = (css: string) => css.replace(/@page\s*[^{}]*\{[^{}]*\}/gi, "");
   const safeContentCss = stripPageRules(contentCss);
   const safeFinalCss = stripPageRules(finalCss);
 
@@ -740,7 +740,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     @media print {
       html, body { width: 100% !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
       .sheet-viewport { display: block !important; width: 100% !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
-      .sheet-paper { width: 100% !important; min-width: 0 !important; min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; box-shadow: none !important; transform: none !important; }
+      .sheet-paper { width: 100% !important; min-width: 0 !important; min-height: 0 !important; height: auto !important; margin: 0 auto !important; overflow: visible !important; box-shadow: none !important; transform: none !important; }
       #tableContainer { width: 100% !important; min-width: 0 !important; max-width: 100% !important; }
       #tableContainer table, #tableContainer table.reports-data-table { width: 100% !important; min-width: 0 !important; max-width: 100% !important; table-layout: fixed !important; }
       #tableContainer table th, #tableContainer table td { min-width: 0 !important; max-width: none !important; }
@@ -1424,8 +1424,8 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         tableContainer.style.setProperty('--print-cell-padding', scaledVerticalPadding + 'px ' + scaledHorizontalPadding + 'px');
 
         tableContainer.style.width = '100%';
-        // Keep a standard physical page size for all exports. Fit-to-content removes margins;
-        // it must not turn a long report into one oversized PDF page.
+        // Keep the selected physical page size and selected margin for all exports;
+        // fit-to-content must not silently override the toolbar controls.
         const pageMargin = margin;
         dynamicRule.textContent = '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargin + '; }';
         document.head.appendChild(dynamicRule);
