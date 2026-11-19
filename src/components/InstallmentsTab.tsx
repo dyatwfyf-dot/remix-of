@@ -1348,25 +1348,16 @@ export default function InstallmentsTab() {
           const notesStatusPrintClass = year === 2026
             ? getNotesStatusPrintClass(r.notes)
             : "";
-          const notesStatusPrintColor = year === 2026
-            ? ({
-                red: "#fecaca",
-                yellow: "#fef08a",
-                green: "#bbf7d0",
-                orange: "#fed7aa",
-                blue: "#e0f2fe",
-                emerald: "#ecfdf5",
-              } as Record<NotesStatusTone, string>)[getNotesStatusTone(r.notes) || "red"] && getNotesStatusTone(r.notes)
-                ? ({
-                    red: "#fecaca",
-                    yellow: "#fef08a",
-                    green: "#bbf7d0",
-                    orange: "#fed7aa",
-                    blue: "#e0f2fe",
-                    emerald: "#ecfdf5",
-                  } as Record<NotesStatusTone, string>)[getNotesStatusTone(r.notes)!]
-                : undefined
-            : undefined;
+          const notesTone = year === 2026 ? getNotesStatusTone(r.notes) : null;
+          const notesStatusPrintColors: Record<NotesStatusTone, string> = {
+            red: "#fecaca",
+            yellow: "#fef08a",
+            green: "#bbf7d0",
+            orange: "#fed7aa",
+            blue: "#e0f2fe",
+            emerald: "#ecfdf5",
+          };
+          const notesStatusPrintColor = notesTone ? notesStatusPrintColors[notesTone] : undefined;
           const tds = cols
             .map((c) => {
               const v = c.cell(
