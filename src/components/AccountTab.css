@@ -81,19 +81,6 @@
 }
 
 
-/* شريط إجراءات الحساب الجاري: يبقى ظاهراً أسفل شريط تبويبات التطبيق أثناء التمرير.
-   لا يُطبّق على أي تبويب آخر، ولا يدخل في الطباعة. */
-@media screen {
-  .mizan-account-tab .accounts-main-actions {
-    position: -webkit-sticky !important;
-    position: sticky !important;
-    top: calc(env(safe-area-inset-top, 0px) + 74px) !important;
-    z-index: 50 !important;
-    isolation: isolate;
-    width: 100%;
-    box-shadow: 0 4px 14px rgba(15, 47, 68, 0.14);
-  }
-}
 
 
 /* ==========================================================
@@ -306,6 +293,7 @@
 
   /* حقول الإدخال والتعديل: نص داكن وواضح فوق خلفية فاتحة */
   .mizan-account-tab .accounts-entry-fields label,
+  .mizan-account-tab .accounts-entry-fields .absolute,
   .mizan-account-tab .accounts-edit-modal label {
     color:#35556c !important;
     font-weight:850 !important;
@@ -432,7 +420,7 @@
   .mizan-account-tab .accounts-main-actions .accounts-main-actions-buttons > button {
     min-height:35px !important;
     padding:.32rem .16rem !important;
-    font-size:8px !important;
+    font-size:9px !important;
     gap:.12rem !important;
   }
   .mizan-account-tab .accounts-main-actions .accounts-import-action svg,
