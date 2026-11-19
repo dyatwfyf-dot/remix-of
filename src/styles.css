@@ -796,60 +796,7 @@ table td > * {
 }
 
 
-/* تنسيقات مستقلة لتبويب mizan-account-tab — القيم مطابقة للتنسيق السابق */
-/* هوية عصرية: أزرق بترولي عميق + لمسة نحاسية، واحتواء تلقائي للأعمدة بدون التفاف النصوص */
-.mizan-account-tab {
-  --sheet-ink: #0f2f44;
-  --sheet-brand: #1f5f7a;
-  --sheet-accent: #c98a3c;
-  color: var(--sheet-ink);
-  letter-spacing: 0.1px;
-}
-
-.mizan-account-tab :where(h1, h2, h3, h4) {
-  letter-spacing: 0.2px;
-  font-weight: 800;
-}
-
-/* الجداول: عرض الأعمدة يتكيّف مع أطول نص دون كسر الكلمات */
-.mizan-account-tab table {
-  table-layout: auto !important;
-  width: 100% !important;
-  min-width:auto !important;
-}
-
-.mizan-account-tab :where(table th, table td) {
-  white-space: nowrap !important;
-  overflow-wrap: normal !important;
-  word-break: keep-all !important;
-  hyphens: none !important;
-  padding: 6px 9px !important;
-  font-size: clamp(13px, 3.3vw, 14.5px) !important;
-  line-height: 1.35 !important;
-}
-
-.mizan-account-tab :where(table th, table td) * {
-  white-space: nowrap !important;
-  overflow-wrap: normal !important;
-  word-break: keep-all !important;
-}
-
-.mizan-account-tab thead th {
-  font-weight: 900 !important;
-  letter-spacing: 0.2px;
-}
-
-/* الأزرار: أحجام مريحة للمس على شاشات شاومي */
-.mizan-account-tab :where(button, [role="button"], label.cursor-pointer) {
-  border-radius: 0.75rem !important;
-  font-weight: 800 !important;
-  min-height: 40px;
-}
-
-.mizan-account-tab :where(input, select) {
-  border-radius: 0.65rem !important;
-  font-weight: 700;
-}
+/* تنسيقات الحساب الجاري محصورة في AccountTab.css لتجنب تكرار القواعد العامة. */
 
 /* إصلاح السحب والتمرير باللمس داخل WebView ونسخة الجوال */
 html,
