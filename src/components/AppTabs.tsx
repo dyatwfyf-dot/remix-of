@@ -663,13 +663,85 @@ const AppTabs: React.FC = () => {
       tr.t-prev td { background:#efe8d6 !important; color:#5b4a2a !important; font-weight:800 !important; }
       tr.t-cum td { background:#0f5132 !important; color:#f5d76e !important; font-weight:800 !important; }
       tr.t-cur td:first-child, tr.t-prev td:first-child, tr.t-cum td:first-child { text-align:center; padding-right:4px; }
+
+      /* ألوان نسخة الطباعة مطابقة حرفياً لألوان واجهة الشاشة.
+         هذه المحددات تتجاوز الثيم العام الذي يفرض ألواناً موحدة على كل التقارير. */
+      #paperContainer #tableContainer table.usage-print-table thead th,
+      #report-source table.usage-print-table thead th {
+        background:#e6f3ec !important; background-color:#e6f3ec !important;
+        color:#0b3d2e !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table thead th.c-total,
+      #report-source table.usage-print-table thead th.c-total {
+        background:#fbe7a1 !important; background-color:#fbe7a1 !important; color:#5a3d00 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table thead th.c-bab,
+      #report-source table.usage-print-table thead th.c-bab {
+        background:#0f5132 !important; background-color:#0f5132 !important; color:#f5d76e !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table thead th.c-fasl,
+      #report-source table.usage-print-table thead th.c-fasl {
+        background:#a9d8c3 !important; background-color:#a9d8c3 !important; color:#0b3d2e !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table thead th.c-band,
+      #report-source table.usage-print-table thead th.c-band {
+        background:#f3dfa2 !important; background-color:#f3dfa2 !important; color:#5a3d00 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table td.formula,
+      #report-source table.usage-print-table td.formula {
+        background:#e7f5ee !important; background-color:#e7f5ee !important; color:#0f5132 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table td.formula-total,
+      #report-source table.usage-print-table td.formula-total {
+        background:#fdf1c4 !important; background-color:#fdf1c4 !important; color:#5a3d00 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table td.formula-bab,
+      #report-source table.usage-print-table td.formula-bab {
+        background:#d3ebdf !important; background-color:#d3ebdf !important; color:#0b3d2e !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table td.formula-fasl,
+      #report-source table.usage-print-table td.formula-fasl {
+        background:#e7f5ee !important; background-color:#e7f5ee !important; color:#0f5132 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table tbody tr.u-row-a > td,
+      #report-source table.usage-print-table tbody tr.u-row-a > td {
+        background:#ffffff !important; background-color:#ffffff !important; color:#173d31 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table tbody tr.u-row-b > td,
+      #report-source table.usage-print-table tbody tr.u-row-b > td {
+        background:#f3faf6 !important; background-color:#f3faf6 !important; color:#173d31 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table tbody tr.month > td,
+      #report-source table.usage-print-table tbody tr.month > td {
+        background:linear-gradient(90deg,#0f5132,#14746f) !important;
+        background-color:#0f5132 !important; color:#f5d76e !important; font-weight:800 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table tbody tr.t-cur > td,
+      #report-source table.usage-print-table tbody tr.t-cur > td {
+        background:#d3ebdf !important; background-color:#d3ebdf !important; color:#0b3d2e !important; font-weight:800 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table tbody tr.t-prev > td,
+      #report-source table.usage-print-table tbody tr.t-prev > td {
+        background:#efe8d6 !important; background-color:#efe8d6 !important; color:#5b4a2a !important; font-weight:800 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table tbody tr.t-cum > td,
+      #report-source table.usage-print-table tbody tr.t-cum > td {
+        background:#0f5132 !important; background-color:#0f5132 !important; color:#f5d76e !important; font-weight:800 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table tbody tr.t-cur > td *,
+      #paperContainer #tableContainer table.usage-print-table tbody tr.t-prev > td *,
+      #paperContainer #tableContainer table.usage-print-table tbody tr.t-cum > td *,
+      #report-source table.usage-print-table tbody tr.t-cur > td *,
+      #report-source table.usage-print-table tbody tr.t-prev > td *,
+      #report-source table.usage-print-table tbody tr.t-cum > td * { color:inherit !important; }
+
       @media print { @page { size:A4 landscape; margin:3mm; } }
       ${runningLetterheadCss}
     </style></head><body>
     ${reportLetterheadHtml()}
     <h2>سجل مفردات الاستخدامات والنفقات العامة</h2>
     <div class="report-date">تاريخ التقرير: ${reportDateLabel}</div>
-    <table><thead>${THEAD_HTML}</thead><tbody>${body}</tbody></table>
+    <table class="usage-print-table"><thead>${THEAD_HTML}</thead><tbody>${body}</tbody></table>
     </body></html>`;
   };
 
