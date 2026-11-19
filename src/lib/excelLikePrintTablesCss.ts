@@ -13,8 +13,8 @@ export const excelLikePrintTablesCss = `
   #tableContainer table[class],
   .preview-report-content table,
   .preview-report-content table[class],
-  body > table,
-  body > table[class] {
+  body table,
+  body table[class] {
     width: 100% !important;
     min-width: 0 !important;
     max-width: 100% !important;
@@ -30,8 +30,8 @@ export const excelLikePrintTablesCss = `
   #tableContainer table[class] col,
   .preview-report-content table col,
   .preview-report-content table[class] col,
-  body > table col,
-  body > table[class] col {
+  body table col,
+  body table[class] col {
     width: auto !important;
     min-width: 0 !important;
     max-width: none !important;
@@ -49,10 +49,10 @@ export const excelLikePrintTablesCss = `
   .preview-report-content table td,
   .preview-report-content table[class] th,
   .preview-report-content table[class] td,
-  body > table th,
-  body > table td,
-  body > table[class] th,
-  body > table[class] td {
+  body table th,
+  body table td,
+  body table[class] th,
+  body table[class] td {
     box-sizing: border-box !important;
     width: auto !important;
     min-width: 0 !important;
@@ -73,13 +73,13 @@ export const excelLikePrintTablesCss = `
   .report-page-content table thead,
   #tableContainer table thead,
   .preview-report-content table thead,
-  body > table thead {
+  body table thead {
     display: table-header-group !important;
   }
   .report-page-content table tfoot,
   #tableContainer table tfoot,
   .preview-report-content table tfoot,
-  body > table tfoot {
+  body table tfoot {
     display: table-footer-group !important;
   }
 
@@ -343,27 +343,27 @@ export const excelLikePrintTablesCss = `
   .report-page-content table tbody tr.note-red > td,
   #tableContainer table tbody tr.note-red > td,
   .preview-report-content table tbody tr.note-red > td,
-  body > table tbody tr.note-red > td { background: #fecaca !important; }
+  body table tbody tr.note-red > td { background: #fecaca !important; }
   .report-page-content table tbody tr.note-amber > td,
   #tableContainer table tbody tr.note-amber > td,
   .preview-report-content table tbody tr.note-amber > td,
-  body > table tbody tr.note-amber > td { background: #fef08a !important; }
+  body table tbody tr.note-amber > td { background: #fef08a !important; }
   .report-page-content table tbody tr.note-green > td,
   #tableContainer table tbody tr.note-green > td,
   .preview-report-content table tbody tr.note-green > td,
-  body > table tbody tr.note-green > td { background: #bbf7d0 !important; }
+  body table tbody tr.note-green > td { background: #bbf7d0 !important; }
   .report-page-content table tbody tr.note-blue > td,
   #tableContainer table tbody tr.note-blue > td,
   .preview-report-content table tbody tr.note-blue > td,
-  body > table tbody tr.note-blue > td { background: #bfdbfe !important; }
+  body table tbody tr.note-blue > td { background: #bfdbfe !important; }
   .report-page-content table tbody tr.note-violet > td,
   #tableContainer table tbody tr.note-violet > td,
   .preview-report-content table tbody tr.note-violet > td,
-  body > table tbody tr.note-violet > td { background: #e9d5ff !important; }
+  body table tbody tr.note-violet > td { background: #e9d5ff !important; }
   .report-page-content table tbody tr.note-gray > td,
   #tableContainer table tbody tr.note-gray > td,
   .preview-report-content table tbody tr.note-gray > td,
-  body > table tbody tr.note-gray > td { background: #e5e7eb !important; }
+  body table tbody tr.note-gray > td { background: #e5e7eb !important; }
 
   .report-page-content table tbody tr.notes-status-red > td,
   #tableContainer table tbody tr.notes-status-red > td,
@@ -430,6 +430,105 @@ export const excelLikePrintTablesCss = `
     print-color-adjust: exact !important;
   }
 
+
+  /* Final universal rules: include every nested table, not only report wrappers. */
+  body table,
+  body table[class] {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    table-layout: auto !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+  }
+  body table col,
+  body table[class] col {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+  body table th,
+  body table td,
+  body table[class] th,
+  body table[class] td {
+    box-sizing: border-box !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+    padding: var(--print-cell-padding, 3px 5px) !important;
+    line-height: var(--print-cell-line-height, 1.35) !important;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    hyphens: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+  body table td.text-cell,
+  body table td.name-cell,
+  body table td.specialty-cell,
+  body table td.batch-cell,
+  body table td.desc-cell,
+  body table td.details-cell,
+  body table td.description-cell,
+  body table td.long-text-cell {
+    width: auto !important;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+  }
+  body table td.num,
+  body table td.numeric-cell,
+  body table td.date-cell,
+  body table td.compact-cell,
+  body table td.ref-cell,
+  body table td.idx,
+  body table td.reports-numeric-cell,
+  body table td.reports-no-wrap-cell,
+  body table th.num,
+  body table th.numeric-cell,
+  body table th.date-cell,
+  body table th.compact-cell,
+  body table th.ref-cell,
+  body table th.idx,
+  body table th[data-col-key*="date" i],
+  body table td[data-col-key*="date" i],
+  body table th[data-col-key*="amount" i],
+  body table td[data-col-key*="amount" i],
+  body table th[data-col-key*="total" i],
+  body table td[data-col-key*="total" i],
+  body table th[data-col-key*="balance" i],
+  body table td[data-col-key*="balance" i] {
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
+    direction: ltr !important;
+    unicode-bidi: isolate !important;
+    font-variant-numeric: tabular-nums !important;
+  }
+  body table th .pdf-cell-text,
+  body table td .pdf-cell-text {
+    display: inline-block !important;
+    width: auto !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    white-space: inherit !important;
+    overflow-wrap: inherit !important;
+    word-break: inherit !important;
+    vertical-align: middle !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+  body table tr {
+    height: auto !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
   @media print {
     .report-page-content table,
     .report-page-content table[class],
@@ -437,8 +536,8 @@ export const excelLikePrintTablesCss = `
     #tableContainer table[class],
     .preview-report-content table,
     .preview-report-content table[class],
-    body > table,
-    body > table[class] {
+    body table,
+    body table[class] {
       width: 100% !important;
       max-width: 100% !important;
       table-layout: auto !important;
