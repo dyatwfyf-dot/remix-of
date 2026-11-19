@@ -628,61 +628,18 @@ table td > * {
   }
 }
 
-/* تنسيقات مستقلة لتبويب mizan-revenue-tab — القيم مطابقة للتنسيق السابق */
-/* هوية عصرية: أزرق بترولي عميق + لمسة نحاسية، واحتواء تلقائي للأعمدة بدون التفاف النصوص */
-.mizan-revenue-tab {
-  --sheet-ink: #0f2f44;
-  --sheet-brand: #1f5f7a;
-  --sheet-accent: #c98a3c;
-  color: var(--sheet-ink);
-  letter-spacing: 0.1px;
-}
-
-.mizan-revenue-tab :where(h1, h2, h3, h4) {
-  letter-spacing: 0.2px;
-  font-weight: 800;
-}
-
-/* الجداول: عرض الأعمدة يتكيّف مع أطول نص دون كسر الكلمات */
-.mizan-revenue-tab table {
-  table-layout: auto !important;
-  width: 100% !important;
-  min-width:auto !important;
-}
-
-.mizan-revenue-tab :where(table th, table td) {
-  white-space: nowrap !important;
-  overflow-wrap: normal !important;
-  word-break: keep-all !important;
-  hyphens: none !important;
-  padding: 6px 9px !important;
-  font-size: clamp(13px, 3.3vw, 14.5px) !important;
-  line-height: 1.35 !important;
-}
-
-.mizan-revenue-tab :where(table th, table td) * {
-  white-space: nowrap !important;
-  overflow-wrap: normal !important;
-  word-break: keep-all !important;
-}
-
-.mizan-revenue-tab thead th {
-  font-weight: 900 !important;
-  letter-spacing: 0.2px;
-}
-
-/* الأزرار: أحجام مريحة للمس على شاشات شاومي */
-.mizan-revenue-tab :where(button, [role="button"], label.cursor-pointer) {
-  border-radius: 0.75rem !important;
-  font-weight: 800 !important;
-  min-height: 40px;
-}
-
-.mizan-revenue-tab :where(input, select) {
-  border-radius: 0.65rem !important;
-  font-weight: 700;
-}
-
+/* تنسيقات مستقلة لتبويب الإيرادات: خط IBM Plex Sans Arabic ومقاسات مالية واضحة */
+.mizan-revenue-tab { --sheet-ink:#0f2f44; --sheet-brand:#1f5f7a; --sheet-accent:#c98a3c; color:var(--sheet-ink); letter-spacing:0; font-family:var(--font-report)!important; }
+.mizan-revenue-tab :where(h1,h2,h3,h4) { font-family:var(--font-report)!important; letter-spacing:0; font-weight:700; }
+.mizan-revenue-tab table { table-layout:auto!important; width:100%!important; min-width:auto!important; font-family:var(--font-report)!important; }
+.mizan-revenue-tab :where(table th,table td) { font-family:var(--font-report)!important; white-space:nowrap!important; overflow-wrap:normal!important; word-break:keep-all!important; hyphens:none!important; padding:6px 8px!important; font-size:13px!important; line-height:1.45!important; }
+.mizan-revenue-tab :where(table th) { font-size:14px!important; font-weight:700!important; }
+.mizan-revenue-tab :where(table td) { font-weight:500!important; }
+.mizan-revenue-tab :where(table td.numeric-cell,table input[type="number"]) { font-family:Cairo,var(--font-report)!important; font-weight:700!important; font-variant-numeric:tabular-nums; }
+.mizan-revenue-tab :where(table th,table td) * { font-family:inherit!important; }
+.mizan-revenue-tab :where(button,[role="button"],label.cursor-pointer) { border-radius:.75rem!important; font-weight:700!important; min-height:40px; }
+.mizan-revenue-tab :where(input,select) { border-radius:.65rem!important; font-weight:600; font-family:var(--font-report)!important; }
+@media(max-width:640px) { .mizan-revenue-tab :where(table th){font-size:13px!important} .mizan-revenue-tab :where(table td){font-size:12.5px!important} }
 
 /* تنسيقات مستقلة لتبويب mizan-expenses-tab — القيم مطابقة للتنسيق السابق */
 /* هوية عصرية: أزرق بترولي عميق + لمسة نحاسية، واحتواء تلقائي للأعمدة بدون التفاف النصوص */
