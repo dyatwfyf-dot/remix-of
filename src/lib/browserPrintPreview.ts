@@ -40,6 +40,10 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     ? `${options.defaultMarginMm}mm`
     : options.margin === "normal" ? "8mm" : "3mm";
   const hasEmbeddedLetterhead = tableHtml.includes("report-letterhead");
+  // The toolbar owns page geometry; ignore conflicting declarations from tab CSS.
+  const stripPageRules = (css: string) => css.replace(/@page\s*[^{}]*\{[^{}]*\}/gi, "");
+  const safeContentCss = stripPageRules(contentCss);
+  const safeFinalCss = stripPageRules(finalCss);
 
   const html = `<!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -447,7 +451,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         border-radius: 0 !important;
         width: 100% !important;
         min-height: auto !important;
-        padding: 0 !important;
+        /* Padding is supplied by the live margin setting stylesheet. */
         transform: none !important;
       }
       .report-letterhead-block {
@@ -472,7 +476,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   html body table tr.report-grand-total-row > td *, html body table tr.total-row > td * { color: #ffffff !important; }
   </style>
   <style>
-    ${contentCss}
+    ${safeContentCss}
     /* تنسيق موحّد لرؤوس الجداول والإجماليات والتوقيعات في المعاينة والطباعة */
     #tableContainer table thead th,
     #tableContainer table thead th.desc-cell,
@@ -654,7 +658,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
     ${reportsCompactColumnsCss}
     ${reportTableThemeCss}
-    ${finalCss}
+    ${safeFinalCss}
     /* Final page-fit rules shared by preview and browser printing. */
     #tableContainer, #tableContainer .preview-report-content {
       width: 100% !important;
@@ -736,7 +740,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     @media print {
       html, body { width: 100% !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
       .sheet-viewport { display: block !important; width: 100% !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
-      .sheet-paper { width: 100% !important; min-width: 0 !important; min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; box-shadow: none !important; transform: none !important; }
+      .sheet-paper { width: 100% !important; min-width: 0 !important; min-height: 0 !important; height: auto !important; margin: 0 auto !important; overflow: visible !important; box-shadow: none !important; transform: none !important; }
       #tableContainer { width: 100% !important; min-width: 0 !important; max-width: 100% !important; }
       #tableContainer table, #tableContainer table.reports-data-table { width: 100% !important; min-width: 0 !important; max-width: 100% !important; table-layout: fixed !important; }
       #tableContainer table th, #tableContainer table td { min-width: 0 !important; max-width: none !important; }
@@ -964,7 +968,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         max-width: 100% !important;
         overflow: visible !important;
       }
-      .sheet-paper { width: 100% !important; padding: 0 !important; }
+      .sheet-paper { width: 100% !important; }
       #tableContainer table,
       #tableContainer table.reports-data-table {
         width: 100% !important;
@@ -1095,33 +1099,37 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       const liveSettingsStyle = document.createElement('style');
       liveSettingsStyle.id = 'live-print-settings';
       function refreshLiveSettingsCss(pageSize, orientation, pageMargin) {
-        // Keep the active @page rule last in the cascade. Shared/report CSS is loaded
-        // before this point and must never override the user's page controls.
+        // This node is always the final stylesheet, so toolbar values override
+        // report-specific rules in both the preview and the browser print dialog.
         liveSettingsStyle.textContent = [
           '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargin + '; }',
-          '@media screen {',
-          '  #paperContainer.sheet-paper { max-width: none !important; flex: 0 0 auto !important; }',
-          '}',
-          '#paperContainer #tableContainer { zoom: var(--print-preview-scale, 1) !important; }',
+          '#paperContainer.sheet-paper { padding: ' + pageMargin + ' !important; margin: 0 auto !important; }',
           '#paperContainer #tableContainer table th,',
           '#paperContainer #tableContainer table td {',
           '  font-size: var(--print-cell-font-size, 14px) !important;',
           '  line-height: var(--print-cell-line-height, 1.45) !important;',
           '  padding: var(--print-cell-padding, 3px 4px) !important;',
           '}',
-          '#paperContainer #tableContainer table thead th {',
-          '  font-size: var(--print-header-font-size, 14px) !important;',
-          '}',
+          '#paperContainer #tableContainer table thead th { font-size: var(--print-header-font-size, 14px) !important; }',
           '#paperContainer #tableContainer table th .pdf-cell-text,',
-          '#paperContainer #tableContainer table td .pdf-cell-text {',
-          '  font-size: inherit !important;',
-          '  line-height: inherit !important;',
+          '#paperContainer #tableContainer table td .pdf-cell-text { font-size: inherit !important; line-height: inherit !important; }',
+          '@media print {',
+          '  html, body { margin: 0 !important; padding: 0 !important; }',
+          '  .sheet-viewport { margin: 0 !important; padding: 0 !important; }',
+          '  #paperContainer.sheet-paper { width: 100% !important; padding: ' + pageMargin + ' !important; margin: 0 auto !important; }',
+          '  #paperContainer #tableContainer { width: 100% !important; margin: 0 !important; padding: 0 !important; }',
+          '  #paperContainer #tableContainer table th,',
+          '  #paperContainer #tableContainer table td {',
+          '    font-size: var(--print-cell-font-size, 14px) !important;',
+          '    line-height: var(--print-cell-line-height, 1.45) !important;',
+          '    padding: var(--print-cell-padding, 3px 4px) !important;',
+          '  }',
+          '  #paperContainer #tableContainer table thead th { font-size: var(--print-header-font-size, 14px) !important; }',
           '}'
-        ].join('\n');
-        // Moving the style node to the end also puts it after the multi-page print
-        // stylesheet, which is created immediately before window.print().
+        ].join('\\n');
         document.head.appendChild(liveSettingsStyle);
       }
+
       const btnPrint = document.getElementById('btnPrint');
       const btnDownloadPdf = document.getElementById('btnDownloadPdf');
       const btnClose = document.getElementById('btnClose');
@@ -1304,7 +1312,8 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         style.textContent = [
           '@media print {',
           'html, body { height:auto!important; min-height:0!important; overflow:visible!important; }',
-          '.sheet-viewport, .sheet-paper, #paperContainer, #tableContainer, .preview-report-content { display:block!important; position:static!important; width:100%!important; min-width:0!important; max-width:100%!important; height:auto!important; min-height:0!important; max-height:none!important; margin:0!important; overflow:visible!important; transform:none!important; box-shadow:none!important; }',
+          '.sheet-viewport, #tableContainer, .preview-report-content { display:block!important; position:static!important; width:100%!important; min-width:0!important; max-width:100%!important; height:auto!important; min-height:0!important; max-height:none!important; margin:0!important; overflow:visible!important; transform:none!important; box-shadow:none!important; }',
+          '.sheet-paper, #paperContainer { display:block!important; position:static!important; width:100%!important; min-width:0!important; max-width:100%!important; height:auto!important; min-height:0!important; max-height:none!important; margin:0 auto!important; overflow:visible!important; transform:none!important; box-shadow:none!important; }',
           'table, table.reports-data-table { display:table!important; width:100%!important; min-width:0!important; max-width:100%!important; height:auto!important; border-collapse:collapse!important; break-inside:auto!important; page-break-inside:auto!important; }',
           'thead { display:table-header-group!important; }',
           'tfoot { display:table-footer-group!important; }',
@@ -1339,6 +1348,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         let printStarted = false;
         try {
           ensureMultiPagePrintLayout();
+          // Re-append live settings after helper styles immediately before printing.
           updatePageSettings();
           window.focus();
           // Keep this call synchronous in the actual toolbar click handler.
@@ -1380,14 +1390,15 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
           paperContainer.style.width = orientation === 'portrait' ? '210mm' : '297mm';
         }
 
-        paperContainer.style.padding = fitToContent ? '0' : margin;
+        paperContainer.style.padding = margin;
+        paperContainer.style.setProperty('--print-page-margin', margin);
         // The shared preview shell caps every container at viewport width. Remove that
         // cap for the physical page itself so A4/A3/Letter and portrait/landscape
         // remain visibly distinct in the horizontally scrollable preview.
         paperContainer.style.setProperty('max-width', 'none', 'important');
         const heights = pageSize === 'A3' ? [420, 297] : pageSize === 'Letter' ? [279.4, 215.9] : [297, 210];
-        paperContainer.style.minHeight = fitToContent ? '0' : heights[orientation === 'portrait' ? 0 : 1] + 'mm';
-        paperContainer.style.height = fitToContent ? 'auto' : '';
+        paperContainer.style.minHeight = heights[orientation === 'portrait' ? 0 : 1] + 'mm';
+        paperContainer.style.height = '';
         paperContainer.style.transform = 'none';
 
         const table = paperContainer.querySelector('table');
@@ -1401,18 +1412,23 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         const headerFontSize = isReportsTabTable ? Math.min(fontSize + 1, 15) : fontSize;
         const horizontalPadding = columnCount > 13 ? 1.5 : columnCount > 9 ? 2.5 : 4;
 
-        paperContainer.style.setProperty('--print-cell-font-size', fontSize + 'px');
-        paperContainer.style.setProperty('--print-header-font-size', headerFontSize + 'px');
-        paperContainer.style.setProperty('--print-cell-padding', '3px ' + horizontalPadding + 'px');
-        tableContainer.style.setProperty('--print-cell-font-size', fontSize + 'px');
-        tableContainer.style.setProperty('--print-header-font-size', headerFontSize + 'px');
-        tableContainer.style.setProperty('--print-cell-padding', '3px ' + horizontalPadding + 'px');
+        const scaledFontSize = fontSize * scale;
+        const scaledHeaderFontSize = headerFontSize * scale;
+        const scaledHorizontalPadding = horizontalPadding * scale;
+        const scaledVerticalPadding = 3 * scale;
+        paperContainer.style.setProperty('--print-cell-font-size', scaledFontSize + 'px');
+        paperContainer.style.setProperty('--print-header-font-size', scaledHeaderFontSize + 'px');
+        paperContainer.style.setProperty('--print-cell-padding', scaledVerticalPadding + 'px ' + scaledHorizontalPadding + 'px');
+        tableContainer.style.setProperty('--print-cell-font-size', scaledFontSize + 'px');
+        tableContainer.style.setProperty('--print-header-font-size', scaledHeaderFontSize + 'px');
+        tableContainer.style.setProperty('--print-cell-padding', scaledVerticalPadding + 'px ' + scaledHorizontalPadding + 'px');
 
         tableContainer.style.width = '100%';
-        // Keep a standard physical page size for all exports. Fit-to-content removes margins;
-        // it must not turn a long report into one oversized PDF page.
-        const pageMargin = fitToContent ? '0mm' : margin;
+        // Keep the selected physical page size and selected margin for all exports;
+        // fit-to-content must not silently override the toolbar controls.
+        const pageMargin = margin;
         dynamicRule.textContent = '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargin + '; }';
+        document.head.appendChild(dynamicRule);
         refreshLiveSettingsCss(pageSize, orientation, pageMargin);
 
         const contentTable = tableContainer.querySelector('table');
@@ -1420,7 +1436,9 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
         const denseTable = columnCount > 9;
         contentTable.classList.toggle('a4-dense-table', denseTable);
         tableContainer.style.width = '100%';
-        tableContainer.style.setProperty('zoom', String(scale), 'important');
+        tableContainer.style.removeProperty('zoom');
+        paperContainer.style.setProperty('--print-preview-scale', String(scale));
+        tableContainer.style.setProperty('--print-preview-scale', String(scale));
 
         if (tableContainer.dataset.printCellsTagged !== 'true' && tableContainer.dataset.printCellsTagging !== 'true') {
           tableContainer.dataset.printCellsTagging = 'true';
