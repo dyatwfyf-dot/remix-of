@@ -158,11 +158,11 @@ const Modal = ({
   if (!isOpen) return null;
   return (
     <div
-      className="fixed inset-0  backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-4"
+      className="accounts-edit-modal fixed inset-0 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-4"
       dir="rtl"
     >
       <div
-        className="rounded-t-2xl sm:rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto border"
+        className="accounts-edit-modal-card rounded-t-2xl sm:rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto border"
         style={{ borderColor: THEME.softBorder, background: "linear-gradient(180deg, #f7fbfe, #e9f3fa)" }}
       >
         <div className="flex justify-between items-center px-5 py-4 border-b top-0 z-10" style={{ borderColor: THEME.softBorder, background: "linear-gradient(90deg, #eaf4fa, #dcecf5)" }}>
@@ -238,7 +238,7 @@ function LedgerStat({
   const t = toneMap[tone];
   return (
     <div
-      className="relative rounded-2xl px-2 py-2 sm:px-4 sm:py-3 border shadow-sm"
+      className="accounts-stat-card relative rounded-2xl px-2 py-2 sm:px-4 sm:py-3 border shadow-sm"
       style={{ background: THEME.cream, borderColor: THEME.softBorder, ...style }}
     >
 
@@ -607,7 +607,7 @@ const isOpeningRow = (row: any) => String(row.description ?? "").includes("ال�
       
 
  {/*شريط العنوان */}
-  <div className="accounts-print-hide relative flex items-center justify-between p-3 rounded-xl border border-black shadow-sm overflow-hidden" style={{ background: "linear-gradient(120deg, #0055FF, #0EA5E9 60%, #4F46E5)"}}>
+  <div className="accounts-print-hide accounts-hero relative flex items-center justify-between p-3 rounded-xl border border-black shadow-sm overflow-hidden" style={{ background: "linear-gradient(120deg, #0055FF, #0EA5E9 60%, #4F46E5)"}}>
   <span className="absolute inset-x-0 top-0 h-1" style={{ background: "linear-gradient(145deg, #1f5f7a, #6aa5c8)" }} />
   <div>
     <h1 className={`${HEADING_MOBILE} text-[#fff] text-xl font-bold tracking-tight`}>
@@ -627,9 +627,9 @@ const isOpeningRow = (row: any) => String(row.description ?? "").includes("ال�
       {/* إجراءات الحساب الجاري: شريط ثابت أسفل شريط التنقل أثناء التمرير */}
       <div className="accounts-print-hide accounts-main-actions flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-2xl border border-[#9fc6d9] bg-white/95 p-2 shadow-md backdrop-blur">
         <div className="px-2 text-sm font-black text-[#0f2f44]">إجراءات الحساب الجاري</div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="accounts-main-actions-row flex flex-nowrap items-center gap-2">
           <label
-            className={`${BTN_MOBILE} relative inline-flex items-center justify-center gap-2 rounded-xl border border-[#1f5f7a]/30 bg-[#e8f4fa] text-[#0f4c6b] font-black shadow-sm cursor-pointer hover:bg-[#d9edf7] transition-colors`}
+            className={`accounts-import-action ${BTN_MOBILE} relative inline-flex items-center justify-center gap-2 rounded-xl border border-[#1f5f7a]/30 bg-[#e8f4fa] text-[#0f4c6b] font-black shadow-sm cursor-pointer hover:bg-[#d9edf7] transition-colors`}
             title="استيراد سجلات الحساب الجاري من Excel"
           >
             <FileSpreadsheet className={ICON_MOBILE} />
@@ -652,11 +652,12 @@ const isOpeningRow = (row: any) => String(row.description ?? "").includes("ال�
               printTableClassName="accounts-ledger-table"
               pdfCss={greenPrintHeaderCss}
               onClear={clearAccounts}
+              className="accounts-main-actions-buttons"
             />
         </div>
       </div>
       {/* ===== بطاقات الإجماليات ===== */}
-<div className="accounts-print-hide grid grid-cols-3 gap-2 bg-sky-300 border border-black">
+<div className="accounts-print-hide accounts-summary-grid grid grid-cols-3 gap-2 bg-sky-300 border border-black">
   <LedgerStat
    label="إجمالي الإيرادات"
     style={{
@@ -692,13 +693,13 @@ const isOpeningRow = (row: any) => String(row.description ?? "").includes("ال�
 </div>
       {/* ===== التقارير الدورية ===== */}
 <div
-  className="accounts-print-hide w-full rounded-2xl overflow-hidden border border-black shadow-sm"
+  className="accounts-print-hide accounts-report-card w-full rounded-2xl overflow-hidden border border-black shadow-sm"
   style={{
     background: "linear-gradient(160deg, #eef6fb, #d7e7f0)"
   }}
 >
   <div
-    className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border border-black"
+    className="accounts-report-header px-4 py-3 flex flex-wrap justify-between items-center gap-3 border border-black"
     style={{ background: "rgba(255,255,255,200.55)"}}
   >
     <div>
@@ -762,7 +763,7 @@ const isOpeningRow = (row: any) => String(row.description ?? "").includes("ال�
         />
       </label>
 
-      <div className="text-xs font-black text-[#000] px-2 py-2 bg-[#ff595e] rounded-lg border border-black" style={{ }}>
+      <div className="accounts-report-period-label text-xs font-black text-[#000] px-2 py-2 bg-[#ff595e] rounded-lg border border-black" style={{ }}>
         {accountReportLabel}
       </div>
 
@@ -783,13 +784,13 @@ const isOpeningRow = (row: any) => String(row.description ?? "").includes("ال�
       {/* ===== لوحة القيد اليدوي والمطابقة ===== */}
       
 <div
-  className="accounts-print-hide bolder border-black w-full rounded-2xl overflow-hidden border  shadow-sm"
+  className="accounts-print-hide accounts-entry-card bolder border-black w-full rounded-2xl overflow-hidden border shadow-sm"
   style={{
     background: "linear-gradient(160deg, #eef6fb, #dcecf5)"
   }}
 >
 <div
-className="px-4 py-3 flex flex-wrap justify-between items-center gap-3 border border-black"
+className="accounts-entry-header px-4 py-3 flex flex-wrap justify-between items-center gap-3 border border-black"
     style={{ background: "rgba(255,255,255,266.55)" }}
   >
     <div className="flex items-center gap-2.5">
@@ -824,7 +825,7 @@ actions={accountEntryWebActions}
 
   <div className="p-2 sm:p-5">
     {/* شبكة الحقول - حقلين في كل سطر */}
-  <div className="grid grid-cols-3 sm:grid-cols-2.5 gap-2 sm:gap-3 items-end">
+  <div className="accounts-entry-fields grid grid-cols-3 sm:grid-cols-2.5 gap-2 sm:gap-3 items-end">
       <Field
         label="التاريخ"
         type="date"
@@ -973,7 +974,7 @@ actions={accountEntryWebActions}
     </div>
 
     {/* أزرار الإجراءات في سطر منفصل */}
-    <div className="flex gap-2 pt-4 mt-2 border-t border-black">
+    <div className="accounts-entry-actions flex gap-2 pt-4 mt-2 border-t border-black">
       <button
         onClick={submit}
         className={`${BTN_MOBILE} flex-1 flex items-center justify-center gap-2 rounded-xl font-black border border-black shadow-sm transition-all bg-gradient-to-r from-[#1a2a3a] to-[#2a6b6a] text-white`}
@@ -990,8 +991,8 @@ actions={accountEntryWebActions}
   </div>
 </div>
       {/* ===== جدول القيود ===== */}
-<div className="accounts-print-area w-full rounded-2xl overflow-hidden border shadow-sm" style={{ background: "#fff", borderColor: "rgba(0,0,0,0.08)" }}>
-<div className="accounts-print-hide px-2 py-2 sm:px-5 sm:py-3.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2 border-b" style={{ background: THEME.cream, borderColor: "rgba(0,0,0,0.06)" }}>
+<div className="accounts-print-area accounts-ledger-card w-full rounded-2xl overflow-hidden border shadow-sm" style={{ background: "#fff", borderColor: "rgba(0,0,0,0.08)" }}>
+<div className="accounts-print-hide accounts-ledger-toolbar px-2 py-2 sm:px-5 sm:py-3.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center flex-wrap gap-2 border-b" style={{ background: THEME.cream, borderColor: "rgba(0,0,0,0.06)" }}>
           <div className="flex items-center gap-2.5">
             <div className="w-2 h-2 rounded-full bg-[#1E8E5A] animate-pulse"></div>
             <h2 className="text-xs sm:text-sm font-black text-[#0f2f44] tracking-wide">
@@ -1011,7 +1012,7 @@ actions={accountEntryWebActions}
         </div>
 
 <div className="p-1.5 sm:p-3">
-<div className="overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-xl">
+<div className="accounts-ledger-scroll overflow-x-auto overflow-y-auto max-h-[72vh] relative rounded-xl">
 <table className="accounts-ledger-table w-full table-auto text-xm xm:text-base text-center font-semibold border-collapse border-2 border-black">
 <thead className="w-auto max-w-0 sticky bg-[#40E0D0] top-0 z-20 text-[#0f2f44] font-black text-[16px] whitespace-normal">
                 <tr>
