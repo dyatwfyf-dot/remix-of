@@ -94,3 +94,349 @@
     box-shadow: 0 4px 14px rgba(15, 47, 68, 0.14);
   }
 }
+
+
+/* ==========================================================
+   الهوية الاحترافية لتبويب الحساب الجاري — عرض الشاشة فقط
+   المحددات محصورة في هذا التبويب؛ قواعد الطباعة أعلاه تبقى كما هي.
+   ========================================================== */
+@media screen {
+  .mizan-account-tab {
+    --account-ink: #17324d;
+    --account-muted: #5e7890;
+    --account-brand: #155e75;
+    --account-brand-deep: #10465d;
+    --account-teal: #138b83;
+    --account-accent: #d49a45;
+    --account-line: #c9dce8;
+    --account-surface: rgba(255,255,255,.94);
+    color: var(--account-ink) !important;
+    background:
+      radial-gradient(ellipse at 8% 0%, rgba(19,139,131,.10), transparent 34%),
+      radial-gradient(ellipse at 100% 22%, rgba(45,126,180,.12), transparent 38%),
+      linear-gradient(145deg,#edf6fb 0%,#f8fbfd 52%,#e5f1f7 100%) !important;
+    border: 1px solid rgba(174,202,219,.55);
+  }
+
+  .mizan-account-tab .accounts-hero {
+    min-height: 88px;
+    padding: 1.1rem 1.2rem !important;
+    border: 1px solid rgba(255,255,255,.9) !important;
+    border-radius: 1.2rem !important;
+    background:
+      radial-gradient(circle at 88% 0%, rgba(255,255,255,.85), transparent 34%),
+      linear-gradient(120deg,#dff0f7 0%,#edf7fa 48%,#e3f2ee 100%) !important;
+    box-shadow: 0 10px 26px rgba(24,82,108,.10) !important;
+  }
+  .mizan-account-tab .accounts-hero > span:first-child {
+    height: 4px !important;
+    background: linear-gradient(90deg,#d49a45,#168c91,#2d79a8) !important;
+  }
+  .mizan-account-tab .accounts-hero h1 {
+    color: #123d58 !important;
+    font-size: clamp(1.15rem,3.2vw,1.65rem) !important;
+    font-weight: 900 !important;
+  }
+  .mizan-account-tab .accounts-hero p { color:#55758a !important; font-weight:700 !important; }
+  .mizan-account-tab .accounts-hero > div:last-child {
+    border: 1px solid rgba(255,255,255,.95) !important;
+    background: rgba(255,255,255,.78) !important;
+    box-shadow: 0 4px 12px rgba(30,80,105,.08) !important;
+    backdrop-filter: blur(8px);
+  }
+  .mizan-account-tab .accounts-hero > div:last-child span { color:#31566e !important; }
+
+  /* شريط الإجراءات والأزرار الأربعة في صف واحد */
+  .mizan-account-tab .accounts-main-actions {
+    position: -webkit-sticky !important;
+    position: sticky !important;
+    top: calc(env(safe-area-inset-top,0px) + 74px) !important;
+    z-index: 50 !important;
+    isolation: isolate;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: .35rem !important;
+    width: 100%;
+    padding: .45rem !important;
+    border: 1px solid #b8d3e1 !important;
+    border-radius: 1rem !important;
+    background: rgba(255,255,255,.96) !important;
+    box-shadow: 0 5px 16px rgba(15,62,86,.12) !important;
+    backdrop-filter: blur(12px);
+  }
+  .mizan-account-tab .accounts-main-actions > div:first-child { display:none !important; }
+  .mizan-account-tab .accounts-main-actions > .accounts-main-actions-row {
+    display:flex !important;
+    flex: 1 1 auto !important;
+    flex-wrap:nowrap !important;
+    align-items:stretch !important;
+    gap:.35rem !important;
+    min-width:0 !important;
+    width:100% !important;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-import-action {
+    display:inline-flex !important;
+    flex:1 1 0 !important;
+    min-width:0 !important;
+    width:auto !important;
+    min-height:38px !important;
+    padding:.42rem .28rem !important;
+    gap:.22rem !important;
+    justify-content:center !important;
+    border:1px solid #b6d5e3 !important;
+    border-radius:.7rem !important;
+    background:linear-gradient(135deg,#e9f6fb,#d9edf5) !important;
+    color:#15516b !important;
+    box-shadow:0 2px 7px rgba(21,94,117,.10) !important;
+    font-size:clamp(8px,2.35vw,11px) !important;
+    line-height:1.15 !important;
+    white-space:nowrap !important;
+    overflow:hidden;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-import-action svg {
+    width:14px !important; height:14px !important; flex:0 0 14px !important;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-main-actions-buttons {
+    display:flex !important;
+    flex:3 1 0 !important;
+    flex-wrap:nowrap !important;
+    gap:.32rem !important;
+    min-width:0 !important;
+    width:auto !important;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-main-actions-buttons > button {
+    display:inline-flex !important;
+    flex:1 1 0 !important;
+    min-width:0 !important;
+    min-height:38px !important;
+    justify-content:center !important;
+    align-items:center !important;
+    gap:.22rem !important;
+    padding:.42rem .28rem !important;
+    border:1px solid #c4d9e4 !important;
+    border-radius:.7rem !important;
+    font-size:clamp(8px,2.35vw,11px) !important;
+    line-height:1.15 !important;
+    font-weight:900 !important;
+    white-space:nowrap !important;
+    overflow:hidden;
+    box-shadow:0 2px 7px rgba(21,72,96,.10) !important;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-main-actions-buttons > button:nth-child(1) {
+    background:linear-gradient(135deg,#e8f2fb,#d7e9f8) !important; color:#174e7b !important;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-main-actions-buttons > button:nth-child(2) {
+    background:linear-gradient(135deg,#dbeaf7,#c5dff0) !important; color:#134b71 !important;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-main-actions-buttons > button:nth-child(3) {
+    background:linear-gradient(135deg,#e1f5e9,#ccebd9) !important; color:#176447 !important;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-main-actions-buttons > button:nth-child(4) {
+    background:linear-gradient(135deg,#fff0ed,#f9dcd7) !important; color:#a33b42 !important;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-main-actions-buttons > button svg {
+    width:14px !important; height:14px !important; flex:0 0 14px !important;
+  }
+  .mizan-account-tab .accounts-main-actions :where(button,label) { margin:0 !important; }
+  .mizan-account-tab .accounts-main-actions button:hover,
+  .mizan-account-tab .accounts-main-actions label:hover { filter:brightness(1.025); }
+  .mizan-account-tab .accounts-main-actions button:active,
+  .mizan-account-tab .accounts-main-actions label:active { transform:translateY(1px) scale(.985); }
+
+  /* بطاقات الإجماليات */
+  .mizan-account-tab .accounts-summary-grid {
+    gap:.65rem !important;
+    padding:.55rem !important;
+    border:1px solid #c9dce8 !important;
+    border-radius:1.2rem !important;
+    background:rgba(255,255,255,.62) !important;
+    box-shadow:0 6px 18px rgba(25,70,95,.07);
+  }
+  .mizan-account-tab .accounts-summary-grid .accounts-stat-card {
+    min-width:0;
+    padding:.85rem .9rem !important;
+    border:1px solid rgba(255,255,255,.92) !important;
+    border-radius:1rem !important;
+    box-shadow:0 5px 14px rgba(25,70,95,.08) !important;
+  }
+  .mizan-account-tab .accounts-summary-grid .accounts-stat-card:nth-child(1) {
+    background:linear-gradient(145deg,#e3f5eb,#d4eee0) !important;
+  }
+  .mizan-account-tab .accounts-summary-grid .accounts-stat-card:nth-child(2) {
+    background:linear-gradient(145deg,#fff0ef,#f8dddd) !important;
+  }
+  .mizan-account-tab .accounts-summary-grid .accounts-stat-card:nth-child(3) {
+    background:linear-gradient(145deg,#e4f1fb,#d6e9f7) !important;
+  }
+  .mizan-account-tab .accounts-summary-grid .accounts-stat-card :where(span,div) { color:var(--account-ink); }
+  .mizan-account-tab .accounts-summary-grid .accounts-stat-card:nth-child(1) .numeric-cell { color:#176447 !important; }
+  .mizan-account-tab .accounts-summary-grid .accounts-stat-card:nth-child(2) .numeric-cell { color:#a33b42 !important; }
+  .mizan-account-tab .accounts-summary-grid .accounts-stat-card:nth-child(3) .numeric-cell { color:#155e75 !important; }
+
+  /* بطاقات التقارير والقيد اليدوي */
+  .mizan-account-tab .accounts-report-card,
+  .mizan-account-tab .accounts-entry-card,
+  .mizan-account-tab .accounts-ledger-card {
+    border:1px solid #c5dce7 !important;
+    border-radius:1.15rem !important;
+    background:rgba(255,255,255,.86) !important;
+    box-shadow:0 8px 24px rgba(25,70,95,.08) !important;
+  }
+  .mizan-account-tab .accounts-report-header,
+  .mizan-account-tab .accounts-entry-header,
+  .mizan-account-tab .accounts-ledger-toolbar {
+    border-color:#d0e1e9 !important;
+    background:linear-gradient(115deg,#eaf4f8,#f5fafc) !important;
+  }
+  .mizan-account-tab :where(.accounts-report-header h2,.accounts-entry-header h2,.accounts-ledger-toolbar h2) {
+    color:#173f59 !important;
+    font-weight:900 !important;
+  }
+  .mizan-account-tab .accounts-report-card p { color:#5d778b !important; }
+  .mizan-account-tab .accounts-report-period-label {
+    padding:.5rem .7rem !important;
+    border:1px solid #d7b878 !important;
+    border-radius:.7rem !important;
+    color:#75501b !important;
+    background:linear-gradient(135deg,#fff7e4,#f7e9c7) !important;
+    font-weight:900 !important;
+  }
+
+  /* حقول الإدخال والتعديل: نص داكن وواضح فوق خلفية فاتحة */
+  .mizan-account-tab .accounts-entry-fields label,
+  .mizan-account-tab .accounts-edit-modal label {
+    color:#35556c !important;
+    font-weight:850 !important;
+  }
+  .mizan-account-tab .accounts-entry-fields :where(input,select),
+  .mizan-account-tab .accounts-edit-modal-card :where(input,select),
+  .mizan-account-tab .accounts-report-card :where(input,select) {
+    min-height:40px;
+    color:#173b55 !important;
+    background:linear-gradient(135deg,#fff,#f0f7fb) !important;
+    border:1px solid #b8d0df !important;
+    border-radius:.72rem !important;
+    box-shadow:inset 0 1px 2px rgba(21,76,102,.035);
+    font-weight:750 !important;
+  }
+  .mizan-account-tab .accounts-entry-fields :where(input,select):focus,
+  .mizan-account-tab .accounts-edit-modal-card :where(input,select):focus,
+  .mizan-account-tab .accounts-report-card :where(input,select):focus {
+    outline:none !important;
+    border-color:#23869a !important;
+    box-shadow:0 0 0 3px rgba(35,134,154,.14) !important;
+  }
+  .mizan-account-tab .accounts-entry-actions { border-color:#d4e3eb !important; }
+  .mizan-account-tab .accounts-entry-actions button:first-child {
+    border:1px solid #155e75 !important;
+    background:linear-gradient(135deg,#1b7890,#155e75) !important;
+    color:#fff !important;
+    box-shadow:0 5px 12px rgba(21,94,117,.18) !important;
+  }
+  .mizan-account-tab .accounts-entry-actions button:last-child {
+    border:1px solid #cbdce5 !important;
+    background:linear-gradient(135deg,#fff,#edf4f8) !important;
+    color:#a34b4b !important;
+  }
+  .mizan-account-tab .accounts-entry-card > div:first-child > div:first-child > div:first-child {
+    background:linear-gradient(135deg,#1b7890,#155e75) !important;
+    color:#fff !important;
+  }
+  .mizan-account-tab .accounts-entry-card .apk-only-actions button {
+    background:linear-gradient(135deg,#e4f3f8,#d2e9f0) !important;
+    color:#15516b !important;
+    border:1px solid #b8d4e0 !important;
+  }
+
+  /* جدول الحركات */
+  .mizan-account-tab .accounts-ledger-card { overflow:hidden; }
+  .mizan-account-tab .accounts-ledger-scroll {
+    border-radius:.9rem !important;
+    background:#f3f8fb !important;
+  }
+  .mizan-account-tab .accounts-ledger-table {
+    width:100% !important;
+    min-width:0 !important;
+    table-layout:auto !important;
+    border:1px solid #b8d0df !important;
+    border-collapse:separate !important;
+    border-spacing:0 !important;
+    color:#203e55 !important;
+    background:#f9fcfd !important;
+  }
+  .mizan-account-tab .accounts-ledger-table thead tr:first-child th {
+    background:linear-gradient(115deg,#d8edf3,#c5e2ec) !important;
+    color:#16465f !important;
+    border-color:#a9cbd9 !important;
+    font-weight:900 !important;
+  }
+  .mizan-account-tab .accounts-ledger-table thead tr:nth-child(2) th {
+    background:#edf5f8 !important;
+    border-color:#c8dce6 !important;
+  }
+  .mizan-account-tab .accounts-ledger-table thead tr:nth-child(2) input {
+    min-width:0 !important;
+    width:100% !important;
+    padding:.32rem .25rem !important;
+    color:#244a62 !important;
+    background:#fff !important;
+    border:1px solid #c4d8e2 !important;
+    border-radius:.45rem !important;
+    font-size:11px !important;
+  }
+  .mizan-account-tab .accounts-ledger-table tbody tr:nth-child(odd) td { background:#fbfdfe !important; }
+  .mizan-account-tab .accounts-ledger-table tbody tr:nth-child(even) td { background:#eef5f8 !important; }
+  .mizan-account-tab .accounts-ledger-table tbody tr:hover td { background:#e0f0f5 !important; }
+  .mizan-account-tab .accounts-ledger-table :where(th,td) {
+    border-color:#c6d8e2 !important;
+    color:#244257 !important;
+    vertical-align:middle !important;
+  }
+  .mizan-account-tab .accounts-ledger-table tbody td:nth-child(12) {
+    background:#e5f5eb !important; color:#176447 !important; font-weight:850 !important;
+  }
+  .mizan-account-tab .accounts-ledger-table tbody td:nth-child(13) {
+    background:#fff0ee !important; color:#a33b42 !important; font-weight:850 !important;
+  }
+  .mizan-account-tab .accounts-ledger-table tbody td:nth-child(15) {
+    background:#fff3df !important; color:#8b5a18 !important; font-weight:900 !important;
+  }
+  .mizan-account-tab .accounts-ledger-table tfoot td {
+    background:linear-gradient(110deg,#dcecf4,#cde3ed) !important;
+    color:#173f59 !important;
+    border-color:#9ebfce !important;
+    font-weight:900 !important;
+  }
+  .mizan-account-tab .accounts-ledger-table button {
+    min-width:34px;
+    min-height:34px;
+    border-radius:.55rem !important;
+    background:rgba(255,255,255,.78);
+  }
+
+  /* نافذة تعديل السجل */
+  .mizan-account-tab .accounts-edit-modal { background:rgba(13,42,60,.42) !important; }
+  .mizan-account-tab .accounts-edit-modal-card {
+    border:1px solid #c4dbe6 !important;
+    background:linear-gradient(155deg,#f8fcfe,#e8f3f8) !important;
+    box-shadow:0 18px 50px rgba(12,51,72,.22) !important;
+  }
+}
+
+@media screen and (max-width: 380px) {
+  .mizan-account-tab .accounts-main-actions { padding:.3rem !important; gap:.22rem !important; }
+  .mizan-account-tab .accounts-main-actions-row { gap:.22rem !important; }
+  .mizan-account-tab .accounts-main-actions .accounts-import-action,
+  .mizan-account-tab .accounts-main-actions .accounts-main-actions-buttons > button {
+    min-height:35px !important;
+    padding:.32rem .16rem !important;
+    font-size:8px !important;
+    gap:.12rem !important;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-import-action svg,
+  .mizan-account-tab .accounts-main-actions .accounts-main-actions-buttons > button svg {
+    width:12px !important; height:12px !important; flex-basis:12px !important;
+  }
+}
