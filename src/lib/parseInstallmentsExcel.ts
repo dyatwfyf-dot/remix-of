@@ -31,7 +31,7 @@ const MONTHS_2026 = [
   "يوليو",
   "اغسطس",
   "سبتمبر",
-  "اكتوبر ",
+  "اكتوبر",
   "نوفمبر",
   "ديسمبر",
 ];
@@ -332,15 +332,25 @@ export function parseInstallmentsExcel(buffer: ArrayBuffer, year: 2025 | 2026): 
       totalPaid += amount;
     });
     const totalValue = valueAt(row, totalColumn);
+    const fees = cleanNumber(valueAt(row, feesColumn));
+    const prevDue = cleanNumber(valueAt(row, prevDueColumn));
+    const calculatedTotalPaid = totalValue === "" ? totalPaid : cleanNumber(totalValue);
+    const remainingValue = valueAt(row, remainingColumn);
+    const calculatedRemaining = Math.max(
+      0,
+      (year === 2025 ? fees : prevDue + fees) - calculatedTotalPaid,
+    );
     return [
       {
         name,
         batch: String(valueAt(row, batchColumn)).trim(),
         specialty: String(valueAt(row, specialtyColumn)).trim(),
-        fees: cleanNumber(valueAt(row, feesColumn)),
-        prevDue: cleanNumber(valueAt(row, prevDueColumn)),
-        totalPaid: totalValue === "" ? totalPaid : cleanNumber(totalValue),
-        remaining: cleanNumber(valueAt(row, remainingColumn)),
+        fees,
+        prevDue,
+        totalPaid: calculatedTotalPaid,
+        remaining: remainingColumn >= 0 && remainingValue !== ""
+          ? cleanNumber(remainingValue)
+          : calculatedRemaining,
         notes: String(valueAt(row, notesColumn)).trim(),
         phone: String(valueAt(row, phoneColumn)).trim(),
         payments,

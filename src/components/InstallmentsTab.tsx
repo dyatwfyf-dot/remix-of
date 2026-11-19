@@ -79,7 +79,7 @@ const MONTHS_2026 = [
   "يوليو",
   "اغسطس",
   "سبتمبر",
-  "اكتوبر ",
+  "اكتوبر",
   "نوفمبر",
   "ديسمبر",
 ];
@@ -725,16 +725,16 @@ export default function InstallmentsTab() {
   ]);
 
   const originalIndex2025 = useMemo(() => {
-    const indices = new Map<string, number>();
+    const indices = new Map<any, number>();
     (installments2025 || []).forEach((row: any, index: number) => {
-      if (!indices.has(row.name)) indices.set(row.name, index);
+      if (!indices.has(row)) indices.set(row, index);
     });
     return indices;
   }, [installments2025]);
   const originalIndex2026 = useMemo(() => {
-    const indices = new Map<string, number>();
+    const indices = new Map<any, number>();
     (installments || []).forEach((row: any, index: number) => {
-      if (!indices.has(row.name)) indices.set(row.name, index);
+      if (!indices.has(row)) indices.set(row, index);
     });
     return indices;
   }, [installments]);
@@ -2205,9 +2205,11 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       prevDue: Number(newRowData2026
         .prevDue) || 0,
       totalPaid: 0,
-      remaining: Number(
-          newRowData2026.prevDue) ||
+      remaining: Math.max(
         0,
+        (Number(newRowData2026.prevDue) || 0) +
+          (Number(newRowData2026.fees) || 0),
+      ),
       notes: "",
       phone: "",
       payments,
@@ -2239,8 +2241,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     const list = [...(installments ||
       [])];
     const updated = list.map((s) => {
-      if (s.name !== paymentModal
-        .row.name) return s;
+      if (s !== paymentModal.row) return s;
       const payments = {
         ...s.payments,
         [paymentModal.month]: (
@@ -2286,14 +2287,16 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       .error("مبلغ غير صحيح");
     const list = [...(installments ||
       [])];
-    const exist = list.find((s) => s
-      .name === newStudentName);
+    const matchingStudents = list.filter((s) => s.name === newStudentName);
+    if (matchingStudents.length > 1) {
+      return toast.error(
+        "يوجد أكثر من سجل بهذا الاسم. استخدم زر إضافة دفعة من صف المتدرب المطلوب لتجنب تعديل سجل آخر.",
+      );
+    }
+    const exist = matchingStudents[0];
     if (exist) {
-      const updated = list.map((
-      s) => {
-        if (s.name !==
-          newStudentName)
-      return s;
+      const updated = list.map((s) => {
+        if (s !== exist) return s;
         const payments = {
           ...s.payments,
           [newStudentMonth]: (
@@ -2366,8 +2369,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     const list = [...(installments ||
       [])];
     const updated = list.map((s) => {
-      if (s.name !==
-        editPaymentModal.row.name)
+      if (s !== editPaymentModal.row)
         return s;
       const payments = { ...s
         .payments, [
@@ -2402,7 +2404,7 @@ td.t-fees { background: ${colorTokens.fees} !important; }
     const list = [...(installments ||
       [])];
     const updated = list.map((s) => {
-      if (s.name !== row.name)
+      if (s !== row)
         return s;
       const payments = { ...s
         .payments, [month]: 0 };
@@ -2861,9 +2863,8 @@ td.t-fees { background: ${colorTokens.fees} !important; }
       if (normalizeName(record.name) !== targetName) return;
       const paymentDate = new Date(record.notifyDate || record.date || "");
       if (!Number.isFinite(paymentDate.getTime()) || paymentDate.getFullYear() < 2022) return;
-      const notifyAmount = cleanNumber(record.notifyAmount);
-      const hasReceipt = Boolean(String(record.hafizaNo || "").trim()) && cleanNumber(record.hafizaAmount) > 0;
-      const paidAmount = notifyAmount > 0 ? notifyAmount : hasReceipt ? cleanNumber(record.hafizaAmount) : 0;
+      // يعتمد إثبات السداد على مبلغ التوريد الفعلي فقط، لا على مبلغ الحافظة.
+      const paidAmount = cleanNumber(record.notifyAmount);
       if (paidAmount <= 0) return;
       if (isRegistrationFeeDescription(record.description)) registrationPaid += paidAmount;
       else if (/امتحان|اختبار/.test(String(record.description || ""))) examPaid += paidAmount;
@@ -3460,7 +3461,7 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
                 ) : (
                   <>
                     {pageRows2025.map((r: any, i: number) => {
-                      const originalIndex = originalIndex2025.get(r.name) ?? -1;
+                      const originalIndex = originalIndex2025.get(r) ?? -1;
                       return (
                         <tr
                           key={i}
@@ -3871,7 +3872,7 @@ className="text-center whitespace-nowrap cursor-pointer hover:bg-black/5 transit
                   <>
                     {pageRows2026.map((r: any, i: number) => {
                       const status = getStatusText(r.remaining);
-                      const originalIndex = originalIndex2026.get(r.name) ?? -1;
+                      const originalIndex = originalIndex2026.get(r) ?? -1;
                       const rowBgClass = getConditionalRowClass(r);
                       const notesStatusTone = getNotesStatusTone(r.notes);
 
