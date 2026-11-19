@@ -208,7 +208,10 @@ export function formatWorksheet(
     let rowHasContent = false;
     row.eachCell({ includeEmpty: true }, (cell: any) => {
       if (cell.value != null && cell.value !== "") rowHasContent = true;
-      const isNumeric = typeof cell.value === "number" || (typeof cell.value === "object" && cell.value?.formula);
+      const cellText = asText(cell.value);
+      const isNumeric = typeof cell.value === "number" ||
+        (typeof cell.value === "object" && cell.value?.formula) ||
+        /^[\\s\\u200e\\u200f]*[+-]?(?:(?:\\d+)(?:[,.٬٫]\\d+)*|\\d{1,4}[-/.]\\d{1,2}[-/.]\\d{1,4})(?:\\s*(?:ر\\.?\\s*ي|ريال|ر\\.?\\s*س))?[\\s\\u200e\\u200f]*$/.test(cellText);
       cell.border = blackBorder;
       cell.font = {
         name: "Arial",
@@ -219,8 +222,8 @@ export function formatWorksheet(
       cell.alignment = {
         horizontal: isNumeric ? "center" : "right",
         vertical: "middle",
-        wrapText: true,
-        shrinkToFit: true,
+        wrapText: !isNumeric,
+        shrinkToFit: isNumeric,
       };
       if (isNumeric) cell.numFmt = "#,##0.00;[Red]-#,##0.00";
     });
@@ -275,6 +278,29 @@ export function formatWorksheet(
     }
     worksheet.getColumn(col).width = Math.min(maxColumnWidth, Math.max(minColumnWidth, maxLength + 2));
   }
+
+  // Excel-like row auto-fit: wrapped text grows vertically instead of being clipped.
+  worksheet.eachRow({ includeEmpty: true }, (row: any, rowNumber: number) => {
+    let estimatedLines = 1;
+    row.eachCell({ includeEmpty: true }, (cell: any) => {
+      const value = cell.value && typeof cell.value === "object"
+        ? cell.value.result ?? cell.value.formula
+        : cell.value;
+      const text = asText(value);
+      if (!text) return;
+      const isAtomic = typeof value === "number" ||
+        /^[\\s\\u200e\\u200f]*[+-]?(?:(?:\\d+)(?:[,.٬٫]\\d+)*|\\d{1,4}[-/.]\\d{1,2}[-/.]\\d{1,4})(?:\\s*(?:ر\\.?\\s*ي|ريال|ر\\.?\\s*س))?[\\s\\u200e\\u200f]*$/.test(text);
+      if (isAtomic) return;
+      const width = Math.max(6, (worksheet.getColumn(cell.col).width || minColumnWidth) - 2);
+      const lines = text.split(/\\r?\\n/).reduce(
+        (sum: number, line: string) => sum + Math.max(1, Math.ceil(line.length / width)),
+        0,
+      );
+      estimatedLines = Math.max(estimatedLines, lines);
+    });
+    const minimumHeight = rowNumber === headerRow ? 30 : 21;
+    row.height = Math.max(row.height || minimumHeight, minimumHeight, estimatedLines * 14 + 5);
+  });
 }
 
 export function appendRows(
