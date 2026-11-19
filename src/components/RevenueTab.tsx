@@ -6,7 +6,8 @@ import { exportRevenueStatement } from "@/lib/exportImport";
 import { useReportDate } from "@/lib/reportDate";
 
 // استيراد الأيقونات لإضفاء لمسة بصرية حديثة متناسقة مع الهوية الجديدة
-import { Calendar, FileSpreadsheet, LayoutGrid, DollarSign, Printer } from "lucide-react";
+import { Calendar, FileSpreadsheet, LayoutGrid, DollarSign, Printer, Trash2 } from "lucide-react";
+import "./RevenueTab.css";
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import WebActionMenu, { type WebActionItem } from "@/components/WebActionMenu";
 import { reportArabicFontFacesCss, reportArabicFontStack } from "@/lib/reportArabicFonts";
@@ -311,6 +312,29 @@ export default function RevenueTab() {
         }
       `}</style>
       {/* لوحة التحكم والتحقق: تم تغيير لون الحدود هنا أيضاً إلى أسود متناسق */}
+      {/* شريط الإجراءات الرئيسية أعلى تبويب الإيرادات */}
+      <div className="revenue-action-bar">
+        <div className="web-only-actions sm:w-auto">
+          <WebActionMenu label="إجراءات الإيرادات" actions={revenueWebActions} />
+        </div>
+        <div className="apk-only-actions revenue-actions-toolbar rounded-xl border border-slate-200 bg-white p-2 shadow-sm" role="group" aria-label="إجراءات الإيرادات">
+          <div className="revenue-actions-buttons">
+            <button type="button" id="revenue-print-action" title="طباعة التقرير أو حفظه بصيغة PDF" onClick={printRevenue} className="revenue-action-button bg-sky-700 text-white hover:bg-sky-800">
+              <Printer className="h-4 w-4" /><span>طباعة / PDF</span>
+            </button>
+            <button type="button" id="revenue-excel-action" title="تصدير بيانات الإيرادات إلى Excel" onClick={() => exportRevenueStatement(revenue, year, reportDate)} className="revenue-action-button border border-slate-200 bg-white text-slate-700 hover:bg-slate-50">
+              <FileSpreadsheet className="h-4 w-4 text-emerald-600" /><span>تصدير Excel</span>
+            </button>
+            <button type="button" id="revenue-clear-action" title="مسح جميع بيانات الإيرادات" onClick={() => {
+              if (!confirm("هل أنت متأكد من مسح جميع بيانات الإيرادات؟ لا يمكن التراجع.")) return;
+              useStore.setState({ revenue: {} });
+            }} className="revenue-action-button bg-rose-600 text-white hover:bg-rose-700">
+              <Trash2 className="h-4 w-4" /><span>مسح البيانات</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 items-end gap-1.5 rounded-xl border border-black bg-white p-1.5 shadow-sm sm:flex sm:flex-wrap sm:gap-3 sm:p-4">
         {/* اختيار الشهر */}
         <div className="flex flex-col gap-2 flex-1 min-w-[140px]">
@@ -345,30 +369,6 @@ export default function RevenueTab() {
           />
         </div>
 
-        {/* مساحة مرنة دافعة للأزرار للشاشات الكبيرة */}
-        <div className="hidden lg:block lg:flex-1" />
-
-        {/* أزرار الإجراءات والتقارير: قائمة منسدلة في الويب، وأزرارها الأصلية داخل APK */}
-        <div className="web-only-actions sm:w-auto">
-          <WebActionMenu label="إجراءات الإيرادات" actions={revenueWebActions} />
-        </div>
-        <div className="apk-only-actions w-full min-w-0 items-center gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-sm lg:w-auto lg:shrink-0" role="group" aria-label="إجراءات الإيرادات">
-          <span className="shrink-0 px-1 text-xs font-black text-slate-600">إجراءات</span>
-          <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto">
-            <button type="button" id="revenue-print-action" onClick={printRevenue} className="flex min-h-10 items-center justify-center gap-1 rounded-lg bg-sky-700 px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-sky-800">
-              <Printer className="h-4 w-4" /><span>طباعة التقرير / PDF</span>
-            </button>
-            <button type="button" id="revenue-excel-action" onClick={() => exportRevenueStatement(revenue, year, reportDate)} className="flex min-h-10 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50">
-              <FileSpreadsheet className="h-4 w-4 text-emerald-600" /><span>تصدير Excel</span>
-            </button>
-            <button type="button" id="revenue-clear-action" onClick={() => {
-              if (!confirm("هل أنت متأكد من مسح جميع بيانات الإيرادات؟ لا يمكن التراجع.")) return;
-              useStore.setState({ revenue: {} });
-            }} className="flex min-h-10 items-center justify-center gap-1 rounded-lg bg-rose-600 px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-rose-700">
-              <span>مسح بيانات الإيرادات</span>
-            </button>
-          </div>
-        </div>
       </div>
 
       {/* لوحة وعاء الجدول الكبيرة الزجاجية بحدود سوداء */}

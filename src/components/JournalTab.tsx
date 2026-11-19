@@ -27,6 +27,7 @@ import TabActions, { greenPrintHeaderCss } from "@/components/TabActions";
 import type { WebActionItem } from "@/components/WebActionMenu";
 import type { Journal } from "@/lib/store";
 import { useTableControls } from "@/hooks/useTableControls";
+import "./JournalTab.css";
 
 const JOURNAL_COLS = [
   { key: "formNo", label: "رقم الاستمارة" },
@@ -511,7 +512,7 @@ export default function JournalTab() {
       pdfCss={greenPrintHeaderCss}
       onClear={clearJournal}
       additionalWebActions={journalWebActions}
-      className="w-auto !grid !grid-cols-2 sm:!flex !gap-2 [&>button]:min-w-0 [&>button]:justify-center [&>button]:rounded-xl [&>button]:px-2 [&>button]:py-2 [&>button]:text-xs [&>button]:font-bold [&>button]:shadow-sm"
+      className="!flex !flex-nowrap !min-w-0 !gap-1 [&>button]:!min-w-0 [&>button]:!flex-1 [&>button]:!justify-center [&>button]:!rounded-lg [&>button]:!px-1 [&>button]:!py-2 [&>button]:!text-[10px] [&>button]:!font-bold [&>button]:!shadow-sm [&>button>svg]:!h-3 [&>button>svg]:!w-3"
     />
   );
 
@@ -520,6 +521,14 @@ export default function JournalTab() {
       className="mizan-journal-tab w-full space-y-3.5 overflow-x-hidden p-1.5 sm:p-3 bg-gradient-to-br from-slate-100 via-indigo-50/40 to-purple-50/30 min-h-screen"
       dir="rtl"
     >
+      {/* شريط الإجراءات الرئيسية أعلى تبويب القيود اليومية */}
+      <div className="mizan-journal-actions-toolbar" role="group" aria-label="الإجراءات الرئيسية للقيود اليومية">
+        <div className="journal-import-action">
+          <ImportButton kind="journal" />
+        </div>
+        {tabActions}
+      </div>
+
       {/* ══ 1. بطاقة إدخال القيد اليومي المركب ══ */}
       <section className="overflow-hidden rounded-2xl border border-indigo-100/80 bg-white/95 shadow-md backdrop-blur-md">
         {/* الترويسة الفخمة */}
@@ -547,12 +556,8 @@ export default function JournalTab() {
               </div>
             </div>
 
-            <div className="apk-only-actions shrink-0 [&>label]:border-purple-500/40 [&>label]:bg-gradient-to-r [&>label]:from-purple-600 [&>label]:to-indigo-600 [&>label]:text-white [&>label]:shadow-sm [&>label]:hover:brightness-110 [&>label]:rounded-xl [&>label]:px-2.5 [&>label]:py-1.5 [&>label]:text-xs [&>label]:font-bold">
-              <ImportButton kind="journal" />
-            </div>
           </div>
 
-          <div className="mt-3 border-t border-white/10 pt-2.5">{tabActions}</div>
         </div>
 
         {/* جسم النموذج: حقلين في كل سطر بدقة */}
