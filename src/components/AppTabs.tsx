@@ -11,7 +11,7 @@ import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import { downloadReportDocumentPdf } from "@/lib/reportPdf";
 import { importUsageInWorker } from "@/lib/excelImportWorkerClient";
 import { saveBlobToInternalStorage } from "@/lib/nativeFileStorage";
-import WebActionMenu from "./WebActionMenu";
+
 
 const mainHeaders = ["رقم الاستمارة", "كشف التسوية", "التاريخ", "البيان"];
 const STORAGE_KEY = "app-tabs-usages-v1";
@@ -595,14 +595,17 @@ const AppTabs: React.FC = () => {
       const rows = rowsOfMonth(m.id);
       const t = monthTotals(m.id);
       body += `<tr class="month"><td colspan="${TOTAL_COLS}">شهر ${m.name}</td></tr>`;
-      rows.forEach((row) => {
-        body += "<tr>";
+      rows.forEach((row, rowIndex) => {
+        body += `<tr class="${rowIndex % 2 === 0 ? "u-row-a" : "u-row-b"}">`;
         mainHeaders.forEach((h) => {
           const cls = h === "التاريخ" ? "date-cell" : h === "رقم الاستمارة" ? "num numeric-cell" : "text-cell";
           body += `<td class="${cls}">${row[h] ?? ""}</td>`;
         });
         dataColumnsOrder.forEach((c) => {
-          const cls = `num numeric-cell${isFormulaCol(c) ? " formula" : ""}`;
+          const formulaType = c === "اجمالي الاستخدامات" ? " formula-total"
+            : c.includes("اجمالي الباب") ? " formula-bab"
+            : c.includes("الفصل") ? " formula-fasl" : "";
+          const cls = `num numeric-cell${isFormulaCol(c) ? " formula" + formulaType : ""}`;
           body += `<td class="${cls}">${row[c] === "" || row[c] === undefined ? "" : formatNumberEn(row[c])}</td>`;
         });
         body += `<td class="text-cell"></td></tr>`;
@@ -631,55 +634,34 @@ const AppTabs: React.FC = () => {
 .report-letterhead-block { display:flex; width:100%; max-width:none; height:30mm; min-height:30mm; max-height:30mm; overflow:hidden; align-items:stretch; justify-content:center; margin:0 0 3mm; page-break-before:avoid; page-break-after:avoid; }
       h2 { text-align:center; color:#000 !important; margin:0 0 3mm; font-weight:800; }
 .report-date { text-align:center; color:#000 !important; margin:0 0 5px; font-size:18px; font-weight:700; }
-      table { width:100%; max-width:100%; min-width:0; border-collapse:collapse; table-layout:auto !important; font-size:clamp(14px,1.05vw,16px); }
-      th, td { border:1px solid #000; padding:2px 3px !important; text-align:center; vertical-align:middle; white-space:normal; overflow:visible; overflow-wrap:break-word; word-break:normal; hyphens:none; line-height:1.15; font-size:clamp(14px,1.05vw,16px); color:#000 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      .num, .numeric-cell, .date-cell { width:1%; min-width:0; white-space:nowrap !important; overflow:visible; overflow-wrap:normal; word-break:keep-all; hyphens:none; font-family:Cairo, sans-serif !important; font-size:clamp(14px,1vw,16px) !important; font-variant-numeric:tabular-nums; direction:ltr; }
-      .text-cell { 
-width:auto; 
-white-space:normal; overflow-wrap:break-word; word-break:normal; }
-.report-letterhead-cell { padding:0 !important; border:0 !important; width:100%; }
-      thead th { 
-background:#fff; font-weight:700; color:#000 !important; 
--webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
-white-space:normal !important;
-        
+      table { width:100%; max-width:100%; min-width:0; border-collapse:collapse; table-layout:fixed !important; font-size:9px; }
+      th, td { border:1px solid #000; padding:2px 2px !important; text-align:center; vertical-align:middle; white-space:normal; overflow:visible; overflow-wrap:anywhere; word-break:normal; hyphens:none; line-height:1.15; font-size:9px; color:#173d31 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      .num, .numeric-cell, .date-cell { min-width:0; white-space:nowrap !important; overflow:visible; overflow-wrap:normal; word-break:keep-all; hyphens:none; font-family:Cairo, sans-serif !important; font-size:8.5px !important; font-variant-numeric:tabular-nums; direction:ltr; }
+      .text-cell { width:auto; white-space:normal; overflow-wrap:anywhere; word-break:normal; }
+      .report-letterhead-cell { padding:0 !important; border:0 !important; width:100%; }
+      thead th { background:#e6f3ec !important; color:#0b3d2e !important; font-weight:800 !important; white-space:normal !important; }
+      thead .c-total { background:#fbe7a1 !important; color:#5a3d00 !important; }
+      thead .c-bab { background:#0f5132 !important; color:#f5d76e !important; }
+      thead .c-fasl { background:#a9d8c3 !important; color:#0b3d2e !important; }
+      thead .c-band { background:#f3dfa2 !important; color:#5a3d00 !important; }
+      thead tr:nth-child(2) th[rowspan="3"]:not(.c-bab),
+      thead tr:nth-child(3) th[rowspan="2"]:not(.c-fasl),
+      thead tr:last-child th {
+        writing-mode:vertical-rl !important; text-orientation:mixed !important;
+        white-space:nowrap !important; min-width:6mm !important; width:6mm !important;
+        height:27mm !important; padding:2px 1px !important; line-height:1.05 !important;
       }
- thead .c-total {
- background:${COLORS.TOTAL_ALL}; 
- -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
-   color:white; 
- }
-      thead .c-bab   { background:${COLORS.BAB_TOTAL}; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important ; 
-        color:white; 
-      }
-      thead .c-fasl  {
-background:${COLORS.FASL}; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
-      color:white; 
-
-        
-      }
-      thead .c-band  { background:${COLORS.BAND}; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; 
-        color:white; 
-
-      }
-td.formula { 
-background:#f8fafc; font-weight:700; 
-color:#000 !important;
--webkit-print-color-adjust:exact!important; 
-print-color-adjust:exact !important; 
-        
-      }
-      tr.month td { background:#164759; font-weight:700 !important; text-align:center; padding:0 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
-   color:white; 
-   
-        
-      }
-      tr.t-cur td  {
-background:#dbeafe;
-color:white!important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      tr.t-prev td { background:#401863; color:white !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      tr.t-cum td  {
-background:#0b3d6d; color:white !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      thead tr:last-child th { height:22mm !important; }
+      td.formula { background:#e7f5ee !important; color:#0f5132 !important; }
+      td.formula-total { background:#fdf1c4 !important; color:#5a3d00 !important; }
+      td.formula-bab { background:#d3ebdf !important; color:#0b3d2e !important; }
+      td.formula-fasl { background:#e7f5ee !important; color:#0f5132 !important; }
+      tbody tr.u-row-a td { background:#ffffff !important; }
+      tbody tr.u-row-b td { background:#f3faf6 !important; }
+      tr.month td { background:#0f5132 !important; color:#f5d76e !important; font-weight:800 !important; text-align:center; padding:4px !important; }
+      tr.t-cur td { background:#d3ebdf !important; color:#0b3d2e !important; font-weight:800 !important; }
+      tr.t-prev td { background:#efe8d6 !important; color:#5b4a2a !important; font-weight:800 !important; }
+      tr.t-cum td { background:#0f5132 !important; color:#f5d76e !important; font-weight:800 !important; }
       tr.t-cur td:first-child, tr.t-prev td:first-child, tr.t-cum td:first-child { text-align:center; padding-right:4px; }
       @media print { @page { size:A4 landscape; margin:3mm; } }
       ${runningLetterheadCss}
@@ -722,9 +704,9 @@ background:#0b3d6d; color:white !important; font-weight:700 !important; -webkit-
       
 
       <div className="u-card p-3 space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-[#0f5132] via-[#14746f] to-[#1a8f86] text-[#f5d76e] shadow-md">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[#0f5132] via-[#14746f] to-[#1a8f86] text-[#f5d76e] shadow-md">
               <FileSpreadsheet className="w-5 h-5" />
             </span>
             <div className="min-w-0">
@@ -732,47 +714,33 @@ background:#0b3d6d; color:white !important; font-weight:700 !important; -webkit-
               <p className="truncate text-[12px] font-bold text-[#5c8573]">النفقات العامة شهراً بشهر</p>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <select
-              value={importMonthId}
-              onChange={(e) => setImportMonthId(Number(e.target.value))}
-              className="rounded-xl border border-[#b5d5c7] bg-[#f1f8f4] px-2.5 py-2 text-[13px] font-bold text-[#0f3a2b] focus:outline-none focus:ring-2 focus:ring-[#14746f]/40"
-              title="الشهر الافتراضي للاستيراد (إن لم يحتوِ الملف عمود الشهر)"
-            >
-              {MONTHS.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
-            </select>
-            <div className="web-only-actions">
-              <WebActionMenu
-                label="إجراءات سجل الاستخدامات"
-                actions={[
-                  { label: "استيراد Excel", icon: Upload, onSelect: handleImportClick },
-                  { label: "تصدير Excel", icon: Download, onSelect: handleExportExcel },
-                  { label: "تصدير PDF", icon: FileText, onSelect: handlePdf },
-                  { label: "طباعة", icon: Printer, onSelect: handlePrint },
-                  { label: "مسح الكل", icon: Eraser, onSelect: handleClearAll, destructive: true },
-                ]}
-              />
-            </div>
-            <div className="apk-only-actions flex flex-wrap items-center gap-2">
-              <button onClick={handleImportClick} className="flex items-center gap-1.5 rounded-xl bg-[#0f5132] px-3 py-2 text-[13px] font-extrabold text-white shadow-sm active:scale-[0.98]">
-                <Upload className="w-4 h-4" /> استيراد Excel
-              </button>
-              <button onClick={handleExportExcel} className="flex items-center gap-1.5 rounded-xl bg-[#14746f] px-3 py-2 text-[13px] font-extrabold text-white shadow-sm active:scale-[0.98]">
-                <Download className="w-4 h-4" /> تصدير Excel
-              </button>
-              <button onClick={handlePdf} className="flex items-center gap-1.5 rounded-xl bg-[#b7791f] px-3 py-2 text-[13px] font-extrabold text-white shadow-sm active:scale-[0.98]">
-                <FileText className="w-4 h-4" /> تحويل PDF
-              </button>
-              <button onClick={handlePrint} className="flex items-center gap-1.5 rounded-xl bg-[#1f3d36] px-3 py-2 text-[13px] font-extrabold text-white shadow-sm active:scale-[0.98]">
-                <Printer className="w-4 h-4" /> طباعة
-              </button>
-              <button onClick={handleClearAll} className="flex items-center gap-1.5 rounded-xl bg-[#a4432f] px-3 py-2 text-[13px] font-extrabold text-white shadow-sm active:scale-[0.98]">
-                <Eraser className="w-4 h-4" /> مسح الكل
-              </button>
-            </div>
-            <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleImportFile} className="hidden" />
-          </div>
+          <select
+            value={importMonthId}
+            onChange={(e) => setImportMonthId(Number(e.target.value))}
+            className="shrink-0 rounded-xl border border-[#b5d5c7] bg-[#f1f8f4] px-2.5 py-2 text-[12px] font-bold text-[#0f3a2b] focus:outline-none focus:ring-2 focus:ring-[#14746f]/40"
+            title="الشهر الافتراضي للاستيراد (إن لم يحتوِ الملف عمود الشهر)"
+          >
+            {MONTHS.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+          </select>
         </div>
+        <div className="usage-actions-row" aria-label="الإجراءات الرئيسية">
+          <button onClick={handleImportClick} className="usage-action-btn bg-[#0f5132] text-white">
+            <Upload className="w-4 h-4" /> <span>استيراد Excel</span>
+          </button>
+          <button onClick={handleExportExcel} className="usage-action-btn bg-[#14746f] text-white">
+            <Download className="w-4 h-4" /> <span>تصدير Excel</span>
+          </button>
+          <button onClick={handlePdf} className="usage-action-btn bg-[#b7791f] text-white">
+            <FileText className="w-4 h-4" /> <span>تصدير PDF</span>
+          </button>
+          <button onClick={handlePrint} className="usage-action-btn bg-[#1f3d36] text-white">
+            <Printer className="w-4 h-4" /> <span>طباعة</span>
+          </button>
+          <button onClick={handleClearAll} className="usage-action-btn bg-[#a4432f] text-white">
+            <Eraser className="w-4 h-4" /> <span>مسح الكل</span>
+          </button>
+        </div>
+        <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleImportFile} className="hidden" />
       </div>
 
       <div className="u-scroll w-full" style={{ maxHeight: "70vh" }}>

@@ -1998,7 +1998,7 @@ export default function ReportsTab() {
     const printOrientation = settings.orientation || (source === "traineeFeeStatus" ? "landscape" : "portrait");
     const printPageSize = settings.pageSize || "A4";
     const marginMm = settings.margin === "narrow" ? 2 : settings.margin === "wide" ? 10 : settings.margin === "normal" ? 6 : (isCustodyReport ? 5 : 6);
-      (printOrientation === "landscape" ? 297 : 210);
+    const pageWidthMm = printOrientation === "landscape" ? 297 : 210;
     const visibleColumnCount = Math.max(1,
       sourceConfig.columns.filter((column) => !settings.hiddenColumns.includes(column.key)).length +
       (settings.hiddenColumns.includes("idx") ? 0 : 1));
