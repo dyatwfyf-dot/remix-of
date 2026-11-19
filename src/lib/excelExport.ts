@@ -211,7 +211,7 @@ export function formatWorksheet(
       const cellText = asText(cell.value);
       const isNumeric = typeof cell.value === "number" ||
         (typeof cell.value === "object" && cell.value?.formula) ||
-        /^[\\s\\u200e\\u200f]*[+-]?(?:(?:\\d+)(?:[,.٬٫]\\d+)*|\\d{1,4}[-/.]\\d{1,2}[-/.]\\d{1,4})(?:\\s*(?:ر\\.?\\s*ي|ريال|ر\\.?\\s*س))?[\\s\\u200e\\u200f]*$/.test(cellText);
+        /^[\s\u200e\u200f]*[+-]?(?:(?:\d+)(?:[,.٬٫]\d+)*|\d{1,4}[-/.]\d{1,2}[-/.]\d{1,4})(?:\s*(?:ر\.?\s*ي|ريال|ر\.?\s*س))?[\s\u200e\u200f]*$/.test(cellText);
       cell.border = blackBorder;
       cell.font = {
         name: "Arial",
@@ -289,10 +289,10 @@ export function formatWorksheet(
       const text = asText(value);
       if (!text) return;
       const isAtomic = typeof value === "number" ||
-        /^[\\s\\u200e\\u200f]*[+-]?(?:(?:\\d+)(?:[,.٬٫]\\d+)*|\\d{1,4}[-/.]\\d{1,2}[-/.]\\d{1,4})(?:\\s*(?:ر\\.?\\s*ي|ريال|ر\\.?\\s*س))?[\\s\\u200e\\u200f]*$/.test(text);
+        /^[\s\u200e\u200f]*[+-]?(?:(?:\d+)(?:[,.٬٫]\d+)*|\d{1,4}[-/.]\d{1,2}[-/.]\d{1,4})(?:\s*(?:ر\.?\s*ي|ريال|ر\.?\s*س))?[\s\u200e\u200f]*$/.test(text);
       if (isAtomic) return;
       const width = Math.max(6, (worksheet.getColumn(cell.col).width || minColumnWidth) - 2);
-      const lines = text.split(/\\r?\\n/).reduce(
+      const lines = text.split(/\r?\n/).reduce(
         (sum: number, line: string) => sum + Math.max(1, Math.ceil(line.length / width)),
         0,
       );
