@@ -226,7 +226,7 @@ export default function RevenueTab() {
     const css = reportArabicFontFacesCss + '@page { size: A4 landscape; margin: 5mm; }' +
       '* { box-sizing:border-box; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }' +
       `html,body,#revenue-print,#revenue-print * { font-family:${reportArabicFontStack} !important; }` +
-      'html,body { margin:0; padding:0; direction:rtl; color:#000; font-family:Cairo,Arial,sans-serif; }' +
+      'html,body { margin:0; padding:0; direction:rtl; color:#000; }' +
       '#revenue-print { width:100%; }' +
       '#revenue-print .revenue-report-heading { display:block !important; width:100% !important; margin:0 auto 3mm !important; padding:2mm 3mm !important; text-align:right !important; page-break-after:avoid !important; box-shadow:none !important; }' +
       '#revenue-print .revenue-heading-layout { display:flex !important; flex-wrap:wrap !important; align-items:center !important; justify-content:space-between !important; gap:2px 12px !important; }' +
@@ -239,11 +239,11 @@ export default function RevenueTab() {
       '#revenue-print .revenue-report-heading svg { display:none !important; }' +
       '#revenue-print .overflow-auto,#revenue-print .overflow-x-auto { overflow:visible !important; max-height:none !important; }' +
       '#revenue-print .sticky { position:static !important; }' +
-      '#revenue-print table { width:100% !important; min-width:0 !important; table-layout:fixed !important; border-collapse:collapse !important; font-family:Cairo,Tahoma,Arial,sans-serif !important; }' +
+      '#revenue-print table { width:100% !important; min-width:0 !important; table-layout:fixed !important; border-collapse:collapse !important; }' +
       '#revenue-print table col.revenue-resource-col { width:24% !important; }' +
       '#revenue-print table col.revenue-code-col { width:7% !important; }' +
       '#revenue-print table col.revenue-value-col { width:8% !important; }' +
-      '#revenue-print table th,#revenue-print table td,#revenue-print table input { font-family:Cairo,Tahoma,Arial,sans-serif !important; }' +
+      '#revenue-print table th,#revenue-print table td,#revenue-print table input { font-family:${reportArabicFontStack} !important; }' +
       '#revenue-print table td:first-child { text-align:right !important; padding-right:6px !important; line-height:1.5 !important; }' +
       '#revenue-print th:nth-child(2),#revenue-print th:nth-child(3),#revenue-print th:nth-child(4),#revenue-print th:nth-child(5),#revenue-print td.numeric-cell { direction:ltr !important; font-variant-numeric:tabular-nums !important; }' +
       '#revenue-print td:first-child { white-space:normal !important; overflow-wrap:break-word !important; word-break:normal !important; font-weight:800 !important; }' +
@@ -288,7 +288,7 @@ export default function RevenueTab() {
         .mizan-revenue-tab .revenue-main-table col.revenue-value-col { width:8%; }
         .mizan-revenue-tab .revenue-main-table td:first-child { text-align:right !important; white-space:normal !important; overflow-wrap:break-word !important; word-break:normal !important; line-height:1.55 !important; padding:7px 9px !important; }
         .mizan-revenue-tab .revenue-main-table .revenue-chapter-name { white-space:normal !important; line-height:1.5 !important; }
-        .mizan-revenue-tab .revenue-main-table th { font-family:Cairo,Tahoma,Arial,sans-serif !important; font-weight:900 !important; line-height:1.4 !important; }
+        .mizan-revenue-tab .revenue-main-table th { font-family:var(--font-report) !important; font-size:14px !important; font-weight:700 !important; line-height:1.45 !important; }
         .mizan-revenue-tab .revenue-report-heading { font-family:var(--font-report) !important; }
         .mizan-revenue-tab .revenue-heading-layout { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 18px; }
         .mizan-revenue-tab .revenue-heading-main { display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; min-width:0; }
@@ -353,7 +353,6 @@ export default function RevenueTab() {
                 icon: Printer,
                 onSelect: printRevenue,
               },
-              {
               {
                 label: "مسح بيانات الإيرادات",
                 destructive: true,
