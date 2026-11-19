@@ -1111,7 +1111,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
           '  font-size: inherit !important;',
           '  line-height: inherit !important;',
           '}'
-        ].join('\\n');
+        ].join('\n');
         // Moving the style node to the end also puts it after the multi-page print
         // stylesheet, which is created immediately before window.print().
         document.head.appendChild(liveSettingsStyle);
