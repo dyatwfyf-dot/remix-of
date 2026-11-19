@@ -1319,18 +1319,40 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       // IMPORTANT: call window.print() synchronously in the original click handler.
       // Awaiting fonts/images or requestAnimationFrame first can consume transient user
       // activation and cause Chrome/Android to silently ignore the print request.
+      function releasePrintLock() {
+        printInProgress = false;
+      }
+
+      // Some browsers fire afterprint only after the dialog closes; Android Chrome
+      // may return from print() immediately. Support both paths without leaving the
+      // toolbar permanently locked after a cancelled or failed print attempt.
+      window.addEventListener('afterprint', releasePrintLock);
+
       function printOnce() {
         if (printInProgress) return false;
+        if (typeof window.print !== 'function') {
+          alert('ميزة الطباعة غير متاحة في هذا المتصفح. افتح المعاينة باستخدام Chrome ثم أعد المحاولة.');
+          return false;
+        }
+
         printInProgress = true;
+        let printStarted = false;
         try {
           ensureMultiPagePrintLayout();
           updatePageSettings();
+          window.focus();
+          // Keep this call synchronous in the actual toolbar click handler.
           window.print();
+          printStarted = true;
           return true;
+        } catch (error) {
+          console.error('[Print] Browser print invocation failed:', error);
+          alert('تعذّر تشغيل الطباعة. تحقق من خدمة الطباعة في المتصفح ثم أعد المحاولة.');
+          return false;
         } finally {
-          // Chrome's print dialog is modal on desktop; Android may return immediately.
-          // Reset shortly afterwards so a second export remains possible.
-          window.setTimeout(function() { printInProgress = false; }, 1200);
+          // Desktop browsers usually wait for the print dialog to close, while
+          // Android may return immediately. The fallback guarantees retry works.
+          window.setTimeout(releasePrintLock, printStarted ? 1800 : 0);
         }
       }
 
@@ -1461,7 +1483,24 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       // Re-assert the selected settings when the browser enters print mode.
       window.addEventListener('beforeprint', updatePageSettings);
 
-      btnPrint.addEventListener('click', function() { try { printOnce(); } catch (error) { console.error('[Print] Failed:', error); alert('تعذرت الطباعة. أعد المحاولة.'); } });
+      btnPrint.addEventListener('click', function(event) {
+        event.preventDefault();
+        if (btnPrint.disabled) return;
+        btnPrint.disabled = true;
+        const originalLabel = btnPrint.textContent;
+        btnPrint.textContent = 'جارٍ فتح الطباعة…';
+        try {
+          printOnce();
+        } catch (error) {
+          console.error('[Print] Toolbar action failed:', error);
+          alert('تعذّرت الطباعة. أعد المحاولة.');
+        } finally {
+          window.setTimeout(function() {
+            btnPrint.disabled = false;
+            btnPrint.textContent = originalLabel || '🖨️ طباعة';
+          }, 1800);
+        }
+      });
       btnDownloadPdf.addEventListener('click', downloadDirectPdf);
       btnClose.addEventListener('click', function() { window.close(); });
 
