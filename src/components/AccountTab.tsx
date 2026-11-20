@@ -652,6 +652,7 @@ const isOpeningRow = (row: any) => String(row.description ?? "").includes("ال�
               printTableClassName="accounts-ledger-table"
               pdfCss={greenPrintHeaderCss}
               onClear={clearAccounts}
+              inlineActions
             />
         </div>
       </div>

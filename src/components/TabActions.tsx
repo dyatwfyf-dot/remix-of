@@ -127,6 +127,8 @@ type Props = {
   onPdfExportRequest?: () => void;
   additionalWebActions ? : WebActionItem[];
   webClassName ? : string;
+  /** Render individual colored action buttons instead of a dropdown menu. */
+  inlineActions?: boolean;
 };
 
 export default function TabActions({
@@ -155,6 +157,7 @@ export default function TabActions({
   onPdfExportRequest,
   additionalWebActions = [],
   webClassName = "",
+  inlineActions = false,
 }: Props) {
   const [pdfBusy, setPdfBusy] = useState(false);
   const { reportDate, reportDateLabel } = useReportDate();
@@ -360,7 +363,35 @@ export default function TabActions({
   return (
     <>
       <div className={`web-only-actions ${webClassName}`}>
-        <WebActionMenu label={`إجراءات ${title}`} actions={webActions} className="w-full sm:w-auto" />
+        {inlineActions ? (
+          <div className="accounts-inline-actions">
+            {webActions.map((action) => {
+              const Icon = action.icon;
+              const tone = action.destructive
+                ? "clear"
+                : action.label.includes("طباعة")
+                  ? "print"
+                  : action.label.includes("PDF") || action.label.includes("تنزيل")
+                    ? "pdf"
+                    : "excel";
+              return (
+                <button
+                  key={action.label}
+                  type="button"
+                  disabled={action.disabled}
+                  onClick={action.onSelect}
+                  title={action.label}
+                  className={`accounts-inline-action accounts-inline-action--${tone}`}
+                >
+                  {Icon ? <Icon className="accounts-inline-action__icon" aria-hidden="true" /> : null}
+                  <span>{action.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <WebActionMenu label={`إجراءات ${title}`} actions={webActions} className="w-full sm:w-auto" />
+        )}
       </div>
 
       <div className={`apk-only-actions flex flex-wrap gap-2 ${className}`}>
