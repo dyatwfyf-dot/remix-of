@@ -1156,7 +1156,7 @@ className ="odd:bg-white even:bg-[#f4fafd] hover:bg-[#e3f0f7] transition-colors 
               {filteredWithBalance.length > 0 && (
                 <tfoot>
                   <tr className="bg-[#E7E2D8]">
-<td colSpan={10} className="border border-black text-right font-extrabold px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
+<td colSpan={11} className="border border-black text-right font-extrabold px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
   الاجمـــــــــالي: 
                     </td>
                     <td className="border border-black font-mono tabular-nums numeric-cell font-black text-center px-1 py-1.5 sm:px-2 sm:py-2 text-sm whitespace-nowrap">
