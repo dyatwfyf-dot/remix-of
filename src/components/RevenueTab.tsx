@@ -128,7 +128,6 @@ export default function RevenueTab() {
     if (!source) return;
     const printContent = source.cloneNode(true) as HTMLElement;
     // Hide the decorative currency icon in the print copy only; keep it on screen.
-    printContent.querySelectorAll(".revenue-currency-icon").forEach((icon) => icon.remove());
     const sourceRows = Array.from(source.querySelectorAll("tr"));
     const printRows = Array.from(printContent.querySelectorAll("tr"));
     const visualProperties = [
@@ -152,6 +151,8 @@ export default function RevenueTab() {
       targetElement.style.setProperty("-webkit-print-color-adjust", "exact", "important");
       targetElement.style.setProperty("print-color-adjust", "exact", "important");
     });
+    // Remove the decorative currency icon only after index-aligned styles have been copied.
+    printContent.querySelectorAll(".revenue-currency-icon").forEach((icon) => icon.remove());
     const printHeading = printContent.querySelector<HTMLElement>(".revenue-report-heading");
     if (printHeading) {
       // Preserve the screen header gradient and its foreground styling in print.
