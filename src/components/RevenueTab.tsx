@@ -127,6 +127,8 @@ export default function RevenueTab() {
     const source = document.getElementById("revenue-report-content");
     if (!source) return;
     const printContent = source.cloneNode(true) as HTMLElement;
+    // Hide the decorative currency icon in the print copy only; keep it on screen.
+    printContent.querySelectorAll(".revenue-currency-icon").forEach((icon) => icon.remove());
     const sourceRows = Array.from(source.querySelectorAll("tr"));
     const printRows = Array.from(printContent.querySelectorAll("tr"));
     const visualProperties = [
@@ -227,8 +229,7 @@ export default function RevenueTab() {
       '@page { size: A4 landscape; margin: 5mm; }' +
       '* { box-sizing:border-box; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }' +
       'html,body { margin:0; padding:0; direction:rtl; color:#000; font-family:' + reportArabicFontStack + '; }' +
-      '#revenue-print { width:100%; }' +
-      '#revenue-print .revenue-report-heading { display:block !important; width:100% !important; margin:0 auto 3mm !important; padding:1.5mm 0 !important; border-bottom:1.5px solid #334b5e !important; border-radius:0 !important; text-align:right !important; page-break-after:avoid !important; box-shadow:none !important; font-family:' + reportArabicFontStack + ' !important; }' +
+      '#revenue-print { width:100%; }' +      '#revenue-print .revenue-report-heading { display:block !important; width:100% !important; margin:0 auto 3mm !important; padding:1.5mm 0 !important; border-bottom:1.5px solid #334b5e !important; border-radius:0 !important; text-align:right !important; page-break-after:avoid !important; box-shadow:none !important; font-family:' + reportArabicFontStack + ' !important; }' +
       '#revenue-print .revenue-heading-layout { display:flex !important; flex-wrap:wrap !important; align-items:center !important; justify-content:space-between !important; gap:2px 12px !important; }' +
       '#revenue-print .revenue-heading-main { display:flex !important; flex-wrap:wrap !important; align-items:center !important; gap:2px 8px !important; }' +
       '#revenue-print .revenue-heading-copy { display:flex !important; flex-wrap:wrap !important; align-items:baseline !important; gap:2px 9px !important; }' +
@@ -457,8 +458,7 @@ export default function RevenueTab() {
             </thead>
             <tbody className="font-medium">
               {/* السطر الإجمالي العلوي السريع */}
-              <tr className="bg-sky-700/[0.04] font-bold text-sky-950 border-b-2 border-black">
- <td className="border border-black text-center font-cairo whitespace-normal !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+              <tr className="bg-sky-700/[0.04] font-bold text-sky-950 border-b-2 border-black"> <td className="border border-black text-center font-cairo whitespace-normal !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
  إجمالي الموارد العامة للوحدة
                 </td>
 <td colSpan={4} className="border border-black !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base whitespace-normal"></td>
@@ -584,7 +584,7 @@ export default function RevenueTab() {
                                         className="w-full pl-6 pr-2 py-1 bg-white border border-slate-200 rounded-lg numeric-cell font-mono text-cente font-bold text-sky-950 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 shadow-sm transition-all"
                                         placeholder="0"
                                       />
-                                      <DollarSign className="w-3 h-3 text-slate-300 absolute cente-2" />
+                                      <DollarSign className="revenue-currency-icon w-3 h-3 text-slate-300 absolute cente-2" />
                                     </div>
                                   </td>
 
