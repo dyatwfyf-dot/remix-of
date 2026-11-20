@@ -1201,3 +1201,253 @@ table:has(> tbody tr:first-child th:first-child:is(.serial-number-column, [data-
   .mizan-hafiza-tab .grid.grid-cols-3 { grid-template-columns:minmax(0,1fr) !important; }
   .mizan-hafiza-tab .grid.grid-cols-2 { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
 }
+
+
+/* استكمال الهوية الدافئة لجميع أجزاء تبويب حوافظ التوريد */
+.mizan-hafiza-tab {
+  --hafiza-ink: #3d2b20;
+  --hafiza-brown: #68452f;
+  --hafiza-copper: #ad7045;
+  --hafiza-olive: #66733b;
+  --hafiza-cream: #f7f0df;
+  --hafiza-paper: #fffaf0;
+  --hafiza-line: #c9b99a;
+}
+
+/* بطاقات النموذج وكشف القيود: تطبيق الخلفية والحدود والظلال على البطاقة كاملة */
+.mizan-hafiza-tab [class*="rounded-2xl"][class*="overflow-hidden"] {
+  background: #fffaf0 !important;
+  border: 1px solid #c9b99a !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 5px 0 #dfd2b9, 0 10px 22px rgba(75,54,31,.12) !important;
+}
+.mizan-hafiza-tab [class*="rounded-2xl"][class*="overflow-hidden"] > :first-child {
+  border-color: #c9b99a !important;
+}
+
+/* رؤوس الأقسام السفلية ورأس جدول كشف القيود */
+.mizan-hafiza-tab [class*="bg-sky-500"],
+.mizan-hafiza-tab [class*="bg-\\[hsla"] {
+  background: linear-gradient(115deg,#68452f 0%,#946442 58%,#b98253 100%) !important;
+  color: #fffaf0 !important;
+}
+.mizan-hafiza-tab [class*="bg-sky-500"] :where(h2,h3,p,span),
+.mizan-hafiza-tab [class*="bg-\\[hsla"] :where(h2,h3,p,span) {
+  color: #fffaf0 !important;
+}
+.mizan-hafiza-tab [class*="bg-sky-500"] svg,
+.mizan-hafiza-tab [class*="bg-\\[hsla"] svg {
+  color: #fffaf0 !important;
+}
+
+/* جدول الحوافظ بكامل مكوناته، بما فيها رأس الأعمدة والمرشحات والصفوف والإجماليات */
+.mizan-hafiza-tab table.hafiza-ledger-table {
+  width: 100% !important;
+  min-width: 920px !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  table-layout: auto !important;
+  background: #fffdf7 !important;
+  border: 1px solid #bda987 !important;
+  border-radius: .7rem !important;
+  overflow: hidden !important;
+}
+.mizan-hafiza-tab table.hafiza-ledger-table thead {
+  background: #e5d2ad !important;
+}
+.mizan-hafiza-tab table.hafiza-ledger-table thead th {
+  background: linear-gradient(180deg,#eadbbb 0%,#d6bf94 100%) !important;
+  color: #493522 !important;
+  border: 1px solid #bda987 !important;
+  padding: 8px 7px !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  white-space: normal !important;
+  vertical-align: middle !important;
+}
+.mizan-hafiza-tab table.hafiza-ledger-table thead th button {
+  color: #493522 !important;
+  font-weight: 900 !important;
+}
+.mizan-hafiza-tab table.hafiza-ledger-table thead input {
+  width: 100% !important;
+  min-width: 42px !important;
+  min-height: 28px !important;
+  padding: 3px 5px !important;
+  color: #493522 !important;
+  background: #fffaf0 !important;
+  border: 1px solid #c9b99a !important;
+  border-radius: .4rem !important;
+  font-size: 11px !important;
+}
+.mizan-hafiza-tab table.hafiza-ledger-table tbody tr {
+  background: #fffdf7 !important;
+  transition: background-color .15s ease;
+}
+.mizan-hafiza-tab table.hafiza-ledger-table tbody tr:nth-child(even) {
+  background: #f4ecdc !important;
+}
+.mizan-hafiza-tab table.hafiza-ledger-table tbody tr:hover {
+  background: #eee0c4 !important;
+}
+.mizan-hafiza-tab table.hafiza-ledger-table tbody td {
+  color: #443426 !important;
+  border: 1px solid #d3c4a7 !important;
+  padding: 7px 8px !important;
+  font-size: 12.5px !important;
+  line-height: 1.45 !important;
+  vertical-align: middle !important;
+}
+.mizan-hafiza-tab table.hafiza-ledger-table tbody td span {
+  color: inherit !important;
+}
+.mizan-hafiza-tab table.hafiza-ledger-table tbody td button {
+  color: #8b4035 !important;
+  background: #f6e6dc !important;
+  border: 1px solid #d9b9a5 !important;
+  border-radius: .5rem !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+}
+.mizan-hafiza-tab table.hafiza-ledger-table tfoot,
+.mizan-hafiza-tab table.hafiza-ledger-table tfoot tr {
+  background: linear-gradient(90deg,#e8d8b8,#d9c49b) !important;
+  color: #493522 !important;
+}
+.mizan-hafiza-tab table.hafiza-ledger-table tfoot td {
+  color: #493522 !important;
+  background: transparent !important;
+  border: 1px solid #bda987 !important;
+  padding: 9px 7px !important;
+  font-weight: 900 !important;
+  font-size: 13px !important;
+}
+.mizan-hafiza-tab table.hafiza-ledger-table tfoot td * {
+  color: #493522 !important;
+}
+
+/* منطقة التمرير أسفل التبويب تبقى ضمن عرض الشاشة وتسمح بالتمرير الأفقي للجدول */
+.mizan-hafiza-tab .overflow-auto {
+  max-width: 100% !important;
+  overflow: auto !important;
+  border: 1px solid #c9b99a !important;
+  border-radius: .75rem !important;
+  background: #fffaf0 !important;
+  scrollbar-width: thin;
+  scrollbar-color: #a77b52 #eee3cd;
+}
+
+/* النموذج: كل حقلين متجاورين في السطر على الكمبيوتر والهاتف */
+.mizan-hafiza-tab .grid.grid-cols-3 {
+  display: grid !important;
+  grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+  gap: .8rem !important;
+  padding: .9rem !important;
+  background: #f5eedf !important;
+  border: 1px solid #d2c2a3 !important;
+  border-radius: .85rem !important;
+  align-items: end !important;
+}
+.mizan-hafiza-tab .grid.grid-cols-3 > * {
+  min-width: 0 !important;
+  width: 100% !important;
+}
+.mizan-hafiza-tab .grid.grid-cols-3 label {
+  display: block !important;
+  margin-bottom: .35rem !important;
+  color: #59432e !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+.mizan-hafiza-tab .grid.grid-cols-3 input {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 40px !important;
+  padding: .45rem .65rem !important;
+  background: #fffdf7 !important;
+  color: #3d2b20 !important;
+  border: 1px solid #c8b794 !important;
+  border-radius: .62rem !important;
+  box-shadow: inset 0 1px 2px rgba(67,48,27,.06) !important;
+}
+.mizan-hafiza-tab .grid.grid-cols-3 input:focus {
+  border-color: #a66f47 !important;
+  box-shadow: 0 0 0 3px rgba(166,111,71,.16) !important;
+}
+.mizan-hafiza-tab .mt-4 {
+  margin-top: .85rem !important;
+  padding: .85rem !important;
+  background: #f1e5ce !important;
+  border: 1px solid #d2c2a3 !important;
+  border-radius: .85rem !important;
+}
+.mizan-hafiza-tab .mt-4 button {
+  min-height: 42px !important;
+  border: 1px solid rgba(65,48,31,.24) !important;
+  border-radius: .7rem !important;
+  font-weight: 900 !important;
+  box-shadow: 0 4px 0 rgba(75,54,31,.22),0 6px 10px rgba(54,39,25,.10) !important;
+}
+.mizan-hafiza-tab .mt-4 button:first-child {
+  background: linear-gradient(180deg,#78864a,#536333) !important;
+  color: #fff !important;
+}
+.mizan-hafiza-tab .mt-4 button:last-child {
+  background: linear-gradient(180deg,#b98253,#8b5938) !important;
+  color: #fffaf0 !important;
+}
+
+/* ألوان عناصر التحكم والبحث والأزرار في قسم الكشف */
+.mizan-hafiza-tab :where(input,select,textarea) {
+  accent-color: #66733b;
+}
+.mizan-hafiza-tab input[placeholder="بحث بالاسم..."] {
+  background: #fffaf0 !important;
+  border: 1px solid #c9b99a !important;
+  color: #493522 !important;
+  border-radius: .65rem !important;
+}
+.mizan-hafiza-tab [class*="bg-sky-600"] {
+  background: linear-gradient(180deg,#78864a,#536333) !important;
+  color: #fff !important;
+  border: 1px solid #46542a !important;
+}
+.mizan-hafiza-tab [class*="bg-slate-100"] {
+  background: #eee3cd !important;
+}
+.mizan-hafiza-tab [class*="text-slate-900"],
+.mizan-hafiza-tab [class*="text-slate-800"] {
+  color: #493522 !important;
+}
+
+@media (max-width: 640px) {
+  .mizan-hafiza-tab .grid.grid-cols-3 {
+    grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+    gap: .6rem !important;
+    padding: .65rem !important;
+  }
+  .mizan-hafiza-tab .grid.grid-cols-3 label {
+    font-size: 11px !important;
+  }
+  .mizan-hafiza-tab .grid.grid-cols-3 input {
+    min-height: 38px !important;
+    font-size: 12px !important;
+  }
+  .mizan-hafiza-tab table.hafiza-ledger-table thead th {
+    padding: 6px 5px !important;
+    font-size: 11px !important;
+  }
+  .mizan-hafiza-tab table.hafiza-ledger-table tbody td {
+    padding: 6px 5px !important;
+    font-size: 11px !important;
+  }
+  .mizan-hafiza-tab table.hafiza-ledger-table tfoot td {
+    font-size: 11px !important;
+  }
+}
+@media (max-width: 360px) {
+  .mizan-hafiza-tab .grid.grid-cols-3 {
+    grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+    gap: .45rem !important;
+  }
+}
