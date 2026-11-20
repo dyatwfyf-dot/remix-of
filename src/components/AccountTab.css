@@ -1279,3 +1279,133 @@
     color: #fff0c8 !important;
   }
 }
+
+ 
+/* ===== أزرار إجراءات الحساب الجاري بألوان وأيقونات مستقلة ===== */
+@media screen {
+  .mizan-account-tab .accounts-main-actions {
+    align-items: center !important;
+  }
+  .mizan-account-tab .accounts-main-actions > div:last-child {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .mizan-account-tab .accounts-main-actions .web-only-actions {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-inline-actions {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px !important;
+    width: 100%;
+    align-items: stretch;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-inline-action {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    min-width: 0;
+    min-height: 68px;
+    padding: 8px 6px !important;
+    border: 1px solid transparent !important;
+    border-radius: 14px !important;
+    color: #fff !important;
+    font-size: 12px !important;
+    line-height: 1.25 !important;
+    font-weight: 950 !important;
+    text-align: center !important;
+    white-space: normal !important;
+    box-shadow: 0 4px 9px rgba(34, 35, 27, .16), inset 0 1px 0 rgba(255,255,255,.22) !important;
+    transition: transform .16s ease, filter .16s ease, box-shadow .16s ease;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-inline-action:hover {
+    filter: brightness(1.08) saturate(1.08);
+    transform: translateY(-2px);
+    box-shadow: 0 7px 13px rgba(34, 35, 27, .20) !important;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-inline-action:active {
+    transform: translateY(0) scale(.97);
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-inline-action:disabled {
+    opacity: .58 !important;
+    cursor: wait !important;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-inline-action__icon {
+    display: block;
+    width: 25px !important;
+    height: 25px !important;
+    flex: 0 0 auto;
+    stroke-width: 2.5 !important;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,.2));
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-inline-action--print {
+    background: linear-gradient(145deg, #2877b8, #164d83) !important;
+    border-color: #123e6b !important;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-inline-action--pdf {
+    background: linear-gradient(145deg, #8654b5, #5b348c) !important;
+    border-color: #4b2a78 !important;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-inline-action--excel {
+    background: linear-gradient(145deg, #23885b, #12633e) !important;
+    border-color: #0e5635 !important;
+  }
+  .mizan-account-tab .accounts-main-actions .accounts-inline-action--clear {
+    background: linear-gradient(145deg, #c64d4d, #962f36) !important;
+    border-color: #7e252d !important;
+  }
+  .mizan-account-tab .accounts-main-actions label[title*="Excel"] {
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0;
+    min-height: 68px !important;
+    padding: 8px 6px !important;
+    border: 1px solid #9b793d !important;
+    border-radius: 14px !important;
+    background: linear-gradient(145deg, #c99d42, #98702c) !important;
+    color: #fff9e8 !important;
+    font-size: 12px !important;
+    line-height: 1.25 !important;
+    font-weight: 950 !important;
+    text-align: center !important;
+    box-shadow: 0 4px 9px rgba(34, 35, 27, .16), inset 0 1px 0 rgba(255,255,255,.22) !important;
+  }
+  .mizan-account-tab .accounts-main-actions label[title*="Excel"] svg {
+    width: 25px !important;
+    height: 25px !important;
+    color: #fff9e8 !important;
+    stroke-width: 2.5 !important;
+  }
+  .mizan-account-tab .accounts-main-actions label[title*="Excel"]:hover {
+    filter: brightness(1.08);
+    transform: translateY(-2px);
+  }
+  @media (max-width: 639px) {
+    .mizan-account-tab .accounts-main-actions .accounts-inline-actions {
+      grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+      gap: 5px !important;
+    }
+    .mizan-account-tab .accounts-main-actions .accounts-inline-action,
+    .mizan-account-tab .accounts-main-actions label[title*="Excel"] {
+      min-height: 62px !important;
+      padding: 6px 3px !important;
+      gap: 4px !important;
+      border-radius: 11px !important;
+      font-size: 10px !important;
+    }
+    .mizan-account-tab .accounts-main-actions .accounts-inline-action__icon,
+    .mizan-account-tab .accounts-main-actions label[title*="Excel"] svg {
+      width: 22px !important;
+      height: 22px !important;
+    }
+  }
+  @media (max-width: 359px) {
+    .mizan-account-tab .accounts-main-actions .accounts-inline-actions {
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+  }
+}
