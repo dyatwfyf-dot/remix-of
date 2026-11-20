@@ -1,0 +1,160 @@
+/* Scoped visual redesign for the Supply Receipts tab.
+   Keeps all data, actions, validation, sorting and print/export behavior unchanged. */
+.mizan-hafiza-tab {
+  --hafiza-cream: #f4dfbd;
+  --hafiza-paper: #f8e8cc;
+  --hafiza-ink: #4b260f;
+  --hafiza-copper: #b96d3d;
+  --hafiza-copper-dark: #874322;
+  --hafiza-olive: #777747;
+  --hafiza-olive-dark: #4d542d;
+  --hafiza-line: #c99a69;
+  color: var(--hafiza-ink) !important;
+  background:
+    radial-gradient(ellipse at 18% 8%, rgba(255,255,255,.78), transparent 42%),
+    linear-gradient(145deg, #f8e9d0 0%, #e8c69b 48%, #f7e5c7 100%) !important;
+  border-radius: 26px;
+  padding: clamp(10px, 2.2vw, 20px) !important;
+}
+.mizan-hafiza-tab > .rounded-2xl:first-child {
+  background: linear-gradient(145deg,#f8e8ce,#e8c49a) !important;
+  border: 2px solid #d5ae7d !important;
+  border-radius: 26px !important;
+  box-shadow: inset 0 2px 5px #fff8, 0 5px 12px #60371935 !important;
+  padding: 18px !important;
+}
+.mizan-hafiza-tab h1,
+.mizan-hafiza-tab h2,
+.mizan-hafiza-tab h3,
+.mizan-hafiza-tab [data-slot="card-title"] {
+  color: var(--hafiza-ink) !important;
+  text-shadow: 0 1px 0 #fff5;
+  letter-spacing: 0 !important;
+}
+.mizan-hafiza-tab > .mb-3\.5.backdrop-blur-md {
+  background: linear-gradient(145deg,#ead0a9,#c99567) !important;
+  border: 2px solid #b98558 !important;
+  border-radius: 24px !important;
+  box-shadow: inset 0 2px 4px #fff8, 0 5px 10px #60371930 !important;
+}
+.mizan-hafiza-tab > .mb-3\.5.backdrop-blur-md button,
+.mizan-hafiza-tab > .mb-3\.5.backdrop-blur-md > div > div {
+  color: #fff8e9 !important;
+  background: linear-gradient(155deg,#c17b4c,#8d4d2c) !important;
+  border: 1px solid #774124 !important;
+  border-radius: 18px !important;
+  box-shadow: inset 0 2px 3px #fff6, 0 4px 7px #4c2a1845 !important;
+  text-shadow: 0 1px 2px #42200e;
+  min-height: 48px;
+}
+.mizan-hafiza-tab > .mb-3\.5.backdrop-blur-md button:first-child,
+.mizan-hafiza-tab > .mb-3\.5.backdrop-blur-md button:nth-child(4) {
+  background: linear-gradient(155deg,#858456,#555a35) !important;
+}
+.mizan-hafiza-tab [data-slot="card"] {
+  background: linear-gradient(145deg,#f9ebd3,#e8c79e) !important;
+  border: 2px solid #d3aa79 !important;
+  border-radius: 28px !important;
+  box-shadow: inset 0 2px 5px #fff9, 0 7px 15px #60371930 !important;
+}
+.mizan-hafiza-tab [data-slot="card-header"] {
+  background: linear-gradient(135deg,#f5dfbd,#e6c197) !important;
+  border: 0 !important;
+  border-bottom: 1px solid #d1a779 !important;
+  border-radius: 24px 24px 0 0;
+  padding: 14px 16px !important;
+}
+.mizan-hafiza-tab [data-slot="card-header"] :is(p,span) {
+  color: #714321 !important;
+}
+.mizan-hafiza-tab [data-slot="card-content"] {
+  padding: clamp(12px,2vw,20px) !important;
+}
+.mizan-hafiza-tab [data-slot="card-content"] > .grid.grid-cols-3 {
+  grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+  gap: 10px !important;
+  background: rgba(255,248,234,.38) !important;
+  border: 1px solid #d4ad7d !important;
+  border-radius: 18px;
+  padding: 12px;
+}
+.mizan-hafiza-tab label {
+  color: #57351e !important;
+  font-weight: 800 !important;
+}
+.mizan-hafiza-tab input:not([type="checkbox"]),
+.mizan-hafiza-tab textarea,
+.mizan-hafiza-tab select {
+  background: linear-gradient(180deg,#fff5e4,#f1dfc3) !important;
+  color: #342316 !important;
+  border: 1px solid #c69b6d !important;
+  border-radius: 12px !important;
+  box-shadow: inset 0 2px 4px #6b421415, 0 1px 2px #fff !important;
+}
+.mizan-hafiza-tab [data-slot="card-content"] > .mt-4 {
+  background: rgba(255,248,234,.4) !important;
+  border: 0 !important;
+  padding-top: 14px !important;
+}
+.mizan-hafiza-tab [data-slot="card-content"] > .mt-4 button {
+  color: #fff9ed !important;
+  background: linear-gradient(155deg,#bd7548,#874626) !important;
+  border: 1px solid #774124 !important;
+  border-radius: 20px !important;
+  box-shadow: inset 0 2px 3px #fff6,0 5px 9px #60371940 !important;
+  text-shadow: 0 1px 2px #42200e;
+  min-height: 54px;
+}
+.mizan-hafiza-tab [data-slot="card-content"] > .mt-4 button:last-child {
+  background: linear-gradient(155deg,#858456,#555a35) !important;
+}
+.mizan-hafiza-tab .hafiza-ledger-table {
+  background: #f8e8ce !important;
+  border: 1px solid #9b6941 !important;
+  border-radius: 14px;
+}
+.mizan-hafiza-tab .hafiza-ledger-table thead th {
+  color: #fff7e8 !important;
+  background: linear-gradient(160deg,#858456,#515632) !important;
+  border: 1px solid #6e5736 !important;
+  text-shadow: 0 1px 2px #302d18;
+  white-space: normal !important;
+}
+.mizan-hafiza-tab .hafiza-ledger-table thead th input {
+  min-width: 48px;
+  background: #fff0d8 !important;
+}
+.mizan-hafiza-tab .hafiza-ledger-table tbody td {
+  color: #382517 !important;
+  background: #f8e8ce !important;
+  border: 1px solid #c69b6d !important;
+  white-space: normal !important;
+}
+.mizan-hafiza-tab .hafiza-ledger-table tbody tr:nth-child(even) td {
+  background: #f0dbb9 !important;
+}
+.mizan-hafiza-tab .hafiza-ledger-table tfoot td {
+  color: #fff8e9 !important;
+  background: linear-gradient(145deg,#858456,#555a35) !important;
+  border: 1px solid #645b36 !important;
+  font-weight: 900 !important;
+}
+.mizan-hafiza-tab .hafiza-ledger-table button {
+  background: linear-gradient(145deg,#c8794c,#984b2d) !important;
+  color: #fff !important;
+  border-radius: 9px !important;
+  padding: 7px !important;
+}
+.mizan-hafiza-tab [data-slot="card"]:last-child [data-slot="card-header"] {
+  background: linear-gradient(135deg,#eacba5,#d9ae7c) !important;
+}
+@media (max-width: 640px) {
+  .mizan-hafiza-tab { padding: 8px !important; border-radius: 18px; }
+  .mizan-hafiza-tab > .rounded-2xl:first-child { padding: 12px !important; }
+  .mizan-hafiza-tab [data-slot="card-content"] > .grid.grid-cols-3 {
+    gap: 8px !important;
+    padding: 9px !important;
+  }
+  .mizan-hafiza-tab [data-slot="card-content"] > .mt-4 button { min-height: 48px; }
+  .mizan-hafiza-tab .hafiza-ledger-table { min-width: 980px; }
+}
