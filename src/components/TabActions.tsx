@@ -365,7 +365,7 @@ export default function TabActions({
       <div className={`web-only-actions ${webClassName}`}>
         {inlineActions ? (
           <div className="accounts-inline-actions">
-            {webActions.map((action, index) => {
+            {webActions.map((action) => {
               const Icon = action.icon;
               const tone = action.destructive
                 ? "clear"
