@@ -1045,3 +1045,159 @@ table:has(> tbody tr:first-child th:first-child:is(.serial-number-column, [data-
 .mizan-reports-tab .reports-print-heading * {
   font-family: var(--font-report) !important;
 }
+
+
+/* هوية دافئة مستوحاة من المرجع البصري — محصورة في تبويب حوافظ التوريد */
+.mizan-hafiza-tab {
+  --hafiza-ink: #3d2b20;
+  --hafiza-brown: #68452f;
+  --hafiza-copper: #ad7045;
+  --hafiza-copper-light: #d8a477;
+  --hafiza-olive: #66733b;
+  --hafiza-olive-dark: #46542a;
+  --hafiza-cream: #f7f0df;
+  --hafiza-paper: #fffaf0;
+  --hafiza-line: #c9b99a;
+  background:
+    radial-gradient(ellipse at 8% 0%, rgba(173,112,69,.12), transparent 34%),
+    radial-gradient(ellipse at 100% 16%, rgba(102,115,59,.12), transparent 38%),
+    linear-gradient(145deg,#eee3cd 0%,#faf5e9 52%,#e9ddc5 100%) !important;
+  color: var(--hafiza-ink) !important;
+  font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif;
+}
+.mizan-hafiza-tab > div:first-child {
+  background: linear-gradient(115deg,#553a2a 0%,#8b5c3c 58%,#b77c4e 100%) !important;
+  border: 1px solid #d5b58d !important;
+  border-radius: 1.15rem !important;
+  box-shadow: 0 7px 0 #4b3427, 0 13px 24px rgba(65,43,28,.2) !important;
+}
+.mizan-hafiza-tab > div:first-child :where(h1,p) { color:#fff8e9 !important; }
+.mizan-hafiza-tab > div:first-child > div > div:first-child {
+  background:linear-gradient(145deg,#c18b5c,#8b5c3c) !important;
+  border:1px solid rgba(255,245,220,.5) !important;
+  box-shadow:inset 0 1px 2px rgba(255,255,255,.35),0 3px 7px rgba(45,27,16,.22) !important;
+}
+.mizan-hafiza-tab > div:nth-child(2) {
+  background:rgba(255,250,240,.94) !important;
+  border:1px solid #c9b99a !important;
+  border-radius:1rem !important;
+  box-shadow:0 5px 0 #d5c6a9,0 9px 18px rgba(75,54,31,.10) !important;
+  backdrop-filter:blur(8px);
+}
+.mizan-hafiza-tab > div:nth-child(2) button,
+.mizan-hafiza-tab > div:nth-child(2) label.cursor-pointer {
+  min-height:42px !important;
+  border:1px solid rgba(65,48,31,.28) !important;
+  border-radius:.72rem !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 4px 0 rgba(54,39,25,.22),0 6px 10px rgba(54,39,25,.12) !important;
+  font-weight:800 !important;
+}
+.mizan-hafiza-tab > div:nth-child(2) button:first-child {
+  background:linear-gradient(180deg,#b98253,#8b5938) !important;
+  color:#fffaf0 !important;
+}
+.mizan-hafiza-tab > div:nth-child(2) button:nth-of-type(2) {
+  background:linear-gradient(180deg,#77864a,#536333) !important;
+  color:#fff !important;
+}
+.mizan-hafiza-tab > div:nth-child(2) > div > div {
+  background:linear-gradient(180deg,#77864a,#536333) !important;
+  border:1px solid #46542a !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 4px 0 #3d4926,0 6px 10px rgba(54,39,25,.12) !important;
+}
+.mizan-hafiza-tab > div:nth-child(2) > div > button {
+  background:linear-gradient(180deg,#a65d4c,#7e4035) !important;
+}
+.mizan-hafiza-tab button:active { transform:translateY(2px) !important; box-shadow:inset 0 1px 2px rgba(0,0,0,.18),0 1px 0 rgba(54,39,25,.2) !important; }
+.mizan-hafiza-tab button:disabled { opacity:.48 !important; }
+.mizan-hafiza-tab [class*="rounded-2xl"][class*="shadow-lg"],
+.mizan-hafiza-tab [class*="rounded-2xl"][class*="shadow-md"] {
+  border:1px solid var(--hafiza-line) !important;
+  border-radius:1rem !important;
+  background:var(--hafiza-paper) !important;
+  box-shadow:0 5px 0 #dfd2b9,0 9px 20px rgba(75,54,31,.10) !important;
+}
+.mizan-hafiza-tab [class*="rounded-2xl"][class*="shadow-lg"] > :first-child,
+.mizan-hafiza-tab [class*="rounded-2xl"][class*="shadow-md"] > :first-child {
+  border-color:var(--hafiza-line) !important;
+}
+.mizan-hafiza-tab :where(.bg-\[hsla\(214\,92\%\,47\%\,1\)\]) {
+  background:linear-gradient(110deg,#785039,#a66f47) !important;
+}
+.mizan-hafiza-tab :where(input,select,textarea) {
+  color:#3d2b20 !important;
+  background:#fffdf7 !important;
+  border:1px solid #c8b794 !important;
+  border-radius:.62rem !important;
+  box-shadow:inset 0 1px 2px rgba(67,48,27,.06) !important;
+}
+.mizan-hafiza-tab :where(input,select,textarea):focus {
+  outline:none !important;
+  border-color:#a66f47 !important;
+  box-shadow:0 0 0 3px rgba(166,111,71,.16) !important;
+}
+.mizan-hafiza-tab label { color:#59432e !important; font-weight:800 !important; }
+.mizan-hafiza-tab table {
+  border-color:#bda987 !important;
+  background:#fffdf7 !important;
+}
+.mizan-hafiza-tab table thead th {
+  background:linear-gradient(180deg,#e9d9b9,#d8c39b) !important;
+  color:#493522 !important;
+  border:1px solid #bda987 !important;
+  font-weight:900 !important;
+}
+.mizan-hafiza-tab table thead th button { color:#493522 !important; }
+.mizan-hafiza-tab table tbody tr:nth-child(even) { background:#f5eedf !important; }
+.mizan-hafiza-tab table tbody tr:hover { background:#eee1c7 !important; }
+.mizan-hafiza-tab table :where(th,td) { border:1px solid #d3c4a7 !important; }
+.mizan-hafiza-tab table tbody td { color:#443426 !important; }
+.mizan-hafiza-tab table tfoot,
+.mizan-hafiza-tab table tfoot tr { background:#e3d4b5 !important; color:#493522 !important; }
+.mizan-hafiza-tab table tfoot td { border:1px solid #bda987 !important; font-weight:900 !important; }
+.mizan-hafiza-tab [class*="bg-sky-600"] { background:#66733b !important; color:#fff !important; }
+.mizan-hafiza-tab [class*="text-slate-900"],
+.mizan-hafiza-tab [class*="text-slate-800"] { color:#493522 !important; }
+
+/* ترتيب النموذج: ثلاثة أعمدة للشاشات الواسعة وعمودان للهاتف */
+.mizan-hafiza-tab .grid.grid-cols-3 {
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:.8rem !important;
+  padding:.8rem !important;
+  border-radius:.8rem !important;
+  background:#f5eedf !important;
+  border-color:#d2c2a3 !important;
+}
+.mizan-hafiza-tab .grid.grid-cols-2 {
+  gap:.65rem !important;
+}
+.mizan-hafiza-tab .mt-4.pt-3\.5 {
+  background:#f4ead7 !important;
+  border:1px solid #d2c2a3 !important;
+  border-radius:.8rem !important;
+  padding:.8rem !important;
+}
+.mizan-hafiza-tab .mt-4.pt-3\.5 button:first-child {
+  background:linear-gradient(180deg,#78864a,#536333) !important;
+  color:#fff !important;
+  box-shadow:0 4px 0 #3e4a27,0 6px 10px rgba(54,39,25,.12) !important;
+}
+.mizan-hafiza-tab .mt-4.pt-3\.5 button:last-child {
+  background:linear-gradient(180deg,#b98253,#8b5938) !important;
+  color:#fffaf0 !important;
+  box-shadow:0 4px 0 #68452f,0 6px 10px rgba(54,39,25,.12) !important;
+}
+@media (max-width:640px) {
+  .mizan-hafiza-tab { padding:.55rem !important; }
+  .mizan-hafiza-tab > div:first-child { padding:.85rem !important; }
+  .mizan-hafiza-tab > div:nth-child(2) { padding:.65rem !important; }
+  .mizan-hafiza-tab .grid.grid-cols-3 { grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:.6rem !important; }
+  .mizan-hafiza-tab .grid.grid-cols-2 { gap:.55rem !important; }
+  .mizan-hafiza-tab > div:nth-child(2) button,
+  .mizan-hafiza-tab > div:nth-child(2) label.cursor-pointer { min-height:42px !important; font-size:.82rem !important; padding-inline:.45rem !important; }
+  .mizan-hafiza-tab table :where(th,td) { padding:5px 6px !important; font-size:12px !important; }
+}
+@media (max-width:380px) {
+  .mizan-hafiza-tab .grid.grid-cols-3 { grid-template-columns:minmax(0,1fr) !important; }
+  .mizan-hafiza-tab .grid.grid-cols-2 { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+}
