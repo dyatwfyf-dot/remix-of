@@ -14,6 +14,7 @@ import {
   DownloadCloud,
   BarChart3,
   ContactRound,
+  Plus,
 } from "lucide-react";
 
 // تحميل ملفات التبويبات عند فتحها فقط لتقليل حجم التشغيل الأول.
@@ -315,7 +316,7 @@ function Index() {
 
   return (
     <div
-      className="apk-tabs-ui w-full min-h-[100dvh] bg-[#e8f0ff] selection:bg-[#6ba3c8]/30 text-base"
+      className="apk-tabs-ui w-full min-h-[100dvh] bg-[#F5EFE6] selection:bg-[#d5b35b]/30 text-base"
       dir="rtl"
     >
       {/* قسم الهيدر العلوي */}
@@ -359,12 +360,12 @@ function Index() {
 
       {/* شريط التنقل الرئيسي: ثابت أعلى المحتوى لسهولة الوصول إلى جميع الأقسام */}
       <nav
-        className="app-main-nav sticky top-0 z-[60] border-b border-[#c7dbe9] bg-white/95 shadow-[0_4px_14px_rgba(46,107,138,0.10)] backdrop-blur-xl"
+        className="app-main-nav sticky top-0 z-[60] border-b border-[#d8c49a] bg-[#F5EFE6]/95 shadow-[0_8px_22px_rgba(93,67,31,0.12)] backdrop-blur-xl"
         dir="rtl"
         aria-label="التنقل الرئيسي"
       >
         <div className="mx-auto flex w-full max-w-[1600px] items-center px-2 py-2 sm:px-4">
-          <div className="app-tab-nav-items flex w-full flex-nowrap gap-2 overflow-x-auto px-0.5 py-0.5 sm:gap-2.5 lg:flex-wrap lg:justify-center lg:overflow-visible">
+          <div className="app-tab-nav-items flex w-full flex-nowrap items-end gap-3 overflow-x-auto px-2 py-3 sm:gap-4 lg:justify-center lg:overflow-x-auto">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.value;
               return (
@@ -377,19 +378,17 @@ function Index() {
                   onClick={() => handleTabChange(tab.value)}
                   aria-current={isActive ? "page" : undefined}
                   aria-label={tab.label}
-                  className={`app-tab-nav-item relative flex min-h-[56px] min-w-[88px] shrink-0 flex-col items-center justify-center gap-1 rounded-xl border px-3 py-2 text-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#6ba3c8] focus:ring-offset-2 sm:min-w-[112px] sm:flex-row sm:gap-2 sm:px-4 lg:min-w-0 lg:flex-1 ${isActive
-                    ? `${tab.activeClass} border-transparent text-white shadow-md shadow-[#2e6b8a]/20`
-                    : `${tab.navTintClass} hover:brightness-[0.97]`
-                  }`}
+                  className={`app-tab-nav-item relative flex min-h-[104px] w-[100px] shrink-0 flex-col items-center justify-start gap-2 overflow-hidden rounded-[22px] border-[3px] border-[#c49a3a] px-2 pb-3 pt-2 text-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#b88b2c] focus:ring-offset-2 sm:min-h-[116px] sm:w-[116px] ${isActive ? "is-active" : ""}`}
                 >
-                  <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-all duration-200 ${isActive ? "border-white/30 bg-white/15 text-white shadow-inner" : `${tab.navTintClass} shadow-sm`}`} aria-hidden="true">{tab.icon}</span>
-                  <span className="whitespace-nowrap text-xs font-extrabold leading-tight sm:text-sm">
+                  <span className="app-tab-medical-strip flex h-6 w-full items-center justify-center rounded-t-[13px]" aria-hidden="true">
+                    <Plus className="h-4 w-4 stroke-[3.5] text-white" />
+                  </span>
+                  <span className="app-tab-ecg" aria-hidden="true" />
+                  <span className="app-tab-icon relative z-[2] flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/25 shadow-inner" aria-hidden="true">{tab.icon}</span>
+                  <span className="relative z-[2] whitespace-nowrap text-[11px] font-extrabold leading-tight sm:text-xs">
                     <span className="sm:hidden">{tab.shortLabel}</span>
                     <span className="hidden sm:inline">{tab.label}</span>
                   </span>
-                  {isActive && (
-                    <span className="absolute inset-x-3 -bottom-[1px] h-[3px] rounded-full bg-white/90 sm:hidden" />
-                  )}
                 </button>
               );
             })}

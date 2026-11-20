@@ -1451,3 +1451,43 @@ table:has(> tbody tr:first-child th:first-child:is(.serial-number-column, [data-
     gap: .45rem !important;
   }
 }
+
+
+/* Premium medical-financial navigation cards */
+.apk-tabs-ui { background-color:#F5EFE6 !important; }
+.app-main-nav { background:rgba(245,239,230,.97) !important; border-color:#d8c49a !important; box-shadow:0 8px 22px rgba(93,67,31,.12),inset 0 1px rgba(255,255,255,.9) !important; }
+.app-tab-nav-items { scrollbar-width:thin; scrollbar-color:#c9aa62 transparent; scroll-padding-inline:24px; }
+.app-tab-nav-item {
+ position:relative; isolation:isolate; flex-direction:column !important; justify-content:flex-start !important; gap:8px !important;
+ border:3px solid #c49a3a !important; border-radius:22px !important; color:#fff !important;
+ background:linear-gradient(145deg,var(--tab-top,#648b82),var(--tab-bottom,#315d55)) !important;
+ box-shadow:0 8px 0 rgba(105,78,31,.20),0 13px 20px rgba(75,55,28,.18),4px 5px 10px rgba(75,55,28,.10),inset 0 1px 0 rgba(255,255,255,.65),inset 0 0 0 1px rgba(255,239,190,.45) !important;
+ transform:translateY(0) scale(1); transform-origin:center bottom;
+}
+.app-tab-nav-item::before { content:""; position:absolute; inset:3px 3px auto; height:24%; border-radius:16px 16px 8px 8px; background:linear-gradient(180deg,rgba(255,255,255,.30),rgba(255,255,255,0)); pointer-events:none; z-index:1; }
+.app-tab-nav-item:nth-child(1) { --tab-top:#668b9a; --tab-bottom:#345767; }
+.app-tab-nav-item:nth-child(2) { --tab-top:#6f8c78; --tab-bottom:#385943; }
+.app-tab-nav-item:nth-child(3) { --tab-top:#8b7658; --tab-bottom:#5b472f; }
+.app-tab-nav-item:nth-child(4) { --tab-top:#5c887b; --tab-bottom:#285b4e; }
+.app-tab-nav-item:nth-child(5) { --tab-top:#687c9c; --tab-bottom:#354866; }
+.app-tab-nav-item:nth-child(6) { --tab-top:#8b7a9b; --tab-bottom:#514263; }
+.app-tab-nav-item:nth-child(7) { --tab-top:#6b987e; --tab-bottom:#376348; }
+.app-tab-nav-item:nth-child(8) { --tab-top:#9a7667; --tab-bottom:#68483b; }
+.app-tab-nav-item:nth-child(9) { --tab-top:#7d8295; --tab-bottom:#464d62; }
+.app-tab-nav-item:nth-child(10) { --tab-top:#9a8759; --tab-bottom:#65552f; }
+.app-tab-medical-strip { position:relative; z-index:3; flex:0 0 auto; background:linear-gradient(90deg,rgba(255,255,255,.08),rgba(255,255,255,.25),rgba(255,255,255,.08)); border-bottom:1px solid rgba(255,255,255,.25); box-shadow:inset 0 1px 2px rgba(255,255,255,.22); }
+.app-tab-icon { color:#fff !important; background:rgba(255,255,255,.13); }
+.app-tab-ecg { position:absolute; z-index:1; top:49%; left:8%; right:8%; height:17px; opacity:.72; background:#f5d77b; clip-path:polygon(0 48%,22% 48%,29% 48%,34% 18%,39% 82%,45% 0,51% 100%,57% 48%,100% 48%,100% 57%,59% 57%,51% 100%,45% 17%,39% 100%,34% 40%,30% 57%,0 57%); filter:drop-shadow(0 0 3px rgba(255,221,126,.45)); }
+.app-tab-nav-item.is-active { z-index:5; color:#533b0c !important; border-color:#a97b1d !important; background:linear-gradient(145deg,#FFE99A 0%,#f6d66e 48%,#E9B93C 100%) !important; box-shadow:0 10px 0 rgba(125,88,19,.22),0 16px 28px rgba(145,101,20,.28),4px 6px 12px rgba(96,67,18,.16),inset 0 2px 0 rgba(255,255,255,.92),inset 0 0 0 1px rgba(255,255,255,.55) !important; transform:translateY(-5px) scale(1.2); }
+.app-tab-nav-item.is-active .app-tab-medical-strip { background:linear-gradient(90deg,#b98c2c,#8e681b,#b98c2c); }
+.app-tab-nav-item.is-active .app-tab-icon { color:#68490c !important; background:rgba(255,255,255,.34); border-color:rgba(131,91,18,.35); }
+.app-tab-nav-item.is-active .app-tab-ecg { background:#9b701c; opacity:.82; }
+.app-tab-nav-item:focus-visible { outline:3px solid #8c681f !important; outline-offset:3px; }
+@media (max-width:640px) {
+ .app-tab-nav-items { gap:10px !important; padding:12px 10px 15px !important; }
+ .app-tab-nav-item { min-height:98px !important; width:88px !important; padding:7px 6px 10px !important; border-radius:18px !important; }
+ .app-tab-nav-item.is-active { transform:translateY(-4px) scale(1.16); }
+ .app-tab-medical-strip { height:21px !important; }
+ .app-tab-nav-item .app-tab-icon { width:34px !important; height:34px !important; }
+ .app-tab-nav-item > span:last-child { font-size:10px !important; }
+}
