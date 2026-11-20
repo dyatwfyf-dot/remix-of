@@ -1097,3 +1097,185 @@
     }
   }
 }
+
+ 
+/* ===== ضبط أعمدة جدول الحساب الجاري وتوحيد ألوانه ===== */
+@media screen {
+  .mizan-account-tab .accounts-print-area .overflow-x-auto {
+    width: 100%;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    scrollbar-width: thin;
+    scrollbar-color: #a9874d #f1e8d5;
+    border: 1px solid #d2c19b;
+    border-radius: 12px;
+    background: #fffdf7;
+  }
+
+  .mizan-account-tab table.accounts-ledger-table {
+    width: 1830px !important;
+    min-width: 1830px !important;
+    max-width: none !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    border: 1px solid #a88a53 !important;
+    background: #fffdf8 !important;
+    direction: rtl !important;
+  }
+
+  /* widths follow the actual column order: row number, COLS, actions */
+  .mizan-account-tab table.accounts-ledger-table :is(th, td):nth-child(1) { width: 58px !important; }
+  .mizan-account-tab table.accounts-ledger-table :is(th, td):nth-child(2) { width: 112px !important; }
+  .mizan-account-tab table.accounts-ledger-table :is(th, td):nth-child(3) { width: 100px !important; }
+  .mizan-account-tab table.accounts-ledger-table :is(th, td):nth-child(4) { width: 108px !important; }
+  .mizan-account-tab table.accounts-ledger-table :is(th, td):nth-child(5) { width: 116px !important; }
+  .mizan-account-tab table.accounts-ledger-table :is(th, td):nth-child(6) { width: 100px !important; }
+  .mizan-account-tab table.accounts-ledger-table :is(th, td):nth-child(7) { width: 116px !important; }
+  .mizan-account-tab table.accounts-ledger-table :is(th, td):nth-child(8) { width: 250px !important; }
+  .mizan-account-tab table.accounts-ledger-table :is(th, td):nth-child(9) { width: 142px !important; }
+  .mizan-account-tab table.accounts-ledger-table :is(th, td):nth-child(10) { width: 142px !important; }
+  .mizan-account-tab table.accounts-ledger-table :is(th, td):nth-child(11) { width: 128px !important; }
+  .mizan-account-tab table.accounts-ledger-table :is(th, td):nth-child(12) { width: 128px !important; }
+  .mizan-account-tab table.accounts-ledger-table :is(th, td):nth-child(13) { width: 128px !important; }
+  .mizan-account-tab table.accounts-ledger-table :is(th, td):nth-child(14) { width: 132px !important; }
+  .mizan-account-tab table.accounts-ledger-table :is(th, td):nth-child(15) { width: 132px !important; }
+  .mizan-account-tab table.accounts-ledger-table :is(th, td):nth-child(16) { width: 90px !important; }
+
+  .mizan-account-tab table.accounts-ledger-table :is(th, td) {
+    box-sizing: border-box !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+    border: 1px solid #d3c5a7 !important;
+    padding: 8px 7px !important;
+    line-height: 1.35 !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .mizan-account-tab table.accounts-ledger-table thead tr:first-child th {
+    background: linear-gradient(105deg, #8b6b36 0%, #b28e4d 48%, #8b6b36 100%) !important;
+    color: #fff9e9 !important;
+    border-color: #80612f !important;
+    font-size: 13px !important;
+    font-weight: 950 !important;
+    white-space: normal !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,.18);
+  }
+  .mizan-account-tab table.accounts-ledger-table thead tr:first-child th > div {
+    min-width: 0;
+    flex-wrap: wrap;
+    gap: 3px !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table thead tr:first-child th span {
+    color: inherit !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table thead tr:nth-child(2) th {
+    background: #f1e8d5 !important;
+    color: #514329 !important;
+    border-color: #d0bd94 !important;
+    padding: 5px !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table thead tr:nth-child(2) input {
+    display: block;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: 31px;
+    box-sizing: border-box !important;
+    padding: 4px 5px !important;
+    border: 1px solid #cbb88f !important;
+    border-radius: 7px !important;
+    background: #fffefa !important;
+    color: #263c33 !important;
+    font-size: 11px !important;
+    text-align: center;
+  }
+  .mizan-account-tab table.accounts-ledger-table tbody tr:nth-child(odd) td {
+    background: #fffefa !important;
+    color: #28342d !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table tbody tr:nth-child(even) td {
+    background: #f5f0e5 !important;
+    color: #28342d !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table tbody tr:hover td {
+    background: #eee2c7 !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(1),
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(2),
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(3),
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(4),
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(5),
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(6),
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(7),
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(11),
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(12),
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(13),
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(15) {
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
+    font-variant-numeric: tabular-nums;
+  }
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(8),
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(9),
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(10) {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(12) {
+    background: #e6f1e7 !important;
+    color: #245f3e !important;
+    font-weight: 900 !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(13) {
+    background: #f8e9e5 !important;
+    color: #963f35 !important;
+    font-weight: 900 !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(14) {
+    background: #f0eadb !important;
+    color: #70582e !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(15) {
+    background: linear-gradient(145deg, #0c564d, #073d38) !important;
+    color: #fff0c8 !important;
+    font-weight: 950 !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(16) {
+    white-space: nowrap !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(16) button {
+    padding: 5px !important;
+    border-radius: 7px !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(16) button:first-child {
+    color: #26714a !important;
+    background: #e8f2e8 !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table tbody td:nth-child(16) button:last-child {
+    color: #a7443c !important;
+    background: #f8e9e5 !important;
+  }
+
+  .mizan-account-tab table.accounts-ledger-table tfoot td {
+    background: #eadbb9 !important;
+    color: #3f321c !important;
+    border-color: #bda474 !important;
+    font-weight: 950 !important;
+    white-space: nowrap !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table tfoot td:nth-child(2) {
+    background: #e4efdf !important;
+    color: #245f3e !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table tfoot td:nth-child(3) {
+    background: #f4e2dc !important;
+    color: #963f35 !important;
+  }
+  .mizan-account-tab table.accounts-ledger-table tfoot td:nth-child(5) {
+    background: #0c564d !important;
+    color: #fff0c8 !important;
+  }
+}
