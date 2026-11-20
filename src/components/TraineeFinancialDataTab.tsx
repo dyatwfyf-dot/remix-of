@@ -293,7 +293,7 @@ export default function TraineeFinancialDataTab() {
       }
       table { width:100%; border-collapse:collapse; table-layout:auto; font-size:9px; }
       th,td { border:1px solid #334155; padding:1.5mm 0; text-align:center; white-space:nowrap; }
-      thead th { background:#126c8e !important; color:#fff !important; }
+      thead th { background:gold !important; color:#fff !important; }
       tfoot td { background:#e2eef5 !important; font-weight:900; }
       .amount { direction:ltr; font-variant-numeric:tabular-nums; }
       .report-date { margin-top:4mm; text-align:left; font-size:9px; }
@@ -615,12 +615,12 @@ export default function TraineeFinancialDataTab() {
           dir="rtl"
           style={{ width: "max-content", minWidth: "100%", tableLayout: "auto" }}
         >
-          <thead className="sticky top-0 z-10 bg-[#126c8e] text-white">
+          <thead className="sticky top-0 z-10 bg-gold text-white">
             <tr>
               {columns.map((header) => (
                 <th
                   key={header}
-                  className="min-w-[100px] max-w-[240px] border border-slate-500 bg-[#126c8e] px-2 py-2 text-[15px] font-black leading-6 text-white"
+                  className="min-w-[100px] max-w-[240px] border border-slate-500 bg-[#126c8e] px-2 py-2 text-[15px] font-white leading-6 text-white"
                 >
                   <button
                     type="button"
@@ -648,7 +648,7 @@ export default function TraineeFinancialDataTab() {
                   )}
                 </th>
               ))}
-              <th className="min-w-[100px] max-w-[220px] border border-slate-500 bg-[#126c8e] px-2 py-2 text-[15px] font-black leading-6 text-white">
+              <th className="min-w-[100px] max-w-[220px] border border-slate-500 bg-[#126c8e] px-2 py-2 text-[15px] font-white leading-6 text-white">
                 إجراءات
               </th>
             </tr>
