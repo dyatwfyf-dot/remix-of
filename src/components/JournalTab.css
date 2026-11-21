@@ -295,8 +295,7 @@
   .mizan-journal-fintech .journal-balance-total p { font-size: 14px; }
 }
 
-/* Compact entry-only canvas: keep the journal history data and logic intact but out of this focused entry view */
-.mizan-journal-fintech > section:has(.journal-ledger-table) { display: none !important; }
+/* Journal history remains visible below the entry form. */
 .mizan-journal-fintech .journal-entry-table thead th:nth-child(4) {
   color: #3d2c08;
   background: linear-gradient(180deg,#ffe79a,#e7b93f);
@@ -321,3 +320,71 @@
   box-shadow: inset 0 2px 0 #fff, 0 2px 3px rgba(0,0,0,.1) !important;
 }
 .mizan-journal-fintech .journal-balance-status > div span { color: #075b5a !important; }
+
+
+/* Journal ledger — integrated with the fintech 3D entry card */
+.mizan-journal-fintech .journal-ledger-card {
+  margin-top:4px; border:3px solid #c99b32; border-radius:19px;
+  background:linear-gradient(180deg,#fffdf7 0%,#fff8ec 100%);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.95),0 7px 0 rgba(92,61,16,.17),0 12px 22px rgba(143,100,28,.15);
+}
+.mizan-journal-fintech .journal-ledger-hero {
+  min-height:62px; color:#fff;
+  background:linear-gradient(100deg,#4a1d6b 0%,#714078 52%,#e8965a 100%);
+  border-bottom:3px solid #e7bd57;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.2),0 4px 10px rgba(74,29,107,.2);
+}
+.mizan-journal-fintech .journal-ledger-hero > div:first-child > span {
+  color:#fff1c8 !important;
+  background:linear-gradient(145deg,rgba(255,255,255,.3),rgba(126,65,124,.55)) !important;
+  border:1px solid rgba(255,221,125,.8);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 3px 6px rgba(34,14,53,.22);
+}
+.mizan-journal-fintech .journal-ledger-hero h3 { color:#fff; text-shadow:0 2px 3px rgba(0,0,0,.22); }
+.mizan-journal-fintech .journal-ledger-hero > div:last-child > span {
+  color:#4b3210 !important; background:linear-gradient(180deg,#ffe79a,#e7b93f) !important;
+  border:1px solid #a97a16 !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 2px 3px rgba(0,0,0,.12);
+}
+.mizan-journal-fintech .journal-ledger-hero button { color:#fff8e9; border-color:rgba(255,255,255,.4); background:rgba(255,255,255,.12); }
+.mizan-journal-fintech .journal-ledger-scroll { max-height:75vh; background:#fffdf8; scrollbar-color:#b88b2b #f4ead6; }
+.mizan-journal-fintech .journal-ledger-table { min-width:1050px; border-collapse:separate; border-spacing:0; color:#352b22; }
+.mizan-journal-fintech .journal-ledger-table thead tr:first-child th {
+  position:sticky; top:0; z-index:3; padding:10px 8px !important; color:#fff;
+  background:linear-gradient(180deg,#087d58,#07523e) !important; border:1px solid #d7b34c !important;
+  font-weight:950; white-space:nowrap;
+}
+.mizan-journal-fintech .journal-ledger-table thead tr:nth-child(2) th {
+  position:sticky; top:39px; z-index:2; padding:5px 4px !important;
+  background:#f5e9cf !important; border:1px solid #d8bd80 !important;
+}
+.mizan-journal-fintech .journal-ledger-table thead tr:nth-child(2) input {
+  width:100%; min-width:74px; min-height:30px; padding:4px 6px;
+  border:1px solid #b78b2d; border-radius:7px; background:#fff; color:#3d3028; font-size:11px; font-weight:800;
+}
+.mizan-journal-fintech .journal-ledger-table tbody td {
+  padding:8px 7px !important; border:1px solid #d8cbb2; border-top:0;
+  color:#30271f; vertical-align:middle; line-height:1.45;
+}
+.mizan-journal-fintech .journal-ledger-table tbody tr:nth-child(odd) td { background:#fffdf8; }
+.mizan-journal-fintech .journal-ledger-table tbody tr:nth-child(even) td { background:#f4efe4; }
+.mizan-journal-fintech .journal-ledger-table tbody tr:hover td { background:#fff0c8 !important; }
+.mizan-journal-fintech .journal-ledger-table tbody td:nth-child(5) span { background:#dff5e9; border-color:#7fc7a0; color:#14583b; }
+.mizan-journal-fintech .journal-ledger-table tbody td:nth-child(6) span { background:#dff5f7; border-color:#78c6d0; color:#07515a; }
+.mizan-journal-fintech .journal-ledger-table tbody td:nth-child(7) { color:#08734e; }
+.mizan-journal-fintech .journal-ledger-table tbody td:nth-child(8) { color:#075b67; }
+.mizan-journal-fintech .journal-ledger-table tbody td:last-child button { border:1px solid #c99b32; box-shadow:0 2px 0 rgba(92,61,16,.16); }
+.mizan-journal-fintech .journal-ledger-table tfoot td {
+  padding:10px 8px !important; color:#4b3210 !important;
+  background:linear-gradient(180deg,#ffe79a,#e7b93f) !important;
+  border:1px solid #a97a16; font-weight:950;
+}
+@media (max-width:640px) {
+  .mizan-journal-fintech .journal-ledger-card { border-radius:15px; }
+  .mizan-journal-fintech .journal-ledger-hero { min-height:54px; padding:8px !important; }
+  .mizan-journal-fintech .journal-ledger-hero h3 { font-size:12px !important; }
+  .mizan-journal-fintech .journal-ledger-hero > div:last-child > span { padding:4px 8px !important; font-size:10px !important; }
+  .mizan-journal-fintech .journal-ledger-scroll { max-height:68vh; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .mizan-journal-fintech .journal-ledger-table { min-width:1050px; font-size:11px; }
+  .mizan-journal-fintech .journal-ledger-table thead tr:first-child th { padding:8px 6px !important; }
+  .mizan-journal-fintech .journal-ledger-table tbody td { padding:7px 5px !important; }
+}
