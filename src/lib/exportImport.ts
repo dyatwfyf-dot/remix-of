@@ -709,8 +709,29 @@ export async function importFromExcel(
 
       if (!debitAmt && !creditAmt && !desc) continue;
 
-      const debitName = debitCol ? norm(headerRow[colLetterToIndex(debitCol) - 1]) : "";
-      const creditName = creditCol ? norm(headerRow[colLetterToIndex(creditCol) - 1]) : "";
+      const detailedHeaderRow = (aoa[headerIdx + 1] as unknown[]) || [];
+      const isGenericSectionName = (value: string) => {
+        const normalized = normHeader(value);
+        return !normalized || ["الاستخدامات", "الموارد"].includes(normalized);
+      };
+      const resolveTemplateAccountName = (
+        col: string | null,
+        side: "debit" | "credit",
+      ): string => {
+        if (!col) return "";
+        const colIndex = colLetterToIndex(col) - 1;
+        const detailedName = norm(detailedHeaderRow[colIndex]);
+        const headerName = norm(headerRow[colIndex]);
+        const visibleName = !isGenericSectionName(detailedName)
+          ? detailedName
+          : !isGenericSectionName(headerName)
+            ? headerName
+            : "";
+        if (visibleName) return visibleName;
+        return TEMPLATE.cols.find((item) => item.col === col)?.name || "";
+      };
+      const debitName = resolveTemplateAccountName(debitCol, "debit");
+      const creditName = resolveTemplateAccountName(creditCol, "credit");
 
       out.push({
         id: uid(),
@@ -1051,11 +1072,16 @@ export async function importFromExcel(
           get(
             r,
             "الحساب المدين",
-            "اسم الحساب المدين",
-            "الطرف المدين",
             "حساب مدين",
+            "الطرف المدين",
+            "طرف مدين",
+            "اسم الحساب المدين",
+            "اسم حساب مدين",
             "مدين (الحساب)",
+            "ح/ مدين",
+            "ح/مدين",
             "من ح/",
+            "من ح /",
             "من حساب",
           ),
         );
@@ -1063,14 +1089,19 @@ export async function importFromExcel(
           get(
             r,
             "الحساب الدائن",
-            "اسم الحساب الدائن",
-            "الطرف الدائن",
             "حساب دائن",
+            "الطرف الدائن",
+            "طرف دائن",
+            "اسم الحساب الدائن",
+            "اسم حساب دائن",
             "دائن (الحساب)",
+            "ح/ دائن",
+            "ح/دائن",
             "إلى ح/",
             "الى ح/",
-            "إلى حساب",
+            "إلى ح /",
             "الى حساب",
+            "إلى حساب",
           ),
         );
 
@@ -1081,19 +1112,24 @@ export async function importFromExcel(
           get(r, "دائن", "المبلغ الدائن", "مبلغ دائن", "له", "دائن ريال"),
         );
 
-        // إذا كان الملف يحتوي على عمود حساب واحد فقط (الشائع جداً في ملفات اليومية):
-        if (!debitAcc && !creditAcc && singleAcc) {
-          if (debit > 0 && credit === 0) {
-            debitAcc = singleAcc;
-          } else if (credit > 0 && debit === 0) {
-            creditAcc = singleAcc;
-          } else {
-            debitAcc = singleAcc;
-            creditAcc = singleAcc;
+        // عند وجود عمود حساب موحد، اربط الاسم بالجانب الذي يحمل المبلغ.
+        // وإذا احتوى السطر على طرفين دون تحديد اسميهما، نوضح الطرف المقابل من البيان بدلاً من تركه فارغاً.
+        if (singleAcc) {
+          if (!debitAcc && debit > 0) debitAcc = singleAcc;
+          if (!creditAcc && credit > 0) creditAcc = singleAcc;
+
+          if (debit > 0 && credit > 0) {
+            if (!debitAcc) debitAcc = singleAcc;
+            if (!creditAcc) creditAcc = singleAcc;
           }
-        } else {
-          if (!debitAcc && singleAcc && debit > 0) debitAcc = singleAcc;
-          if (!creditAcc && singleAcc && credit > 0) creditAcc = singleAcc;
+        }
+
+        const hasDebitAmount = debit > 0;
+        const hasCreditAmount = credit > 0;
+        if (hasDebitAmount && hasCreditAmount && debitAcc && !creditAcc) {
+          creditAcc = `الطرف المقابل موضح في البيان: ${description}`;
+        } else if (hasDebitAmount && hasCreditAmount && creditAcc && !debitAcc) {
+          debitAcc = `الطرف المقابل موضح في البيان: ${description}`;
         }
 
         // قراءة التاريخ ومعالجة الأرقام التسلسلية للإكسل
