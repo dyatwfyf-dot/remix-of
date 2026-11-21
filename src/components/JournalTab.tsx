@@ -736,8 +736,8 @@ export default function JournalTab() {
       </section>
 
       {/* ══ 2. جدول سجل القيود اليومية ══ */}
-      <section className="overflow-hidden rounded-2xl border border-indigo-100/80 bg-white/95 shadow-md backdrop-blur-md">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 bg-gradient-to-l from-slate-950 via-indigo-950 to-purple-950 px-3 py-3 sm:px-5 sm:py-3.5">
+      <section className="journal-ledger-card overflow-hidden rounded-2xl border bg-white/95 backdrop-blur-md">
+        <div className="journal-ledger-hero grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-3 sm:px-5 sm:py-3.5">
           <div className="flex items-center gap-2">
             <span className="grid h-8 w-8 place-items-center rounded-xl bg-purple-500/20 text-purple-200">
               <Sparkles className="h-4 w-4" />
@@ -775,7 +775,7 @@ export default function JournalTab() {
             </div>
           </div>
         ) : (
-<div className="overflow-auto max-h-[75vh]">
+<div className="journal-ledger-scroll overflow-auto max-h-[75vh]">
 <table className="journal-ledger-table w-full table-auto border-collapse text-center text-xs sm:text-sm font-bold">
  <thead className="w-auto sticky top-0 z-20 bg-gradient-to-l from-slate-900 via-indigo-950 to-purple-900 text-white shadow-md whitespace-normal">
 <tr>
