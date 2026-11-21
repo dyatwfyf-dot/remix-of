@@ -358,14 +358,7 @@ export default function TraineeFinancialDataTab() {
 
 
   const feePaymentSummaryByTrainee = useMemo(() => {
-    const summaries = new Map<string, {
-      registrationPaid: number;
-      examsPaid: number;
-      totalPaid: number;
-      registrationStatus: string;
-      examsStatus: string;
-      remaining: number;
-    }>();
+    const summaries = new Map<string, { registrationPaid: number; examsPaid: number }>();
     (records || []).forEach((record) => {
       const key = normalizeTraineeName(record[HEADERS[2]]);
       if (!key || summaries.has(key)) return;
@@ -378,39 +371,37 @@ export default function TraineeFinancialDataTab() {
           amount > 0 &&
           (isRegistrationFeeDescription(item.description) || /(امتحان|اختبار)/.test(description));
       });
-      const registrationPaid = eligibleReceipts.reduce(
-        (sum, item) => sum + (isRegistrationFeeDescription(item.description) ? parseAmount(item.notifyAmount) : 0),
-        0,
-      );
-      const examsPaid = eligibleReceipts.reduce(
-        (sum, item) => sum + (!isRegistrationFeeDescription(item.description) ? parseAmount(item.notifyAmount) : 0),
-        0,
-      );
-      const registrationDue = parseAmount(record["رسوم القيد والتسجيل"]);
-      const examsDue = parseAmount(record["إجمالي رسوم الامتحانات"]);
-      const status = (due: number, paid: number) =>
-        due <= 0 ? "غير مستحق" : paid <= 0 ? "غير مسدد" : paid < due ? "مسدد جزئياً" : "مسدد";
       summaries.set(key, {
-        registrationPaid,
-        examsPaid,
-        totalPaid: registrationPaid + examsPaid,
-        registrationStatus: status(registrationDue, registrationPaid),
-        examsStatus: status(examsDue, examsPaid),
-        remaining: Math.max(0, registrationDue - registrationPaid) + Math.max(0, examsDue - examsPaid),
+        registrationPaid: eligibleReceipts.reduce(
+          (sum, item) => sum + (isRegistrationFeeDescription(item.description) ? parseAmount(item.notifyAmount) : 0),
+          0,
+        ),
+        examsPaid: eligibleReceipts.reduce(
+          (sum, item) => sum + (!isRegistrationFeeDescription(item.description) ? parseAmount(item.notifyAmount) : 0),
+          0,
+        ),
       });
     });
     return summaries;
   }, [records, hafiza]);
 
-  const getFeePaymentSummary = (row: TraineeFinancialRecord) =>
-    feePaymentSummaryByTrainee.get(normalizeTraineeName(row[HEADERS[2]])) || {
+  const getFeePaymentSummary = (row: TraineeFinancialRecord) => {
+    const paid = feePaymentSummaryByTrainee.get(normalizeTraineeName(row[HEADERS[2]])) || {
       registrationPaid: 0,
       examsPaid: 0,
-      totalPaid: 0,
-      registrationStatus: "غير مسدد",
-      examsStatus: "غير مسدد",
-      remaining: parseAmount(row["رسوم القيد والتسجيل"]) + parseAmount(row["إجمالي رسوم الامتحانات"]),
     };
+    const registrationDue = parseAmount(row["رسوم القيد والتسجيل"]);
+    const examsDue = parseAmount(row["إجمالي رسوم الامتحانات"]);
+    const status = (due: number, amountPaid: number) =>
+      due <= 0 ? "غير مستحق" : amountPaid <= 0 ? "غير مسدد" : amountPaid < due ? "مسدد جزئياً" : "مسدد";
+    return {
+      ...paid,
+      totalPaid: paid.registrationPaid + paid.examsPaid,
+      registrationStatus: status(registrationDue, paid.registrationPaid),
+      examsStatus: status(examsDue, paid.examsPaid),
+      remaining: Math.max(0, registrationDue - paid.registrationPaid) + Math.max(0, examsDue - paid.examsPaid),
+    };
+  };
 
   const visibleRows = useMemo(() => {
     const q = normalize(query).toLocaleLowerCase("ar");
@@ -502,7 +493,7 @@ export default function TraineeFinancialDataTab() {
     const firstFinancialIndex = tableColumns.indexOf(HEADERS[6]);
     const footerCells = tableColumns.slice(firstFinancialIndex).map((header) => {
       if (!CURRENCY_COLUMNS.has(header)) return "<td></td>";
-      const total = visibleRows.reduce((sum, item) => sum + parseAmount(item.row[header]), 0);
+      const total = visibleRows.reduce((sum, item) => sum + parseAmount(getDisplayValue(item.row, header)), 0);
       return `<td class="amount">${total.toLocaleString("en-US")}</td>`;
     }).join("");
     const tableHtml = `${reportLetterheadHtml()}<h1>${escapeHtml(TITLE)}</h1><p class="rule-line">${escapeHtml(RULES)}</p><p class="record-count">عدد السجلات المعروضة: ${visibleRows.length}</p><table><thead><tr>${tableHead}</tr></thead><tbody>${tableBody || `<tr><td colspan="${tableColumns.length}">لا توجد سجلات مطابقة</td></tr>`}</tbody><tfoot><tr><td colspan="${firstFinancialIndex}" class="total-label">الإجمالي العام للسجلات المعروضة</td>${footerCells}</tr></tfoot></table><p class="report-date">تاريخ الطباعة: ${new Date().toLocaleDateString("ar-YE")}</p>`;
