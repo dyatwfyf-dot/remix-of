@@ -3431,12 +3431,12 @@ async () => {
   </div>
 </div>
 <div className="overflow-auto max-h-[72vh] rounded-lg border border-slate-200 shadow-sm relative">
-            <table className="installments-table min-w-max table-auto text-sm sm:text-base font-semibold">
+            <table className="installments-table installments-table-2025 min-w-max table-auto text-sm sm:text-base font-semibold">
               <thead className="bg-gradient-to-b from-sky-700 to-sky-800 font-bold border-b-2 border-sky-900  [&>tr>th]:!text-white sticky top-0 z-20 shadow-md">
                 <tr>
                   <th className="text-center whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">#</th>
                   <th
-                    className="text-center whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
+                    className="installments-2025-name-cell text-center whitespace-nowrap cursor-pointer hover:bg-white/10 transition-colors !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base"
                     onClick={() => handleSort2025("name")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -3513,7 +3513,7 @@ async () => {
                           <td className="text-center text-black whitespace-nowrap !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
                             {(currentPage2025 - 1) * INSTALLMENT_PAGE_SIZE + i + 1}
                           </td>
-                          <td className="text-center font-semibold text-black whitespace-nowrap bg-sky-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
+                          <td className="installments-2025-name-cell text-center font-semibold text-black bg-sky-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
                             {r.name}
                           </td>
                           <td className="text-center text-black whitespace-nowrap bg-cyan-50/70 !px-1 !py-1.5 sm:!px-2 sm:!py-2 !text-sm sm:!text-base">
