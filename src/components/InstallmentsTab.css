@@ -255,8 +255,13 @@
   grid-column: span 4 !important;
 }
 
-.mizan-installments-tab .installments-controls-2025 > .installments-tab-actions-2025 > button {
-  grid-column: span 3 !important;
+/* أزرار الإجراءات الأربعة: ثلاثة في صف والرابع في المنتصف أسفلها */
+.mizan-installments-tab .installments-controls-2025 > .installments-tab-actions-2025 > button:nth-child(-n+3) {
+  grid-column: span 4 !important;
+}
+
+.mizan-installments-tab .installments-controls-2025 > .installments-tab-actions-2025 > button:nth-child(4) {
+  grid-column: 5 / span 4 !important;
 }
 
 .mizan-installments-tab .installments-controls-2025 .installments-action-2025,
