@@ -1491,3 +1491,60 @@ table:has(> tbody tr:first-child th:first-child:is(.serial-number-column, [data-
  .app-tab-nav-item .app-tab-icon { width:34px !important; height:34px !important; }
  .app-tab-nav-item > span:last-child { font-size:10px !important; }
 }
+
+/* Compact primary tab navigation for Xiaomi / narrow Android screens.
+   Scoped only to the main tab bar; navigation behavior and tab content remain unchanged. */
+@media (max-width: 640px) {
+  .app-main-nav > div {
+    padding: 3px 4px !important;
+  }
+  .app-tab-nav-items {
+    gap: 6px !important;
+    padding: 6px 4px 8px !important;
+    scroll-padding-inline: 8px !important;
+  }
+  .app-tab-nav-item {
+    width: 68px !important;
+    min-height: 76px !important;
+    gap: 4px !important;
+    padding: 5px 4px 6px !important;
+    border-width: 2px !important;
+    border-radius: 14px !important;
+    box-shadow: 0 4px 0 rgba(105,78,31,.18), 0 6px 10px rgba(75,55,28,.13), inset 0 1px 0 rgba(255,255,255,.55) !important;
+  }
+  .app-tab-nav-item.is-active {
+    transform: translateY(-2px) scale(1.04) !important;
+    box-shadow: 0 5px 0 rgba(125,88,19,.18), 0 8px 13px rgba(145,101,20,.20), inset 0 1px 0 rgba(255,255,255,.85) !important;
+  }
+  .app-tab-medical-strip {
+    height: 16px !important;
+    min-height: 16px !important;
+  }
+  .app-tab-nav-item .app-tab-icon {
+    width: 27px !important;
+    height: 27px !important;
+    border-radius: 8px !important;
+  }
+  .app-tab-nav-item > span:last-child {
+    font-size: 9px !important;
+    line-height: 1.15 !important;
+  }
+  .app-tab-nav-item .app-tab-medical-strip svg {
+    width: 11px !important;
+    height: 11px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .app-tab-nav-items { gap: 4px !important; padding-inline: 2px !important; }
+  .app-tab-nav-item {
+    width: 62px !important;
+    min-height: 72px !important;
+    padding: 4px 3px 5px !important;
+  }
+  .app-tab-nav-item .app-tab-icon {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  .app-tab-nav-item > span:last-child { font-size: 8px !important; }
+}
