@@ -714,10 +714,7 @@ export async function importFromExcel(
         const normalized = normHeader(value);
         return !normalized || ["الاستخدامات", "الموارد"].includes(normalized);
       };
-      const resolveTemplateAccountName = (
-        col: string | null,
-        side: "debit" | "credit",
-      ): string => {
+      const resolveTemplateAccountName = (col: string | null): string => {
         if (!col) return "";
         const colIndex = colLetterToIndex(col) - 1;
         const detailedName = norm(detailedHeaderRow[colIndex]);
@@ -730,8 +727,8 @@ export async function importFromExcel(
         if (visibleName) return visibleName;
         return TEMPLATE.cols.find((item) => item.col === col)?.name || "";
       };
-      const debitName = resolveTemplateAccountName(debitCol, "debit");
-      const creditName = resolveTemplateAccountName(creditCol, "credit");
+      const debitName = resolveTemplateAccountName(debitCol);
+      const creditName = resolveTemplateAccountName(creditCol);
 
       out.push({
         id: uid(),
@@ -1112,15 +1109,16 @@ export async function importFromExcel(
           get(r, "دائن", "المبلغ الدائن", "مبلغ دائن", "له", "دائن ريال"),
         );
 
-        // عند وجود عمود حساب موحد، اربط الاسم بالجانب الذي يحمل المبلغ.
-        // وإذا احتوى السطر على طرفين دون تحديد اسميهما، نوضح الطرف المقابل من البيان بدلاً من تركه فارغاً.
+        // عند وجود عمود حساب موحد، اربط الاسم بالجانب ذي المبلغ.
+        // وإذا كان السطر يمثل طرفين بمبلغين ولا توجد أسماء منفصلة لهما،
+        // نعرض الطرف المقابل بوصفه موضحاً في البيان بدلاً من تكرار اسم الحساب أو تركه فارغاً.
         if (singleAcc) {
-          if (!debitAcc && debit > 0) debitAcc = singleAcc;
-          if (!creditAcc && credit > 0) creditAcc = singleAcc;
-
-          if (debit > 0 && credit > 0) {
-            if (!debitAcc) debitAcc = singleAcc;
-            if (!creditAcc) creditAcc = singleAcc;
+          if (debit > 0 && credit > 0 && !debitAcc && !creditAcc) {
+            debitAcc = singleAcc;
+            creditAcc = `الطرف المقابل موضح في البيان: ${description}`;
+          } else {
+            if (!debitAcc && debit > 0) debitAcc = singleAcc;
+            if (!creditAcc && credit > 0) creditAcc = singleAcc;
           }
         }
 
