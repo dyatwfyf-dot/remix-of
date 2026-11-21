@@ -105,8 +105,8 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <label className={`group relative block min-w-0 ${className}`}>
-      <span className="mb-1.5 flex items-center gap-1.5 text-xs font-bold text-indigo-950/80">
+    <label className={`journal-field-card group relative block min-w-0 ${className}`}>
+      <span className="journal-field-label mb-1.5 flex items-center gap-1.5 text-xs font-bold">
         <span className="text-purple-600 transition-transform duration-200 group-hover:scale-110">
           {icon}
         </span>
@@ -117,8 +117,7 @@ function Field({
   );
 }
 
-const inputCls =
-  "w-auto max-w-auto rounded-xl border border-indigo-200/80 bg-white/90 px-3 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 shadow-sm outline-none transition-all placeholder:text-slate-400 focus:border-purple-600 focus:bg-white focus:ring-4 focus:ring-purple-500/15";
+const inputCls = "journal-3d-input w-full min-w-0 rounded-xl px-3 py-2.5 text-xs sm:text-sm font-bold outline-none transition-all";
 
 const journalClampCls =
   "block w-auto overflow-hidden text-ellipsis whitespace-normal leading-snug sm:max-w-auto";
@@ -418,11 +417,7 @@ export default function JournalTab() {
     return (
       <tr
         key={l.id}
-        className={`border-b border-indigo-100/60 transition-colors ${
-          isDebit
-            ? "bg-emerald-50/40 hover:bg-emerald-50/70"
-            : "bg-rose-50/40 hover:bg-rose-50/70"
-        }`}
+        className={`journal-entry-row transition-colors ${isDebit ? "journal-debit-row" : "journal-credit-row"}`}
       >
         <td className="!whitespace-nowrap text-center !px-1.5 !py-2 !text-xs sm:!text-sm">
           <span
@@ -518,7 +513,7 @@ export default function JournalTab() {
 
   return (
     <div
-      className="mizan-journal-tab w-full space-y-3.5 overflow-x-hidden p-1.5 sm:p-3 bg-gradient-to-br from-slate-100 via-indigo-50/40 to-purple-50/30 min-h-screen"
+      className="mizan-journal-tab mizan-journal-fintech w-full space-y-3 overflow-x-hidden p-1.5 sm:p-3 min-h-screen"
       dir="rtl"
     >
       {/* شريط الإجراءات الرئيسية أعلى تبويب القيود اليومية */}
@@ -530,13 +525,13 @@ export default function JournalTab() {
       </div>
 
       {/* ══ 1. بطاقة إدخال القيد اليومي المركب ══ */}
-      <section className="overflow-hidden rounded-2xl border border-indigo-100/80 bg-white/95 shadow-md backdrop-blur-md">
+      <section className="journal-entry-card overflow-hidden rounded-2xl border bg-white/95 shadow-md backdrop-blur-md">
         {/* الترويسة الفخمة */}
-        <div className="relative bg-gradient-to-l from-slate-950 via-indigo-950 to-purple-950 px-3 py-3 sm:px-5 sm:py-4">
+        <div className="journal-entry-hero relative px-3 py-3 sm:px-5 sm:py-4">
           <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-300 opacity-80" />
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2.5">
             <div className="flex min-w-0 items-center gap-2.5">
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-purple-400/30 bg-purple-500/20 text-purple-200 shadow-inner">
+              <span className="journal-entry-book grid h-11 w-11 shrink-0 place-items-center rounded-2xl border text-purple-200 shadow-inner">
                 <BookOpenText className="h-5 w-5" />
               </span>
               <div className="min-w-0">
@@ -550,8 +545,8 @@ export default function JournalTab() {
                     </span>
                   )}
                 </div>
-                <p className="truncate text-xs font-semibold text-indigo-200/80">
-                  إدخال أطراف متعددة مع احتساب وتوزيع آلي متزن
+                <p className="journal-entry-subtitle text-xs font-semibold">
+                  إدخال أطراف متعددة مع احتساب<br />وتوزيع آلي متوازن
                 </p>
               </div>
             </div>
@@ -603,10 +598,11 @@ export default function JournalTab() {
           </div>
 
           {/* جدول أطراف القيد (المدين والدائن) */}
-<div className="overflow-hidden rounded-2xl border border-indigo-100 shadow-sm">
+<div className="journal-entry-table-frame overflow-hidden rounded-2xl border shadow-sm">
+<div className="journal-entry-table-caption">إدخال أطراف متعددة مع احتساب</div>
 
 <div className="overflow-auto max-h-[80vh]">
-<table className="min-w-auto w-auto table-auto border-collapse text-center text-xs sm:text-sm font-bold">
+<table className="journal-entry-table min-w-full w-full table-auto border-separate border-spacing-1 text-center text-xs sm:text-sm font-bold">
 <thead className="bg-gradient-to-l from-indigo-950 to-purple-900 text-white">
                   <tr>
 <th className="whitespace-normal text-center font-bold !px-2 !py-2.5 !text-xs sm:!text-sm">
@@ -637,16 +633,16 @@ export default function JournalTab() {
                 <button
                   type="button"
                   onClick={() => addLine("debit")}
- className="flex min-h-[38px] items-center justify-center gap-1.5 rounded-xl border border-emerald-300 bg-emerald-50/80 px-2 text-xs sm:text-sm font-bold text-emerald-900 shadow-sm transition-all hover:bg-emerald-100 active:scale-[0.98]"
+ className="journal-3d-button journal-add-debit flex min-h-[42px] items-center justify-center gap-1.5 rounded-2xl px-2 text-xs sm:text-sm font-black transition-all active:translate-y-1"
                 >
-                  <Plus className="h-4 w-4 text-emerald-600" /> إضافة حساب مدين
+                  <Plus className="h-4 w-4" /> + إضافة حساب مدين
                 </button>
                 <button
                   type="button"
                   onClick={() => addLine("credit")}
-                  className="flex min-h-[38px] items-center justify-center gap-1.5 rounded-xl border border-rose-300 bg-rose-50/80 px-2 text-xs sm:text-sm font-bold text-rose-900 shadow-sm transition-all hover:bg-rose-100 active:scale-[0.98]"
+                  className="journal-3d-button journal-add-credit flex min-h-[42px] items-center justify-center gap-1.5 rounded-2xl px-2 text-xs sm:text-sm font-black transition-all active:translate-y-1"
                 >
-                  <Plus className="h-4 w-4 text-rose-600" /> إضافة حساب دائن
+                  <Plus className="h-4 w-4" /> + إضافة حساب دائن
                 </button>
               </div>
             </div>
@@ -654,7 +650,7 @@ export default function JournalTab() {
 
           {/* ══ بطاقة التوازن ومؤشر التعادل ══ */}
           <div
-            className={`rounded-2xl border p-3 shadow-md backdrop-blur-md transition-all
+            className={`journal-balance-card rounded-2xl border p-3 shadow-md transition-all
               ${
                 isBalanced
                   ? "border-emerald-300 bg-gradient-to-br from-emerald-50/90 to-teal-50/90"
@@ -662,22 +658,22 @@ export default function JournalTab() {
               }`}
           >
             {/* إحصائيات سريعة */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pb-2.5">
-              <div className="rounded-xl border border-emerald-200 bg-white/80 p-2 text-center shadow-xs">
+            <div className="grid grid-cols-2 gap-2 pb-2.5">
+              <div className="journal-balance-total journal-balance-debit rounded-xl border p-2 text-center shadow-xs">
                 <span className="text-[11px] font-bold text-emerald-700">إجمالي المدين</span>
                 <p className="font-mono text-sm sm:text-base font-black text-emerald-950">
                   {totalDebit.toLocaleString("en-US")}
                 </p>
               </div>
 
-              <div className="rounded-xl border border-rose-200 bg-white/80 p-2 text-center shadow-xs">
+              <div className="journal-balance-total journal-balance-credit rounded-xl border p-2 text-center shadow-xs">
                 <span className="text-[11px] font-bold text-rose-700">إجمالي الدائن</span>
                 <p className="font-mono text-sm sm:text-base font-black text-rose-950">
                   {totalCredit.toLocaleString("en-US")}
                 </p>
               </div>
 
-              <div className="col-span-2 sm:col-span-1 rounded-xl border border-indigo-200 bg-white/80 p-2 text-center shadow-xs flex flex-col justify-center">
+              <div className="journal-balance-status col-span-2 rounded-xl border p-2 text-center shadow-xs flex flex-col justify-center">
                 <span className="text-[11px] font-bold text-indigo-900">حالة التوازن</span>
                 <div className="flex items-center justify-center gap-1.5 font-bold text-xs sm:text-sm">
                   {isBalanced ? (
@@ -729,9 +725,9 @@ export default function JournalTab() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-2 text-xs sm:text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-100 active:scale-[0.98]"
+                className="journal-3d-button journal-clear-button flex min-h-[44px] items-center justify-center gap-1.5 rounded-2xl px-2 text-xs sm:text-sm font-black transition-all active:translate-y-1"
               >
-                <RotateCcw className="h-4 w-4 text-slate-500" />
+                <RotateCcw className="h-4 w-4" />
                 {editingId ? "إلغاء التعديل" : "تفريغ الحقول"}
               </button>
             </div>
