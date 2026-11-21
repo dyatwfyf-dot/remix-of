@@ -29,7 +29,19 @@ const VISIBLE_BASE_HEADERS = [
 const SHEET_NAME = database.sheetName;
 const TITLE = database.title;
 const RULES = database.rules;
+const PAYMENT_SUMMARY_HEADERS = [
+  "المسدد من رسوم القيد والتسجيل",
+  "المسدد من رسوم الامتحانات",
+  "حالة سداد رسوم القيد والتسجيل",
+  "حالة سداد رسوم الامتحانات",
+  "إجمالي المسدد من رسوم القيد والامتحانات",
+  "المتبقي من رسوم القيد والامتحانات",
+] as const;
 const CURRENCY_COLUMNS = new Set([
+  "المسدد من رسوم القيد والتسجيل",
+  "المسدد من رسوم الامتحانات",
+  "إجمالي المسدد من رسوم القيد والامتحانات",
+  "المتبقي من رسوم القيد والامتحانات",
   "رسوم القيد والتسجيل",
   "الأقساط الدراسية المستحقة",
   "رسم الكتابي الأول",
@@ -93,7 +105,7 @@ export default function TraineeFinancialDataTab() {
   const installments2026 = useStore((state) => state.installments);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const columns = useMemo(() => [...VISIBLE_BASE_HEADERS, ...customColumns], [customColumns]);
-  const tableColumns = useMemo(() => [...VISIBLE_BASE_HEADERS, ...TRAINEE_FEE_SCHEDULE_HEADERS, ...customColumns], [customColumns]);
+  const tableColumns = useMemo(() => [...VISIBLE_BASE_HEADERS, ...TRAINEE_FEE_SCHEDULE_HEADERS, ...PAYMENT_SUMMARY_HEADERS, ...customColumns], [customColumns]);
   const batchOptions = useMemo(() => {
     const options = new Map<string, string>();
     (records || []).forEach((row) => {
@@ -324,11 +336,81 @@ export default function TraineeFinancialDataTab() {
   };
 
   const getDisplayValue = (row: TraineeFinancialRecord, header: string) => {
-    if (!TRAINEE_FEE_SCHEDULE_HEADERS.includes(header as (typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number])) return row[header] ?? "";
-    const batchKey = normalizeBatchKey(row[HEADERS[3]]);
-    const schedule = calculateTraineeFeeSchedule(row[HEADERS[3]], batchStudyStartDates[batchKey]);
-    return schedule[header as (typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number]];
+    if (TRAINEE_FEE_SCHEDULE_HEADERS.includes(header as (typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number])) {
+      const batchKey = normalizeBatchKey(row[HEADERS[3]]);
+      const schedule = calculateTraineeFeeSchedule(row[HEADERS[3]], batchStudyStartDates[batchKey]);
+      return schedule[header as (typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number]];
+    }
+    if (PAYMENT_SUMMARY_HEADERS.includes(header as (typeof PAYMENT_SUMMARY_HEADERS)[number])) {
+      const summary = getFeePaymentSummary(row);
+      const values: Record<(typeof PAYMENT_SUMMARY_HEADERS)[number], string | number> = {
+        "المسدد من رسوم القيد والتسجيل": summary.registrationPaid,
+        "المسدد من رسوم الامتحانات": summary.examsPaid,
+        "حالة سداد رسوم القيد والتسجيل": summary.registrationStatus,
+        "حالة سداد رسوم الامتحانات": summary.examsStatus,
+        "إجمالي المسدد من رسوم القيد والامتحانات": summary.totalPaid,
+        "المتبقي من رسوم القيد والامتحانات": summary.remaining,
+      };
+      return values[header as (typeof PAYMENT_SUMMARY_HEADERS)[number]];
+    }
+    return row[header] ?? "";
   };
+
+
+  const feePaymentSummaryByTrainee = useMemo(() => {
+    const summaries = new Map<string, {
+      registrationPaid: number;
+      examsPaid: number;
+      totalPaid: number;
+      registrationStatus: string;
+      examsStatus: string;
+      remaining: number;
+    }>();
+    (records || []).forEach((record) => {
+      const key = normalizeTraineeName(record[HEADERS[2]]);
+      if (!key || summaries.has(key)) return;
+      const eligibleReceipts = (hafiza || []).filter((item) => {
+        const amount = parseAmount(item.notifyAmount);
+        const description = normalizeDescription(item.description);
+        return normalizeTraineeName(item.name) === key &&
+          Boolean(normalize(item.hafizaNo)) &&
+          Boolean(normalize(item.notifyNo)) &&
+          amount > 0 &&
+          (isRegistrationFeeDescription(item.description) || /(امتحان|اختبار)/.test(description));
+      });
+      const registrationPaid = eligibleReceipts.reduce(
+        (sum, item) => sum + (isRegistrationFeeDescription(item.description) ? parseAmount(item.notifyAmount) : 0),
+        0,
+      );
+      const examsPaid = eligibleReceipts.reduce(
+        (sum, item) => sum + (!isRegistrationFeeDescription(item.description) ? parseAmount(item.notifyAmount) : 0),
+        0,
+      );
+      const registrationDue = parseAmount(record["رسوم القيد والتسجيل"]);
+      const examsDue = parseAmount(record["إجمالي رسوم الامتحانات"]);
+      const status = (due: number, paid: number) =>
+        due <= 0 ? "غير مستحق" : paid <= 0 ? "غير مسدد" : paid < due ? "مسدد جزئياً" : "مسدد";
+      summaries.set(key, {
+        registrationPaid,
+        examsPaid,
+        totalPaid: registrationPaid + examsPaid,
+        registrationStatus: status(registrationDue, registrationPaid),
+        examsStatus: status(examsDue, examsPaid),
+        remaining: Math.max(0, registrationDue - registrationPaid) + Math.max(0, examsDue - examsPaid),
+      });
+    });
+    return summaries;
+  }, [records, hafiza]);
+
+  const getFeePaymentSummary = (row: TraineeFinancialRecord) =>
+    feePaymentSummaryByTrainee.get(normalizeTraineeName(row[HEADERS[2]])) || {
+      registrationPaid: 0,
+      examsPaid: 0,
+      totalPaid: 0,
+      registrationStatus: "غير مسدد",
+      examsStatus: "غير مسدد",
+      remaining: parseAmount(row["رسوم القيد والتسجيل"]) + parseAmount(row["إجمالي رسوم الامتحانات"]),
+    };
 
   const visibleRows = useMemo(() => {
     const q = normalize(query).toLocaleLowerCase("ar");
@@ -353,7 +435,7 @@ export default function TraineeFinancialDataTab() {
       });
     }
     return filtered;
-  }, [records, query, sort, tableColumns, batchStudyStartDates]);
+  }, [records, query, sort, tableColumns, batchStudyStartDates, feePaymentSummaryByTrainee]);
 
   const startEdit = (index: number) => {
     setEditingIndex(index);
@@ -476,6 +558,7 @@ export default function TraineeFinancialDataTab() {
             header &&
             !HEADERS.includes(header) &&
             !TRAINEE_FEE_SCHEDULE_HEADERS.includes(header as (typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number]) &&
+            !PAYMENT_SUMMARY_HEADERS.includes(header as (typeof PAYMENT_SUMMARY_HEADERS)[number]) &&
             header !== STUDY_YEARS_HEADER &&
             header !== REGISTRY_HEADER,
         );
@@ -528,10 +611,10 @@ export default function TraineeFinancialDataTab() {
       Object.fromEntries(
         [...CURRENCY_COLUMNS].map((header) => [
           header,
-          records.reduce((sum, row) => sum + parseAmount(row[header]), 0),
+          records.reduce((sum, row) => sum + parseAmount(getDisplayValue(row, header)), 0),
         ]),
       ),
-    [records],
+    [records, hafiza, batchStudyStartDates, feePaymentSummaryByTrainee],
   );
 
   return (
