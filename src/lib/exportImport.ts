@@ -599,19 +599,45 @@ export async function importFromExcel(
       blankrows: false,
     });
     if (aoa.length < 5) return null;
-    const row4 = (aoa[3] as unknown[]) || [];
-    const az = norm(row4[51]);
+
+    // قد يسبق جدول اليومية رأس تقرير من 8 صفوف عند التصدير عبر ExcelJS،
+    // بينما تبدأ بعض القوالب القديمة مباشرة من الصف الأول. ابحث عن صف
+    // عناوين الأعمدة نفسه بدلاً من افتراض موضع ثابت.
+    const headerIdx = aoa.findIndex((rawRow) => {
+      const row = (rawRow as unknown[]) || [];
+      const totalHeader = normHeader(row[51]).includes(normHeader("المبلغ الكلي"));
+      const firstColumnsMatch =
+        normHeader(row[0]).includes(normHeader("رقم الاستمارة")) &&
+        normHeader(row[1]).includes(normHeader("كشف التسوية")) &&
+        normHeader(row[2]).includes(normHeader("التاريخ")) &&
+        normHeader(row[3]).includes(normHeader("البيان"));
+      return totalHeader || firstColumnsMatch;
+    });
+
+    if (headerIdx < 0) return null;
+    const headerRow = (aoa[headerIdx] as unknown[]) || [];
     const isTemplate =
-      az.includes("المبلغ الكلي") || norm((aoa[1] as unknown[])?.[5]).includes("اليومية العامة");
+      normHeader(headerRow[51]).includes(normHeader("المبلغ الكلي")) ||
+      (headerIdx > 0 &&
+        (aoa.slice(0, headerIdx).some((rawRow) =>
+          (rawRow as unknown[]).some((cell) =>
+            normHeader(cell).includes(normHeader("اليومية العامة")),
+          ),
+        )));
     if (!isTemplate) return null;
+
     const out: Journal[] = [];
-    for (let i = 4; i < aoa.length; i++) {
-      const row = aoa[i] as unknown[];
-      if (!row || row.every((c) => c === "" || c == null)) continue;
+    for (let i = headerIdx + 1; i < aoa.length; i++) {
+      const row = (aoa[i] as unknown[]) || [];
+      if (!row.length || row.every((c) => c === "" || c == null)) continue;
+
       const desc = norm(row[3]);
       const date = row[2];
+      // صفوف أسماء الأشهر والفواصل لا تحتوي تاريخاً أو بياناً.
       if (!date && !desc) continue;
-      let debitCol: string | null = null, debitAmt = 0;
+
+      let debitCol: string | null = null;
+      let debitAmt = 0;
       for (let c = DEBIT_FIRST - 1; c <= DEBIT_LAST - 1; c++) {
         const v = parseNumericValue(row[c]);
         if (v) {
@@ -620,7 +646,9 @@ export async function importFromExcel(
           break;
         }
       }
-      let creditCol: string | null = null, creditAmt = 0;
+
+      let creditCol: string | null = null;
+      let creditAmt = 0;
       for (let c = CREDIT_FIRST - 1; c <= CREDIT_LAST - 1; c++) {
         const v = parseNumericValue(row[c]);
         if (v) {
@@ -629,16 +657,19 @@ export async function importFromExcel(
           break;
         }
       }
+
       if (!debitAmt && !creditAmt && !desc) continue;
-      const debitName = debitCol ? norm(row4[colLetterToIndex(debitCol) - 1]) : "";
-      const creditName = creditCol ? norm(row4[colLetterToIndex(creditCol) - 1]) : "";
+
+      const debitName = debitCol ? norm(headerRow[colLetterToIndex(debitCol) - 1]) : "";
+      const creditName = creditCol ? norm(headerRow[colLetterToIndex(creditCol) - 1]) : "";
+
       out.push({
         id: uid(),
         date: toDate(date),
-        formNo: row[0] != null ? String(row[0]).trim() : "",
-        settlement: row[1] != null ? String(row[1]).trim() : "",
+        formNo: cellStr(row[0]),
+        settlement: cellStr(row[1]),
         description: desc,
-        account: debitName,
+        account: debitName || creditName,
         debitAccount: debitName,
         creditAccount: creditName,
         debitCol: debitCol || undefined,
