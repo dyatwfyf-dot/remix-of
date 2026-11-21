@@ -666,8 +666,8 @@ export async function importFromExcel(
       out.push({
         id: uid(),
         date: toDate(date),
-        formNo: cellStr(row[0]),
-        settlement: cellStr(row[1]),
+        formNo: row[1] != null ? String(row[1]) : "",
+        settlement: "",
         description: desc,
         account: debitName || creditName,
         debitAccount: debitName,
@@ -1032,22 +1032,8 @@ export async function importFromExcel(
         result.journal.push({
           id: uid(),
           date: parsedDate,
-          formNo: cellStr(
-            get(r, "رقم الاستمارة", "رقم الاستماره", "رقم القيد", "رقم السند", "الاستمارة", "م"),
-          ),
-          settlement: cellStr(
-            get(
-              r,
-              "رقم كشف التسوية",
-              "رقم كشف التسويه",
-              "كشف التسوية",
-              "كشف التسويه",
-              "رقم التسوية",
-              "رقم التسويه",
-              "التسوية",
-              "التسويه",
-            ),
-          ),
+          formNo: cellStr(get(r, "رقم الاستمارة", "رقم القيد", "رقم السند", "الاستمارة", "م")),
+          settlement: "",
           description,
           account: debitAcc || creditAcc || singleAcc,
           debitAccount: debitAcc,
