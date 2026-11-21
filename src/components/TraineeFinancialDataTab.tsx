@@ -863,7 +863,7 @@ export default function TraineeFinancialDataTab() {
               </tr>
             ))}
           </tbody>
-          <tfoot className="sticky bottom-0 bg-[#e2eef5] font-extrabold text-black">
+          <tfoot className="bg-[#e2eef5] font-extrabold text-black">
             <tr>
               <td
                 colSpan={tableColumns.indexOf(HEADERS[6])}
