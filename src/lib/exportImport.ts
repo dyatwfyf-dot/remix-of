@@ -255,7 +255,6 @@ function buildJournalSheet(journal: Journal[]): XLSX.WorkSheet {
   const firstCreditColLetter = XLSX.utils.encode_col(CREDIT_FIRST - 1);
   const lastCreditColLetter = XLSX.utils.encode_col(CREDIT_LAST - 1);
 
-  let serial = 0;
   for (const [ymKey, items] of grouped) {
     let label = ymKey;
     const parts = ymKey.split("-");
@@ -269,9 +268,8 @@ function buildJournalSheet(journal: Journal[]): XLSX.WorkSheet {
     row++;
 
     for (const j of items) {
-      serial++;
-      ws[`A${row}`] = { v: serial, t: "n" };
-      if (j.formNo) ws[`B${row}`] = { v: j.formNo, t: "s" };
+      if (j.formNo) ws[`A${row}`] = { v: j.formNo, t: "s" };
+      if (j.settlement) ws[`B${row}`] = { v: j.settlement, t: "s" };
       if (j.date) ws[`C${row}`] = { v: j.date, t: "s" };
       if (j.description) ws[`D${row}`] = { v: j.description, t: "s" };
 
@@ -637,8 +635,8 @@ export async function importFromExcel(
       out.push({
         id: uid(),
         date: toDate(date),
-        formNo: row[1] != null ? String(row[1]) : "",
-        settlement: "",
+        formNo: row[0] != null ? String(row[0]).trim() : "",
+        settlement: row[1] != null ? String(row[1]).trim() : "",
         description: desc,
         account: debitName,
         debitAccount: debitName,
@@ -1003,8 +1001,22 @@ export async function importFromExcel(
         result.journal.push({
           id: uid(),
           date: parsedDate,
-          formNo: cellStr(get(r, "رقم الاستمارة", "رقم القيد", "رقم السند", "الاستمارة", "م")),
-          settlement: cellStr(get(r, "كشف التسوية", "التسوية")),
+          formNo: cellStr(
+            get(r, "رقم الاستمارة", "رقم الاستماره", "رقم القيد", "رقم السند", "الاستمارة", "م"),
+          ),
+          settlement: cellStr(
+            get(
+              r,
+              "رقم كشف التسوية",
+              "رقم كشف التسويه",
+              "كشف التسوية",
+              "كشف التسويه",
+              "رقم التسوية",
+              "رقم التسويه",
+              "التسوية",
+              "التسويه",
+            ),
+          ),
           description,
           account: debitAcc || creditAcc || singleAcc,
           debitAccount: debitAcc,
