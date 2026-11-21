@@ -750,3 +750,162 @@
     font-size: 9px !important;
   }
 }
+
+
+/* ==========================================================================
+   أقساط 2026: ترتيب حتمي للأزرار — أربعة أزرار في كل صف أفقي
+   يعالج تقاطع ترتيب TabActions مع شبكة الأزرار الرئيسية ذات 12 خانة.
+   ========================================================================== */
+.mizan-installments-tab .installments-controls-2026 {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  grid-auto-flow: row !important;
+  align-items: stretch !important;
+}
+
+/* البحث صف مستقل في بداية اللوحة */
+.mizan-installments-tab .installments-controls-2026 > .installments-search-2026 {
+  grid-column: 1 / -1 !important;
+  grid-row: 1 !important;
+}
+
+/* الصف الأول: تنسيق شرطي، طالب جديد، عمود جديد، إضافة قسط */
+.mizan-installments-tab .installments-controls-2026 > .installment-action-format {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+}
+.mizan-installments-tab .installments-controls-2026 > .installment-action-student {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+}
+.mizan-installments-tab .installments-controls-2026 > .installment-action-column {
+  grid-column: 3 !important;
+  grid-row: 2 !important;
+}
+.mizan-installments-tab .installments-controls-2026 > .installment-action-payment {
+  grid-column: 4 !important;
+  grid-row: 2 !important;
+}
+
+/* الصف الثاني: استيراد، Excel، طباعة تفصيلية، PDF تفصيلي */
+.mizan-installments-tab .installments-controls-2026 > .installment-action-import {
+  grid-column: 1 !important;
+  grid-row: 3 !important;
+}
+.mizan-installments-tab .installments-controls-2026 > .installment-action-excel {
+  grid-column: 2 !important;
+  grid-row: 3 !important;
+}
+.mizan-installments-tab .installments-controls-2026 > .installment-action-print {
+  grid-column: 3 !important;
+  grid-row: 3 !important;
+}
+.mizan-installments-tab .installments-controls-2026 > .installment-action-pdf {
+  grid-column: 4 !important;
+  grid-row: 3 !important;
+}
+
+/* مجموعة الملخص/المعاينة/التصدير/المسح: أربعة أزرار في صف مستقل */
+.mizan-installments-tab .installments-controls-2026 > .installments-summary-actions {
+  grid-column: 1 / -1 !important;
+  grid-row: 4 !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  grid-auto-flow: row !important;
+  gap: 8px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex-wrap: nowrap !important;
+}
+.mizan-installments-tab .installments-controls-2026 > .installments-summary-actions > button {
+  grid-column: auto !important;
+  grid-row: auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  min-height: 70px !important;
+  padding: 6px 3px !important;
+  gap: 4px !important;
+  font-size: clamp(9px, 2.35vw, 12px) !important;
+  flex-wrap: nowrap !important;
+}
+
+/* تثبيت الحجم والمحاذاة للأزرار المباشرة الأربعة في كل صف */
+.mizan-installments-tab .installments-controls-2026 > .installment-action-btn {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 76px !important;
+  padding: 6px 3px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  font-size: clamp(9px, 2.35vw, 12px) !important;
+  line-height: 1.12 !important;
+  text-align: center !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+}
+.mizan-installments-tab .installments-controls-2026 > .installment-action-btn svg,
+.mizan-installments-tab .installments-controls-2026 > .installments-summary-actions > button svg {
+  flex: 0 0 auto !important;
+  width: 19px !important;
+  height: 19px !important;
+}
+
+/* لا نسمح لقواعد apk-only-actions العامة بتحويل أزرار الصفوف إلى التفاف داخلي */
+.mizan-installments-tab .installments-controls-2026 > .installment-action-btn,
+.mizan-installments-tab .installments-controls-2026 > .installments-summary-actions {
+  flex-wrap: nowrap !important;
+}
+
+/* على الهواتف الصغيرة تبقى أربعة أعمدة، مع ضغط متوازن للمقاسات */
+@media (max-width: 420px) {
+  .mizan-installments-tab .installments-controls-2026 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    padding: 7px !important;
+  }
+  .mizan-installments-tab .installments-controls-2026 > .installment-action-btn {
+    min-height: 66px !important;
+    padding: 5px 2px !important;
+    font-size: 8.5px !important;
+    border-radius: 10px !important;
+  }
+  .mizan-installments-tab .installments-controls-2026 > .installment-action-btn svg {
+    width: 17px !important;
+    height: 17px !important;
+  }
+  .mizan-installments-tab .installments-controls-2026 > .installments-summary-actions {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+  }
+  .mizan-installments-tab .installments-controls-2026 > .installments-summary-actions > button {
+    min-height: 62px !important;
+    padding: 4px 2px !important;
+    font-size: 8px !important;
+  }
+}
+@media (max-width: 360px) {
+  .mizan-installments-tab .installments-controls-2026 {
+    gap: 4px !important;
+    padding: 6px !important;
+  }
+  .mizan-installments-tab .installments-controls-2026 > .installment-action-btn {
+    min-height: 60px !important;
+    padding: 4px 1px !important;
+    font-size: 8px !important;
+  }
+  .mizan-installments-tab .installments-controls-2026 > .installments-summary-actions {
+    gap: 4px !important;
+  }
+  .mizan-installments-tab .installments-controls-2026 > .installments-summary-actions > button {
+    min-height: 58px !important;
+    padding: 3px 1px !important;
+    font-size: 7.5px !important;
+  }
+}
