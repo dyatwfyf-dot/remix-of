@@ -245,9 +245,25 @@
   grid-column: span 4 !important;
 }
 
-.mizan-installments-tab .installments-controls-2025 > .installments-direct-actions-2025,
-.mizan-installments-tab .installments-controls-2025 > .installments-tab-actions-2025 {
+.mizan-installments-tab .installments-controls-2025 > .installments-direct-actions-2025 {
   display: contents !important;
+}
+
+/* اجعل غلاف TabActions نفسه شبكة مستقلة؛ لا تعتمد على display:contents
+   أو flex-wrap العام حتى تبقى الأزرار الأربعة في صف أفقي واحد. */
+.mizan-installments-tab .installments-controls-2025 > .installments-tab-actions-2025 {
+  grid-column: 1 / -1 !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  grid-auto-flow: row !important;
+  align-items: stretch !important;
+  justify-items: stretch !important;
+  gap: 8px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex-wrap: nowrap !important;
 }
 
 .mizan-installments-tab .installments-controls-2025 > .installments-direct-actions-2025 > .installments-action-2025--export,
@@ -255,13 +271,15 @@
   grid-column: span 4 !important;
 }
 
-/* أزرار الإجراءات الأربعة: ثلاثة في صف والرابع في المنتصف أسفلها */
-.mizan-installments-tab .installments-controls-2025 > .installments-tab-actions-2025 > button:nth-child(-n+3) {
-  grid-column: span 4 !important;
-}
-
-.mizan-installments-tab .installments-controls-2025 > .installments-tab-actions-2025 > button:nth-child(4) {
-  grid-column: 5 / span 4 !important;
+/* الأزرار الأربعة تشغل الأعمدة الأربعة للغلاف بالتساوي وفي صف واحد. */
+.mizan-installments-tab .installments-controls-2025 > .installments-tab-actions-2025 > button {
+  grid-column: auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  min-height: 68px !important;
+  padding: 6px 3px !important;
+  gap: 4px !important;
+  font-size: clamp(9px, 2.4vw, 12px) !important;
 }
 
 .mizan-installments-tab .installments-controls-2025 .installments-action-2025,
@@ -410,3 +428,46 @@
 .mizan-installments-tab table.installments-table-2025 tbody td:nth-child(n+5):not(:last-child),.mizan-installments-tab table.installments-table-2025 thead th:nth-child(n+5):not(:last-child){min-width:76px}
 .mizan-installments-tab table.installments-table-2025 tbody td:last-child{min-width:104px;white-space:nowrap!important}
 @media(max-width:480px){.mizan-installments-tab table.installments-table-2025 th,.mizan-installments-tab table.installments-table-2025 td{padding:6px 7px!important;font-size:12px!important}.mizan-installments-tab table.installments-table-2025 thead th.installments-2025-name-cell,.mizan-installments-tab table.installments-table-2025 tbody td.installments-2025-name-cell{min-width:138px!important;max-width:190px!important}}
+
+
+/* تثبيت الصف الأفقي لأزرار إجراءات أقساط 2025 على جميع المقاسات. */
+.mizan-installments-tab .installments-controls-2025 > .installments-tab-actions-2025 {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+.mizan-installments-tab .installments-controls-2025 > .installments-tab-actions-2025 > button {
+  grid-column: auto !important;
+  min-height: 68px !important;
+  padding: 6px 3px !important;
+  font-size: clamp(9px, 2.4vw, 12px) !important;
+}
+.mizan-installments-tab .installments-controls-2025 > .installments-tab-actions-2025 > button svg {
+  width: 19px !important;
+  height: 19px !important;
+}
+@media (max-width: 420px) {
+  .mizan-installments-tab .installments-controls-2025 > .installments-tab-actions-2025 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+  .mizan-installments-tab .installments-controls-2025 > .installments-tab-actions-2025 > button {
+    min-height: 62px !important;
+    padding: 5px 2px !important;
+    font-size: 9px !important;
+    line-height: 1.1 !important;
+  }
+  .mizan-installments-tab .installments-controls-2025 > .installments-tab-actions-2025 > button svg {
+    width: 17px !important;
+    height: 17px !important;
+  }
+}
+@media (max-width: 360px) {
+  .mizan-installments-tab .installments-controls-2025 > .installments-tab-actions-2025 {
+    gap: 4px !important;
+  }
+  .mizan-installments-tab .installments-controls-2025 > .installments-tab-actions-2025 > button {
+    min-height: 58px !important;
+    padding: 4px 1px !important;
+    font-size: 8px !important;
+  }
+}
