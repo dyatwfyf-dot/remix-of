@@ -3675,11 +3675,13 @@ async () => {
         onClick={() => setNewPaymentModal(true)}
         className="apk-only-actions installment-action-btn installment-action-payment w-full px-2 py-1.5 bg-red-700 text-white rounded-md text-sm font-bold shadow hover:bg-red-800 transition-colors flex items-center justify-center gap-1 truncate"
       >
-        <span>➕ إضافة قسط</span>
+        <Plus className={ICON_MOBILE} aria-hidden="true" />
+        <span>إضافة قسط</span>
       </button>
 
       <label className={`apk-only-actions installment-action-btn installment-action-import relative w-full px-2 py-1.5 bg-white text-sky-700 rounded-md text-sm font-bold cursor-pointer shadow hover:bg-sky-50 transition-colors flex items-center justify-center gap-1 text-center ${importingYear !== null ? "opacity-60 pointer-events-none" : ""}`}>
-        {importingYear === 2026 ? "جارٍ الاستيراد…" : "📥 استيراد"}
+        <Upload className={ICON_MOBILE} aria-hidden="true" />
+        <span>{importingYear === 2026 ? "جارٍ الاستيراد…" : "استيراد"}</span>
         <input
           type="file"
           accept=".xlsx,.xls"
