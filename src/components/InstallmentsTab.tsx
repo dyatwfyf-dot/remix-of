@@ -30,6 +30,7 @@ import {
   ClipboardList,
   Image as ImageIcon,
   Download,
+  Upload,
 } from "lucide-react";
 import TabActions from "./TabActions";
 import { noteRowClass,
@@ -3351,8 +3352,12 @@ async () => {
  className="pl-3 pr-8 py-2 rounded-lg text-sm border border-sky-300 outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-48 text-slate-800 shadow-sm"
               />
             </div>
-<label className={`apk-only-actions relative w-full px-2 sm:px-2 py-2 sm:py-2 bg-white text-sky-700 rounded-lg text-xs sm:text-xs font-bold cursor-pointer hover:bg-sky-50 shadow text-center ${importingYear !== null ? "opacity-60 pointer-events-none" : ""}`}>
-  {importingYear === 2025 ? "جارٍ الاستيراد…" : "📥 استيراد الملف"}{" "}
+<label
+  aria-label="استيراد ملف أقساط 2025"
+  className={`installments-action-2025 installments-action-2025--import relative w-full cursor-pointer ${importingYear !== null ? "opacity-60 pointer-events-none" : ""}`}
+>
+  <Upload className="h-5 w-5" aria-hidden="true" />
+  <span>{importingYear === 2025 ? "جارٍ الاستيراد…" : "استيراد الملف"}</span>
   <input
     type="file"
     accept=".xlsx,.xls"
@@ -3362,22 +3367,26 @@ async () => {
   />
 </label>
 
-
-<div className="apk-only-actions col-span-2 flex gap-1 w-full">
-<button
- onClick={() => exportToExcel(2025)}
-className={`flex-1 ${BTN_COMPACT} bg-teal-400 text-black-700 rounded-md font-bold shadow hover:bg-green-200 transition-colors flex items-center justify-center gap-1`}
-  >تصدير الي اكسل
-<FileSpreadsheet className={ICON_MOBILE} /> 
-<span className="hidden sm:inline">Excel تصدير الي 
-</span>
-              </button>
-              <button
-                onClick={() => setPrintSettingsYear(2025)}
-className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold shadow hover:bg-white transition-colors flex items-center justify-center gap-1`} >طباعة تفصيلية
- <Printer className={ICON_MOBILE} /> <span className="hidden sm:inline">طباعة تفصيلية</span>
-              </button>
-            </div>
+<div className="installments-direct-actions-2025">
+  <button
+    type="button"
+    onClick={() => exportToExcel(2025)}
+    className="installments-action-2025 installments-action-2025--export"
+    title="تصدير أقساط 2025 إلى Excel"
+  >
+    <FileSpreadsheet className="h-5 w-5" aria-hidden="true" />
+    <span>تصدير Excel</span>
+  </button>
+  <button
+    type="button"
+    onClick={() => setPrintSettingsYear(2025)}
+    className="installments-action-2025 installments-action-2025--detailed-print"
+    title="إعدادات وطباعة تفصيلية لأقساط 2025"
+  >
+    <Printer className="h-5 w-5" aria-hidden="true" />
+    <span>طباعة تفصيلية</span>
+  </button>
+</div>
 
 <TabActions
  title="أقساط العام 2025"
@@ -3399,7 +3408,7 @@ className={`flex-1 ${BTN_COMPACT} bg-green-500 text-white rounded-md font-bold s
               pdfMarginMm={1}
               pdfCss={INSTALLMENTS_SUMMARY_REPORT_CSS}
               additionalWebActions={installments2025WebActions}
- className="col-span-2 w-full grid !grid-cols-2 !gap-2 [&>button]:w-full [&>button]:min-w-0 [&>button]:justify-center [&>button]:px-2 [&>button]:py-2"
+ className="installments-tab-actions-2025"
             />
           </div>
         </div>
