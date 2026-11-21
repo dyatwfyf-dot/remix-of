@@ -475,6 +475,10 @@ export async function importFromExcel(
 
   const detectKind = (sheetName: string, cols: string[]): ImportKind | null => {
     const n = sheetName;
+    // أسماء القيود واليومية لها أولوية على كلمة "كشف" حتى لا تُقرأ ككشوف شهرية.
+    if (["يومية", "اليومية", "قيود", "القيود"].some((token) => n.includes(token))) {
+      return "journal";
+    }
     if (n.includes("ايراد") || n.includes("إيراد") || n.includes("موارد")) return "revenue";
     if (
       n.includes("كشف") ||
@@ -485,10 +489,14 @@ export async function importFromExcel(
       return "monthly";
     if (n.includes("قسط") || n.includes("الأقساط") || n.includes("الاقساط")) return "installments";
     if (n.includes("حافظ") || n.includes("حوافظ")) return "hafiza";
-    if (n.includes("يومية") || n.includes("اليومية") || n.includes("قيود")) return "journal";
     if (n.includes("الحساب") || n.includes("حساب")) return "account";
-    const has = (s: string) => cols.some((c) => c.includes(s));
-    if (has("الحساب المدين") || (has("مدين") && has("دائن"))) return "journal";
+    const has = (s: string) => cols.some((c) => normHeader(c).includes(normHeader(s)));
+    if (
+      has("الحساب المدين") ||
+      (has("مدين") && has("دائن")) ||
+      has("بيان القيد") ||
+      has("شرح القيد")
+    ) return "journal";
     if (has("الإيرادات") || has("المصروفات") || has("الرصيد")) return "account";
     if (INSTALLMENT_MONTHS.some((m) => has(m))) return "installments";
     if (has("مبلغ التوريد") || has("رقم الحافظة")) return "hafiza";
@@ -600,39 +608,80 @@ export async function importFromExcel(
     });
     if (aoa.length < 5) return null;
 
-    // قد يسبق جدول اليومية رأس تقرير من 8 صفوف عند التصدير عبر ExcelJS،
-    // بينما تبدأ بعض القوالب القديمة مباشرة من الصف الأول. ابحث عن صف
-    // عناوين الأعمدة نفسه بدلاً من افتراض موضع ثابت.
-    const headerIdx = aoa.findIndex((rawRow) => {
-      const row = (rawRow as unknown[]) || [];
-      const totalHeader = normHeader(row[51]).includes(normHeader("المبلغ الكلي"));
-      const firstColumnsMatch =
-        normHeader(row[0]).includes(normHeader("رقم الاستمارة")) &&
-        normHeader(row[1]).includes(normHeader("كشف التسوية")) &&
-        normHeader(row[2]).includes(normHeader("التاريخ")) &&
-        normHeader(row[3]).includes(normHeader("البيان"));
-      return totalHeader || firstColumnsMatch;
-    });
+    const matchesHeader = (value: unknown, aliases: string[]): boolean => {
+      const header = normHeader(value);
+      if (!header) return false;
+      return aliases.some((alias) => {
+        const normalizedAlias = normHeader(alias);
+        // "م" عنوان قصير، لذا يجب مطابقته بالكامل حتى لا يطابق كلمات أخرى.
+        return normalizedAlias === normHeader("م")
+          ? header === normalizedAlias
+          : header === normalizedAlias || header.includes(normalizedAlias);
+      });
+    };
 
-    if (headerIdx < 0) return null;
+    const firstAliases = ["رقم الاستمارة", "الاستمارة", "استمارة", "رقم المستند", "م"];
+    const settlementAliases = ["كشف التسوية", "التسوية", "تسوية"];
+    const dateAliases = ["التاريخ", "تاريخ"];
+    const descriptionAliases = ["البيان", "بيان", "شرح"];
+
+    const findHeaderColumns = (row: unknown[]) => {
+      // قد يحتوي العمود A على تسلسل "م"، فتبدأ حقول القيد الفعلية من العمود B.
+      for (const startCol of [1, 0]) {
+        if (
+          matchesHeader(row[startCol], firstAliases) &&
+          matchesHeader(row[startCol + 1], settlementAliases) &&
+          matchesHeader(row[startCol + 2], dateAliases) &&
+          matchesHeader(row[startCol + 3], descriptionAliases)
+        ) {
+          return {
+            formNoCol: startCol,
+            settlementCol: startCol + 1,
+            dateCol: startCol + 2,
+            descriptionCol: startCol + 3,
+          };
+        }
+      }
+      return null;
+    };
+
+    let headerIdx = -1;
+    let headerColumns: ReturnType<typeof findHeaderColumns> = null;
+    for (let i = 0; i < aoa.length; i++) {
+      const row = (aoa[i] as unknown[]) || [];
+      const columns = findHeaderColumns(row);
+      const totalHeader = normHeader(row[51]).includes(normHeader("المبلغ الكلي"));
+      if (columns || totalHeader) {
+        headerIdx = i;
+        headerColumns = columns || {
+          formNoCol: 0,
+          settlementCol: 1,
+          dateCol: 2,
+          descriptionCol: 3,
+        };
+        break;
+      }
+    }
+
+    if (headerIdx < 0 || !headerColumns) return null;
     const headerRow = (aoa[headerIdx] as unknown[]) || [];
-    const isTemplate =
-      normHeader(headerRow[51]).includes(normHeader("المبلغ الكلي")) ||
-      (headerIdx > 0 &&
-        (aoa.slice(0, headerIdx).some((rawRow) =>
-          (rawRow as unknown[]).some((cell) =>
-            normHeader(cell).includes(normHeader("اليومية العامة")),
-          ),
-        )));
-    if (!isTemplate) return null;
+    const hasJournalTitle = headerIdx > 0 &&
+      aoa.slice(0, headerIdx).some((rawRow) =>
+        (rawRow as unknown[]).some((cell) =>
+          normHeader(cell).includes(normHeader("اليومية العامة")),
+        ),
+      );
+    const hasTemplateTotal = normHeader(headerRow[51]).includes(normHeader("المبلغ الكلي"));
+    // تطابق عناوين الحقول الأربع يكفي لقبول القوالب العامة حتى دون ترويسة التقرير الموسعة.
+    if (!hasTemplateTotal && !hasJournalTitle && !findHeaderColumns(headerRow)) return null;
 
     const out: Journal[] = [];
     for (let i = headerIdx + 1; i < aoa.length; i++) {
       const row = (aoa[i] as unknown[]) || [];
       if (!row.length || row.every((c) => c === "" || c == null)) continue;
 
-      const desc = norm(row[3]);
-      const date = row[2];
+      const desc = norm(row[headerColumns.descriptionCol]);
+      const date = row[headerColumns.dateCol];
       // صفوف أسماء الأشهر والفواصل لا تحتوي تاريخاً أو بياناً.
       if (!date && !desc) continue;
 
@@ -665,9 +714,9 @@ export async function importFromExcel(
 
       out.push({
         id: uid(),
-        date: toDate(date),
-        formNo: row[1] != null ? String(row[1]) : "",
-        settlement: "",
+        date: toDate(date as string | number | undefined),
+        formNo: cellStr(row[headerColumns.formNoCol]),
+        settlement: cellStr(row[headerColumns.settlementCol]),
         description: desc,
         account: debitName || creditName,
         debitAccount: debitName,
@@ -851,11 +900,17 @@ export async function importFromExcel(
   };
 
   for (const name of wb.SheetNames) {
+    const isJournalNamedSheet = ["قيود", "القيود", "يومية", "اليومية"].some((token) =>
+      name.includes(token),
+    );
     const isMonthlySheet =
-      monthIndexFromName(name) > 0 ||
-      name.includes("كشف") ||
-      name.includes("حساب") ||
-      only === "monthly";
+      !isJournalNamedSheet &&
+      (
+        monthIndexFromName(name) > 0 ||
+        name.includes("كشف") ||
+        name.includes("حساب") ||
+        only === "monthly"
+      );
 
     if ((!only || only === "monthly" || only === "journal") && isMonthlySheet) {
       const mRows = parseMonthlySheet(wb.Sheets[name], name);
@@ -962,13 +1017,36 @@ export async function importFromExcel(
     } else if (kind === "journal") {
       rows.forEach((r) => {
         const description = cellStr(
-          get(r, "البيان", "شرح القيد", "الوصف", "بيان القيد", "ملاحظات"),
+          get(
+            r,
+            "البيان",
+            "بيان",
+            "شرح القيد",
+            "شرح",
+            "الوصف",
+            "وصف",
+            "التفاصيل",
+            "تفاصيل",
+            "بيان القيد",
+            "ملاحظات",
+          ),
         );
         if (!description) return;
         if (description.includes("الإجمالي") || description.includes("الاجمالي")) return;
 
         // قراءة الأعمدة باحتمالاتها المتعددة
-        const singleAcc = cellStr(get(r, "الحساب", "اسم الحساب", "الطرف", "اسم_الحساب", "حساب"));
+        const singleAcc = cellStr(
+          get(
+            r,
+            "الحساب",
+            "اسم الحساب",
+            "الطرف",
+            "اسم_الحساب",
+            "حساب",
+            "الحساب/الطرف",
+            "اسم الحساب / الطرف",
+          ),
+        );
         let debitAcc = cellStr(
           get(
             r,
@@ -1019,7 +1097,16 @@ export async function importFromExcel(
         }
 
         // قراءة التاريخ ومعالجة الأرقام التسلسلية للإكسل
-        let rawDate = get(r, "التاريخ", "تاريخ القيد", "تاريخ الحركة", "تاريخ", "date");
+        const rawDate = get(
+          r,
+          "التاريخ",
+          "تاريخ",
+          "تاريخ القيد",
+          "التاريخ الميلادي",
+          "تاريخ العملية",
+          "تاريخ الحركة",
+          "date",
+        );
         let parsedDate = toDate(rawDate);
         if (!parsedDate && rawDate) {
           const num = Number(rawDate);
@@ -1032,7 +1119,22 @@ export async function importFromExcel(
         result.journal.push({
           id: uid(),
           date: parsedDate,
-          formNo: cellStr(get(r, "رقم الاستمارة", "رقم القيد", "رقم السند", "الاستمارة", "م")),
+          formNo: cellStr(
+            get(
+              r,
+              "رقم الاستمارة",
+              "الاستمارة",
+              "استمارة",
+              "رقم المستند",
+              "المستند",
+              "مستند",
+              "رقم السند",
+              "سند",
+              "رقم القيد",
+              "قيد",
+              "م",
+            ),
+          ),
           settlement: "",
           description,
           account: debitAcc || creditAcc || singleAcc,
