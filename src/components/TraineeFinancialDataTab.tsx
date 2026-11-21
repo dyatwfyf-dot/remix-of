@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import "./TraineeFinancialDataTab.css";
 import * as XLSX from "xlsx";
 import {
   Download,
@@ -24,7 +25,7 @@ import { calculateTraineeFeeSchedule, recalculateTraineeFinancialRecord, STUDY_Y
 const HEADERS = database.headers as string[];
 const REGISTRY_HEADER = HEADERS[1];
 const VISIBLE_BASE_HEADERS = [
-  HEADERS[0], HEADERS[2], HEADERS[3], HEADERS[4], STUDY_YEARS_HEADER, ...HEADERS.slice(5),
+  HEADERS[0], HEADERS[2], HEADERS[3], HEADERS[4], STUDY_YEARS_HEADER, HEADERS[5], ...HEADERS.slice(6),
 ];
 const SHEET_NAME = database.sheetName;
 const TITLE = database.title;
@@ -93,6 +94,11 @@ const normalizeDescription = (value: unknown) =>
     .replace(/[إأآ]/g, "ا")
     .replace(/\s+/g, " ");
 const normalizeBatchKey = (value: unknown) => normalizeAcademicStatus(value).replace(/^الدفعة\s*/, "").replace(/^دفعة\s*/, "").replace(/\s+/g, "");
+const displayColumnHeader = (header: string) => ({
+  "موعد الكتابي الأول": "حالة الكتابي الأول",
+  "موعد الكتابي النهائي": "حالة الكتابي النهائي",
+  "موعد السريري الشفوي": "حالة السريري الشفوي",
+}[header] || header);
 
 export default function TraineeFinancialDataTab() {
   const records = useStore((state) => state.traineeFinancialRecords);
@@ -105,7 +111,13 @@ export default function TraineeFinancialDataTab() {
   const installments2026 = useStore((state) => state.installments);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const columns = useMemo(() => [...VISIBLE_BASE_HEADERS, ...customColumns], [customColumns]);
-  const tableColumns = useMemo(() => [...VISIBLE_BASE_HEADERS, ...TRAINEE_FEE_SCHEDULE_HEADERS, ...PAYMENT_SUMMARY_HEADERS, ...customColumns], [customColumns]);
+  const tableColumns = useMemo(() => [
+    ...VISIBLE_BASE_HEADERS.slice(0, 6),
+    ...TRAINEE_FEE_SCHEDULE_HEADERS,
+    ...VISIBLE_BASE_HEADERS.slice(6),
+    ...PAYMENT_SUMMARY_HEADERS,
+    ...customColumns,
+  ], [customColumns]);
   const batchOptions = useMemo(() => {
     const options = new Map<string, string>();
     (records || []).forEach((row) => {
@@ -338,7 +350,12 @@ export default function TraineeFinancialDataTab() {
   const getDisplayValue = (row: TraineeFinancialRecord, header: string) => {
     if (TRAINEE_FEE_SCHEDULE_HEADERS.includes(header as (typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number])) {
       const batchKey = normalizeBatchKey(row[HEADERS[3]]);
-      const schedule = calculateTraineeFeeSchedule(row[HEADERS[3]], batchStudyStartDates[batchKey]);
+      const schedule = calculateTraineeFeeSchedule(
+        row[HEADERS[3]],
+        batchStudyStartDates[batchKey],
+        new Date(),
+        row[STUDY_YEARS_HEADER],
+      );
       return schedule[header as (typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number]];
     }
     if (PAYMENT_SUMMARY_HEADERS.includes(header as (typeof PAYMENT_SUMMARY_HEADERS)[number])) {
@@ -486,7 +503,7 @@ export default function TraineeFinancialDataTab() {
 
 
   const printTraineeDataTable = () => {
-    const tableHead = tableColumns.map((header) => `<th>${escapeHtml(header)}</th>`).join("");
+    const tableHead = tableColumns.map((header) => `<th>${escapeHtml(displayColumnHeader(header))}</th>`).join("");
     const tableBody = visibleRows.map(({ row }) =>
       `<tr>${tableColumns.map((header) => `<td>${escapeHtml(getDisplayValue(row, header))}</td>`).join("")}</tr>`,
     ).join("");
@@ -757,15 +774,15 @@ export default function TraineeFinancialDataTab() {
         <span className="rounded px-2 py-1 bg-emerald-50">مستمر / منتظم</span>
       </div>
       <div
-        className="overflow-auto rounded-xl border border-slate-400 bg-white shadow-sm"
+        className="trainee-data-table-wrap overflow-auto rounded-xl border border-slate-400 bg-white shadow-sm"
         style={{ maxHeight: "calc(100dvh - 280px)" }}
       >
         <table
-          className="w-max min-w-full table-auto border-collapse text-center text-sm text-black"
+          className="trainee-data-table w-max min-w-full table-auto border-collapse text-center text-sm text-black"
           dir="rtl"
           style={{ width: "max-content", minWidth: "100%", tableLayout: "auto" }}
         >
-          <thead className="sticky top-0 z-10 bg-gold text-white">
+          <thead className="sticky top-0 z-10 text-white">
             <tr>
               {tableColumns.map((header) => (
                 <th
@@ -783,7 +800,7 @@ export default function TraineeFinancialDataTab() {
                     }
                     className="whitespace-normal break-words"
                   >
-                    {header}
+                    {displayColumnHeader(header)}
                     {sort?.key === header ? (sort.desc ? " ↓" : " ↑") : " ↕"}
                   </button>
                   {customColumns.includes(header) && (

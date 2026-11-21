@@ -98,8 +98,8 @@ export const recalculateTraineeFinancialRecord = (
 
 /**
  * تواريخ الاستحقاق المعروضة تقديرية ومبنية على تاريخ بداية الدفعة
- * وتسلسل المستويات المستخدم حالياً (الكتابي الأول بالسنة الثانية،
- * والكتابي النهائي والسريري بالسنة الرابعة). لا تستبدل تقويم الامتحانات الرسمي.
+ * ويُحسب موعد الكتابي النهائي من مدة الدراسة المسجلة لكل متدرب.
+ * لا تستبدل هذه التواريخ تقويم الامتحانات الرسمي.
  */
 export const TRAINEE_FEE_SCHEDULE_HEADERS = [
   "بداية الدراسة",
@@ -143,6 +143,7 @@ export const calculateTraineeFeeSchedule = (
   batch: unknown,
   startDateValue: string | undefined,
   referenceDate: Date = new Date(),
+  studyYearsValue?: unknown,
 ): Record<(typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number], string> => {
   const empty = Object.fromEntries(
     TRAINEE_FEE_SCHEDULE_HEADERS.map((header) => [header, "لم يحدد تاريخ بداية الدراسة"]),
@@ -151,7 +152,8 @@ export const calculateTraineeFeeSchedule = (
   if (!startDate) return empty;
 
   const firstWrittenDate = addStudyYears(startDate, 1);
-  const finalWrittenDate = addStudyYears(startDate, 3);
+  const studyYears = parseAmount(studyYearsValue);
+  const finalWrittenDate = studyYears > 0 ? addStudyYears(startDate, studyYears) : null;
   const today = new Date(referenceDate.getFullYear(), referenceDate.getMonth(), referenceDate.getDate());
   const tuitionDates: string[] = [];
   if (isTuitionExemptBatch(batch)) {
@@ -170,7 +172,11 @@ export const calculateTraineeFeeSchedule = (
     "موعد استحقاق القيد والتسجيل": formatStudyDate(startDate),
     "مواعيد استحقاق الأقساط السنوية": tuitionDates.join("، "),
     "موعد الكتابي الأول المتوقع": formatStudyDate(firstWrittenDate),
-    "موعد الكتابي النهائي المتوقع": formatStudyDate(finalWrittenDate),
-    "موعد السريري الشفوي المتوقع": formatStudyDate(finalWrittenDate),
+    "موعد الكتابي النهائي المتوقع": finalWrittenDate
+      ? formatStudyDate(finalWrittenDate)
+      : "لم تحدد مدة الدراسة",
+    "موعد السريري الشفوي المتوقع": finalWrittenDate
+      ? formatStudyDate(finalWrittenDate)
+      : "لم تحدد مدة الدراسة",
   };
 };
