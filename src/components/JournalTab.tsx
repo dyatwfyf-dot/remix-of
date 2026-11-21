@@ -167,11 +167,11 @@ function AccountDropdownCell({
   };
 
   return (
-    <div ref={wrapRef} className="relative w-full min-w-[180px] sm:min-w-[210px]">
+    <div ref={wrapRef} className="journal-account-picker relative w-full min-w-0">
       <button
         type="button"
         onClick={handleOpen}
-        className={`flex min-h-[40px] w-auto items-center justify-between gap-1.5 rounded-xl border px-2.5 py-2 text-right text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-[0.99]
+        className={`flex min-h-[46px] w-full min-w-0 items-center justify-between gap-1 rounded-xl border px-1.5 py-2 text-right text-[11px] sm:text-sm font-bold shadow-sm transition-all active:scale-[0.99]
           ${
             value
               ? isDebit
@@ -180,7 +180,7 @@ function AccountDropdownCell({
               : "border-dashed border-indigo-200 bg-indigo-50/40 text-slate-400 hover:border-purple-400 hover:bg-white"
           }`}
       >
-        <span className="min-w-3 flex-1 truncate text-center leading-snug">
+        <span className="min-w-0 flex-1 whitespace-normal break-words text-center leading-tight">
           {value || (isDebit ? "اختر الحساب المدين…" : "اختر الحساب الدائن…")}
         </span>
         <ChevronDown className="h-3.5 w-3.5 shrink-0 text-slate-400" />
@@ -230,7 +230,7 @@ function AccountDropdownCell({
                     key={acc}
                     type="button"
                     onClick={() => pick(acc)}
-className={`w-auto break-words border-b border-slate-100 px-3 py-3 text-right text-xs sm:text-sm font-semibold leading-relaxed transition-colors last:border-0
+className={`block w-full min-w-0 break-words border-b border-slate-100 px-3 py-3 text-right text-xs sm:text-sm font-semibold leading-relaxed transition-colors last:border-0
                       ${
                         value === acc
                           ? isDebit
@@ -428,19 +428,19 @@ export default function JournalTab() {
             {idx + 1} · {isDebit ? "مدين" : "دائن"}
           </span>
         </td>
-        <td className="min-w-[180px] sm:min-w-[210px] !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-nowrap">
+        <td className="min-w-0 !w-[35%] !px-1 !py-2 !text-xs sm:!text-sm">
           <AccountDropdownCell
             value={l.account}
             onChange={(v) => updateLine(l.id, "account", v)}
             type={l.type}
           />
         </td>
-        <td className="min-w-[150px] sm:min-w-[180px] !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-nowrap">
+        <td className="min-w-0 !w-[26%] !px-1 !py-2 !text-xs sm:!text-sm">
           <input
             type="text"
             value={l.description || ""}
             onChange={(e) => updateLine(l.id, "description", e.target.value)}
-            placeholder="بيان السطر (اختياري)"
+            placeholder="البيان (اختياري)"
             className={`min-w-0 w-full rounded-xl border bg-white px-2.5 py-2 text-xs sm:text-sm font-semibold outline-none shadow-sm transition-all
               ${
                 isDebit
@@ -449,10 +449,12 @@ export default function JournalTab() {
               }`}
           />
         </td>
-        <td className="w-[110px] sm:w-[130px] !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-nowrap">
+        <td className="min-w-0 !w-[19%] !px-1 !py-2 !text-xs sm:!text-sm">
           <input
             type="number"
             inputMode="decimal"
+            min="0"
+            step="0.01"
             dir="ltr"
             value={l.amount || ""}
             onChange={(e) => updateLine(l.id, "amount", e.target.value)}
@@ -465,7 +467,7 @@ export default function JournalTab() {
               }`}
           />
         </td>
-        <td className="w-[50px] text-center !px-1.5 !py-2 !text-xs sm:!text-sm whitespace-nowrap">
+        <td className="min-w-0 !w-[8%] text-center !px-0.5 !py-2 !text-xs sm:!text-sm">
           {total > 1 && (
             <button
               type="button"
@@ -602,7 +604,8 @@ export default function JournalTab() {
 <div className="journal-entry-table-caption">إدخال أطراف متعددة مع احتساب</div>
 
 <div className="overflow-auto max-h-[80vh]">
-<table className="journal-entry-table min-w-full w-full table-auto border-separate border-spacing-1 text-center text-xs sm:text-sm font-bold">
+<table className="journal-entry-table w-full table-fixed border-separate border-spacing-0 text-center text-xs sm:text-sm font-bold">
+<colgroup><col style={{ width: "12%" }} /><col style={{ width: "35%" }} /><col style={{ width: "26%" }} /><col style={{ width: "19%" }} /><col style={{ width: "8%" }} /></colgroup>
 <thead className="bg-gradient-to-l from-indigo-950 to-purple-900 text-white">
                   <tr>
 <th className="whitespace-normal text-center font-bold !px-2 !py-2.5 !text-xs sm:!text-sm">
