@@ -176,7 +176,7 @@ function AccountDropdownCell({
             value
               ? isDebit
                 ? "border-emerald-300 bg-emerald-50 text-emerald-950 hover:bg-emerald-100/70"
-                : "border-rose-300 bg-rose-50 text-rose-950 hover:bg-rose-100/70"
+                : "border-cyan-300 bg-rose-50 text-rose-950 hover:bg-rose-100/70"
               : "border-dashed border-indigo-200 bg-indigo-50/40 text-slate-400 hover:border-purple-400 hover:bg-white"
           }`}
       >
@@ -197,7 +197,7 @@ function AccountDropdownCell({
             <div className="mx-auto mt-2 h-1.5 w-12 rounded-full bg-slate-200 md:hidden" />
             <div
               className={`mt-2 flex items-center gap-2 px-3 py-3 md:mt-0
-              ${isDebit ? "bg-gradient-to-l from-emerald-800 to-teal-700" : "bg-gradient-to-l from-rose-800 to-pink-700"}`}
+              ${isDebit ? "bg-gradient-to-l from-emerald-800 to-teal-700" : "bg-gradient-to-l from-rose-800 to-orange-700"}`}
             >
               <Search className="h-4 w-4 shrink-0 text-white" />
               <input
@@ -711,7 +711,7 @@ export default function JournalTab() {
                 type="button"
                 onClick={handleSave}
                 title={isBalanced ? "" : "يجب تساوي إجمالي المدين والدائن"}
-                className={`flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-2 text-xs sm:text-sm font-black text-white shadow-md transition-all active:scale-[0.98]
+                className={`journal-3d-button journal-save-button flex min-h-[44px] items-center justify-center gap-2 rounded-2xl px-2 text-xs sm:text-sm font-black transition-all active:translate-y-1 ${isBalanced ? "" : "journal-save-disabled"}
                   ${
                     isBalanced
                       ? "bg-gradient-to-l from-purple-700 via-indigo-700 to-purple-800 shadow-purple-600/30 hover:brightness-110"
