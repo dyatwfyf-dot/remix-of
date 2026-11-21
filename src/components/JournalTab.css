@@ -86,3 +86,211 @@
     font-size: 11px !important;
   }
 }
+
+
+/* Fintech 3D redesign — presentation only; journal calculations and actions remain unchanged */
+.mizan-journal-fintech {
+  --j-purple: #4a1d6b;
+  --j-orange: #e8965a;
+  --j-emerald: #2fbf8a;
+  --j-cyan: #1ecbe1;
+  --j-lime: #7ed957;
+  --j-gold: #d6a52c;
+  --j-beige: #fff8ec;
+  color: #263d3b;
+  background: radial-gradient(ellipse at 50% 0%, #fffdf7 0%, #f5efe6 75%);
+}
+.mizan-journal-fintech .journal-entry-card {
+  border: 3px solid #c99b32;
+  border-radius: 22px;
+  background: #fff8ec;
+  box-shadow: 0 10px 0 rgba(92, 61, 16, .20), 0 15px 28px rgba(143, 100, 28, .22);
+}
+.mizan-journal-fintech .journal-entry-hero {
+  min-height: 92px;
+  color: #fff;
+  background: linear-gradient(100deg, #4a1d6b 0%, #714078 52%, #e8965a 100%);
+  border-bottom: 3px solid #e7bd57;
+  box-shadow: inset 0 3px 0 rgba(255,255,255,.22), 0 5px 14px rgba(74,29,107,.28);
+}
+.mizan-journal-fintech .journal-entry-hero > div:first-child { align-items: center; }
+.mizan-journal-fintech .journal-entry-hero h3 {
+  color: #fff;
+  font-size: clamp(18px, 4vw, 25px);
+  font-weight: 950;
+  letter-spacing: -.3px;
+  text-shadow: 0 2px 3px rgba(0,0,0,.24);
+}
+.mizan-journal-fintech .journal-entry-subtitle {
+  color: #fff8e9;
+  line-height: 1.55;
+  white-space: normal;
+}
+.mizan-journal-fintech .journal-entry-book {
+  width: 54px; height: 54px;
+  color: #fff1c8;
+  background: linear-gradient(145deg, rgba(255,255,255,.32), rgba(126,65,124,.55));
+  border: 2px solid rgba(255,221,125,.9);
+  border-radius: 15px;
+  box-shadow: inset 0 2px 8px rgba(255,255,255,.38), 0 5px 12px rgba(34,14,53,.3);
+}
+.mizan-journal-fintech .journal-entry-book svg { width: 27px; height: 27px; }
+.mizan-journal-fintech .journal-field-card {
+  min-height: 78px;
+  padding: 8px 9px 7px;
+  border: 3px solid #4b4037;
+  border-radius: 15px;
+  background: linear-gradient(180deg, #fffdf8 0%, #fff8ec 42%, #f4e7d1 100%);
+  box-shadow: inset 0 3px 0 rgba(255,255,255,.95), 0 5px 0 rgba(73,55,38,.18), 0 8px 13px rgba(64,47,31,.13);
+}
+.mizan-journal-fintech .journal-field-label {
+  min-height: 24px;
+  margin-bottom: 4px;
+  color: #3c3029;
+  font-size: 12px;
+  font-weight: 950;
+}
+.mizan-journal-fintech .journal-field-label > span:first-child {
+  display: inline-grid;
+  width: 25px; height: 25px;
+  flex: 0 0 25px;
+  place-items: center;
+  border-radius: 7px;
+  color: #fff;
+  background: linear-gradient(145deg, #f3a66d, #d96e2f);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 4px rgba(80,43,21,.2);
+}
+.mizan-journal-fintech .journal-field-card:first-child .journal-field-label > span:first-child { background: linear-gradient(145deg,#9c70d8,#5b2a8a); }
+.mizan-journal-fintech .journal-3d-input {
+  width: 100%;
+  min-height: 32px;
+  padding: 4px 7px;
+  color: #3d3028;
+  background: rgba(255,255,255,.5);
+  border: 1px solid rgba(83,64,46,.32);
+  border-radius: 8px;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,.95);
+  font-size: 12px;
+}
+.mizan-journal-fintech .journal-3d-input::placeholder { color: #a69a8e; opacity: 1; }
+.mizan-journal-fintech .journal-entry-table-frame {
+  border: 3px solid #087e79;
+  border-radius: 17px;
+  background: #d8f2e7;
+  box-shadow: 0 6px 0 rgba(5,89,84,.22), 0 10px 18px rgba(5,89,84,.16);
+}
+.mizan-journal-fintech .journal-entry-table-caption {
+  padding: 5px 8px;
+  color: #174c2e;
+  background: linear-gradient(180deg,#b9f28e,#7ed957);
+  text-align: center;
+  font-weight: 950;
+  font-size: 11px;
+  border-bottom: 2px solid #247d42;
+}
+.mizan-journal-fintech .journal-entry-table thead { background: #075c42; }
+.mizan-journal-fintech .journal-entry-table thead th {
+  padding: 6px 4px !important;
+  color: #fff;
+  background: linear-gradient(180deg,#087d58,#07523e);
+  border: 1px solid #d7b34c;
+  border-radius: 6px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 2px 3px rgba(0,0,0,.12);
+  font-size: 11px !important;
+}
+.mizan-journal-fintech .journal-entry-row td {
+  padding: 5px 4px !important;
+  border: 1px solid rgba(5,82,70,.45);
+  border-radius: 6px;
+  box-shadow: 0 2px 3px rgba(0,0,0,.1);
+}
+.mizan-journal-fintech .journal-debit-row { background: #2fbf8a !important; color: #123f32; }
+.mizan-journal-fintech .journal-credit-row { background: #1ecbe1 !important; color: #073e49; }
+.mizan-journal-fintech .journal-entry-row td:last-child input {
+  background: #fff8ec !important;
+  border: 2px solid #bd922a !important;
+  color: #382c1c !important;
+  font-weight: 900;
+  box-shadow: inset 0 2px 3px rgba(255,255,255,.9), 0 2px 3px rgba(83,59,14,.2);
+}
+.mizan-journal-fintech .journal-entry-row td:nth-child(1) span {
+  border: 1px solid rgba(255,255,255,.7);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 2px 3px rgba(0,0,0,.18);
+}
+.mizan-journal-fintech .journal-add-debit,
+.mizan-journal-fintech .journal-add-credit,
+.mizan-journal-fintech .journal-save-button,
+.mizan-journal-fintech .journal-clear-button {
+  min-height: 43px;
+  border: 3px solid #d9ad43;
+  border-radius: 15px;
+  color: #fff !important;
+  font-weight: 950;
+  text-shadow: 0 1px 2px rgba(0,0,0,.22);
+  box-shadow: inset 0 3px 0 rgba(255,255,255,.35), 0 6px 0 rgba(59,42,22,.28), 0 9px 13px rgba(55,38,20,.2);
+  transition: transform .12s ease, filter .12s ease;
+}
+.mizan-journal-fintech .journal-add-debit { background: linear-gradient(180deg,#55d7a7 0%,#2fbf8a 55%,#16865d 100%); }
+.mizan-journal-fintech .journal-add-credit { background: linear-gradient(180deg,#a6f27e 0%,#7ed957 55%,#4e9d2e 100%); }
+.mizan-journal-fintech .journal-save-button { background: linear-gradient(180deg,#8754b0 0%,#5b2a8a 60%,#351454 100%); }
+.mizan-journal-fintech .journal-clear-button {
+  color: #24180e !important;
+  text-shadow: none;
+  border-color: #57351e;
+  background: linear-gradient(180deg,#ffad70 0%,#ff7a29 58%,#d64f0c 100%);
+}
+.mizan-journal-fintech .journal-3d-button:active { transform: translateY(4px); box-shadow: inset 0 2px 0 rgba(255,255,255,.25), 0 2px 0 rgba(59,42,22,.25); }
+.mizan-journal-fintech .journal-save-disabled { filter: grayscale(.55) brightness(.85); opacity: .75; }
+.mizan-journal-fintech .journal-balance-card {
+  padding: 9px;
+  border: 3px solid #d5a52f;
+  border-radius: 17px;
+  background: linear-gradient(115deg,#fde8a0 0%,#f5c86b 100%);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.8), 0 6px 0 rgba(142,99,20,.22), 0 10px 16px rgba(142,99,20,.18);
+}
+.mizan-journal-fintech .journal-balance-total {
+  border: 1px solid rgba(7,93,91,.35);
+  border-radius: 10px;
+  background: rgba(255,255,255,.25);
+  color: #075b5a;
+}
+.mizan-journal-fintech .journal-balance-total span,
+.mizan-journal-fintech .journal-balance-status > span { color: #075b5a !important; font-weight: 950; }
+.mizan-journal-fintech .journal-balance-total p { color: #075b5a !important; font-size: 16px; font-weight: 950; }
+.mizan-journal-fintech .journal-balance-status {
+  border: 0;
+  border-top: 2px solid rgba(133,92,20,.42);
+  border-radius: 0;
+  background: transparent;
+  color: #075b5a;
+}
+.mizan-journal-fintech .journal-balance-status > div { color: #075b5a; }
+.mizan-journal-fintech .mizan-journal-actions-toolbar {
+  gap: 4px;
+  margin-bottom: 5px;
+  padding: 4px;
+  border-color: #d1a43c;
+  border-radius: 12px;
+  background: #fff8ec;
+}
+.mizan-journal-fintech .mizan-journal-actions-toolbar .journal-import-action > label,
+.mizan-journal-fintech .mizan-journal-actions-toolbar > .apk-only-actions > button {
+  border: 2px solid #b78b2d !important;
+  border-radius: 9px !important;
+  box-shadow: 0 3px 0 rgba(67,48,17,.2) !important;
+}
+@media (max-width: 640px) {
+  .mizan-journal-fintech { padding: 4px !important; gap: 8px !important; }
+  .mizan-journal-fintech .journal-entry-card { border-radius: 17px; }
+  .mizan-journal-fintech .journal-entry-card > div:last-child { padding: 8px !important; gap: 8px !important; }
+  .mizan-journal-fintech .journal-entry-card .grid.grid-cols-2 { gap: 6px !important; }
+  .mizan-journal-fintech .journal-field-card { min-height: 72px; padding: 6px; }
+  .mizan-journal-fintech .journal-field-label { font-size: 11px; }
+  .mizan-journal-fintech .journal-entry-table-frame .overflow-auto { max-height: none !important; overflow-x: auto; }
+  .mizan-journal-fintech .journal-entry-table { min-width: 520px; }
+  .mizan-journal-fintech .journal-add-debit,
+  .mizan-journal-fintech .journal-add-credit,
+  .mizan-journal-fintech .journal-save-button,
+  .mizan-journal-fintech .journal-clear-button { min-height: 40px; font-size: 10px !important; padding-inline: 4px !important; }
+  .mizan-journal-fintech .journal-balance-total p { font-size: 14px; }
+}
