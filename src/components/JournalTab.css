@@ -294,3 +294,30 @@
   .mizan-journal-fintech .journal-clear-button { min-height: 40px; font-size: 10px !important; padding-inline: 4px !important; }
   .mizan-journal-fintech .journal-balance-total p { font-size: 14px; }
 }
+
+/* Compact entry-only canvas: keep the journal history data and logic intact but out of this focused entry view */
+.mizan-journal-fintech > section:has(.journal-ledger-table) { display: none !important; }
+.mizan-journal-fintech .journal-entry-table thead th:nth-child(4) {
+  color: #3d2c08;
+  background: linear-gradient(180deg,#ffe79a,#e7b93f);
+  border-color: #a97a16;
+}
+.mizan-journal-fintech .journal-entry-row td:nth-child(4) input {
+  background: #fff0b7 !important;
+  border: 2px solid #b88720 !important;
+  color: #3a2a0a !important;
+  font-weight: 950;
+}
+.mizan-journal-fintech .journal-entry-row td:nth-child(2) button {
+  border: 2px solid #087e79 !important;
+  background: linear-gradient(180deg,#fffdf8,#e5f6e8) !important;
+  color: #075b58 !important;
+  box-shadow: inset 0 2px 0 #fff, 0 3px 0 rgba(5,89,84,.2) !important;
+}
+.mizan-journal-fintech .journal-entry-row td:nth-child(3) input {
+  background: #fff8ec !important;
+  border: 2px solid rgba(5,89,84,.55) !important;
+  color: #174c42 !important;
+  box-shadow: inset 0 2px 0 #fff, 0 2px 3px rgba(0,0,0,.1) !important;
+}
+.mizan-journal-fintech .journal-balance-status > div span { color: #075b5a !important; }
