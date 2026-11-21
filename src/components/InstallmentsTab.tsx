@@ -2532,7 +2532,21 @@ td.t-fees { background: ${colorTokens.fees} !important; }
 
     // 4. إجمالي المطلوب والمتبقي
     const dueTotal = year === 2026 ? prevDue + 0 : fees;
-    const remaining = dueTotal - totalPaid;
+    const normalizedBatch = String(row?.batch ?? "")
+      .trim()
+      .replace(/[ًٌٍَُِّْـ]/g, "")
+      .replace(/[إأآ]/g, "ا")
+      .replace(/\s+/g, "")
+      .replace(/^الدفعة/, "")
+      .replace(/^دفعة/, "");
+    const isSixthBatch2026 = year === 2026 && [
+      "السادسة", "سادسة", "السادس", "سادس", "6", "٦",
+    ].includes(normalizedBatch);
+    // للدفعة السادسة فقط: الرصيد في كشف حساب 2026 = المسدد خلال العام ناقص الرسوم.
+    // بقية الدفعات والسنة 2025 تحتفظ بمعادلتها الحالية.
+    const remaining = isSixthBatch2026
+      ? totalPaid - fees
+      : dueTotal - totalPaid;
     const safeName = safePdfFileName(row.name);
 
     // 5. إظهار الأشهر التي لها مبلغ سداد فقط
@@ -2563,8 +2577,13 @@ td.t-fees { background: ${colorTokens.fees} !important; }
           </tr>`
         : "";
 
-    const remainingLabel =
-      remaining > 0
+    const remainingLabel = isSixthBatch2026
+      ? remaining > 0
+        ? "الرصيد الإضافي (له)"
+        : remaining < 0
+          ? "الرصيد المتبقي (عليه)"
+          : "الحالة: تم السداد بالكامل"
+      : remaining > 0
         ? "الرصيد المتبقي (عليه)"
         : remaining < 0
           ? "الرصيد الإضافي (له)"
