@@ -19,7 +19,7 @@ import { useStore, type TraineeFinancialRecord } from "@/lib/store";
 import { isRegistrationFeeDescription } from "@/lib/feeClassification";
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import { escapeHtml, reportLetterheadHtml } from "@/lib/printTableHtml";
-import { recalculateTraineeFinancialRecord, STUDY_YEARS_HEADER } from "@/lib/traineeFinancialCalculations";
+import { calculateTraineeFeeSchedule, recalculateTraineeFinancialRecord, STUDY_YEARS_HEADER, TRAINEE_FEE_SCHEDULE_HEADERS } from "@/lib/traineeFinancialCalculations";
 
 const HEADERS = database.headers as string[];
 const REGISTRY_HEADER = HEADERS[1];
@@ -29,7 +29,19 @@ const VISIBLE_BASE_HEADERS = [
 const SHEET_NAME = database.sheetName;
 const TITLE = database.title;
 const RULES = database.rules;
+const PAYMENT_SUMMARY_HEADERS = [
+  "المسدد من رسوم القيد والتسجيل",
+  "المسدد من رسوم الامتحانات",
+  "حالة سداد رسوم القيد والتسجيل",
+  "حالة سداد رسوم الامتحانات",
+  "إجمالي المسدد من رسوم القيد والامتحانات",
+  "المتبقي من رسوم القيد والامتحانات",
+] as const;
 const CURRENCY_COLUMNS = new Set([
+  "المسدد من رسوم القيد والتسجيل",
+  "المسدد من رسوم الامتحانات",
+  "إجمالي المسدد من رسوم القيد والامتحانات",
+  "المتبقي من رسوم القيد والامتحانات",
   "رسوم القيد والتسجيل",
   "الأقساط الدراسية المستحقة",
   "رسم الكتابي الأول",
@@ -80,16 +92,29 @@ const normalizeDescription = (value: unknown) =>
     .replace(/[ًٌٍَُِّْـ]/g, "")
     .replace(/[إأآ]/g, "ا")
     .replace(/\s+/g, " ");
+const normalizeBatchKey = (value: unknown) => normalizeAcademicStatus(value).replace(/^الدفعة\s*/, "").replace(/^دفعة\s*/, "").replace(/\s+/g, "");
 
 export default function TraineeFinancialDataTab() {
   const records = useStore((state) => state.traineeFinancialRecords);
   const setRecords = useStore((state) => state.setTraineeFinancialRecords);
   const customColumns = useStore((state) => state.traineeFinancialCustomColumns);
   const setCustomColumns = useStore((state) => state.setTraineeFinancialCustomColumns);
+  const batchStudyStartDates = useStore((state) => state.traineeBatchStudyStartDates || {});
+  const setBatchStudyStartDates = useStore((state) => state.setTraineeBatchStudyStartDates);
   const hafiza = useStore((state) => state.hafiza);
   const installments2026 = useStore((state) => state.installments);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const columns = useMemo(() => [...VISIBLE_BASE_HEADERS, ...customColumns], [customColumns]);
+  const tableColumns = useMemo(() => [...VISIBLE_BASE_HEADERS, ...TRAINEE_FEE_SCHEDULE_HEADERS, ...PAYMENT_SUMMARY_HEADERS, ...customColumns], [customColumns]);
+  const batchOptions = useMemo(() => {
+    const options = new Map<string, string>();
+    (records || []).forEach((row) => {
+      const label = normalize(row[HEADERS[3]]);
+      const key = normalizeBatchKey(label);
+      if (key && !["غيرمحدد", "منسحب"].includes(key) && !options.has(key)) options.set(key, label);
+    });
+    return Array.from(options.entries()).sort((a, b) => a[1].localeCompare(b[1], "ar", { numeric: true }));
+  }, [records]);
   const [query, setQuery] = useState("");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [draft, setDraft] = useState<TraineeFinancialRecord>({});
@@ -310,6 +335,74 @@ export default function TraineeFinancialDataTab() {
     if (!opened) toast.error("تعذر فتح معاينة الطباعة؛ اسمح بالنوافذ المنبثقة في المتصفح");
   };
 
+  const getDisplayValue = (row: TraineeFinancialRecord, header: string) => {
+    if (TRAINEE_FEE_SCHEDULE_HEADERS.includes(header as (typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number])) {
+      const batchKey = normalizeBatchKey(row[HEADERS[3]]);
+      const schedule = calculateTraineeFeeSchedule(row[HEADERS[3]], batchStudyStartDates[batchKey]);
+      return schedule[header as (typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number]];
+    }
+    if (PAYMENT_SUMMARY_HEADERS.includes(header as (typeof PAYMENT_SUMMARY_HEADERS)[number])) {
+      const summary = getFeePaymentSummary(row);
+      const values: Record<(typeof PAYMENT_SUMMARY_HEADERS)[number], string | number> = {
+        "المسدد من رسوم القيد والتسجيل": summary.registrationPaid,
+        "المسدد من رسوم الامتحانات": summary.examsPaid,
+        "حالة سداد رسوم القيد والتسجيل": summary.registrationStatus,
+        "حالة سداد رسوم الامتحانات": summary.examsStatus,
+        "إجمالي المسدد من رسوم القيد والامتحانات": summary.totalPaid,
+        "المتبقي من رسوم القيد والامتحانات": summary.remaining,
+      };
+      return values[header as (typeof PAYMENT_SUMMARY_HEADERS)[number]];
+    }
+    return row[header] ?? "";
+  };
+
+
+  const feePaymentSummaryByTrainee = useMemo(() => {
+    const summaries = new Map<string, { registrationPaid: number; examsPaid: number }>();
+    (records || []).forEach((record) => {
+      const key = normalizeTraineeName(record[HEADERS[2]]);
+      if (!key || summaries.has(key)) return;
+      const eligibleReceipts = (hafiza || []).filter((item) => {
+        const amount = parseAmount(item.notifyAmount);
+        const description = normalizeDescription(item.description);
+        return normalizeTraineeName(item.name) === key &&
+          Boolean(normalize(item.hafizaNo)) &&
+          Boolean(normalize(item.notifyNo)) &&
+          amount > 0 &&
+          (isRegistrationFeeDescription(item.description) || /(امتحان|اختبار)/.test(description));
+      });
+      summaries.set(key, {
+        registrationPaid: eligibleReceipts.reduce(
+          (sum, item) => sum + (isRegistrationFeeDescription(item.description) ? parseAmount(item.notifyAmount) : 0),
+          0,
+        ),
+        examsPaid: eligibleReceipts.reduce(
+          (sum, item) => sum + (!isRegistrationFeeDescription(item.description) ? parseAmount(item.notifyAmount) : 0),
+          0,
+        ),
+      });
+    });
+    return summaries;
+  }, [records, hafiza]);
+
+  const getFeePaymentSummary = (row: TraineeFinancialRecord) => {
+    const paid = feePaymentSummaryByTrainee.get(normalizeTraineeName(row[HEADERS[2]])) || {
+      registrationPaid: 0,
+      examsPaid: 0,
+    };
+    const registrationDue = parseAmount(row["رسوم القيد والتسجيل"]);
+    const examsDue = parseAmount(row["إجمالي رسوم الامتحانات"]);
+    const status = (due: number, amountPaid: number) =>
+      due <= 0 ? "غير مستحق" : amountPaid <= 0 ? "غير مسدد" : amountPaid < due ? "مسدد جزئياً" : "مسدد";
+    return {
+      ...paid,
+      totalPaid: paid.registrationPaid + paid.examsPaid,
+      registrationStatus: status(registrationDue, paid.registrationPaid),
+      examsStatus: status(examsDue, paid.examsPaid),
+      remaining: Math.max(0, registrationDue - paid.registrationPaid) + Math.max(0, examsDue - paid.examsPaid),
+    };
+  };
+
   const visibleRows = useMemo(() => {
     const q = normalize(query).toLocaleLowerCase("ar");
     const filtered = (records || [])
@@ -317,12 +410,12 @@ export default function TraineeFinancialDataTab() {
       .filter(
         ({ row }) =>
           !q ||
-          columns.some((header) => normalize(row[header]).toLocaleLowerCase("ar").includes(q)),
+          tableColumns.some((header) => normalize(getDisplayValue(row, header)).toLocaleLowerCase("ar").includes(q)),
       );
     if (sort) {
       filtered.sort((a, b) => {
-        const av = a.row[sort.key];
-        const bv = b.row[sort.key];
+        const av = getDisplayValue(a.row, sort.key);
+        const bv = getDisplayValue(b.row, sort.key);
         const an = Number(String(av ?? "").replace(/[,٬\s]/g, ""));
         const bn = Number(String(bv ?? "").replace(/[,٬\s]/g, ""));
         const cmp =
@@ -333,7 +426,7 @@ export default function TraineeFinancialDataTab() {
       });
     }
     return filtered;
-  }, [records, query, sort, columns]);
+  }, [records, query, sort, tableColumns, batchStudyStartDates, feePaymentSummaryByTrainee]);
 
   const startEdit = (index: number) => {
     setEditingIndex(index);
@@ -374,21 +467,60 @@ export default function TraineeFinancialDataTab() {
       [TITLE],
       [RULES],
       [],
-      columns,
-      ...records.map((row) => columns.map((header) => row[header] ?? "")),
+      tableColumns,
+      ...records.map((row) => tableColumns.map((header) => getDisplayValue(row, header))),
     ];
     const sheet = XLSX.utils.aoa_to_sheet(aoa);
     sheet["!views"] = [{ rightToLeft: true }];
-    sheet["!cols"] = columns.map((header) => ({
+    sheet["!cols"] = tableColumns.map((header) => ({
       wch: Math.min(34, Math.max(14, header.length + 4)),
     }));
     sheet["!autofilter"] = {
-      ref: `A4:${XLSX.utils.encode_col(columns.length - 1)}${records.length + 4}`,
+      ref: `A4:${XLSX.utils.encode_col(tableColumns.length - 1)}${records.length + 4}`,
     };
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, sheet, SHEET_NAME.slice(0, 31));
     XLSX.writeFile(workbook, "بيانات_المتدربين.xlsx");
     toast.success("تم تصدير بيانات المتدربين");
+  };
+
+
+  const printTraineeDataTable = () => {
+    const tableHead = tableColumns.map((header) => `<th>${escapeHtml(header)}</th>`).join("");
+    const tableBody = visibleRows.map(({ row }) =>
+      `<tr>${tableColumns.map((header) => `<td>${escapeHtml(getDisplayValue(row, header))}</td>`).join("")}</tr>`,
+    ).join("");
+    const firstFinancialIndex = tableColumns.indexOf(HEADERS[6]);
+    const footerCells = tableColumns.slice(firstFinancialIndex).map((header) => {
+      if (!CURRENCY_COLUMNS.has(header)) return "<td></td>";
+      const total = visibleRows.reduce((sum, item) => sum + parseAmount(getDisplayValue(item.row, header)), 0);
+      return `<td class="amount">${total.toLocaleString("en-US")}</td>`;
+    }).join("");
+    const tableHtml = `${reportLetterheadHtml()}<h1>${escapeHtml(TITLE)}</h1><p class="rule-line">${escapeHtml(RULES)}</p><p class="record-count">عدد السجلات المعروضة: ${visibleRows.length}</p><table><thead><tr>${tableHead}</tr></thead><tbody>${tableBody || `<tr><td colspan="${tableColumns.length}">لا توجد سجلات مطابقة</td></tr>`}</tbody><tfoot><tr><td colspan="${firstFinancialIndex}" class="total-label">الإجمالي العام للسجلات المعروضة</td>${footerCells}</tr></tfoot></table><p class="report-date">تاريخ الطباعة: ${new Date().toLocaleDateString("ar-YE")}</p>`;
+    const contentCss = `
+      h1 { text-align:center; font-size:16px; margin:3mm 0; font-weight:900; }
+      .rule-line { text-align:center; font-size:8px; font-weight:800; margin:2mm 0; }
+      .record-count { text-align:right; font-size:8px; font-weight:800; margin:2mm 0; }
+      table { width:100%; border-collapse:collapse; table-layout:auto; font-size:7px; }
+      th,td { border:1px solid #000; padding:1mm .6mm; text-align:center; vertical-align:middle; white-space:normal; overflow-wrap:anywhere; line-height:1.25; }
+      thead th { background:linear-gradient(180deg,#f5d76e,#d8a928) !important; color:#111 !important; font-weight:900; }
+      tbody td { background:#fff !important; color:#111 !important; }
+      tbody tr:nth-child(even) td { background:#f4f8fc !important; }
+      tfoot td { background:#dbeafe !important; color:#111 !important; font-weight:900; }
+      .total-label { text-align:right; }
+      .amount { direction:ltr; white-space:nowrap; font-variant-numeric:tabular-nums; }
+      .report-date { margin-top:4mm; text-align:left; font-size:8px; }
+      @media print { @page { size:A3 landscape; margin:6mm; } }
+    `;
+    const opened = openBrowserPrintPreview({
+      title: "جدول بيانات المتدربين ومواعيد استحقاق الرسوم",
+      tableHtml,
+      contentCss,
+      defaultOrientation: "landscape",
+      defaultPageSize: "A3",
+      defaultMarginMm: 6,
+    });
+    if (!opened) toast.error("تعذر فتح معاينة الطباعة؛ اسمح بالنوافذ المنبثقة في المتصفح");
   };
 
   const importExcel = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -416,6 +548,8 @@ export default function TraineeFinancialDataTab() {
           (header) =>
             header &&
             !HEADERS.includes(header) &&
+            !TRAINEE_FEE_SCHEDULE_HEADERS.includes(header as (typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number]) &&
+            !PAYMENT_SUMMARY_HEADERS.includes(header as (typeof PAYMENT_SUMMARY_HEADERS)[number]) &&
             header !== STUDY_YEARS_HEADER &&
             header !== REGISTRY_HEADER,
         );
@@ -468,14 +602,14 @@ export default function TraineeFinancialDataTab() {
       Object.fromEntries(
         [...CURRENCY_COLUMNS].map((header) => [
           header,
-          records.reduce((sum, row) => sum + parseAmount(row[header]), 0),
+          records.reduce((sum, row) => sum + parseAmount(getDisplayValue(row, header)), 0),
         ]),
       ),
-    [records],
+    [records, hafiza, batchStudyStartDates, feePaymentSummaryByTrainee],
   );
 
   return (
-    <div className="min-h-[calc(100dvh-140px)] bg-[#f4f9fd] p-2 text-slate-900 sm:p-4" dir="rtl">
+    <div className="mizan-trainee-financial-tab min-h-[calc(100dvh-140px)] bg-[#f4f9fd] p-2 text-slate-900 sm:p-4" dir="rtl">
       <section className="mb-3 rounded-2xl border border-[#b8d4e8] bg-gradient-to-l from-[#e8f0f8] to-white p-3 shadow-sm sm:p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -489,34 +623,21 @@ export default function TraineeFinancialDataTab() {
               </p>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={addRow}
-              className="flex items-center gap-1.5 rounded-lg bg-[#176db1] px-3 py-2 text-sm font-bold text-white"
-            >
-              <Plus className="h-4 w-4" /> إضافة صف
+          <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3 xl:w-auto xl:grid-cols-5">
+            <button type="button" onClick={addRow} className="flex min-h-[68px] flex-col items-center justify-center gap-1 rounded-xl border border-white/70 bg-gradient-to-br from-sky-500 via-blue-600 to-blue-800 px-2 py-2 text-xs font-black text-white shadow-[inset_0_2px_0_rgba(255,255,255,.45),0_4px_0_#173575,0_7px_12px_rgba(15,23,42,.18)] active:translate-y-0.5">
+              <Plus className="h-5 w-5" /> إضافة صف
             </button>
-            <button
-              type="button"
-              onClick={addColumn}
-              className="flex items-center gap-1.5 rounded-lg bg-[#7055a5] px-3 py-2 text-sm font-bold text-white"
-            >
-              <Plus className="h-4 w-4" /> إضافة عمود
+            <button type="button" onClick={addColumn} className="flex min-h-[68px] flex-col items-center justify-center gap-1 rounded-xl border border-white/70 bg-gradient-to-br from-violet-500 via-purple-600 to-purple-800 px-2 py-2 text-xs font-black text-white shadow-[inset_0_2px_0_rgba(255,255,255,.45),0_4px_0_#4c1d95,0_7px_12px_rgba(15,23,42,.18)] active:translate-y-0.5">
+              <Plus className="h-5 w-5" /> إضافة عمود
             </button>
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-1.5 rounded-lg bg-[#14746f] px-3 py-2 text-sm font-bold text-white"
-            >
-              <Upload className="h-4 w-4" /> استيراد Excel
+            <button type="button" onClick={() => fileInputRef.current?.click()} className="flex min-h-[68px] flex-col items-center justify-center gap-1 rounded-xl border border-white/70 bg-gradient-to-br from-teal-400 via-teal-600 to-teal-800 px-2 py-2 text-xs font-black text-white shadow-[inset_0_2px_0_rgba(255,255,255,.45),0_4px_0_#115e59,0_7px_12px_rgba(15,23,42,.18)] active:translate-y-0.5">
+              <Upload className="h-5 w-5" /> استيراد Excel
             </button>
-            <button
-              type="button"
-              onClick={exportExcel}
-              className="flex items-center gap-1.5 rounded-lg bg-[#2e6b8a] px-3 py-2 text-sm font-bold text-white"
-            >
-              <Download className="h-4 w-4" /> تصدير Excel
+            <button type="button" onClick={exportExcel} className="flex min-h-[68px] flex-col items-center justify-center gap-1 rounded-xl border border-white/70 bg-gradient-to-br from-emerald-400 via-emerald-600 to-emerald-800 px-2 py-2 text-xs font-black text-white shadow-[inset_0_2px_0_rgba(255,255,255,.45),0_4px_0_#065f46,0_7px_12px_rgba(15,23,42,.18)] active:translate-y-0.5">
+              <Download className="h-5 w-5" /> تصدير Excel
+            </button>
+            <button type="button" onClick={printTraineeDataTable} className="flex min-h-[68px] flex-col items-center justify-center gap-1 rounded-xl border border-white/70 bg-gradient-to-br from-amber-400 via-orange-500 to-orange-700 px-2 py-2 text-xs font-black text-white shadow-[inset_0_2px_0_rgba(255,255,255,.45),0_4px_0_#9a3412,0_7px_12px_rgba(15,23,42,.18)] active:translate-y-0.5">
+              <Printer className="h-5 w-5" /> طباعة الجدول
             </button>
             <input
               ref={fileInputRef}
@@ -536,6 +657,35 @@ export default function TraineeFinancialDataTab() {
             className="w-full rounded-lg border border-slate-300 bg-white py-2 pe-9 ps-3 text-sm outline-none focus:border-sky-600"
           />
         </div>
+      </section>
+
+<section className="mb-3 rounded-2xl border border-[#b8d4e8] bg-gradient-to-br from-white via-[#f5fbff] to-[#e3f0fa] p-3 shadow-[inset_0_1px_0_white,0_5px_15px_rgba(15,23,42,.08)] sm:p-4">
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <h2 className="font-black text-[#17324d]">بداية الدراسة حسب الدفعة</h2>
+          <span className="rounded-lg bg-[#2e6b8a] px-2 py-1 text-[10px] font-extrabold text-white">من 2021 فصاعداً</span>
+        </div>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+          {batchOptions.map(([key, label]) => (
+            <label key={key} className="flex min-w-0 flex-col gap-1 rounded-xl border border-[#c4d9e8] bg-white/90 p-2 text-xs font-extrabold text-slate-700 shadow-sm">
+              <span>{label}</span>
+              <input
+                type="date"
+                min="2021-01-01"
+                value={batchStudyStartDates[key] || ""}
+                onChange={(event) => {
+                  const next = { ...batchStudyStartDates };
+                  if (event.target.value) next[key] = event.target.value;
+                  else delete next[key];
+                  setBatchStudyStartDates(next);
+                }}
+                className="min-h-10 w-full rounded-lg border border-slate-300 bg-white px-2 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
+              />
+            </label>
+          ))}
+        </div>
+        <p className="mt-2 text-[11px] font-semibold leading-5 text-slate-600">
+          تُحدّث تواريخ القيد والأقساط السنوية ومواعيد الامتحانات التقديرية تلقائياً عند تغيير التاريخ. مواعيد الامتحانات تقديرية وفق تسلسل المستويات الحالي، أما إثبات السداد الفعلي فيبقى من «حوافظ التوريد» فقط.
+        </p>
       </section>
 
       {editingIndex !== null && (
@@ -617,7 +767,7 @@ export default function TraineeFinancialDataTab() {
         >
           <thead className="sticky top-0 z-10 bg-gold text-white">
             <tr>
-              {columns.map((header) => (
+              {tableColumns.map((header) => (
                 <th
                   key={header}
                   className="min-w-[100px] max-w-[240px] border border-slate-500 bg-[#126c8e] px-2 py-2 text-[15px] font-white leading-6 text-white"
@@ -659,12 +809,12 @@ export default function TraineeFinancialDataTab() {
                 key={`${index}-${String(row[HEADERS[2]] ?? "")}`}
                 className={getAcademicStatusRowClass(row["الحالة الأكاديمية"]) || (index % 2 ? "bg-slate-50" : "bg-white")}
               >
-                {columns.map((header) => (
+                {tableColumns.map((header) => (
                   <td
                     key={header}
                     className="max-w-[280px] border border-slate-300 px-2 py-1.5 text-[14px] font-bold leading-6 text-black [overflow-wrap:anywhere]"
                   >
-                    {formatValue(row[header], header)}
+                    {formatValue(getDisplayValue(row, header), header)}
                   </td>
                 ))}
                 <td className="min-w-[170px] border border-slate-300 bg-white px-1 py-1 text-black">
@@ -699,20 +849,17 @@ export default function TraineeFinancialDataTab() {
           <tfoot className="sticky bottom-0 bg-[#e2eef5] font-extrabold text-black">
             <tr>
               <td
-                colSpan={VISIBLE_BASE_HEADERS.indexOf(HEADERS[6])}
+                colSpan={tableColumns.indexOf(HEADERS[6])}
                 className="border border-slate-500 px-2 py-2 text-right text-[14px] font-black text-black"
               >
                 الإجمالي العام ({records.length} متدربًا)
               </td>
-              {columns.slice(VISIBLE_BASE_HEADERS.indexOf(HEADERS[6]), VISIBLE_BASE_HEADERS.length).map((header) => (
+              {tableColumns.slice(tableColumns.indexOf(HEADERS[6])).map((header) => (
                 <td key={header} className="max-w-[280px] border border-slate-500 px-2 py-2 text-[14px] font-black text-black [overflow-wrap:anywhere]">
                   {totals[header] !== undefined
                     ? Number(totals[header]).toLocaleString("en-US")
                     : ""}
                 </td>
-              ))}
-              {customColumns.map((header) => (
-                <td key={header} className="border border-slate-500 px-1 py-2" />
               ))}
               <td className="border border-slate-500" />
             </tr>

@@ -95,3 +95,82 @@ export const recalculateTraineeFinancialRecord = (
 
   return next;
 };
+
+/**
+ * تواريخ الاستحقاق المعروضة تقديرية ومبنية على تاريخ بداية الدفعة
+ * وتسلسل المستويات المستخدم حالياً (الكتابي الأول بالسنة الثانية،
+ * والكتابي النهائي والسريري بالسنة الرابعة). لا تستبدل تقويم الامتحانات الرسمي.
+ */
+export const TRAINEE_FEE_SCHEDULE_HEADERS = [
+  "بداية الدراسة",
+  "موعد استحقاق القيد والتسجيل",
+  "مواعيد استحقاق الأقساط السنوية",
+  "موعد الكتابي الأول المتوقع",
+  "موعد الكتابي النهائي المتوقع",
+  "موعد السريري الشفوي المتوقع",
+] as const;
+
+const parseStudyStartDate = (value: string): Date | null => {
+  const match = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(year, month - 1, day);
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
+  date.setHours(0, 0, 0, 0);
+  return date;
+};
+
+const addStudyYears = (date: Date, years: number): Date => {
+  const year = date.getFullYear() + years;
+  const month = date.getMonth();
+  const day = Math.min(date.getDate(), new Date(year, month + 1, 0).getDate());
+  return new Date(year, month, day);
+};
+
+const formatStudyDate = (date: Date): string =>
+  String(date.getDate()).padStart(2, "0") + "/" +
+  String(date.getMonth() + 1).padStart(2, "0") + "/" + date.getFullYear();
+
+const isTuitionExemptBatch = (value: unknown): boolean => {
+  const batch = normalize(value).replace(/^الدفعة\s*/, "").replace(/^دفعة\s*/, "");
+  return ["الاولى", "اولى", "الاول", "اول", "1", "١"].includes(batch);
+};
+
+/** ينتج مواعيد القيد والرسوم السنوية ومراحل الاختبار دون تعديل أي حركة سداد. */
+export const calculateTraineeFeeSchedule = (
+  batch: unknown,
+  startDateValue: string | undefined,
+  referenceDate: Date = new Date(),
+): Record<(typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number], string> => {
+  const empty = Object.fromEntries(
+    TRAINEE_FEE_SCHEDULE_HEADERS.map((header) => [header, "لم يحدد تاريخ بداية الدراسة"]),
+  ) as Record<(typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number], string>;
+  const startDate = parseStudyStartDate(String(startDateValue || ""));
+  if (!startDate) return empty;
+
+  const firstWrittenDate = addStudyYears(startDate, 1);
+  const finalWrittenDate = addStudyYears(startDate, 3);
+  const today = new Date(referenceDate.getFullYear(), referenceDate.getMonth(), referenceDate.getDate());
+  const tuitionDates: string[] = [];
+  if (isTuitionExemptBatch(batch)) {
+    tuitionDates.push("معفى من الأقساط الدراسية");
+  } else {
+    for (let year = 0; year <= 80; year += 1) {
+      const dueDate = addStudyYears(startDate, year);
+      if (dueDate > today) break;
+      tuitionDates.push(formatStudyDate(dueDate));
+    }
+    if (!tuitionDates.length) tuitionDates.push("لم يحل موعد القسط السنوي الأول بعد");
+  }
+
+  return {
+    "بداية الدراسة": formatStudyDate(startDate),
+    "موعد استحقاق القيد والتسجيل": formatStudyDate(startDate),
+    "مواعيد استحقاق الأقساط السنوية": tuitionDates.join("، "),
+    "موعد الكتابي الأول المتوقع": formatStudyDate(firstWrittenDate),
+    "موعد الكتابي النهائي المتوقع": formatStudyDate(finalWrittenDate),
+    "موعد السريري الشفوي المتوقع": formatStudyDate(finalWrittenDate),
+  };
+};
