@@ -16,9 +16,9 @@
   left: auto !important;
   z-index: 36 !important;
   box-sizing: border-box !important;
-  width: 128px !important;
-  min-width: 128px !important;
-  max-width: 128px !important;
+  width: 120px !important;
+  min-width: 120px !important;
+  max-width: 120px !important;
   white-space: normal !important;
   overflow-wrap: anywhere !important;
   background: linear-gradient(180deg,#fde68a 0%,#f59e0b 42%,#92400e 100%) !important;
@@ -36,9 +36,9 @@
   inset-block-end: auto !important;
   z-index: 2 !important;
   box-sizing: border-box !important;
-  width: 128px !important;
-  min-width: 128px !important;
-  max-width: 128px !important;
+  width: 120px !important;
+  min-width: 120px !important;
+  max-width: 120px !important;
   white-space: normal !important;
   overflow-wrap: anywhere !important;
   background: linear-gradient(90deg,#fffbeb 0%,#fef3c7 100%) !important;
@@ -67,9 +67,9 @@
  .mizan-trainee-financial-tab .trainee-data-table thead th { min-width:94px; max-width:170px; padding:7px 5px!important; font-size:11px!important; }
  .mizan-trainee-financial-tab .trainee-data-table thead th:nth-child(2),
  .mizan-trainee-financial-tab .trainee-data-table tbody td:nth-child(2) {
-   width: 116px !important;
-   min-width: 116px !important;
-   max-width: 116px !important;
+   width: 108px !important;
+   min-width: 108px !important;
+   max-width: 108px !important;
  }
  .mizan-trainee-financial-tab .trainee-data-table tbody td:nth-child(2) { top:auto!important; bottom:auto!important; }
  .mizan-trainee-financial-tab .trainee-data-table tbody td { padding:6px 5px!important; font-size:11px!important; }
