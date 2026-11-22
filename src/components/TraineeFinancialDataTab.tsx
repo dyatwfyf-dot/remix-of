@@ -466,7 +466,7 @@ export default function TraineeFinancialDataTab() {
       });
     }
     return filtered;
-  }, [records, query, sort, tableColumns, batchStudyStartDates, feePaymentSummaryByTrainee]);
+  }, [records, query, sort, tableColumns, batchStudyStartDates, feeScheduleByRecord, feePaymentSummaryByTrainee]);
 
   const startEdit = (index: number) => {
     setEditingIndex(index);
