@@ -347,16 +347,32 @@ export default function TraineeFinancialDataTab() {
     if (!opened) toast.error("تعذر فتح معاينة الطباعة؛ اسمح بالنوافذ المنبثقة في المتصفح");
   };
 
+  const feeScheduleByRecord = useMemo(() => {
+    const schedules = new Map<
+      TraineeFinancialRecord,
+      ReturnType<typeof calculateTraineeFeeSchedule>
+    >();
+
+    (records || []).forEach((row) => {
+      const batchKey = normalizeBatchKey(row[HEADERS[3]]);
+      schedules.set(
+        row,
+        calculateTraineeFeeSchedule(
+          row[HEADERS[3]],
+          batchStudyStartDates[batchKey],
+          new Date(),
+          row[STUDY_YEARS_HEADER],
+        ),
+      );
+    });
+
+    return schedules;
+  }, [records, batchStudyStartDates]);
+
   const getDisplayValue = (row: TraineeFinancialRecord, header: string) => {
     if (TRAINEE_FEE_SCHEDULE_HEADERS.includes(header as (typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number])) {
-      const batchKey = normalizeBatchKey(row[HEADERS[3]]);
-      const schedule = calculateTraineeFeeSchedule(
-        row[HEADERS[3]],
-        batchStudyStartDates[batchKey],
-        new Date(),
-        row[STUDY_YEARS_HEADER],
-      );
-      return schedule[header as (typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number]];
+      const schedule = feeScheduleByRecord.get(row);
+      return schedule?.[header as (typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number]] ?? "";
     }
     if (PAYMENT_SUMMARY_HEADERS.includes(header as (typeof PAYMENT_SUMMARY_HEADERS)[number])) {
       const summary = getFeePaymentSummary(row);
@@ -376,29 +392,36 @@ export default function TraineeFinancialDataTab() {
 
   const feePaymentSummaryByTrainee = useMemo(() => {
     const summaries = new Map<string, { registrationPaid: number; examsPaid: number }>();
+
+    // Create one accumulator per normalized trainee name.
     (records || []).forEach((record) => {
       const key = normalizeTraineeName(record[HEADERS[2]]);
-      if (!key || summaries.has(key)) return;
-      const eligibleReceipts = (hafiza || []).filter((item) => {
-        const amount = parseAmount(item.notifyAmount);
-        const description = normalizeDescription(item.description);
-        return normalizeTraineeName(item.name) === key &&
-          Boolean(normalize(item.hafizaNo)) &&
-          Boolean(normalize(item.notifyNo)) &&
-          amount > 0 &&
-          (isRegistrationFeeDescription(item.description) || /(امتحان|اختبار)/.test(description));
-      });
-      summaries.set(key, {
-        registrationPaid: eligibleReceipts.reduce(
-          (sum, item) => sum + (isRegistrationFeeDescription(item.description) ? parseAmount(item.notifyAmount) : 0),
-          0,
-        ),
-        examsPaid: eligibleReceipts.reduce(
-          (sum, item) => sum + (!isRegistrationFeeDescription(item.description) ? parseAmount(item.notifyAmount) : 0),
-          0,
-        ),
-      });
+      if (key && !summaries.has(key)) {
+        summaries.set(key, { registrationPaid: 0, examsPaid: 0 });
+      }
     });
+
+    // Index eligible receipts in one pass instead of filtering all receipts for every trainee.
+    (hafiza || []).forEach((item) => {
+      const key = normalizeTraineeName(item.name);
+      const summary = summaries.get(key);
+      if (!summary) return;
+
+      const amount = parseAmount(item.notifyAmount);
+      if (
+        amount <= 0 ||
+        !normalize(item.hafizaNo) ||
+        !normalize(item.notifyNo)
+      ) return;
+
+      const isRegistration = isRegistrationFeeDescription(item.description);
+      const isExam = /(امتحان|اختبار)/.test(normalizeDescription(item.description));
+      if (!isRegistration && !isExam) return;
+
+      if (isRegistration) summary.registrationPaid += amount;
+      else summary.examsPaid += amount;
+    });
+
     return summaries;
   }, [records, hafiza]);
 
@@ -443,7 +466,7 @@ export default function TraineeFinancialDataTab() {
       });
     }
     return filtered;
-  }, [records, query, sort, tableColumns, batchStudyStartDates, feePaymentSummaryByTrainee]);
+  }, [records, query, sort, tableColumns, batchStudyStartDates, feeScheduleByRecord, feePaymentSummaryByTrainee]);
 
   const startEdit = (index: number) => {
     setEditingIndex(index);

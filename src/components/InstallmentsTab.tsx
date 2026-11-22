@@ -7,6 +7,7 @@ import React, { useDeferredValue, useEffect, useMemo,
 import { Capacitor } from "@capacitor/core";
 import { useStore,
   type InstallmentCustomColumn } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 import { isRegistrationFeeDescription } from "@/lib/feeClassification";
 import { fmt } from "@/lib/format";
 import { importInstallmentsInWorker } from "@/lib/excelImportWorkerClient";
@@ -257,7 +258,18 @@ export default function InstallmentsTab() {
     installmentConditionalRules2026,
     setInstallmentCustomColumns2026,
     setInstallmentConditionalRules2026,
-  } = useStore() as any;
+  } = useStore(
+    useShallow((state) => ({
+      installments: state.installments,
+      hafiza: state.hafiza,
+      installments2025: state.installments2025,
+      clearInstallments: state.clearInstallments,
+      installmentCustomColumns2026: state.installmentCustomColumns2026,
+      installmentConditionalRules2026: state.installmentConditionalRules2026,
+      setInstallmentCustomColumns2026: state.setInstallmentCustomColumns2026,
+      setInstallmentConditionalRules2026: state.setInstallmentConditionalRules2026,
+    })),
+  ) as any;
   const { reportDate,
     reportDateLabel } = useReportDate();
   

@@ -215,16 +215,46 @@ function Index() {
     setIsMounted(true);
   }, []);
 
-  // Detect serial-number columns in every dynamically rendered tab table.
-  // Observe row/table insertion only; class tagging does not trigger this observer.
+  // Tag only tables affected by DOM insertions; batch work to one animation frame.
+  // Avoid rescanning every table in the document after unrelated React updates.
   useEffect(() => {
-    const tagTables = () => tagSerialColumns(document);
-    tagTables();
+    const pendingRoots = new Set<ParentNode>();
+    let frameId: number | null = null;
+
     const observer = new MutationObserver((records) => {
-      if (records.some((record) => record.addedNodes.length > 0)) tagTables();
+      records.forEach((record) => {
+        record.addedNodes.forEach((node) => {
+          const element = node instanceof Element ? node : node.parentElement;
+          if (!element) return;
+
+          const table = element.matches("table")
+            ? element
+            : element.closest("table") ?? element.querySelector("table");
+
+          if (table) {
+            pendingRoots.add(table.parentElement ?? document);
+          } else if (element.querySelector("table")) {
+            pendingRoots.add(element);
+          }
+        });
+      });
+
+      if (pendingRoots.size === 0 || frameId !== null) return;
+      frameId = window.requestAnimationFrame(() => {
+        pendingRoots.forEach((root) => tagSerialColumns(root));
+        pendingRoots.clear();
+        frameId = null;
+      });
     });
+
+    tagSerialColumns(document);
     observer.observe(document.body, { childList: true, subtree: true });
-    return () => observer.disconnect();
+
+    return () => {
+      observer.disconnect();
+      if (frameId !== null) window.cancelAnimationFrame(frameId);
+      pendingRoots.clear();
+    };
   }, []);
 
   useEffect(() => {

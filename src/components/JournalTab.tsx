@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useStore } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 import {
   Edit,
   Save,
@@ -259,7 +260,14 @@ className={`block w-full min-w-0 break-words border-b border-slate-100 px-3 py-3
 
 // ── المكوّن الرئيسي لتبويب القيود اليومية ──────────────────────────────────
 export default function JournalTab() {
-  const { journal, addJournal, deleteJournal, clearJournal } = useStore();
+  const { journal, addJournal, deleteJournal, clearJournal } = useStore(
+    useShallow((state) => ({
+      journal: state.journal,
+      addJournal: state.addJournal,
+      deleteJournal: state.deleteJournal,
+      clearJournal: state.clearJournal,
+    })),
+  );
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formNo, setFormNo] = useState("");

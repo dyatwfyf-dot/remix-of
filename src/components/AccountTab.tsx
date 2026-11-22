@@ -2,6 +2,7 @@ import "./AccountTab.css";
 import { useFiscalYear } from "@/lib/fiscalYear";
 import React, { useMemo, useState } from "react";
 import { useStore } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 import { fmt, today } from "@/lib/format";
 import { DESCRIPTIONS } from "@/lib/accounts";
 import { toast } from "sonner";
@@ -267,8 +268,17 @@ export default function AccountsTab() {
     updateAccount,
     deleteAccount,
     clearAccounts,
-    hafiza = [],
-  } = useStore();
+    hafiza,
+  } = useStore(
+    useShallow((state) => ({
+      accounts: state.accounts,
+      addAccount: state.addAccount,
+      updateAccount: state.updateAccount,
+      deleteAccount: state.deleteAccount,
+      clearAccounts: state.clearAccounts,
+      hafiza: state.hafiza,
+    })),
+  );
   const [form, setForm] = useState<FormType>(emptyForm);
   const [editingRow, setEditingRow] = useState<any | null>(null);
 
