@@ -228,7 +228,7 @@ function parseJournalDate(dateStr?: string | number): { year: number; month: num
 }
 
 export default function MonthlyStatementTab() {
-  const { journal } = useStore();
+  const journal = useStore((state) => state.journal);
   const { reportDate, reportDateLabel } = useReportDate();
   const tableRef = useRef<HTMLTableElement>(null);
 
