@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useStore, type Trainee } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 import { fmt, today } from "@/lib/format";
 import { DESCRIPTIONS } from "@/lib/accounts";
 import { toast } from "sonner";
@@ -80,7 +81,17 @@ const empty: Form = {
 
 export default function HafizaTab() {
   const { trainees, hafiza, addHafiza, deleteHafiza, clearHafiza, addTrainee, updateHafiza } =
-    useStore();
+    useStore(
+      useShallow((state) => ({
+        trainees: state.trainees,
+        hafiza: state.hafiza,
+        addHafiza: state.addHafiza,
+        deleteHafiza: state.deleteHafiza,
+        clearHafiza: state.clearHafiza,
+        addTrainee: state.addTrainee,
+        updateHafiza: state.updateHafiza,
+      })),
+    );
   const [form, setForm] = useState<Form>(empty);
   const [nameQuery, setNameQuery] = useState("");
   const [showSugg, setShowSugg] = useState(false);
