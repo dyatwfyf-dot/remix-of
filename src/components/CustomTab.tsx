@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useStore } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 import { toast } from "sonner";
 
 export default function CustomTab({ tabId }: { tabId: string }) {
@@ -12,7 +13,17 @@ export default function CustomTab({ tabId }: { tabId: string }) {
     deleteCustomRow,
     renameCustomTab,
     deleteCustomTab,
-  } = useStore();
+  } = useStore(
+    useShallow((state) => ({
+      addCustomColumn: state.addCustomColumn,
+      removeCustomColumn: state.removeCustomColumn,
+      addCustomRow: state.addCustomRow,
+      updateCustomRow: state.updateCustomRow,
+      deleteCustomRow: state.deleteCustomRow,
+      renameCustomTab: state.renameCustomTab,
+      deleteCustomTab: state.deleteCustomTab,
+    })),
+  );
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [newCol, setNewCol] = useState("");
 
