@@ -1007,3 +1007,312 @@
   .mizan-reports-tab .reports-action-toolbar > button { min-height: 58px !important; padding: 6px 4px !important; font-size: 10px !important; }
   .mizan-reports-tab .reports-action-toolbar > button svg { width: 19px !important; height: 19px !important; }
 }
+
+
+/* Final conflict-safe layout for report selectors and sticky actions. */
+.mizan-reports-tab,
+.mizan-reports-tab .reports-tab-shell {
+  overflow: visible !important;
+}
+.mizan-reports-tab {
+  --reports-sticky-nav-offset: 145px;
+}
+.mizan-reports-tab .reports-filter-panel {
+  position: relative !important;
+  overflow: visible !important;
+}
+.mizan-reports-tab .reports-filter-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+  gap: 10px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+.mizan-reports-tab .reports-filter-grid > * {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+.mizan-reports-tab .report-option-picker {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+.mizan-reports-tab .report-option-picker-trigger {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+.mizan-reports-tab .reports-actions-panel {
+  position: sticky !important;
+  top: var(--reports-sticky-nav-offset, 145px) !important;
+  z-index: 50 !important;
+  align-self: stretch !important;
+  width: 100% !important;
+  margin: 0 !important;
+  isolation: isolate;
+  padding: 10px 16px 9px !important;
+  border-bottom: 1px solid #c8dbe3 !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(241,249,251,.97)) !important;
+  box-shadow: 0 7px 18px rgba(15, 41, 63, .13) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.mizan-reports-tab .reports-actions-panel .reports-action-toolbar {
+  margin: 0 !important;
+}
+.report-option-picker-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 12000 !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-width: 100vw !important;
+  max-height: 100dvh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: rgba(5, 24, 37, .72) !important;
+}
+.report-option-picker-overlay .report-option-picker-panel {
+  position: relative !important;
+  inset: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #f5fafc !important;
+  box-shadow: none !important;
+}
+.report-option-picker-overlay .report-option-picker-panel-header {
+  display: flex !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  padding: max(16px, env(safe-area-inset-top, 0px)) 18px 15px !important;
+  color: #fff !important;
+  background: linear-gradient(110deg, #082f49 0%, #0f766e 58%, #0e7490 100%) !important;
+  box-shadow: inset 0 -1px 0 rgba(255,255,255,.2), 0 3px 12px rgba(5,24,37,.15) !important;
+}
+.report-option-picker-overlay .report-option-picker-heading {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+.report-option-picker-overlay .report-option-picker-heading h2 {
+  margin: 0 !important;
+  color: #fff !important;
+  font-size: clamp(17px, 4.5vw, 21px) !important;
+  font-weight: 950 !important;
+  line-height: 1.4 !important;
+}
+.report-option-picker-overlay .report-option-picker-heading p {
+  margin: 4px 0 0 !important;
+  color: #d8f2f1 !important;
+  font-size: 12px !important;
+  font-weight: 750 !important;
+}
+.report-option-picker-overlay .report-option-picker-close {
+  display: grid !important;
+  flex: 0 0 42px !important;
+  width: 42px !important;
+  height: 42px !important;
+  place-items: center !important;
+  border: 1px solid rgba(255,255,255,.65) !important;
+  border-radius: 12px !important;
+  color: #fff !important;
+  background: rgba(255,255,255,.14) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.24) !important;
+}
+.report-option-picker-overlay .report-option-picker-meta {
+  display: flex !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  padding: 10px 16px !important;
+  border-bottom: 1px solid #cfe5e9 !important;
+  color: #365966 !important;
+  background: #edf8fa !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+}
+.report-option-picker-overlay .report-option-picker-meta button {
+  min-height: 34px !important;
+  padding: 6px 12px !important;
+  border: 1.5px solid #111827 !important;
+  border-radius: 9px !important;
+  color: #fff !important;
+  background: linear-gradient(145deg, #2dd4bf, #0f766e) !important;
+  font-size: 12px !important;
+  font-weight: 950 !important;
+}
+.report-option-picker-overlay .report-option-picker-list {
+  display: block !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  padding: 4px 10px 10px !important;
+  background: #f5fafc !important;
+}
+.report-option-picker-overlay .report-option-picker-option {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 54px !important;
+  margin: 0 !important;
+  padding: 10px 13px !important;
+  border: 0 !important;
+  border-bottom: 1px solid #d9e8ed !important;
+  border-radius: 0 !important;
+  color: #173b4d !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  text-align: right !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  line-height: 1.55 !important;
+  white-space: normal !important;
+}
+.report-option-picker-overlay .report-option-picker-option:nth-child(even) {
+  background: #f0f8fa !important;
+}
+.report-option-picker-overlay .report-option-picker-option.is-selected {
+  color: #064e5a !important;
+  background: linear-gradient(90deg, #d8f4ef 0%, #effbfc 100%) !important;
+  font-weight: 950 !important;
+}
+.report-option-picker-overlay .report-option-picker-index {
+  display: inline-flex !important;
+  flex: 0 0 30px !important;
+  width: 30px !important;
+  height: 30px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid #9dbac3 !important;
+  border-radius: 8px !important;
+  color: #075985 !important;
+  background: #eaf5f8 !important;
+  font-size: 11px !important;
+  font-weight: 950 !important;
+}
+.report-option-picker-overlay .report-option-picker-check {
+  display: inline-flex !important;
+  flex: 0 0 24px !important;
+  width: 24px !important;
+  height: 24px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1.5px solid #111827 !important;
+  border-radius: 7px !important;
+  color: #fff !important;
+  background: #fff !important;
+  font-size: 15px !important;
+  font-weight: 950 !important;
+}
+.report-option-picker-overlay .report-option-picker-option.is-selected .report-option-picker-check {
+  border-color: #075e54 !important;
+  background: linear-gradient(145deg, #2dd4bf, #0f766e) !important;
+}
+.report-option-picker-overlay .report-option-picker-option-label {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  overflow-wrap: anywhere !important;
+}
+.report-option-picker-overlay .report-option-picker-selected-mark {
+  flex: 0 0 auto !important;
+  color: #0f766e !important;
+  font-weight: 950 !important;
+}
+.report-option-picker-overlay .report-option-picker-empty {
+  margin: 0 !important;
+  padding: 28px 16px !important;
+  color: #607783 !important;
+  text-align: center !important;
+  font-size: 14px !important;
+  font-weight: 850 !important;
+}
+.report-option-picker-overlay .report-option-picker-footer {
+  display: flex !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  padding: 12px 16px max(12px, env(safe-area-inset-bottom, 0px)) !important;
+  border-top: 1px solid #cfe5e9 !important;
+  color: #365966 !important;
+  background: #fff !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+}
+.report-option-picker-overlay .report-option-picker-footer button {
+  min-width: 92px !important;
+  min-height: 40px !important;
+  padding: 7px 14px !important;
+  border: 1.5px solid #111827 !important;
+  border-radius: 10px !important;
+  color: #fff !important;
+  background: linear-gradient(145deg, #0e7490, #075985) !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+}
+@media screen and (max-width: 640px) {
+  .mizan-reports-tab .reports-actions-panel {
+    top: var(--reports-sticky-nav-offset, 93px) !important;
+    padding: 7px 8px 6px !important;
+  }
+  .mizan-reports-tab .reports-action-toolbar { gap: 7px !important; }
+  .mizan-reports-tab .reports-action-toolbar > button {
+    min-height: 58px !important;
+    padding: 6px 4px !important;
+    font-size: 10px !important;
+  }
+  .mizan-reports-tab .reports-action-toolbar > button svg {
+    width: 19px !important;
+    height: 19px !important;
+  }
+  .mizan-reports-tab .reports-filter-panel { padding: 12px !important; }
+  .mizan-reports-tab .reports-filter-grid { gap: 8px !important; }
+  .mizan-reports-tab .report-option-picker-trigger {
+    min-height: 44px !important;
+    padding: 7px 6px !important;
+    font-size: 11px !important;
+  }
+  .mizan-reports-tab .report-option-picker-label { font-size: 11px !important; }
+  .report-option-picker-overlay .report-option-picker-option {
+    min-height: 50px !important;
+    padding: 9px 11px !important;
+    font-size: 13px !important;
+  }
+}
+@media screen and (max-width: 380px) {
+  .mizan-reports-tab .reports-filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+  .mizan-reports-tab .reports-filter-panel { padding: 9px !important; }
+  .mizan-reports-tab .reports-filter-grid > * { min-width: 0 !important; }
+  .mizan-reports-tab .report-option-picker-trigger { font-size: 10px !important; }
+}
