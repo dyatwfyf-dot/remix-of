@@ -2291,7 +2291,7 @@ export default function ReportsTab() {
           .mizan-reports-tab .reports-table-scroll #reports-table tbody td.reports-no-wrap-cell { white-space:nowrap; overflow-wrap:normal; word-break:keep-all; }
         }
       `}</style>
-      <section className="mx-auto w-full max-w-[1600px] overflow-hidden rounded-3xl border border-sky-200 bg-white shadow-xl">
+      <section className="reports-tab-shell mx-auto w-full max-w-[1600px] overflow-visible rounded-3xl border border-sky-200 bg-white shadow-xl">
         <header className="reports-tab-header bg-gradient-to-l from-[#2e6b8a] via-[#3d7fa0] to-[#2e6b8a] p-4 text-white sm:p-6">
           <div className="flex items-center gap-3">
             <div className="reports-header-icon flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
@@ -2305,6 +2305,33 @@ export default function ReportsTab() {
             </div>
           </div>
         </header>
+
+        {/* أزرار العمليات والتصدير والطباعة */}
+        <div className="reports-actions-panel p-4">
+          <TabActions
+            className="reports-action-toolbar"
+            webClassName="reports-web-actions"
+            inlineActions
+            title={title}
+            fileName="financial-report"
+            rows={actionRows}
+            printRows={displayRows}
+            columns={sourceConfig.columns}
+            printColumns={sourceConfig.columns}
+            numericKeys={numericKeys}
+            pdfFinalCss={`${reportsTabPrintCss}\n${isLoanOrCustody ? custodyPortraitPrintCss : ""}`}
+            renderPrintTableHtml={(reportDateLabel) => buildReportsScreenPrintHtml(source, reportDateLabel, reportRecordCount)}
+            onPrintRequest={() => openReportsPrintSettings("print")}
+            onPdfExportRequest={() => openReportsPrintSettings("pdf")}
+            pdfOrientation={source === "traineeFeeStatus" ? "landscape" : "portrait"}
+            pdfMarginMm={isLoanOrCustody ? 5 : undefined}
+            includeTotalRow={!isLoanOrCustody && source !== "traineeFeeStatus"}
+            printTableClassName={source === "trainee" ? "reports-trainee-payment-table" : ""}
+            excelCellFontSize={source === "trainee" ? 12 : undefined}
+            excelMaxTextLines={2}
+          />
+        </div>
+
 
         {/* فلاتر واختيارات التقرير */}
         <div className="reports-filter-panel border-b border-sky-100 bg-slate-50/70 p-4">
@@ -2415,32 +2442,6 @@ export default function ReportsTab() {
               </label>
             )}
           </div>
-        </div>
-
-        {/* أزرار العمليات والتصدير والطباعة */}
-        <div className="reports-actions-panel p-4">
-          <TabActions
-            className="reports-action-toolbar"
-            webClassName="reports-web-actions"
-            inlineActions
-            title={title}
-            fileName="financial-report"
-            rows={actionRows}
-            printRows={displayRows}
-            columns={sourceConfig.columns}
-            printColumns={sourceConfig.columns}
-            numericKeys={numericKeys}
-            pdfFinalCss={`${reportsTabPrintCss}\n${isLoanOrCustody ? custodyPortraitPrintCss : ""}`}
-            renderPrintTableHtml={(reportDateLabel) => buildReportsScreenPrintHtml(source, reportDateLabel, reportRecordCount)}
-            onPrintRequest={() => openReportsPrintSettings("print")}
-            onPdfExportRequest={() => openReportsPrintSettings("pdf")}
-            pdfOrientation={source === "traineeFeeStatus" ? "landscape" : "portrait"}
-            pdfMarginMm={isLoanOrCustody ? 5 : undefined}
-            includeTotalRow={!isLoanOrCustody && source !== "traineeFeeStatus"}
-            printTableClassName={source === "trainee" ? "reports-trainee-payment-table" : ""}
-            excelCellFontSize={source === "trainee" ? 12 : undefined}
-            excelMaxTextLines={2}
-          />
         </div>
 
         {/* جدول عرض التقرير */}
