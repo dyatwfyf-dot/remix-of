@@ -62,14 +62,7 @@ const REPORT_SOURCES: readonly ReportSource[] = [
 type ReportPickerOption = { value: string; label: string };
 
 function ReportOptionPicker({
-  label,
-  options,
-  value,
-  onChange,
-  multiple = false,
-  allLabel,
-  placeholder,
-  helperText,
+  label, options, value, onChange, multiple = false, allLabel, placeholder, helperText,
 }: {
   label: string;
   options: ReportPickerOption[];
@@ -86,19 +79,13 @@ function ReportOptionPicker({
   const searchRef = useRef<HTMLInputElement>(null);
   const selectedValues = Array.isArray(value) ? value : value ? [value] : [];
   const isAllSelected = multiple && selectedValues.length === 0;
-
   const filteredOptions = useMemo(() => {
     const search = query.trim().toLocaleLowerCase("ar");
     if (!search) return options;
-    return options.filter((option) =>
-      `${option.label} ${option.value}`.toLocaleLowerCase("ar").includes(search)
-    );
+    return options.filter((option) => `${option.label} ${option.value}`.toLocaleLowerCase("ar").includes(search));
   }, [options, query]);
-
   const selectedLabel = multiple
-    ? isAllSelected
-      ? allLabel || `كل ${label}`
-      : `تم اختيار ${selectedValues.length} من ${options.length}`
+    ? isAllSelected ? allLabel || `كل ${label}` : `تم اختيار ${selectedValues.length} من ${options.length}`
     : options.find((option) => option.value === selectedValues[0])?.label || placeholder || `اختر ${label}`;
 
   useEffect(() => {
@@ -135,10 +122,7 @@ function ReportOptionPicker({
       <button
         type="button"
         className="report-option-picker-trigger"
-        onClick={() => {
-          setOpen((current) => !current);
-          setQuery("");
-        }}
+        onClick={() => { setOpen((current) => !current); setQuery(""); }}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label={`${label}: ${selectedLabel}`}
@@ -148,78 +132,45 @@ function ReportOptionPicker({
         <ChevronDown className={`report-option-picker-chevron ${open ? "is-open" : ""}`} aria-hidden="true" />
       </button>
       {helperText && <span className="report-option-picker-help">{helperText}</span>}
-
       {open && (
         <>
-          <button
-            type="button"
-            className="report-option-picker-backdrop"
-            aria-label="إغلاق قائمة الخيارات"
-            onClick={() => { setOpen(false); setQuery(""); }}
-          />
+          <button type="button" className="report-option-picker-backdrop" aria-label="إغلاق قائمة الخيارات"
+            onClick={() => { setOpen(false); setQuery(""); }} />
           <section className="report-option-picker-panel" role="dialog" aria-label={`خيارات ${label}`} dir="rtl">
             <div className="report-option-picker-panel-header">
               <div className="report-option-picker-search">
                 <Search className="h-4 w-4 shrink-0" aria-hidden="true" />
-                <input
-                  ref={searchRef}
-                  type="search"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Escape") { setOpen(false); setQuery(""); }
-                  }}
-                  placeholder={`ابحث في ${label}…`}
-                  aria-label={`البحث في ${label}`}
-                />
+                <input ref={searchRef} type="search" value={query} onChange={(event) => setQuery(event.target.value)}
+                  onKeyDown={(event) => { if (event.key === "Escape") { setOpen(false); setQuery(""); } }}
+                  placeholder={`ابحث في ${label}…`} aria-label={`البحث في ${label}`} />
               </div>
-              <button
-                type="button"
-                className="report-option-picker-close"
-                onClick={() => { setOpen(false); setQuery(""); }}
-                aria-label="إغلاق"
-              >
-                <X className="h-4 w-4" />
-              </button>
+              <button type="button" className="report-option-picker-close"
+                onClick={() => { setOpen(false); setQuery(""); }} aria-label="إغلاق"><X className="h-4 w-4" /></button>
             </div>
             <div className="report-option-picker-meta">
               <span>{filteredOptions.length} خيار متاح</span>
-              {multiple && (
-                <button type="button" onClick={() => onChange([])}>
-                  {allLabel || `كل ${label}`}
-                </button>
-              )}
+              {multiple && <button type="button" onClick={() => onChange([])}>{allLabel || `كل ${label}`}</button>}
             </div>
             <div className="report-option-picker-list">
-              {filteredOptions.length === 0 ? (
-                <p className="report-option-picker-empty">لا توجد نتائج مطابقة</p>
-              ) : filteredOptions.map((option, index) => {
-                const selected = isAllSelected || selectedValues.includes(option.value);
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    className={`report-option-picker-option ${selected ? "is-selected" : ""}`}
-                    onClick={() => choose(option.value)}
-                    aria-pressed={selected}
-                  >
-                    {multiple ? (
-                      <span className="report-option-picker-check" aria-hidden="true">{selected ? "✓" : ""}</span>
-                    ) : (
-                      <span className="report-option-picker-index">{index + 1}</span>
-                    )}
-                    <span className="report-option-picker-option-label">{option.label}</span>
-                    {selected && !multiple && <span className="report-option-picker-selected-mark">✓</span>}
-                  </button>
-                );
-              })}
+              {filteredOptions.length === 0 ? <p className="report-option-picker-empty">لا توجد نتائج مطابقة</p> :
+                filteredOptions.map((option, index) => {
+                  const selected = isAllSelected || selectedValues.includes(option.value);
+                  return (
+                    <button key={option.value} type="button"
+                      className={`report-option-picker-option ${selected ? "is-selected" : ""}`}
+                      onClick={() => choose(option.value)} aria-pressed={selected}>
+                      {multiple ? <span className="report-option-picker-check" aria-hidden="true">{selected ? "✓" : ""}</span> :
+                        <span className="report-option-picker-index">{index + 1}</span>}
+                      <span className="report-option-picker-option-label">{option.label}</span>
+                      {selected && !multiple && <span className="report-option-picker-selected-mark">✓</span>}
+                    </button>
+                  );
+                })}
             </div>
-            {multiple && (
-              <div className="report-option-picker-footer">
-                <span>{isAllSelected ? "سيتم عرض جميع الخيارات" : `تم تحديد ${selectedValues.length} خيار`}</span>
-                <button type="button" onClick={() => { setOpen(false); setQuery(""); }}>تم</button>
-              </div>
-            )}
+            {multiple && <div className="report-option-picker-footer">
+              <span>{isAllSelected ? "سيتم عرض جميع الخيارات" : `تم تحديد ${selectedValues.length} خيار`}</span>
+              <button type="button" onClick={() => { setOpen(false); setQuery(""); }}>تم</button>
+            </div>}
           </section>
         </>
       )}
@@ -2298,63 +2249,140 @@ export default function ReportsTab() {
    <div class="letter-signatures" style="display: flex; justify-content: space-between; margin-top: 60px; text-align: center; font-size: 16px;">
     <div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">الصندوق</label><strong style="display: block; margin-bottom: 15px;">${escapeHtml(feeDemandSignatures.department)}</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>
     <div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">الشؤون المالية</label><strong style="display: block; margin-bottom: 15px;">${escapeHtml(feeDemandSignatures.director)}</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>
-    <div style="flex: 1;"><ReportOptionPicker
-                  label="المتدرب"
-                  value={selectedTrainee}
-                  options={[
-                    { value: "all", label: "كل المتدربين" },
-                    ...traineeOptions.map((name) => ({ value: name, label: name })),
-                  ]}
-                  onChange={(next) => setSelectedTrainee(String(next))}
-                  placeholder="ابحث واختر المتدرب"
-                />
+    <div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">رئيس فرع المجلس </label><strong style="display: block; margin-bottom: 15px;">${escapeHtml(feeDemandSignatures.signer)}</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>
+   </div>
+  </article>`;
+    
+    const finalCss = `
+   @page { size:A4 portrait; margin:18mm; }
+   #tableContainer .fee-demand-letter { width:100%; min-height:245mm; margin:0 auto; color:#111; font-family:${reportArabicFontStack}; font-size:16px; line-height:2; }
+   #tableContainer .fee-demand-letter h1 { margin:0 0 10mm; padding:0 0 4mm; border-bottom:2px solid #17324d; color:#17324d; text-align:center; font-size:22px; font-weight:900; }
+   #tableContainer .fee-demand-letter p { margin:0 0 5mm; text-align:justify; }
+   #tableContainer .fee-demand-letter .letter-date { text-align:left; }
+   #tableContainer .fee-demand-letter .salutation { margin-top:10mm; }
+   #tableContainer .fee-demand-letter .thanks { margin-top:8mm; }
+   #tableContainer .letter-signatures { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8mm; margin-top:22mm; text-align:center; }
+   #tableContainer .letter-signatures > div { display:flex; min-height:32mm; flex-direction:column; align-items:center; gap:3mm; }
+   #tableContainer .letter-signatures label { font-weight:800; }
+   #tableContainer .letter-signatures strong { min-height:8mm; }
+   #tableContainer .letter-signatures span { width:75%; height:8mm; margin-top:2mm; border-bottom:1px dotted #333; }
+  `;
+    const opened = openBrowserPrintPreview({
+      title,
+      reportDateLabel,
+      tableHtml,
+      contentCss: reportDocumentCss,
+      finalCss,
+      defaultOrientation: "portrait",
+      defaultPageSize: "A4",
+      defaultMarginMm: 18,
+    });
+    if (!opened) toast.error("تعذر فتح معاينة المطالبة، تحقق من السماح بالنوافذ المنبثقة");
+  };
+  return (
+    <div className="mizan-reports-tab min-h-screen p-2 sm:p-4" dir="rtl">
+      <style>{`/* Screen table sizing: content-driven columns, wrapped text and natural row heights. */
+        @media screen {
+          .mizan-reports-tab .reports-table-scroll #reports-table { width:max-content; min-width:100%; max-width:none; table-layout:auto; }
+          .mizan-reports-tab .reports-table-scroll #reports-table th,
+          .mizan-reports-tab .reports-table-scroll #reports-table td { height:auto; vertical-align:middle; }
+          .mizan-reports-tab .reports-table-scroll #reports-table tbody td { white-space:normal; overflow-wrap:anywhere; word-break:normal; }
+          .mizan-reports-tab .reports-table-scroll #reports-table tbody td.reports-numeric-cell,
+          .mizan-reports-tab .reports-table-scroll #reports-table tbody td.reports-no-wrap-cell { white-space:nowrap; overflow-wrap:normal; word-break:keep-all; }
+        }
+      `}</style>
+      <section className="mx-auto w-full max-w-[1600px] overflow-hidden rounded-3xl border border-sky-200 bg-white shadow-xl">
+        <header className="reports-tab-header bg-gradient-to-l from-[#2e6b8a] via-[#3d7fa0] to-[#2e6b8a] p-4 text-white sm:p-6">
+          <div className="flex items-center gap-3">
+            <div className="reports-header-icon flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
+              <BarChart3 className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-black sm:text-2xl">التقارير المالية المتقدمة</h1>
+              <p className="mt-0.5 text-xs text-sky-100 sm:text-sm">
+                استعراض وتحليل كافة البيانات المالية، العهد، الإيرادات والمصروفات بدقة عالية
+              </p>
+            </div>
+          </div>
+        </header>
+
+        {/* فلاتر واختيارات التقرير */}
+        <div className="reports-filter-panel border-b border-sky-100 bg-slate-50/70 p-4">
+          <div className="reports-filter-grid grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            <ReportOptionPicker label="نوع التقرير" value={source}
+  options={SOURCES.map((item) => ({ value: item.value, label: item.label }))}
+  onChange={(next) => {
+    const nextSource = String(next) as ReportSource;
+    setSource(nextSource);
+    if (nextSource === "traineeFeeStatus") { setSortColumn("trainee"); setSortDirection("asc"); }
+    setDeletedRows(new Set());
+    setSelectedTraineeFeeStatus("all");
+  }} placeholder="اختر نوع التقرير" />
+
+            {source === "traineeFeeStatus" && (
+              <ReportOptionPicker label="حالة السداد" value={selectedTraineeFeeStatus}
+  options={[
+    { value: "all", label: "كل الحالات" },
+    { value: "registration-only", label: "سدد رسوم القيد والتسجيل ولم يسدد رسوم الامتحانات" },
+    { value: "exam-only", label: "سدد رسوم الامتحانات ولم يسدد رسوم القيد والتسجيل" },
+    { value: "neither", label: "لم يسدد رسوم القيد والتسجيل ولا رسوم الامتحانات" },
+    { value: "both", label: "سدد رسوم القيد والتسجيل ورسوم الامتحانات معاً" },
+  ]} onChange={(next) => setSelectedTraineeFeeStatus(String(next))} placeholder="اختر حالة السداد" />
+            )}
+
+            {source !== "youssefLoan" && source !== "tawfiqCustody" && source !== "trainee" && source !== "feeTotals" && source !== "traineeFeeStatus" && (
+              <>
+                <ReportOptionPicker label="الفترة الزمنية" value={period}
+  options={PERIODS.map((item) => ({ value: item.value, label: item.label }))}
+  onChange={(next) => setPeriod(String(next) as PeriodType)} placeholder="اختر الفترة" />
+
+                {period !== "all" && (
+                  <ReportOptionPicker label="السنة" value={String(year)}
+  options={yearOptions.map((item) => ({ value: String(item), label: String(item) }))}
+  onChange={(next) => setYear(Number(next))} placeholder="اختر السنة" />
+                )}
+
+                {period === "month" && (
+                  <ReportOptionPicker label="الشهر" value={String(month)}
+  options={MONTHS.map((item, index) => ({ value: String(index), label: item }))}
+  onChange={(next) => setMonth(Number(next))} placeholder="اختر الشهر" />
+                )}
+              </>
+            )}
+
+            {/* فلاتر خاصة بكشف المتدربين وإجماليات الرسوم */}
+            {(source === "trainee" || source === "feeTotals") && (
+              <>
+                <ReportOptionPicker label="المتدرب" value={selectedTrainee}
+  options={[
+    { value: "all", label: "كل المتدربين" },
+    ...traineeOptions.map((name) => ({ value: name, label: name })),
+  ]} onChange={(next) => setSelectedTrainee(String(next))} placeholder="ابحث واختر المتدرب" />
 
                 {source === "trainee" && (
                   <>
-                    <ReportOptionPicker
-                      label="نوع الرسم"
-                      value={selectedFees}
+                    <ReportOptionPicker label="نوع الرسم" value={selectedFees}
                       options={feeCategoryOptions.map((fee) => ({ value: fee, label: fee }))}
                       onChange={(next) => setSelectedFees(Array.isArray(next) ? next : [])}
-                      multiple
-                      allLabel="كل الرسوم"
-                      placeholder="اختر نوع الرسم"
-                      helperText="يمكن البحث وتحديد رسم واحد أو عدة رسوم من القائمة نفسها."
-                    />
+                      multiple allLabel="كل الرسوم" placeholder="اختر نوع الرسم"
+                      helperText="يمكن البحث وتحديد رسم واحد أو عدة رسوم من القائمة نفسها." />
 
-                    <ReportOptionPicker
-                      label="طريقة التجميع"
-                      value={traineeGrouping}
-                      options={[
-                        { value: "month", label: "تجميع شهري" },
-                        { value: "year", label: "تجميع سنوي" },
-                      ]}
-                      onChange={(next) => setTraineeGrouping(String(next) as TraineeGrouping)}
-                      placeholder="اختر طريقة التجميع"
-                    />
+<ReportOptionPicker label="طريقة التجميع" value={traineeGrouping}
+  options={[{ value: "month", label: "تجميع شهري" }, { value: "year", label: "تجميع سنوي" }]}
+  onChange={(next) => setTraineeGrouping(String(next) as TraineeGrouping)} placeholder="اختر طريقة التجميع" />
 
-                    <ReportOptionPicker
-                      label="رقم الدفعة"
-                      value={selectedBatches}
+                    <ReportOptionPicker label="رقم الدفعة" value={selectedBatches}
                       options={batchOptions.map((batch) => ({ value: batch, label: batch }))}
                       onChange={(next) => setSelectedBatches(Array.isArray(next) ? next : [])}
-                      multiple
-                      allLabel="كل الدفعات"
-                      placeholder="اختر رقم الدفعة"
-                      helperText="يمكن البحث وتحديد دفعة واحدة أو عدة دفعات."
-                    />
+                      multiple allLabel="كل الدفعات" placeholder="اختر رقم الدفعة"
+                      helperText="يمكن البحث وتحديد دفعة واحدة أو عدة دفعات." />
 
-                    <ReportOptionPicker
-                      label="طريقة العرض"
-                      value={traineeDisplayMode}
-                      options={[
-                        { value: "both", label: "تفصيلي وإجمالي" },
-                        { value: "detail", label: "تفصيلي فقط" },
-                        { value: "summary", label: "إجمالي فقط" },
-                      ]}
-                      onChange={(next) => setTraineeDisplayMode(String(next) as TraineeDisplayMode)}
-                      placeholder="اختر طريقة العرض"
-                    />
+<ReportOptionPicker label="طريقة العرض" value={traineeDisplayMode}
+  options={[
+    { value: "both", label: "تفصيلي وإجمالي" },
+    { value: "detail", label: "تفصيلي فقط" },
+    { value: "summary", label: "إجمالي فقط" },
+  ]} onChange={(next) => setTraineeDisplayMode(String(next) as TraineeDisplayMode)} placeholder="اختر طريقة العرض" />
                   </>
                 )}
               </>
