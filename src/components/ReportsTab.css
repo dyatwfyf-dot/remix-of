@@ -594,3 +594,393 @@
     outline:3px solid rgba(13,148,136,.28)!important;outline-offset:2px;
   }
 }
+
+
+/* Reports interaction refinement: resolve the global apk-only toolbar override and
+   give all filter inputs the same clear, high-contrast control system. */
+@layer utilities {
+  .mizan-reports-tab .reports-action-toolbar {
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    flex-wrap:nowrap!important;
+    align-items:stretch!important;
+    gap:9px!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+  }
+  .mizan-reports-tab .reports-action-toolbar>button {
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:5px!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    min-height:58px!important;
+    margin:0!important;
+    padding:8px 7px!important;
+    box-sizing:border-box!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+    text-align:center!important;
+  }
+  .mizan-reports-tab .reports-action-toolbar>button svg {
+    width:20px!important;
+    height:20px!important;
+    flex:0 0 auto!important;
+  }
+}
+@media screen and (max-width:560px) {
+  @layer utilities {
+    .mizan-reports-tab .reports-action-toolbar {
+      grid-template-columns:repeat(3,minmax(0,1fr))!important;
+      gap:6px!important;
+    }
+    .mizan-reports-tab .reports-action-toolbar>button {
+      min-height:52px!important;
+      padding:6px 3px!important;
+      gap:3px!important;
+      font-size:clamp(9px,2.65vw,11px)!important;
+      line-height:1.2!important;
+      border-radius:11px!important;
+    }
+    .mizan-reports-tab .reports-action-toolbar>button svg {
+      width:18px!important;
+      height:18px!important;
+    }
+  }
+}
+
+/* Searchable popovers matching the Journal debit/credit account picker pattern. */
+@media screen {
+  .mizan-reports-tab .reports-filter-grid {
+    align-items:stretch!important;
+  }
+  .mizan-reports-tab .reports-filter-grid>label,
+  .mizan-reports-tab .reports-filter-grid>.report-option-picker {
+    min-width:0!important;
+    box-sizing:border-box!important;
+    padding:10px 11px!important;
+    border:1px solid #8baab6!important;
+    border-radius:13px!important;
+    background:linear-gradient(145deg,#fff 0%,#eef8fa 100%)!important;
+    box-shadow:inset 0 1px 0 #fff,0 3px 0 #d5e7eb,0 6px 12px rgba(8,47,73,.075)!important;
+  }
+  .mizan-reports-tab .reports-filter-grid>label {
+    color:#123b50!important;
+  }
+  .mizan-reports-tab input:not([type="checkbox"]):not([type="radio"]),
+  .mizan-reports-tab select,
+  .mizan-reports-tab textarea,
+  .mizan-reports-tab .report-option-picker-trigger {
+    box-sizing:border-box!important;
+    border:1.5px solid #111827!important;
+    border-radius:10px!important;
+    color:#123447!important;
+    background:linear-gradient(180deg,#f8feff 0%,#e7f5f8 100%)!important;
+    box-shadow:inset 0 1px 2px rgba(8,47,73,.07),0 2px 0 rgba(8,47,73,.09)!important;
+    outline:none!important;
+  }
+  .mizan-reports-tab .reports-filter-grid>:nth-child(even) input:not([type="checkbox"]),
+  .mizan-reports-tab .reports-filter-grid>:nth-child(even) select,
+  .mizan-reports-tab .reports-filter-grid>:nth-child(even) textarea,
+  .mizan-reports-tab .reports-filter-grid>:nth-child(even) .report-option-picker-trigger {
+    background:linear-gradient(180deg,#fffaf4 0%,#fff0df 100%)!important;
+  }
+  .mizan-reports-tab input:not([type="checkbox"]):not([type="radio"]):focus,
+  .mizan-reports-tab select:focus,
+  .mizan-reports-tab textarea:focus,
+  .mizan-reports-tab .report-option-picker-trigger:focus-visible {
+    border-color:#0f766e!important;
+    box-shadow:0 0 0 3px rgba(15,118,110,.18),inset 0 1px 2px rgba(8,47,73,.05)!important;
+  }
+  .mizan-reports-tab .reports-filter-grid input:not([type="checkbox"]),
+  .mizan-reports-tab .reports-filter-grid select,
+  .mizan-reports-tab .reports-filter-grid textarea {
+    width:100%!important;
+    min-height:44px!important;
+    padding:9px 11px!important;
+    font-size:13px!important;
+    font-weight:800!important;
+  }
+  .mizan-reports-tab .report-option-picker {
+    position:relative!important;
+    display:flex!important;
+    flex-direction:column!important;
+    gap:7px!important;
+    min-width:0!important;
+    color:#123b50!important;
+    font-size:12px!important;
+    font-weight:900!important;
+    line-height:1.45!important;
+  }
+  .mizan-reports-tab .report-option-picker-label {
+    display:block;
+    color:#123b50!important;
+    font-size:12px!important;
+    font-weight:950!important;
+  }
+  .mizan-reports-tab .report-option-picker-trigger {
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:8px!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:46px!important;
+    padding:8px 10px!important;
+    text-align:right!important;
+    font-size:12px!important;
+    font-weight:850!important;
+    cursor:pointer!important;
+    transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease!important;
+  }
+  .mizan-reports-tab .report-option-picker-trigger-text {
+    display:block;
+    flex:1 1 auto;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    text-align:right;
+  }
+  .mizan-reports-tab .report-option-picker-count {
+    display:inline-flex;
+    flex:0 0 auto;
+    min-width:23px;
+    min-height:22px;
+    align-items:center;
+    justify-content:center;
+    padding:2px 6px;
+    border:1px solid #0f766e;
+    border-radius:7px;
+    background:#d6f5ef;
+    color:#075e54!important;
+    font-size:10px;
+    font-weight:950;
+  }
+  .mizan-reports-tab .report-option-picker-chevron {
+    flex:0 0 auto;
+    width:17px;
+    height:17px;
+    color:#075985!important;
+    transition:transform .15s ease;
+  }
+  .mizan-reports-tab .report-option-picker-chevron.is-open {transform:rotate(180deg)}
+  .mizan-reports-tab .report-option-picker-help {
+    color:#536d78!important;
+    font-size:10px!important;
+    font-weight:700!important;
+    line-height:1.45!important;
+  }
+  .mizan-reports-tab .report-option-picker-backdrop {
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:1190;
+    border:0!important;
+    border-radius:0!important;
+    background:rgba(5,24,37,.54)!important;
+    box-shadow:none!important;
+  }
+  .mizan-reports-tab .report-option-picker-panel {
+    position:absolute;
+    z-index:1200;
+    top:calc(100% + 7px);
+    right:0;
+    display:flex;
+    flex-direction:column;
+    width:min(390px,calc(100vw - 28px));
+    max-height:min(64vh,520px);
+    overflow:hidden;
+    border:1.5px solid #111827;
+    border-radius:17px;
+    background:#fff;
+    box-shadow:0 20px 45px rgba(5,24,37,.26),inset 0 1px 0 #fff;
+  }
+  .mizan-reports-tab .report-option-picker-panel-header {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:11px;
+    background:linear-gradient(110deg,#082f49 0%,#0f766e 58%,#0e7490 100%);
+  }
+  .mizan-reports-tab .report-option-picker-search {
+    display:flex;
+    flex:1 1 auto;
+    align-items:center;
+    gap:8px;
+    min-width:0;
+    color:#075985!important;
+  }
+  .mizan-reports-tab .report-option-picker-search input {
+    width:100%!important;
+    min-width:0!important;
+    min-height:40px!important;
+    padding:8px 10px!important;
+    border:1.5px solid #111827!important;
+    border-radius:9px!important;
+    color:#123447!important;
+    background:#fff!important;
+    font-size:13px!important;
+    font-weight:800!important;
+  }
+  .mizan-reports-tab .report-option-picker-search input::placeholder {color:#607783!important;opacity:1}
+  .mizan-reports-tab .report-option-picker-close {
+    display:grid;
+    flex:0 0 auto;
+    width:34px;
+    height:34px;
+    place-items:center;
+    border:1px solid rgba(255,255,255,.65)!important;
+    border-radius:9px!important;
+    color:#fff!important;
+    background:rgba(255,255,255,.14)!important;
+  }
+  .mizan-reports-tab .report-option-picker-meta {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:8px 12px;
+    border-bottom:1px solid #cfe5e9;
+    color:#365966!important;
+    background:#edf8fa;
+    font-size:11px;
+    font-weight:850;
+  }
+  .mizan-reports-tab .report-option-picker-meta button {
+    min-height:29px;
+    padding:5px 10px;
+    border:1.5px solid #111827!important;
+    border-radius:8px;
+    color:#fff!important;
+    background:linear-gradient(145deg,#2dd4bf,#0f766e)!important;
+    font-size:11px;
+    font-weight:900;
+  }
+  .mizan-reports-tab .report-option-picker-list {
+    min-height:50px;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    background:#fff;
+  }
+  .mizan-reports-tab .report-option-picker-option {
+    display:flex!important;
+    align-items:center!important;
+    gap:9px!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:43px!important;
+    padding:8px 12px!important;
+    border:0!important;
+    border-bottom:1px solid #e2edf0!important;
+    border-radius:0!important;
+    color:#173b4d!important;
+    background:#fff!important;
+    box-shadow:none!important;
+    text-align:right!important;
+    font-size:12px!important;
+    font-weight:750!important;
+    line-height:1.45!important;
+    white-space:normal!important;
+  }
+  .mizan-reports-tab .report-option-picker-option:hover {background:#eff9fb!important}
+  .mizan-reports-tab .report-option-picker-option.is-selected {
+    color:#064e5a!important;
+    background:linear-gradient(90deg,#e1f7f5 0%,#f0fbfc 100%)!important;
+    font-weight:950!important;
+  }
+  .mizan-reports-tab .report-option-picker-index {
+    display:inline-flex;
+    flex:0 0 25px;
+    width:25px;
+    height:25px;
+    align-items:center;
+    justify-content:center;
+    border:1px solid #9dbac3;
+    border-radius:7px;
+    color:#075985!important;
+    background:#eaf5f8;
+    font-size:10px;
+    font-weight:900;
+  }
+  .mizan-reports-tab .report-option-picker-check {
+    display:inline-flex;
+    flex:0 0 21px;
+    width:21px;
+    height:21px;
+    align-items:center;
+    justify-content:center;
+    border:1.5px solid #111827;
+    border-radius:6px;
+    color:#fff!important;
+    background:#fff;
+    font-size:14px;
+    font-weight:950;
+  }
+  .mizan-reports-tab .report-option-picker-option.is-selected .report-option-picker-check {
+    border-color:#075e54;
+    background:linear-gradient(145deg,#2dd4bf,#0f766e);
+  }
+  .mizan-reports-tab .report-option-picker-option-label {flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+  .mizan-reports-tab .report-option-picker-selected-mark {flex:0 0 auto;color:#0f766e!important;font-weight:950}
+  .mizan-reports-tab .report-option-picker-empty {padding:22px 12px;color:#607783!important;text-align:center;font-size:12px;font-weight:800}
+  .mizan-reports-tab .report-option-picker-footer {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:10px 12px;
+    border-top:1px solid #cfe5e9;
+    color:#365966!important;
+    background:#f3fafb;
+    font-size:11px;
+    font-weight:850;
+  }
+  .mizan-reports-tab .report-option-picker-footer button {
+    min-width:74px;
+    min-height:34px;
+    padding:6px 13px;
+    border:1.5px solid #111827!important;
+    border-radius:9px;
+    color:#fff!important;
+    background:linear-gradient(145deg,#0e7490,#075985)!important;
+    font-weight:900;
+  }
+}
+@media screen and (max-width:640px) {
+  .mizan-reports-tab .reports-filter-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+  .mizan-reports-tab .report-option-picker-panel {
+    position:fixed!important;
+    top:auto!important;
+    right:0!important;
+    bottom:0!important;
+    left:0!important;
+    width:100%!important;
+    max-width:none!important;
+    max-height:78dvh!important;
+    border-radius:22px 22px 0 0!important;
+    border-bottom:0!important;
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    animation:reports-picker-rise .18s ease-out;
+  }
+  .mizan-reports-tab .report-option-picker-backdrop {display:block!important}
+  .mizan-reports-tab .report-option-picker-list {max-height:52dvh!important}
+  .mizan-reports-tab .report-option-picker-option {min-height:46px!important;font-size:13px!important}
+  .mizan-reports-tab .report-option-picker-trigger {min-height:44px!important;padding:7px!important;font-size:11px!important}
+  .mizan-reports-tab .report-option-picker-help {font-size:9px!important}
+}
+@media screen and (max-width:380px) {
+  .mizan-reports-tab .reports-filter-grid {grid-template-columns:1fr!important}
+  .mizan-reports-tab .reports-action-toolbar>button {min-height:50px!important}
+}
+@keyframes reports-picker-rise {
+  from {transform:translateY(18px);opacity:.75}
+  to {transform:translateY(0);opacity:1}
+}
