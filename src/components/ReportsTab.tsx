@@ -2160,8 +2160,15 @@ export default function ReportsTab() {
   };
   return (
     <div className="mizan-reports-tab min-h-screen p-2 sm:p-4" dir="rtl">
-      <style>{`/* Keep report body rows on one line on screen; header wrapping is defined in ReportsTab.css. */
-        .mizan-reports-tab .reports-table-scroll #reports-table tbody td { white-space:nowrap; overflow-wrap:normal; word-break:keep-all; }
+      <style>{`/* Screen table sizing: content-driven columns, wrapped text and natural row heights. */
+        @media screen {
+          .mizan-reports-tab .reports-table-scroll #reports-table { width:max-content; min-width:100%; max-width:none; table-layout:auto; }
+          .mizan-reports-tab .reports-table-scroll #reports-table th,
+          .mizan-reports-tab .reports-table-scroll #reports-table td { height:auto; vertical-align:middle; }
+          .mizan-reports-tab .reports-table-scroll #reports-table tbody td { white-space:normal; overflow-wrap:anywhere; word-break:normal; }
+          .mizan-reports-tab .reports-table-scroll #reports-table tbody td.reports-numeric-cell,
+          .mizan-reports-tab .reports-table-scroll #reports-table tbody td.reports-no-wrap-cell { white-space:nowrap; overflow-wrap:normal; word-break:keep-all; }
+        }
       `}</style>
       <section className="mx-auto w-full max-w-[1600px] overflow-hidden rounded-3xl border border-sky-200 bg-white shadow-xl">
         <header className="reports-tab-header bg-gradient-to-l from-[#2e6b8a] via-[#3d7fa0] to-[#2e6b8a] p-4 text-white sm:p-6">
@@ -2296,29 +2303,43 @@ export default function ReportsTab() {
 
                 {source === "trainee" && (
                   <>
-                    <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
-                      نوع الرسم
-                      <select
-                        multiple
-                        size={4}
-                        value={selectedFees}
-                        onChange={(e) => {
-                          const values = Array.from(e.target.selectedOptions, (option) => option.value);
-                          setSelectedFees(values.filter((value) => value !== "__all__"));
-                        }}
-                        aria-label="اختيار رسم أو أكثر لعرضها في كشف المدفوعات"
-                        title="يمكن اختيار أكثر من رسم"
-                        className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
+                    <div className="fee-picker-field">
+                      <div className="fee-picker-heading">
+                        <span>نوع الرسم</span>
+                        <span className="fee-picker-count">{selectedFees.length === 0 ? "كل الرسوم" : `تم اختيار ${selectedFees.length}`}</span>
+                      </div>
+                      <button
+                        type="button"
+                        className={`fee-picker-all ${selectedFees.length === 0 ? "is-active" : ""}`}
+                        aria-pressed={selectedFees.length === 0}
+                        onClick={() => setSelectedFees([])}
                       >
-                        <option value="__all__">كل الرسوم</option>
-                        {feeCategoryOptions.map((fee) => (
-                          <option key={fee} value={fee}>
-                            {fee}
-                          </option>
-                        ))}
-                      </select>
-                      <span className="text-[11px] font-semibold text-slate-500">اترك الاختيار فارغاً لعرض كل الرسوم، ويمكن تحديد أكثر من رسم.</span>
-                    </label>
+                        كل الرسوم
+                      </button>
+                      <div className="fee-picker-options" role="group" aria-label="اختيار رسوم كشف المدفوعات">
+                        {feeCategoryOptions.map((fee) => {
+                          const checked = selectedFees.length === 0 || selectedFees.includes(fee);
+                          return (
+                            <label key={fee} className={`fee-picker-option ${checked ? "is-selected" : ""}`}>
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => {
+                                  const next = selectedFees.length === 0
+                                    ? feeCategoryOptions.filter((item) => item !== fee)
+                                    : checked
+                                      ? selectedFees.filter((item) => item !== fee)
+                                      : [...selectedFees, fee];
+                                  setSelectedFees(next.length === feeCategoryOptions.length ? [] : next);
+                                }}
+                              />
+                              <span>{fee}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                      <span className="fee-picker-help">يمكن تحديد رسم واحد أو عدة رسوم، أو اختيار «كل الرسوم» لعرضها جميعاً.</span>
+                    </div>
 
                     <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
                       طريقة التجميع
@@ -2406,6 +2427,8 @@ export default function ReportsTab() {
         <div className="reports-actions-panel p-4">
           <TabActions
             className="reports-action-toolbar"
+            webClassName="reports-web-actions"
+            inlineActions
             title={title}
             fileName="financial-report"
             rows={actionRows}
