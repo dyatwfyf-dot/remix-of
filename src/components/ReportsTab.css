@@ -984,3 +984,26 @@
   from {transform:translateY(18px);opacity:.75}
   to {transform:translateY(0);opacity:1}
 }
+
+
+/* Keep report actions at the top of the tab and visible while the page scrolls. */
+.mizan-reports-tab .reports-tab-shell { overflow: visible !important; }
+.mizan-reports-tab .reports-actions-panel {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 40 !important;
+  isolation: isolate;
+  padding: 10px 16px 9px !important;
+  border-bottom: 1px solid #c8dbe3 !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(241,249,251,.97)) !important;
+  box-shadow: 0 7px 18px rgba(15, 41, 63, .13) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.mizan-reports-tab .reports-actions-panel .reports-action-toolbar { margin: 0 !important; }
+@media (max-width: 640px) {
+  .mizan-reports-tab .reports-actions-panel { top: 0 !important; padding: 7px 8px 6px !important; }
+  .mizan-reports-tab .reports-action-toolbar { gap: 7px !important; }
+  .mizan-reports-tab .reports-action-toolbar > button { min-height: 58px !important; padding: 6px 4px !important; font-size: 10px !important; }
+  .mizan-reports-tab .reports-action-toolbar > button svg { width: 19px !important; height: 19px !important; }
+}
