@@ -1,5 +1,6 @@
 import "./ReportsTab.css";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   BarChart3,
   ClipboardList,
@@ -9,7 +10,6 @@ import {
   DollarSign,
   FileText,
   Printer,
-  Search,
   Trash2,
   TrendingUp,
   UserRound,
@@ -74,38 +74,35 @@ function ReportOptionPicker({
   helperText?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const searchRef = useRef<HTMLInputElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const selectedValues = Array.isArray(value) ? value : value ? [value] : [];
   const isAllSelected = multiple && selectedValues.length === 0;
-  const filteredOptions = useMemo(() => {
-    const search = query.trim().toLocaleLowerCase("ar");
-    if (!search) return options;
-    return options.filter((option) => `${option.label} ${option.value}`.toLocaleLowerCase("ar").includes(search));
-  }, [options, query]);
   const selectedLabel = multiple
-    ? isAllSelected ? allLabel || `كل ${label}` : `تم اختيار ${selectedValues.length} من ${options.length}`
-    : options.find((option) => option.value === selectedValues[0])?.label || placeholder || `اختر ${label}`;
+    ? isAllSelected ? allLabel || "كل " + label : "تم اختيار " + selectedValues.length + " من " + options.length
+    : options.find((option) => option.value === selectedValues[0])?.label || placeholder || "اختر " + label;
 
   useEffect(() => {
     if (!open) return;
-    searchRef.current?.focus();
-    const handleOutside = (event: PointerEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
-        setOpen(false);
-        setQuery("");
-      }
+    const previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
     };
-    document.addEventListener("pointerdown", handleOutside);
-    return () => document.removeEventListener("pointerdown", handleOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    const focusFrame = window.requestAnimationFrame(() => closeButtonRef.current?.focus());
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      window.cancelAnimationFrame(focusFrame);
+      document.body.style.overflow = previousBodyOverflow;
+      triggerRef.current?.focus();
+    };
   }, [open]);
 
   const choose = (optionValue: string) => {
     if (!multiple) {
       onChange(optionValue);
       setOpen(false);
-      setQuery("");
       return;
     }
     const next = isAllSelected
@@ -116,63 +113,81 @@ function ReportOptionPicker({
     onChange(next.length === options.length ? [] : next);
   };
 
+  const closePicker = () => setOpen(false);
+
   return (
-    <div ref={wrapperRef} className={`report-option-picker ${multiple ? "is-multiple" : "is-single"}`}>
+    <div className={"report-option-picker " + (multiple ? "is-multiple" : "is-single")}>
       <span className="report-option-picker-label">{label}</span>
       <button
+        ref={triggerRef}
         type="button"
         className="report-option-picker-trigger"
-        onClick={() => { setOpen((current) => !current); setQuery(""); }}
+        onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label={`${label}: ${selectedLabel}`}
+        aria-label={label + ": " + selectedLabel}
       >
         <span className="report-option-picker-trigger-text">{selectedLabel}</span>
         {multiple && <span className="report-option-picker-count">{isAllSelected ? "الكل" : selectedValues.length}</span>}
-        <ChevronDown className={`report-option-picker-chevron ${open ? "is-open" : ""}`} aria-hidden="true" />
+        <ChevronDown className={"report-option-picker-chevron " + (open ? "is-open" : "")} aria-hidden="true" />
       </button>
       {helperText && <span className="report-option-picker-help">{helperText}</span>}
-      {open && (
-        <>
-          <button type="button" className="report-option-picker-backdrop" aria-label="إغلاق قائمة الخيارات"
-            onClick={() => { setOpen(false); setQuery(""); }} />
-          <section className="report-option-picker-panel" role="dialog" aria-label={`خيارات ${label}`} dir="rtl">
+      {open && typeof document !== "undefined" && createPortal(
+        <div
+          className="report-option-picker-overlay"
+          role="presentation"
+          onClick={(event) => { if (event.target === event.currentTarget) closePicker(); }}
+        >
+          <section className="report-option-picker-panel" role="dialog" aria-modal="true" aria-label={"خيارات " + label} dir="rtl">
             <div className="report-option-picker-panel-header">
-              <div className="report-option-picker-search">
-                <Search className="h-4 w-4 shrink-0" aria-hidden="true" />
-                <input ref={searchRef} type="search" value={query} onChange={(event) => setQuery(event.target.value)}
-                  onKeyDown={(event) => { if (event.key === "Escape") { setOpen(false); setQuery(""); } }}
-                  placeholder={`ابحث في ${label}…`} aria-label={`البحث في ${label}`} />
+              <div className="report-option-picker-heading">
+                <h2>{label}</h2>
+                <p>{multiple ? selectedLabel : "اختر أحد الخيارات التالية"}</p>
               </div>
-              <button type="button" className="report-option-picker-close"
-                onClick={() => { setOpen(false); setQuery(""); }} aria-label="إغلاق"><X className="h-4 w-4" /></button>
+              <button
+                ref={closeButtonRef}
+                type="button"
+                className="report-option-picker-close"
+                onClick={closePicker}
+                aria-label="إغلاق"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
             <div className="report-option-picker-meta">
-              <span>{filteredOptions.length} خيار متاح</span>
-              {multiple && <button type="button" onClick={() => onChange([])}>{allLabel || `كل ${label}`}</button>}
+              <span>{options.length} خيار متاح</span>
+              {multiple && <button type="button" onClick={() => onChange([])}>{allLabel || "كل " + label}</button>}
             </div>
             <div className="report-option-picker-list">
-              {filteredOptions.length === 0 ? <p className="report-option-picker-empty">لا توجد نتائج مطابقة</p> :
-                filteredOptions.map((option, index) => {
+              {options.length === 0 ? <p className="report-option-picker-empty">لا توجد خيارات متاحة</p> :
+                options.map((option, index) => {
                   const selected = isAllSelected || selectedValues.includes(option.value);
                   return (
-                    <button key={option.value} type="button"
-                      className={`report-option-picker-option ${selected ? "is-selected" : ""}`}
-                      onClick={() => choose(option.value)} aria-pressed={selected}>
-                      {multiple ? <span className="report-option-picker-check" aria-hidden="true">{selected ? "✓" : ""}</span> :
-                        <span className="report-option-picker-index">{index + 1}</span>}
+                    <button
+                      key={option.value}
+                      type="button"
+                      className={"report-option-picker-option " + (selected ? "is-selected" : "")}
+                      onClick={() => choose(option.value)}
+                      aria-pressed={selected}
+                    >
+                      {multiple
+                        ? <span className="report-option-picker-check" aria-hidden="true">{selected ? "✓" : ""}</span>
+                        : <span className="report-option-picker-index">{index + 1}</span>}
                       <span className="report-option-picker-option-label">{option.label}</span>
                       {selected && !multiple && <span className="report-option-picker-selected-mark">✓</span>}
                     </button>
                   );
                 })}
             </div>
-            {multiple && <div className="report-option-picker-footer">
-              <span>{isAllSelected ? "سيتم عرض جميع الخيارات" : `تم تحديد ${selectedValues.length} خيار`}</span>
-              <button type="button" onClick={() => { setOpen(false); setQuery(""); }}>تم</button>
-            </div>}
+            {multiple && (
+              <div className="report-option-picker-footer">
+                <span>{isAllSelected ? "سيتم عرض جميع الخيارات" : "تم تحديد " + selectedValues.length + " خيار"}</span>
+                <button type="button" onClick={closePicker}>تم</button>
+              </div>
+            )}
           </section>
-        </>
+        </div>,
+        document.body
       )}
     </div>
   );
@@ -2279,6 +2294,28 @@ export default function ReportsTab() {
     });
     if (!opened) toast.error("تعذر فتح معاينة المطالبة، تحقق من السماح بالنوافذ المنبثقة");
   };
+  useEffect(() => {
+    const reportsRoot = document.querySelector<HTMLElement>(".mizan-reports-tab");
+    const navigationBar = document.querySelector<HTMLElement>(".app-main-nav");
+    if (!reportsRoot || !navigationBar) return;
+
+    const updateStickyOffset = () => {
+      const navigationHeight = Math.ceil(navigationBar.getBoundingClientRect().height);
+      reportsRoot.style.setProperty("--reports-sticky-nav-offset", String(navigationHeight) + "px");
+    };
+
+    updateStickyOffset();
+    const observer = typeof ResizeObserver !== "undefined" ? new ResizeObserver(updateStickyOffset) : null;
+    observer?.observe(navigationBar);
+    window.addEventListener("resize", updateStickyOffset);
+
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", updateStickyOffset);
+      reportsRoot.style.removeProperty("--reports-sticky-nav-offset");
+    };
+  }, []);
+
   return (
     <div className="mizan-reports-tab min-h-screen p-2 sm:p-4" dir="rtl">
       <style>{`/* Screen table sizing: content-driven columns, wrapped text and natural row heights. */
@@ -2335,7 +2372,7 @@ export default function ReportsTab() {
 
         {/* فلاتر واختيارات التقرير */}
         <div className="reports-filter-panel border-b border-sky-100 bg-slate-50/70 p-4">
-          <div className="reports-filter-grid grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="reports-filter-grid grid grid-cols-2 gap-3">
             <ReportOptionPicker label="نوع التقرير" value={source}
   options={SOURCES.map((item) => ({ value: item.value, label: item.label }))}
   onChange={(next) => {
