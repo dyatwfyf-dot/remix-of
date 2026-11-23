@@ -1,5 +1,5 @@
 import "./ReportsTab.css";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   BarChart3,
   ClipboardList,
@@ -9,6 +9,7 @@ import {
   DollarSign,
   FileText,
   Printer,
+  Search,
   Trash2,
   TrendingUp,
   UserRound,
@@ -56,6 +57,126 @@ const REPORT_SOURCES: readonly ReportSource[] = [
   "feeTotals",
   "traineeFeeStatus",
 ];
+
+
+type ReportPickerOption = { value: string; label: string };
+
+function ReportOptionPicker({
+  label, options, value, onChange, multiple = false, allLabel, placeholder, helperText,
+}: {
+  label: string;
+  options: ReportPickerOption[];
+  value: string | string[];
+  onChange: (value: string | string[]) => void;
+  multiple?: boolean;
+  allLabel?: string;
+  placeholder?: string;
+  helperText?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const selectedValues = Array.isArray(value) ? value : value ? [value] : [];
+  const isAllSelected = multiple && selectedValues.length === 0;
+  const filteredOptions = useMemo(() => {
+    const search = query.trim().toLocaleLowerCase("ar");
+    if (!search) return options;
+    return options.filter((option) => `${option.label} ${option.value}`.toLocaleLowerCase("ar").includes(search));
+  }, [options, query]);
+  const selectedLabel = multiple
+    ? isAllSelected ? allLabel || `كل ${label}` : `تم اختيار ${selectedValues.length} من ${options.length}`
+    : options.find((option) => option.value === selectedValues[0])?.label || placeholder || `اختر ${label}`;
+
+  useEffect(() => {
+    if (!open) return;
+    searchRef.current?.focus();
+    const handleOutside = (event: PointerEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        setOpen(false);
+        setQuery("");
+      }
+    };
+    document.addEventListener("pointerdown", handleOutside);
+    return () => document.removeEventListener("pointerdown", handleOutside);
+  }, [open]);
+
+  const choose = (optionValue: string) => {
+    if (!multiple) {
+      onChange(optionValue);
+      setOpen(false);
+      setQuery("");
+      return;
+    }
+    const next = isAllSelected
+      ? options.map((option) => option.value).filter((item) => item !== optionValue)
+      : selectedValues.includes(optionValue)
+        ? selectedValues.filter((item) => item !== optionValue)
+        : [...selectedValues, optionValue];
+    onChange(next.length === options.length ? [] : next);
+  };
+
+  return (
+    <div ref={wrapperRef} className={`report-option-picker ${multiple ? "is-multiple" : "is-single"}`}>
+      <span className="report-option-picker-label">{label}</span>
+      <button
+        type="button"
+        className="report-option-picker-trigger"
+        onClick={() => { setOpen((current) => !current); setQuery(""); }}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-label={`${label}: ${selectedLabel}`}
+      >
+        <span className="report-option-picker-trigger-text">{selectedLabel}</span>
+        {multiple && <span className="report-option-picker-count">{isAllSelected ? "الكل" : selectedValues.length}</span>}
+        <ChevronDown className={`report-option-picker-chevron ${open ? "is-open" : ""}`} aria-hidden="true" />
+      </button>
+      {helperText && <span className="report-option-picker-help">{helperText}</span>}
+      {open && (
+        <>
+          <button type="button" className="report-option-picker-backdrop" aria-label="إغلاق قائمة الخيارات"
+            onClick={() => { setOpen(false); setQuery(""); }} />
+          <section className="report-option-picker-panel" role="dialog" aria-label={`خيارات ${label}`} dir="rtl">
+            <div className="report-option-picker-panel-header">
+              <div className="report-option-picker-search">
+                <Search className="h-4 w-4 shrink-0" aria-hidden="true" />
+                <input ref={searchRef} type="search" value={query} onChange={(event) => setQuery(event.target.value)}
+                  onKeyDown={(event) => { if (event.key === "Escape") { setOpen(false); setQuery(""); } }}
+                  placeholder={`ابحث في ${label}…`} aria-label={`البحث في ${label}`} />
+              </div>
+              <button type="button" className="report-option-picker-close"
+                onClick={() => { setOpen(false); setQuery(""); }} aria-label="إغلاق"><X className="h-4 w-4" /></button>
+            </div>
+            <div className="report-option-picker-meta">
+              <span>{filteredOptions.length} خيار متاح</span>
+              {multiple && <button type="button" onClick={() => onChange([])}>{allLabel || `كل ${label}`}</button>}
+            </div>
+            <div className="report-option-picker-list">
+              {filteredOptions.length === 0 ? <p className="report-option-picker-empty">لا توجد نتائج مطابقة</p> :
+                filteredOptions.map((option, index) => {
+                  const selected = isAllSelected || selectedValues.includes(option.value);
+                  return (
+                    <button key={option.value} type="button"
+                      className={`report-option-picker-option ${selected ? "is-selected" : ""}`}
+                      onClick={() => choose(option.value)} aria-pressed={selected}>
+                      {multiple ? <span className="report-option-picker-check" aria-hidden="true">{selected ? "✓" : ""}</span> :
+                        <span className="report-option-picker-index">{index + 1}</span>}
+                      <span className="report-option-picker-option-label">{option.label}</span>
+                      {selected && !multiple && <span className="report-option-picker-selected-mark">✓</span>}
+                    </button>
+                  );
+                })}
+            </div>
+            {multiple && <div className="report-option-picker-footer">
+              <span>{isAllSelected ? "سيتم عرض جميع الخيارات" : `تم تحديد ${selectedValues.length} خيار`}</span>
+              <button type="button" onClick={() => { setOpen(false); setQuery(""); }}>تم</button>
+            </div>}
+          </section>
+        </>
+      )}
+    </div>
+  );
+}
 
 export interface ReportRow {
   id ? : string;
@@ -2188,96 +2309,43 @@ export default function ReportsTab() {
         {/* فلاتر واختيارات التقرير */}
         <div className="reports-filter-panel border-b border-sky-100 bg-slate-50/70 p-4">
           <div className="reports-filter-grid grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
-              نوع التقرير
-              <select
-                value={source}
-                onChange={(e) => {
-                  setSource(e.target.value as ReportSource);
-                  if (e.target.value === "traineeFeeStatus") {
-                    setSortColumn("trainee");
-                    setSortDirection("asc");
-                  }
-                  setDeletedRows(new Set());
-                  setSelectedTraineeFeeStatus("all");
-                }}
-                className="min-h-24 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
-              >
-                {SOURCES.map((s) => (
-                  <option key={s.value} value={s.value}>
-                    {s.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <ReportOptionPicker label="نوع التقرير" value={source}
+  options={SOURCES.map((item) => ({ value: item.value, label: item.label }))}
+  onChange={(next) => {
+    const nextSource = String(next) as ReportSource;
+    setSource(nextSource);
+    if (nextSource === "traineeFeeStatus") { setSortColumn("trainee"); setSortDirection("asc"); }
+    setDeletedRows(new Set());
+    setSelectedTraineeFeeStatus("all");
+  }} placeholder="اختر نوع التقرير" />
 
             {source === "traineeFeeStatus" && (
-              <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
-                حالة السداد
-                <select
-                  value={selectedTraineeFeeStatus}
-                  onChange={(event) => setSelectedTraineeFeeStatus(event.target.value)}
-                  aria-label="تصفية تقرير المتدربين حسب حالة السداد"
-                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
-                >
-                  <option value="all">كل الحالات</option>
-                  <option value="registration-only">سدد رسوم القيد والتسجيل ولم يسدد رسوم الامتحانات</option>
-                  <option value="exam-only">سدد رسوم الامتحانات ولم يسدد رسوم القيد والتسجيل</option>
-                  <option value="neither">لم يسدد رسوم القيد والتسجيل ولا رسوم الامتحانات</option>
-                  <option value="both">سدد رسوم القيد والتسجيل ورسوم الامتحانات معاً</option>
-                </select>
-              </label>
+              <ReportOptionPicker label="حالة السداد" value={selectedTraineeFeeStatus}
+  options={[
+    { value: "all", label: "كل الحالات" },
+    { value: "registration-only", label: "سدد رسوم القيد والتسجيل ولم يسدد رسوم الامتحانات" },
+    { value: "exam-only", label: "سدد رسوم الامتحانات ولم يسدد رسوم القيد والتسجيل" },
+    { value: "neither", label: "لم يسدد رسوم القيد والتسجيل ولا رسوم الامتحانات" },
+    { value: "both", label: "سدد رسوم القيد والتسجيل ورسوم الامتحانات معاً" },
+  ]} onChange={(next) => setSelectedTraineeFeeStatus(String(next))} placeholder="اختر حالة السداد" />
             )}
 
             {source !== "youssefLoan" && source !== "tawfiqCustody" && source !== "trainee" && source !== "feeTotals" && source !== "traineeFeeStatus" && (
               <>
-                <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
-                  الفترة الزمنية
-                  <select
-                    value={period}
-                    onChange={(e) => setPeriod(e.target.value as PeriodType)}
-                    className="rounded-xl border border-slate-300 bg-[#F1BF98] px-3 py-2 text-sm font-bold text-black outline-none focus:border-sky-600"
-                  >
-                    {PERIODS.map((p) => (
-                      <option key={p.value} value={p.value}>
-                        {p.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                <ReportOptionPicker label="الفترة الزمنية" value={period}
+  options={PERIODS.map((item) => ({ value: item.value, label: item.label }))}
+  onChange={(next) => setPeriod(String(next) as PeriodType)} placeholder="اختر الفترة" />
 
                 {period !== "all" && (
-                  <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
-                    السنة
-                    <select
-                      value={year}
-                      onChange={(e) => setYear(Number(e.target.value))}
-                      className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
-                    >
-                      {yearOptions.map((y) => (
-                        <option key={y} value={y}>
-                          {y}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                  <ReportOptionPicker label="السنة" value={String(year)}
+  options={yearOptions.map((item) => ({ value: String(item), label: String(item) }))}
+  onChange={(next) => setYear(Number(next))} placeholder="اختر السنة" />
                 )}
 
                 {period === "month" && (
-                  <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
-                    الشهر
-                    <select
-                      value={month}
-                      onChange={(e) => setMonth(Number(e.target.value))}
-                      className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
-                    >
-                      {MONTHS.map((m, idx) => (
-                        <option key={idx} value={idx}>
-                          {m}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                  <ReportOptionPicker label="الشهر" value={String(month)}
+  options={MONTHS.map((item, index) => ({ value: String(index), label: item }))}
+  onChange={(next) => setMonth(Number(next))} placeholder="اختر الشهر" />
                 )}
               </>
             )}
@@ -2285,124 +2353,36 @@ export default function ReportsTab() {
             {/* فلاتر خاصة بكشف المتدربين وإجماليات الرسوم */}
             {(source === "trainee" || source === "feeTotals") && (
               <>
-                <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
-                  المتدرب
-                  <select
-                    value={selectedTrainee}
-                    onChange={(e) => setSelectedTrainee(e.target.value)}
-                    className="rounded-xl border border-slate-300 bg-[#5B5750] px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
-                  >
-                    <option value="all">كل المتدربين</option>
-                    {traineeOptions.map((name) => (
-                      <option key={name} value={name}>
-                        {name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                <ReportOptionPicker label="المتدرب" value={selectedTrainee}
+  options={[
+    { value: "all", label: "كل المتدربين" },
+    ...traineeOptions.map((name) => ({ value: name, label: name })),
+  ]} onChange={(next) => setSelectedTrainee(String(next))} placeholder="ابحث واختر المتدرب" />
 
                 {source === "trainee" && (
                   <>
-                    <div className="fee-picker-field">
-                      <div className="fee-picker-heading">
-                        <span>نوع الرسم</span>
-                        <span className="fee-picker-count">{selectedFees.length === 0 ? "كل الرسوم" : `تم اختيار ${selectedFees.length}`}</span>
-                      </div>
-                      <button
-                        type="button"
-                        className={`fee-picker-all ${selectedFees.length === 0 ? "is-active" : ""}`}
-                        aria-pressed={selectedFees.length === 0}
-                        onClick={() => setSelectedFees([])}
-                      >
-                        كل الرسوم
-                      </button>
-                      <div className="fee-picker-options" role="group" aria-label="اختيار رسوم كشف المدفوعات">
-                        {feeCategoryOptions.map((fee) => {
-                          const checked = selectedFees.length === 0 || selectedFees.includes(fee);
-                          return (
-                            <label key={fee} className={`fee-picker-option ${checked ? "is-selected" : ""}`}>
-                              <input
-                                type="checkbox"
-                                checked={checked}
-                                onChange={() => {
-                                  const next = selectedFees.length === 0
-                                    ? feeCategoryOptions.filter((item) => item !== fee)
-                                    : checked
-                                      ? selectedFees.filter((item) => item !== fee)
-                                      : [...selectedFees, fee];
-                                  setSelectedFees(next.length === feeCategoryOptions.length ? [] : next);
-                                }}
-                              />
-                              <span>{fee}</span>
-                            </label>
-                          );
-                        })}
-                      </div>
-                      <span className="fee-picker-help">يمكن تحديد رسم واحد أو عدة رسوم، أو اختيار «كل الرسوم» لعرضها جميعاً.</span>
-                    </div>
+                    <ReportOptionPicker label="نوع الرسم" value={selectedFees}
+                      options={feeCategoryOptions.map((fee) => ({ value: fee, label: fee }))}
+                      onChange={(next) => setSelectedFees(Array.isArray(next) ? next : [])}
+                      multiple allLabel="كل الرسوم" placeholder="اختر نوع الرسم"
+                      helperText="يمكن البحث وتحديد رسم واحد أو عدة رسوم من القائمة نفسها." />
 
-                    <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
-                      طريقة التجميع
-                      <select
-                        value={traineeGrouping}
-                        onChange={(e) => setTraineeGrouping(e.target.value as TraineeGrouping)}
-                        className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
-                      >
-                        <option value="month">تجميع شهري</option>
-                        <option value="year">تجميع سنوي</option>
-                      </select>
-                    </label>
+<ReportOptionPicker label="طريقة التجميع" value={traineeGrouping}
+  options={[{ value: "month", label: "تجميع شهري" }, { value: "year", label: "تجميع سنوي" }]}
+  onChange={(next) => setTraineeGrouping(String(next) as TraineeGrouping)} placeholder="اختر طريقة التجميع" />
 
-                    <div className="fee-picker-field batch-picker-field">
-                      <div className="fee-picker-heading">
-                        <span>رقم الدفعة</span>
-                        <span className="fee-picker-count">{selectedBatches.length === 0 ? "كل الدفعات" : `تم اختيار ${selectedBatches.length}`}</span>
-                      </div>
-                      <button
-                        type="button"
-                        className={`fee-picker-all ${selectedBatches.length === 0 ? "is-active" : ""}`}
-                        aria-pressed={selectedBatches.length === 0}
-                        onClick={() => setSelectedBatches([])}
-                      >
-                        كل الدفعات
-                      </button>
-                      <div className="fee-picker-options" role="group" aria-label="اختيار دفعة أو أكثر لعرضها في كشف المدفوعات">
-                        {batchOptions.map((batch) => {
-                          const checked = selectedBatches.length === 0 || selectedBatches.includes(batch);
-                          return (
-                            <label key={batch} className={`fee-picker-option ${checked ? "is-selected" : ""}`}>
-                              <input
-                                type="checkbox"
-                                checked={checked}
-                                onChange={() => {
-                                  const next = selectedBatches.length === 0
-                                    ? batchOptions.filter((item) => item !== batch)
-                                    : checked
-                                      ? selectedBatches.filter((item) => item !== batch)
-                                      : [...selectedBatches, batch];
-                                  setSelectedBatches(next.length === batchOptions.length ? [] : next);
-                                }}
-                              />
-                              <span>{batch}</span>
-                            </label>
-                          );
-                        })}
-                      </div>
-                      <span className="fee-picker-help">يمكن تحديد دفعة واحدة أو عدة دفعات، أو اختيار «كل الدفعات» لعرضها جميعاً.</span>
-                    </div>
+                    <ReportOptionPicker label="رقم الدفعة" value={selectedBatches}
+                      options={batchOptions.map((batch) => ({ value: batch, label: batch }))}
+                      onChange={(next) => setSelectedBatches(Array.isArray(next) ? next : [])}
+                      multiple allLabel="كل الدفعات" placeholder="اختر رقم الدفعة"
+                      helperText="يمكن البحث وتحديد دفعة واحدة أو عدة دفعات." />
 
-                    <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
-                      طريقة العرض
-                      <select
-                        value={traineeDisplayMode}
-                        onChange={(e) => setTraineeDisplayMode(e.target.value as TraineeDisplayMode)}
-                        className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold outline-none focus:border-sky-600"
-                      >
-                        <option value="both">تفصيلي وإجمالي</option>
-                        <option value="detail">تفصيلي فقط</option>
-                        <option value="summary">إجمالي فقط</option>
-                      </select>
-                    </label>
+<ReportOptionPicker label="طريقة العرض" value={traineeDisplayMode}
+  options={[
+    { value: "both", label: "تفصيلي وإجمالي" },
+    { value: "detail", label: "تفصيلي فقط" },
+    { value: "summary", label: "إجمالي فقط" },
+  ]} onChange={(next) => setTraineeDisplayMode(String(next) as TraineeDisplayMode)} placeholder="اختر طريقة العرض" />
                   </>
                 )}
               </>
