@@ -2353,29 +2353,43 @@ export default function ReportsTab() {
                       </select>
                     </label>
 
-                    <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
-                      رقم الدفعة
-                      <select
-                        multiple
-                        size={4}
-                        value={selectedBatches}
-                        onChange={(e) => {
-                          const values = Array.from(e.target.selectedOptions, (option) => option.value);
-                          setSelectedBatches(values.filter((value) => value !== "__all__"));
-                        }}
-                        aria-label="اختيار دفعة أو أكثر لعرضها في كشف المدفوعات"
-                        title="يمكن اختيار أكثر من دفعة"
-                        className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-600"
+                    <div className="fee-picker-field batch-picker-field">
+                      <div className="fee-picker-heading">
+                        <span>رقم الدفعة</span>
+                        <span className="fee-picker-count">{selectedBatches.length === 0 ? "كل الدفعات" : `تم اختيار ${selectedBatches.length}`}</span>
+                      </div>
+                      <button
+                        type="button"
+                        className={`fee-picker-all ${selectedBatches.length === 0 ? "is-active" : ""}`}
+                        aria-pressed={selectedBatches.length === 0}
+                        onClick={() => setSelectedBatches([])}
                       >
-                        <option value="__all__">كل الدفعات</option>
-                        {batchOptions.map((batch) => (
-                          <option key={batch} value={batch}>
-                            {batch}
-                          </option>
-                        ))}
-                      </select>
-                      <span className="text-[11px] font-semibold text-slate-500">اترك الاختيار فارغاً لعرض كل الدفعات، ويمكن تحديد أكثر من دفعة.</span>
-                    </label>
+                        كل الدفعات
+                      </button>
+                      <div className="fee-picker-options" role="group" aria-label="اختيار دفعة أو أكثر لعرضها في كشف المدفوعات">
+                        {batchOptions.map((batch) => {
+                          const checked = selectedBatches.length === 0 || selectedBatches.includes(batch);
+                          return (
+                            <label key={batch} className={`fee-picker-option ${checked ? "is-selected" : ""}`}>
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => {
+                                  const next = selectedBatches.length === 0
+                                    ? batchOptions.filter((item) => item !== batch)
+                                    : checked
+                                      ? selectedBatches.filter((item) => item !== batch)
+                                      : [...selectedBatches, batch];
+                                  setSelectedBatches(next.length === batchOptions.length ? [] : next);
+                                }}
+                              />
+                              <span>{batch}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                      <span className="fee-picker-help">يمكن تحديد دفعة واحدة أو عدة دفعات، أو اختيار «كل الدفعات» لعرضها جميعاً.</span>
+                    </div>
 
                     <label className="flex flex-col gap-1 text-xs font-black text-slate-700">
                       طريقة العرض
