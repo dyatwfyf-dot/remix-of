@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useStore, type Account, type TraineeFinancialRecord } from "@/lib/store";
 import { isRegistrationFeeDescription } from "@/lib/feeClassification";
+import { isInactiveTraineeStatus } from "@/lib/traineeFeeNotifications";
 import { useFiscalYear } from "@/lib/fiscalYear";
 import TabActions, { type TabCol } from "./TabActions";
 import PrintSettingsModal, { type InstallmentsPrintSettings } from "./PrintSettingsModal";
@@ -1184,9 +1185,12 @@ export default function ReportsTab() {
       const fields = new Map(Object.entries(record).map(([header, value]) => [traineeNameKey(header), value]));
       const name = financialNameHeaders.map((header) => fields.get(header)).find((value) => String(value ?? "").trim());
       if (!name) return [];
+      const academicStatus = fields.get(traineeNameKey("الحالة الأكاديمية")) ?? fields.get(traineeNameKey("الحالة")) ?? "";
+      const batch = String(fields.get(traineeNameKey("رقم الدفعة")) ?? "").trim();
+      if (isInactiveTraineeStatus(academicStatus) || isInactiveTraineeStatus(batch)) return [];
       return [{
         name: String(name).trim(),
-        batch: String(fields.get(traineeNameKey("رقم الدفعة")) ?? "").trim(),
+        batch,
         specialty: String(fields.get(traineeNameKey("المساق الطبي")) ?? "").trim(),
       }];
     });

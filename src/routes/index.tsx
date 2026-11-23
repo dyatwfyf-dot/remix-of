@@ -1,4 +1,4 @@
-import { lazy, Suspense, startTransition, useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Toaster, toast } from "sonner";
 
@@ -15,6 +15,8 @@ import {
   BarChart3,
   ContactRound,
   Plus,
+  Bell,
+  X,
 } from "lucide-react";
 
 // تحميل ملفات التبويبات عند فتحها فقط لتقليل حجم التشغيل الأول.
@@ -34,6 +36,8 @@ import { canInstall, onInstallAvailability, promptInstall } from "@/lib/pwa";
 import { installAndroidBackButton } from "@/lib/capacitorNavigation";
 import YearSelector from "@/components/YearSelector";
 import { tagSerialColumns } from "@/lib/reportsCompactColumnsCss";
+import { useStore } from "@/lib/store";
+import { buildTraineeFeeNotifications } from "@/lib/traineeFeeNotifications";
 
 // إعداد مسار التوجيه والبيانات التعريفية للمتصفح
 export const Route = createFileRoute("/")({
@@ -207,6 +211,14 @@ function Index() {
   const activeTabRef = useRef(activeTab);
   const tabHistoryRef = useRef<Tab[]>([getInitialTab()]);
   const [pwaInstallable, setPwaInstallable] = useState<boolean>(false);
+  const [feeNotificationsOpen, setFeeNotificationsOpen] = useState(false);
+  const traineeFinancialRecords = useStore((state) => state.traineeFinancialRecords);
+  const hafiza = useStore((state) => state.hafiza);
+  const feeNotifications = useMemo(
+    () => buildTraineeFeeNotifications(traineeFinancialRecords || [], hafiza || []),
+    [traineeFinancialRecords, hafiza],
+  );
+  const notificationDateLabel = new Date().toLocaleDateString("ar-YE");
 
   // حماية الإقلاع الأولي: لا تُرسم التبويبات الثقيلة على الخادم، بل بعد تحميل المتصفح فقط.
   const [isMounted, setIsMounted] = useState(false);
@@ -376,6 +388,16 @@ function Index() {
 
         {/* الجزء الأيسر: زر تثبيت التطبيق */}
         <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => setFeeNotificationsOpen(true)}
+            className="relative inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-red-200 bg-gradient-to-b from-red-500 to-red-700 px-2.5 py-2 text-xs font-black text-white shadow-[0_4px_12px_rgba(185,28,28,.32)] transition hover:from-red-600 hover:to-red-800 active:scale-95 sm:gap-2 sm:px-3 sm:text-sm"
+            aria-label={`إشعارات الرسوم غير المسددة: ${feeNotifications.length} متدرب`}
+          >
+            <Bell className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline">إشعارات الرسوم</span>
+            <span className="min-w-5 rounded-full bg-white px-1.5 py-0.5 text-center text-[10px] font-black text-red-700">{feeNotifications.length}</span>
+          </button>
           {pwaInstallable && (
             <button
               onClick={handlePWAInstall}
@@ -461,6 +483,57 @@ function Index() {
           </Suspense>
         )}
       </div>
+
+
+      {feeNotificationsOpen && (
+        <div
+          className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/70 p-2 sm:p-5"
+          role="presentation"
+          onMouseDown={(event) => { if (event.target === event.currentTarget) setFeeNotificationsOpen(false); }}
+        >
+          <section className="flex max-h-[96dvh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-red-200 bg-white shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="fee-notifications-title" dir="rtl">
+            <header className="flex items-center justify-between gap-3 border-b border-red-100 bg-gradient-to-l from-red-800 via-red-700 to-rose-600 px-4 py-3 text-white sm:px-5">
+              <div className="flex min-w-0 items-center gap-2">
+                <Bell className="h-6 w-6 shrink-0" />
+                <div className="min-w-0">
+                  <h2 id="fee-notifications-title" className="truncate text-base font-black sm:text-lg">إشعارات الرسوم غير المسددة</h2>
+                  <p className="text-xs font-semibold text-red-100">حالة السداد حتى تاريخ {notificationDateLabel}</p>
+                </div>
+              </div>
+              <button type="button" onClick={() => setFeeNotificationsOpen(false)} className="rounded-lg p-2 text-white transition hover:bg-white/15" aria-label="إغلاق"><X className="h-5 w-5" /></button>
+            </header>
+            <div className="flex items-center justify-between gap-2 border-b border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700">
+              <span>المتدربون الذين لديهم رسوم غير مسددة</span>
+              <span className="rounded-full bg-red-100 px-3 py-1 text-red-800">{feeNotifications.length} متدرب</span>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4">
+              {feeNotifications.length === 0 ? (
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-8 text-center font-bold text-emerald-800">لا توجد رسوم غير مسددة للمتدربين النشطين حتى هذا التاريخ.</div>
+              ) : (
+                <div className="space-y-3">
+                  {feeNotifications.map((trainee, index) => (
+                    <article key={trainee.name} className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+                      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex min-w-0 items-center gap-2">
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-red-50 text-xs font-black text-red-700">{index + 1}</span>
+                          <h3 className="font-black text-slate-900">{trainee.name}</h3>
+                        </div>
+                        {trainee.batch && <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">الدفعة: {trainee.batch}</span>}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {trainee.unpaidFees.map((fee) => <span key={fee} className="rounded-lg border border-red-100 bg-red-50 px-2.5 py-1.5 text-xs font-bold text-red-800">{fee}</span>)}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </div>
+            <footer className="border-t border-slate-200 bg-slate-50 px-4 py-3 text-left">
+              <button type="button" onClick={() => setFeeNotificationsOpen(false)} className="rounded-lg bg-slate-800 px-5 py-2 text-sm font-bold text-white hover:bg-slate-900">إغلاق</button>
+            </footer>
+          </section>
+        </div>
+      )}
 
       <Toaster position="top-center" richColors />
     </div>
