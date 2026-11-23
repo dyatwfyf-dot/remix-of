@@ -2159,11 +2159,11 @@ export default function ReportsTab() {
     if (!opened) toast.error("تعذر فتح معاينة المطالبة، تحقق من السماح بالنوافذ المنبثقة");
   };
   return (
-    <div className="mizan-reports-tab min-h-screen bg-gradient-to-br from-slate-100 via-sky-50 to-indigo-50 p-2 sm:p-4" dir="rtl">
+    <div className="mizan-reports-tab min-h-screen p-2 sm:p-4" dir="rtl">
       <style>{`/* Keep report body rows on one line on screen; header wrapping is defined in ReportsTab.css. */
         .mizan-reports-tab .reports-table-scroll #reports-table tbody td { white-space:nowrap; overflow-wrap:normal; word-break:keep-all; }
       `}</style>
-      <section className="mx-auto w-full max-w-[210mm] overflow-hidden rounded-3xl border border-sky-200 bg-white shadow-xl">
+      <section className="mx-auto w-full max-w-[1600px] overflow-hidden rounded-3xl border border-sky-200 bg-white shadow-xl">
         <header className="reports-tab-header bg-gradient-to-l from-[#2e6b8a] via-[#3d7fa0] to-[#2e6b8a] p-4 text-white sm:p-6">
           <div className="flex items-center gap-3">
             <div className="reports-header-icon flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
@@ -2405,6 +2405,7 @@ export default function ReportsTab() {
         {/* أزرار العمليات والتصدير والطباعة */}
         <div className="reports-actions-panel p-4">
           <TabActions
+            className="reports-action-toolbar"
             title={title}
             fileName="financial-report"
             rows={actionRows}
