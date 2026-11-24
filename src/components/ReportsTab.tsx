@@ -219,6 +219,11 @@ const buildCustomCustodyColumns = (
   return ordered;
 };
 
+const getCustomCustodyCellStorageKey = (rowKey: string, columnKey: string) =>
+  `${rowKey}::${columnKey}`;
+
+const CUSTOM_CUSTODY_CELL_DATA_STORAGE_KEY = "reports-custom-custody-cell-data-v1";
+
 export interface ReportRow {
   id ? : string;
   date ? : string;
@@ -850,6 +855,19 @@ export default function ReportsTab() {
     } catch { return []; }
   });
 
+  const [customCustodyCellData, setCustomCustodyCellData] = useState<Record<string, string>>(() => {
+    try {
+      const saved = localStorage.getItem(CUSTOM_CUSTODY_CELL_DATA_STORAGE_KEY);
+      const parsed: unknown = saved ? JSON.parse(saved) : {};
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+      return Object.fromEntries(
+        Object.entries(parsed).filter((entry): entry is [string, string] => typeof entry[1] === "string")
+      );
+    } catch {
+      return {};
+    }
+  });
+
   useEffect(() => {
     try {
       localStorage.setItem("reports-custom-custody-columns-v1", JSON.stringify(customCustodyColumns));
@@ -857,6 +875,14 @@ export default function ReportsTab() {
       console.error("تعذر حفظ أعمدة كشف العهدة والسلف:", error);
     }
   }, [customCustodyColumns]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(CUSTOM_CUSTODY_CELL_DATA_STORAGE_KEY, JSON.stringify(customCustodyCellData));
+    } catch (error) {
+      console.error("تعذر حفظ بيانات خلايا الأعمدة المخصصة:", error);
+    }
+  }, [customCustodyCellData]);
 
   const addCustomCustodyColumn = () => {
     const label = customCustodyColumnLabel.trim();
@@ -877,6 +903,11 @@ export default function ReportsTab() {
 
   const removeCustomCustodyColumn = (key: string) => {
     setCustomCustodyColumns((current) => current.filter((column) => column.key !== key));
+    setCustomCustodyCellData((current) =>
+      Object.fromEntries(
+        Object.entries(current).filter(([cellKey]) => !cellKey.endsWith(`::${key}`))
+      )
+    );
   };
 
   useEffect(() => {
@@ -1092,6 +1123,7 @@ export default function ReportsTab() {
       
       result.push({
         id: rowKey,
+        sourceRowId: row.id,
         date: row.date || "—",
         docNo,
         description: row.description || "سلفة د/يوسف",
@@ -1152,6 +1184,7 @@ export default function ReportsTab() {
       
       result.push({
         id: rowKey,
+        sourceRowId: row.id,
         date: row.date || "—",
         docNo,
         description: row.description || "عهدة توفيق الداعي",
@@ -2896,6 +2929,37 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                           const isNumeric = numericKeys.includes(col.key);
                           const isNoWrap = noWrapKeys.includes(col.key);
                           const isEditableCustodyRow = isLoanOrCustody && !isOpening && !isTotal;
+                          const isCustomCustodyColumn =
+                            isEditableCustodyRow && customCustodyColumns.some((customColumn) => customColumn.key === col.key);
+                          const customCellKey = getCustomCustodyCellStorageKey(String(row.sourceRowId || row.id || ""), col.key);
+                          const customCellValue = customCustodyCellData[customCellKey] ?? "";
+
+                          if (isCustomCustodyColumn) {
+                            return (
+                              <td
+                                key={col.key}
+                                data-col-key={col.key}
+                                className="border border-black p-1 font-bold reports-text-cell bg-white text-slate-900"
+                                title={`انقر لإدخال بيانات في عمود ${col.label}`}
+                              >
+                                <input
+                                  type="text"
+                                  value={customCellValue}
+                                  onChange={(event) =>
+                                    setCustomCustodyCellData((previous) => ({
+                                      ...previous,
+                                      [customCellKey]: event.target.value,
+                                    }))
+                                  }
+                                  aria-label={`${col.label} - ${String(row.date || "")}`}
+                                  className="w-full min-w-[72px] rounded border border-transparent bg-transparent px-1 py-1 text-center text-xs font-bold text-slate-900 outline-none transition hover:border-sky-300 focus:border-sky-600 focus:bg-white focus:ring-1 focus:ring-sky-200 print:hidden"
+                                />
+                                <span className="hidden print:inline reports-cell-content whitespace-pre-wrap break-words">
+                                  {customCellValue}
+                                </span>
+                              </td>
+                            );
+                          }
 
                           // حقول إدخال يدوية لرقم كشف التسوية والملاحظات والمبلغ في تقارير العهد
                           if (isEditableCustodyRow && (col.key === "settlementNo" || col.key === "notes")) {
