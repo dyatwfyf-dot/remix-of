@@ -787,14 +787,30 @@ const buildReportsScreenPrintHtml = (
   
   table.querySelectorAll("button, svg, script, style").forEach((element) => element.remove());
   table.querySelectorAll("input, textarea, select").forEach((control) => {
+    const isCustomCustodyCell = control.hasAttribute("data-custom-custody-cell");
     let value = "";
-    if (control instanceof HTMLSelectElement) value = control.selectedOptions[0]?.textContent?.trim() || "";
-    else if (control instanceof HTMLInputElement) value = control.value || (isCustodyReport ? "" : control.placeholder || "");
-    else if (control instanceof HTMLTextAreaElement) value = control.value || (isCustodyReport ? "" : control.placeholder || "");
+    if (control instanceof HTMLSelectElement) {
+      value = control.selectedOptions[0]?.textContent?.trim() || "";
+    } else if (control instanceof HTMLInputElement) {
+      value = isCustomCustodyCell
+        ? control.getAttribute("data-print-value") ?? ""
+        : control.value || (isCustodyReport ? "" : control.placeholder || "");
+    } else if (control instanceof HTMLTextAreaElement) {
+      value = control.value || (isCustodyReport ? "" : control.placeholder || "");
+    }
     const printableValue = document.createElement("span");
     printableValue.className = "reports-print-control-value";
     const printClass = control.getAttribute("data-print-class");
     if (printClass) printableValue.classList.add(printClass);
+    if (isCustomCustodyCell) {
+      printableValue.classList.add("reports-custom-custody-print-value");
+      printableValue.style.setProperty("display", "inline-block", "important");
+      printableValue.style.setProperty("width", "100%", "important");
+      printableValue.style.setProperty("white-space", "pre-wrap", "important");
+      printableValue.style.setProperty("overflow-wrap", "anywhere", "important");
+      printableValue.style.setProperty("word-break", "normal", "important");
+      printableValue.style.setProperty("vertical-align", "middle", "important");
+    }
     printableValue.textContent = value;
     control.replaceWith(printableValue);
   });
@@ -2945,6 +2961,8 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                                 <input
                                   type="text"
                                   value={customCellValue}
+                                  data-custom-custody-cell="true"
+                                  data-print-value={customCellValue}
                                   onChange={(event) =>
                                     setCustomCustodyCellData((previous) => ({
                                       ...previous,
@@ -2954,9 +2972,6 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                                   aria-label={`${col.label} - ${String(row.date || "")}`}
                                   className="w-full min-w-[72px] rounded border border-transparent bg-transparent px-1 py-1 text-center text-xs font-bold text-slate-900 outline-none transition hover:border-sky-300 focus:border-sky-600 focus:bg-white focus:ring-1 focus:ring-sky-200 print:hidden"
                                 />
-                                <span className="hidden print:inline reports-cell-content whitespace-pre-wrap break-words">
-                                  {customCellValue}
-                                </span>
                               </td>
                             );
                           }
