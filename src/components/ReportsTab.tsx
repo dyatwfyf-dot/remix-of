@@ -1123,6 +1123,7 @@ export default function ReportsTab() {
       
       result.push({
         id: rowKey,
+        sourceRowId: row.id,
         date: row.date || "—",
         docNo,
         description: row.description || "سلفة د/يوسف",
@@ -1183,6 +1184,7 @@ export default function ReportsTab() {
       
       result.push({
         id: rowKey,
+        sourceRowId: row.id,
         date: row.date || "—",
         docNo,
         description: row.description || "عهدة توفيق الداعي",
@@ -2929,7 +2931,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                           const isEditableCustodyRow = isLoanOrCustody && !isOpening && !isTotal;
                           const isCustomCustodyColumn =
                             isEditableCustodyRow && customCustodyColumns.some((customColumn) => customColumn.key === col.key);
-                          const customCellKey = getCustomCustodyCellStorageKey(String(row.id || ""), col.key);
+                          const customCellKey = getCustomCustodyCellStorageKey(String(row.sourceRowId || row.id || ""), col.key);
                           const customCellValue = customCustodyCellData[customCellKey] ?? "";
 
                           if (isCustomCustodyColumn) {
