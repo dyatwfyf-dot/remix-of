@@ -787,14 +787,30 @@ const buildReportsScreenPrintHtml = (
   
   table.querySelectorAll("button, svg, script, style").forEach((element) => element.remove());
   table.querySelectorAll("input, textarea, select").forEach((control) => {
+    const isCustomCustodyCell = control.hasAttribute("data-custom-custody-cell");
     let value = "";
-    if (control instanceof HTMLSelectElement) value = control.selectedOptions[0]?.textContent?.trim() || "";
-    else if (control instanceof HTMLInputElement) value = control.value || (isCustodyReport ? "" : control.placeholder || "");
-    else if (control instanceof HTMLTextAreaElement) value = control.value || (isCustodyReport ? "" : control.placeholder || "");
+    if (control instanceof HTMLSelectElement) {
+      value = control.selectedOptions[0]?.textContent?.trim() || "";
+    } else if (control instanceof HTMLInputElement) {
+      value = isCustomCustodyCell
+        ? control.getAttribute("data-print-value") ?? ""
+        : control.value || (isCustodyReport ? "" : control.placeholder || "");
+    } else if (control instanceof HTMLTextAreaElement) {
+      value = control.value || (isCustodyReport ? "" : control.placeholder || "");
+    }
     const printableValue = document.createElement("span");
     printableValue.className = "reports-print-control-value";
     const printClass = control.getAttribute("data-print-class");
     if (printClass) printableValue.classList.add(printClass);
+    if (isCustomCustodyCell) {
+      printableValue.classList.add("reports-custom-custody-print-value");
+      printableValue.style.setProperty("display", "inline-block", "important");
+      printableValue.style.setProperty("width", "100%", "important");
+      printableValue.style.setProperty("white-space", "pre-wrap", "important");
+      printableValue.style.setProperty("overflow-wrap", "anywhere", "important");
+      printableValue.style.setProperty("word-break", "normal", "important");
+      printableValue.style.setProperty("vertical-align", "middle", "important");
+    }
     printableValue.textContent = value;
     control.replaceWith(printableValue);
   });
