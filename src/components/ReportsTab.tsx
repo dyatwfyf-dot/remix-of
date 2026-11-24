@@ -10,6 +10,7 @@ import {
   DollarSign,
   FileText,
   Printer,
+  Plus,
   Trash2,
   TrendingUp,
   UserRound,
@@ -810,6 +811,43 @@ export default function ReportsTab() {
     }
   });
   const [period, setPeriod] = useState < PeriodType > ("all");
+  const [customCustodyColumnLabel, setCustomCustodyColumnLabel] = useState("");
+  const [customCustodyColumns, setCustomCustodyColumns] = useState<TabCol[]>(() => {
+    try {
+      const saved = localStorage.getItem("reports-custom-custody-columns-v1");
+      const parsed: unknown = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed)
+        ? parsed.filter((column): column is TabCol =>
+            !!column && typeof column.key === "string" && typeof column.label === "string" &&
+            column.key.startsWith("customCustody_") && column.label.trim().length > 0)
+        : [];
+    } catch { return []; }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("reports-custom-custody-columns-v1", JSON.stringify(customCustodyColumns));
+    } catch (error) {
+      console.error("تعذر حفظ أعمدة كشف العهدة والسلف:", error);
+    }
+  }, [customCustodyColumns]);
+
+  const addCustomCustodyColumn = () => {
+    const label = customCustodyColumnLabel.trim();
+    if (!label) { toast.error("أدخل عنوان العمود أولاً"); return; }
+    if (customCustodyColumns.some((column) => column.label.trim() === label)) {
+      toast.error("هذا العمود موجود بالفعل"); return;
+    }
+    setCustomCustodyColumns((current) => [
+      ...current, { key: `customCustody_${Date.now()}_${current.length}`, label },
+    ]);
+    setCustomCustodyColumnLabel("");
+    toast.success("تمت إضافة العمود إلى كشف العهدة والسلف");
+  };
+
+  const removeCustomCustodyColumn = (key: string) => {
+    setCustomCustodyColumns((current) => current.filter((column) => column.key !== key));
+  };
 
   useEffect(() => {
     try {
@@ -1761,6 +1799,7 @@ export default function ReportsTab() {
             key: "amount",
             label: "المبلغ"
           },
+          ...customCustodyColumns,
         ],
       }
     };
@@ -1773,6 +1812,7 @@ export default function ReportsTab() {
           { key: "settlementNo", label: "رقم كشف التسوية" },
           { key: "notes", label: "الملاحظات" },
           { key: "amount", label: "المبلغ" },
+          ...customCustodyColumns,
         ],
       };
     }
@@ -1881,7 +1921,7 @@ export default function ReportsTab() {
         { key: "amount", label: "المبلغ" },
       ],
     };
-  }, [source]);
+  }, [source, customCustodyColumns]);
   
   const reportRows = useMemo < ReportRow[] > (() => {
     if (source === "youssefLoan") return youssefRows;
@@ -2484,6 +2524,38 @@ export default function ReportsTab() {
             )}
           </div>
         </div>
+
+        {(source === "youssefLoan" || source === "tawfiqCustody") && (
+          <div className="mb-3 flex flex-wrap items-end gap-2 rounded-xl border border-sky-200 bg-sky-50 p-3" dir="rtl">
+            <label className="min-w-[180px] flex-1 text-right text-xs font-black text-slate-700">
+              عنوان العمود الجديد
+              <input
+                type="text"
+                value={customCustodyColumnLabel}
+                onChange={(event) => setCustomCustodyColumnLabel(event.target.value)}
+                onKeyDown={(event) => { if (event.key === "Enter") addCustomCustodyColumn(); }}
+                placeholder="اكتب اسم العمود..."
+                maxLength={60}
+                className="mt-1 min-h-10 w-full rounded-lg border border-slate-400 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-700"
+              />
+            </label>
+            <button type="button" onClick={addCustomCustodyColumn} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-sky-700 px-4 py-2 text-sm font-black text-white shadow-sm transition hover:bg-sky-800 active:scale-95">
+              <Plus className="h-4 w-4" /> إضافة عمود
+            </button>
+            {customCustodyColumns.length > 0 && (
+              <div className="flex w-full flex-wrap gap-2 pt-1">
+                {customCustodyColumns.map((column) => (
+                  <span key={column.key} className="inline-flex items-center gap-1 rounded-lg border border-sky-200 bg-white px-2.5 py-1.5 text-xs font-bold text-sky-900">
+                    {column.label}
+                    <button type="button" onClick={() => removeCustomCustodyColumn(column.key)} className="rounded p-0.5 text-rose-600 hover:bg-rose-50" aria-label={`حذف العمود ${column.label}`} title="حذف العمود">
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* جدول عرض التقرير */}
         
