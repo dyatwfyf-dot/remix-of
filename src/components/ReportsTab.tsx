@@ -195,6 +195,30 @@ function ReportOptionPicker({
   );
 }
 
+type CustomCustodyColumn = TabCol & { positionAfter?: string };
+
+const buildCustomCustodyColumns = (
+  baseColumns: TabCol[],
+  customColumns: CustomCustodyColumn[],
+): TabCol[] => {
+  const ordered = [...baseColumns];
+  const lastInsertedAfter = new Map<string, string>();
+  customColumns.forEach((column) => {
+    const anchor = column.positionAfter || baseColumns[baseColumns.length - 1]?.key || "";
+    const lastInsertedKey = lastInsertedAfter.get(anchor);
+    const anchorIndex = ordered.findIndex((item) => item.key === (lastInsertedKey || anchor));
+    if (anchor === "__start__") {
+      ordered.unshift(column);
+    } else if (anchorIndex >= 0) {
+      ordered.splice(anchorIndex + 1, 0, column);
+    } else {
+      ordered.push(column);
+    }
+    lastInsertedAfter.set(anchor, column.key);
+  });
+  return ordered;
+};
+
 export interface ReportRow {
   id ? : string;
   date ? : string;
@@ -812,14 +836,16 @@ export default function ReportsTab() {
   });
   const [period, setPeriod] = useState < PeriodType > ("all");
   const [customCustodyColumnLabel, setCustomCustodyColumnLabel] = useState("");
-  const [customCustodyColumns, setCustomCustodyColumns] = useState<TabCol[]>(() => {
+  const [customCustodyColumnPosition, setCustomCustodyColumnPosition] = useState("amount");
+  const [customCustodyColumns, setCustomCustodyColumns] = useState<CustomCustodyColumn[]>(() => {
     try {
       const saved = localStorage.getItem("reports-custom-custody-columns-v1");
       const parsed: unknown = saved ? JSON.parse(saved) : [];
       return Array.isArray(parsed)
-        ? parsed.filter((column): column is TabCol =>
+        ? parsed.filter((column): column is CustomCustodyColumn =>
             !!column && typeof column.key === "string" && typeof column.label === "string" &&
             column.key.startsWith("customCustody_") && column.label.trim().length > 0)
+            .map((column) => ({ ...column, positionAfter: typeof column.positionAfter === "string" ? column.positionAfter : "amount" }))
         : [];
     } catch { return []; }
   });
@@ -839,7 +865,11 @@ export default function ReportsTab() {
       toast.error("هذا العمود موجود بالفعل"); return;
     }
     setCustomCustodyColumns((current) => [
-      ...current, { key: `customCustody_${Date.now()}_${current.length}`, label },
+      ...current, {
+        key: `customCustody_${Date.now()}_${current.length}`,
+        label,
+        positionAfter: customCustodyColumnPosition,
+      },
     ]);
     setCustomCustodyColumnLabel("");
     toast.success("تمت إضافة العمود إلى كشف العهدة والسلف");
@@ -1790,30 +1820,25 @@ export default function ReportsTab() {
     if (source === "youssefLoan") {
       return {
         title: "مسير إخلاء العهدة",
-        columns: [
-          { key: "date", label: "التاريخ" },
-          { key: "description", label: "البيان" },
-          { key: "settlementNo", label: "رقم كشف التسوية" },
-          { key: "notes", label: "الملاحظات" },
-          {
-            key: "amount",
-            label: "المبلغ"
-          },
-          ...customCustodyColumns,
-        ],
-      }
-    };
-    if (source === "tawfiqCustody") {
-      return {
-        title: "مسير إخلاء العهدة",
-        columns: [
+        columns: buildCustomCustodyColumns([
           { key: "date", label: "التاريخ" },
           { key: "description", label: "البيان" },
           { key: "settlementNo", label: "رقم كشف التسوية" },
           { key: "notes", label: "الملاحظات" },
           { key: "amount", label: "المبلغ" },
-          ...customCustodyColumns,
-        ],
+        ], customCustodyColumns),
+      }
+    };
+    if (source === "tawfiqCustody") {
+      return {
+        title: "مسير إخلاء العهدة",
+        columns: buildCustomCustodyColumns([
+          { key: "date", label: "التاريخ" },
+          { key: "description", label: "البيان" },
+          { key: "settlementNo", label: "رقم كشف التسوية" },
+          { key: "notes", label: "الملاحظات" },
+          { key: "amount", label: "المبلغ" },
+        ], customCustodyColumns),
       };
     }
     if (source === "traineeFeeStatus") {
@@ -2538,6 +2563,24 @@ export default function ReportsTab() {
                 maxLength={60}
                 className="mt-1 min-h-10 w-full rounded-lg border border-slate-400 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-700"
               />
+            </label>
+            <label className="min-w-[180px] flex-1 text-right text-xs font-black text-slate-700">
+              موضع العمود داخل الجدول
+              <select
+                value={customCustodyColumnPosition}
+                onChange={(event) => setCustomCustodyColumnPosition(event.target.value)}
+                className="mt-1 min-h-10 w-full rounded-lg border border-slate-400 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-sky-700"
+              >
+                <option value="__start__">بداية الجدول</option>
+                <option value="date">بعد التاريخ</option>
+                <option value="description">بعد البيان</option>
+                <option value="settlementNo">بعد رقم كشف التسوية</option>
+                <option value="notes">بعد الملاحظات</option>
+                <option value="amount">بعد المبلغ</option>
+                {customCustodyColumns.map((column) => (
+                  <option key={column.key} value={column.key}>بعد {column.label}</option>
+                ))}
+              </select>
             </label>
             <button type="button" onClick={addCustomCustodyColumn} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-sky-700 px-4 py-2 text-sm font-black text-white shadow-sm transition hover:bg-sky-800 active:scale-95">
               <Plus className="h-4 w-4" /> إضافة عمود
