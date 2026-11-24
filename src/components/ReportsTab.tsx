@@ -2945,6 +2945,8 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                                 <input
                                   type="text"
                                   value={customCellValue}
+                                  data-custom-custody-cell="true"
+                                  data-print-value={customCellValue}
                                   onChange={(event) =>
                                     setCustomCustodyCellData((previous) => ({
                                       ...previous,
@@ -2954,9 +2956,6 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                                   aria-label={`${col.label} - ${String(row.date || "")}`}
                                   className="w-full min-w-[72px] rounded border border-transparent bg-transparent px-1 py-1 text-center text-xs font-bold text-slate-900 outline-none transition hover:border-sky-300 focus:border-sky-600 focus:bg-white focus:ring-1 focus:ring-sky-200 print:hidden"
                                 />
-                                <span className="hidden print:inline reports-cell-content whitespace-pre-wrap break-words">
-                                  {customCellValue}
-                                </span>
                               </td>
                             );
                           }
