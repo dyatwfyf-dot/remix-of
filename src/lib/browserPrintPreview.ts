@@ -49,8 +49,6 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   // Reserve enough page-bottom space for the automatic page-number footer.
   const defaultPageBottomMargin = `${Math.max(6, Number.parseFloat(defaultMargin) || 0)}mm`;
   const defaultPageMargins = `${defaultMargin} ${defaultMargin} ${defaultPageBottomMargin} ${defaultMargin}`;
-    ? `${options.defaultMarginMm}mm`
-    : options.margin === "normal" ? "8mm" : "3mm";
   const hasEmbeddedLetterhead = tableHtml.includes("report-letterhead");
   // The toolbar owns page geometry; ignore conflicting declarations from tab CSS.
   const stripPageRules = (css: string) => {
@@ -380,7 +378,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       color: #000000 !important;
       font-weight: 800;
       font-size: 16px !important;
-      line-height: var(--print-cell-line-height, 1.45) !important;
+      line-height: var(--print-cell-line-height, 1.4) !important;
     }
 
     thead th {
@@ -612,7 +610,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       vertical-align: middle !important;
       text-align: center !important;
       font-size: 16px !important;
-      line-height: var(--print-cell-line-height, 1.45) !important;
+      line-height: var(--print-cell-line-height, 1.4) !important;
     }
     .sheet-paper table th > *,
     .sheet-paper table td > * {
@@ -622,7 +620,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       display: inline-block !important;
       vertical-align: middle !important;
       font-size: 16px !important;
-      line-height: var(--print-cell-line-height, 1.45) !important;
+      line-height: var(--print-cell-line-height, 1.4) !important;
     }
 
   html body table tr.report-grand-total-row > td, html body table tr.total-row > td,
@@ -717,9 +715,9 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       white-space: normal !important;
       overflow-wrap: anywhere !important;
       word-break: normal !important;
-      line-height: var(--print-cell-line-height, 1.45) !important;
+      line-height: var(--print-cell-line-height, 1.4) !important;
       font-size: var(--print-cell-font-size, 12px) !important;
-      padding: var(--print-cell-padding, 3px 4px) !important;
+      padding: var(--print-cell-padding, 4px 5px) !important;
     }
     #tableContainer table th {
       font-size: var(--print-header-font-size, 12px) !important;
@@ -804,7 +802,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       padding: 4px 5px !important;
       font-family: ${reportDataFontStack} !important;
       font-size: 16px !important;
-      line-height: var(--print-cell-line-height, 1.45) !important;
+      line-height: var(--print-cell-line-height, 1.4) !important;
       text-align: center !important;
       vertical-align: middle !important;
       white-space: normal !important;
@@ -949,7 +947,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       min-width: 0 !important;
       max-width: none !important;
       font-size: var(--print-cell-font-size, 16px) !important;
-      padding: var(--print-cell-padding, 3px 4px) !important;
+      padding: var(--print-cell-padding, 4px 5px) !important;
       white-space: normal !important;
       overflow-wrap: anywhere !important;
       word-break: normal !important;
@@ -1223,8 +1221,8 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
           '#paperContainer #tableContainer table th,',
           '#paperContainer #tableContainer table td {',
           '  font-size: var(--print-cell-font-size, 14px) !important;',
-          '  line-height: var(--print-cell-line-height, 1.45) !important;',
-          '  padding: var(--print-cell-padding, 3px 4px) !important;',
+          '  line-height: var(--print-cell-line-height, 1.4) !important;',
+          '  padding: var(--print-cell-padding, 4px 5px) !important;',
           '}',
           '#paperContainer #tableContainer table thead th { font-size: var(--print-header-font-size, 14px) !important; }',
           '#paperContainer #tableContainer table th .pdf-cell-text,',
@@ -1237,8 +1235,8 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
           '  #paperContainer #tableContainer table th,',
           '  #paperContainer #tableContainer table td {',
           '    font-size: var(--print-cell-font-size, 14px) !important;',
-          '    line-height: var(--print-cell-line-height, 1.45) !important;',
-          '    padding: var(--print-cell-padding, 3px 4px) !important;',
+          '    line-height: var(--print-cell-line-height, 1.4) !important;',
+          '    padding: var(--print-cell-padding, 4px 5px) !important;',
           '  }',
           '  #paperContainer #tableContainer table thead th { font-size: var(--print-header-font-size, 14px) !important; }',
           '}'
