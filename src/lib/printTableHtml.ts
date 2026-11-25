@@ -186,6 +186,23 @@ export const tablePrintStyles = `
     line-height: 1.4;
   }
 
+  .letterhead-title-ar,
+  .letterhead-bismillah {
+    font-family: ${reportHeadingFontStack} !important;
+    font-weight: 900 !important;
+    color: #000000 !important;
+  }
+  .letterhead-title-en {
+    font-family: ${reportHeadingFontStack} !important;
+    font-weight: 900 !important;
+  }
+  .letterhead-sub-ar,
+  .letterhead-branch-ar,
+  .letterhead-sub-en,
+  .letterhead-branch-en {
+    font-family: ${reportDataFontStack} !important;
+  }
+
   .custody-date-row td {
     padding: 5px 8px !important;
     border: 1px solid #b77900 !important;
@@ -237,7 +254,7 @@ export const tablePrintStyles = `
 
   th, td {
     border: 1px solid #000000 !important;
-    padding: 4px 3px !important;
+    padding: 4px 5px !important;
     text-align: center !important;
     vertical-align: middle !important;
     font-size: 16px !important;
@@ -277,7 +294,7 @@ export const tablePrintStyles = `
     color: #000000 !important;
     background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important;
     background-color: #ffd700 !important;
-    color: #3b2600 !important;
+    color: #000000 !important;
     font-weight: 900 !important;
     font-size: 16px !important;
     padding: 5px 3px !important;
@@ -429,7 +446,7 @@ background: transparent !important;
   /* الأرقام والتواريخ والأكواد تبقى في سطر واحد لسهولة قراءتها */
   .num, .numeric-cell, .date-cell, .compact-cell, .ref-cell, .idx {
     direction: ltr !important;
-    font-family: ${reportArabicFontStack} !important;
+    font-family: ${reportDataFontStack} !important;
     font-weight: 800 !important;
     white-space: nowrap !important;
     word-break: keep-all !important;
@@ -483,7 +500,7 @@ background: transparent !important;
   .summary-card-row .summary-value-cell {
     background: #51c4ec !important;
     text-align: center !important;
-    font-family: ${reportArabicFontStack} !important;
+    font-family: ${reportDataFontStack} !important;
     font-weight: 900 !important;
     direction: ltr !important;
   }
