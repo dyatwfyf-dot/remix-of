@@ -1038,11 +1038,22 @@ table:has(> tbody tr:first-child th:first-child:is(.serial-number-column, [data-
 }
 
 
-/* الخط الاحترافي لمخرجات التقارير المالية والإدارية دون تغيير خط بقية التبويبات. */
-#tableContainer table.reports-data-table,
-#tableContainer table.reports-data-table *,
+/* Typography split for report output: Cairo for headings and IBM Plex for table data. */
+#tableContainer table.reports-data-table {
+  font-family: var(--font-report) !important;
+}
+#tableContainer table.reports-data-table thead th,
+#tableContainer table.reports-data-table thead th *,
+#tableContainer table.reports-fee-status-table thead th,
+#tableContainer table.reports-fee-status-table thead th *,
 .mizan-reports-tab .reports-print-heading,
 .mizan-reports-tab .reports-print-heading * {
+  font-family: "Cairo", sans-serif !important;
+}
+#tableContainer table.reports-data-table tbody td,
+#tableContainer table.reports-data-table tbody td *,
+#tableContainer table.reports-fee-status-table tbody td,
+#tableContainer table.reports-fee-status-table tbody td * {
   font-family: var(--font-report) !important;
 }
 
