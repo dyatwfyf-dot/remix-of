@@ -54,7 +54,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   const stripPageRules = (css: string) => {
     let output = "";
     let cursor = 0;
-    const pageRulePattern = /@page[^{}]*[{]/gi;
+    const pageRulePattern = /@page\b[^{}]*[{]/gi;
     let match: RegExpExecArray | null;
 
     while ((match = pageRulePattern.exec(css)) !== null) {
@@ -1046,6 +1046,12 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     #tableContainer table tbody td.financial-amount-cell,
     #tableContainer table tbody td.reports-numeric-cell,
     #tableContainer table tbody td.reports-no-wrap-cell,
+    #tableContainer table tbody td.num .pdf-cell-text,
+    #tableContainer table tbody td.numeric-cell .pdf-cell-text,
+    #tableContainer table tbody td.amount-cell .pdf-cell-text,
+    #tableContainer table tbody td.financial-amount-cell .pdf-cell-text,
+    #tableContainer table tbody td.reports-numeric-cell .pdf-cell-text,
+    #tableContainer table tbody td.reports-no-wrap-cell .pdf-cell-text,
     .preview-report-content table tbody td.num,
     .preview-report-content table tbody td.numeric-cell,
     .preview-report-content table tbody td.amount-cell,
