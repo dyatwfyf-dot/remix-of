@@ -3,6 +3,17 @@
  * The same declarations are injected into standalone print/PDF documents so they
  * render consistently without requesting fonts from external services.
  */
+/** Font family for official Arabic headings, report titles, and table headers. */
+export const reportHeadingFontStack = '"Cairo", Tahoma, Arial, sans-serif';
+
+/** Font family for table data, numeric values, and ordinary report text. */
+export const reportDataFontStack =
+  '"IBM Plex Sans Arabic", "Noto Sans Arabic", Tahoma, Arial, sans-serif';
+
+/**
+ * Backwards-compatible stack for print paths that have not migrated to the
+ * heading/data split yet.
+ */
 export const reportArabicFontStack =
   '"IBM Plex Sans Arabic", "Noto Sans Arabic", "Noto Naskh Arabic", "Cairo", Tahoma, Arial, sans-serif';
 

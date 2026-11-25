@@ -1,7 +1,7 @@
 import { fmt } from "./format";
 import { formatReportDate } from "@/lib/reportDate";
 import { noteRowClass, noteRowCss } from "@/lib/notesColors";
-import { reportArabicFontFacesCss, reportArabicFontStack } from "./reportArabicFonts";
+import { reportArabicFontFacesCss, reportDataFontStack, reportHeadingFontStack } from "./reportArabicFonts";
 export type TableCol = { key: string; label: string };
 
 /**
@@ -144,7 +144,13 @@ export const tablePrintStyles = `
   ${reportArabicFontFacesCss}
   @page {
     size: A4;
-    margin: 3mm;
+    margin: 3mm 3mm 6mm;
+    @bottom-center {
+      content: "صفحة " counter(page) " من " counter(pages);
+      font-family: "Cairo", sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+    }
   }
   
   *, *::before, *::after {
@@ -154,7 +160,8 @@ export const tablePrintStyles = `
   }
 
   body {
-    font-family: ${reportArabicFontStack} !important;
+    font-family: ${reportDataFontStack} !important;
+    counter-reset: pageNumber;
     padding: 3mm 4mm;
     color: #000000 !important;
     direction: rtl;
@@ -165,14 +172,34 @@ export const tablePrintStyles = `
     print-color-adjust: exact !important;
   }
 
-  h1 {
-    text-align: center;
+  h1,
+  .report-title {
+    font-family: ${reportHeadingFontStack} !important;
+    font-weight: 900 !important;
     color: #000000 !important;
+    text-align: center;
     margin: 0 0 4px;
     font-size: 22px;
     font-weight: 900;
     white-space: pre-line;
     line-height: 1.4;
+  }
+
+  .letterhead-title-ar,
+  .letterhead-bismillah {
+    font-family: ${reportHeadingFontStack} !important;
+    font-weight: 900 !important;
+    color: #000000 !important;
+  }
+  .letterhead-title-en {
+    font-family: ${reportHeadingFontStack} !important;
+    font-weight: 900 !important;
+  }
+  .letterhead-sub-ar,
+  .letterhead-branch-ar,
+  .letterhead-sub-en,
+  .letterhead-branch-en {
+    font-family: ${reportDataFontStack} !important;
   }
 
   .custody-date-row td {
@@ -226,19 +253,28 @@ export const tablePrintStyles = `
 
   th, td {
     border: 1px solid #000000 !important;
-    padding: 4px 3px !important;
     text-align: center !important;
     vertical-align: middle !important;
     font-size: 16px !important;
-    line-height: 1.45 !important;
-    font-family: ${reportArabicFontStack} !important;
+    line-height: 1.4 !important;
+    font-family: ${reportDataFontStack} !important;
+    padding: 4px 5px !important;
+    color: #000000 !important;
     height: auto !important;
     white-space: normal !important;
     word-break: normal !important;
     overflow-wrap: anywhere !important;
   }
-  td.num, td.numeric-cell, td.date-cell, td.ref-cell, td.compact-cell, td.idx,
+  td.num, td.numeric-cell, td.date-cell, td.ref-cell, td.compact-cell, td.idx {
+    font-family: ${reportDataFontStack} !important;
+    font-weight: 700 !important;
+    font-variant-numeric: tabular-nums !important;
+    font-feature-settings: "tnum" 1 !important;
+    white-space: nowrap !important;
+  }
   th.num, th.numeric-cell, th.date-cell, th.ref-cell, th.compact-cell, th.idx {
+    font-family: ${reportHeadingFontStack} !important;
+    font-weight: 800 !important;
     white-space: nowrap !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
@@ -250,11 +286,12 @@ export const tablePrintStyles = `
   }
 
   thead th {
-    background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important;
-    background-color: #ffd700 !important;
-    color: #3b2600 !important;
+    font-family: ${reportHeadingFontStack} !important;
     font-weight: 900 !important;
     font-size: 16px !important;
+    color: #000000 !important;
+    background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important;
+    background-color: #ffd700 !important;
     padding: 5px 3px !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -266,7 +303,7 @@ export const tablePrintStyles = `
   #tableContainer table thead th[data-col-key="description"] {
     background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important;
     background-color: #ffd700 !important;
-    color: #3b2600 !important;
+    color: #000000 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -282,7 +319,12 @@ export const tablePrintStyles = `
 
   tbody td {
     color: #000000 !important;
-    font-weight: 800 !important;
+    font-family: ${reportDataFontStack} !important;
+    font-weight: 500 !important;
+    line-height: 1.4 !important;
+    padding: 4px 5px !important;
+    font-variant-numeric: tabular-nums !important;
+    font-feature-settings: "tnum" 1 !important;
     background: #ffffff !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -399,7 +441,7 @@ background: transparent !important;
   /* الأرقام والتواريخ والأكواد تبقى في سطر واحد لسهولة قراءتها */
   .num, .numeric-cell, .date-cell, .compact-cell, .ref-cell, .idx {
     direction: ltr !important;
-    font-family: ${reportArabicFontStack} !important;
+    font-family: ${reportDataFontStack} !important;
     font-weight: 800 !important;
     white-space: nowrap !important;
     word-break: keep-all !important;
@@ -453,8 +495,10 @@ background: transparent !important;
   .summary-card-row .summary-value-cell {
     background: #51c4ec !important;
     text-align: center !important;
-    font-family: ${reportArabicFontStack} !important;
-    font-weight: 900 !important;
+    font-family: ${reportDataFontStack} !important;
+    font-weight: 700 !important;
+    font-variant-numeric: tabular-nums !important;
+    font-feature-settings: "tnum" 1 !important;
     direction: ltr !important;
   }
   .summary-card-0 td {
@@ -497,7 +541,7 @@ background: transparent !important;
     align-items: end !important;
   }
   .sig-title {
-    font-family: ${reportArabicFontStack} !important;
+    font-family: ${reportHeadingFontStack} !important;
     font-weight: 900 !important;
     font-size: 16px !important;
     color: #000000 !important;
@@ -510,8 +554,8 @@ background: transparent !important;
     overflow-wrap: anywhere !important;
   }
   .sig-name {
-    font-family: ${reportArabicFontStack} !important;
-    font-weight: 800 !important;
+    font-family: ${reportDataFontStack} !important;
+    font-weight: 600 !important;
     font-size: 16px !important;
     color: #000000 !important;
     text-align: center !important;
@@ -676,7 +720,7 @@ export function buildTableHtml(opts: {
   const reportHeading = titleLines.shift() || "";
   const custodyDateLine = titleLines.join(" ").trim();
   const titleRow = `<tr class="doc-title-row"><td colspan="${columns.length + indexColumnCount}" class="doc-title-cell">
-    <h1>${escapeHtml(reportHeading)}</h1>
+    <h1 class="report-title">${escapeHtml(reportHeading)}</h1>
     ${isCustodyReport ? "" : `<div class="sub">${escapeHtml(sub)}</div>`}
   </td></tr>${isCustodyReport && custodyDateLine ? `<tr class="custody-date-row"><td colspan="${columns.length + indexColumnCount}"><div class="custody-date-line">${escapeHtml(custodyDateLine)}</div></td></tr>` : ""}`;
 
