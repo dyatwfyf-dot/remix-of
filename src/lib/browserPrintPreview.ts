@@ -1069,18 +1069,22 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       font-weight: 600 !important;
       color: #000000 !important;
     }
+    #tableContainer table tbody tr.total-row > td,
+    #tableContainer table tbody tr.total-row > td *,
+    #tableContainer table tbody tr.report-grand-total-row > td,
+    #tableContainer table tbody tr.report-grand-total-row > td *,
+    #tableContainer table tbody tr.reports-trainee-total-row > td,
+    #tableContainer table tbody tr.reports-trainee-total-row > td *,
+    .preview-report-content table tbody tr.total-row > td,
+    .preview-report-content table tbody tr.total-row > td *,
+    .preview-report-content table tbody tr.report-grand-total-row > td,
+    .preview-report-content table tbody tr.report-grand-total-row > td *,
+    .preview-report-content table tbody tr.reports-trainee-total-row > td,
+    .preview-report-content table tbody tr.reports-trainee-total-row > td * {
+      color: #ffffff !important;
+    }
     @media print {
       body { counter-reset: pageNumber; }
-      #tableContainer table tbody tr.total-row > td,
-      #tableContainer table tbody tr.total-row > td *,
-      #tableContainer table tbody tr.report-grand-total-row > td,
-      #tableContainer table tbody tr.report-grand-total-row > td *,
-      .preview-report-content table tbody tr.total-row > td,
-      .preview-report-content table tbody tr.total-row > td *,
-      .preview-report-content table tbody tr.report-grand-total-row > td,
-      .preview-report-content table tbody tr.report-grand-total-row > td * {
-        color: #ffffff !important;
-      }
     }
 </style>
 </head>
