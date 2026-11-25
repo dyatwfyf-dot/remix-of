@@ -253,7 +253,6 @@ export const tablePrintStyles = `
 
   th, td {
     border: 1px solid #000000 !important;
-    padding: 4px 5px !important;
     text-align: center !important;
     vertical-align: middle !important;
     font-size: 16px !important;
@@ -288,14 +287,11 @@ export const tablePrintStyles = `
 
   thead th {
     font-family: ${reportHeadingFontStack} !important;
-    font-weight: 800 !important;
-    font-size: 15px !important;
+    font-weight: 900 !important;
+    font-size: 16px !important;
     color: #000000 !important;
     background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important;
     background-color: #ffd700 !important;
-    color: #000000 !important;
-    font-weight: 900 !important;
-    font-size: 16px !important;
     padding: 5px 3px !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -500,7 +496,9 @@ background: transparent !important;
     background: #51c4ec !important;
     text-align: center !important;
     font-family: ${reportDataFontStack} !important;
-    font-weight: 900 !important;
+    font-weight: 700 !important;
+    font-variant-numeric: tabular-nums !important;
+    font-feature-settings: "tnum" 1 !important;
     direction: ltr !important;
   }
   .summary-card-0 td {
@@ -557,7 +555,7 @@ background: transparent !important;
   }
   .sig-name {
     font-family: ${reportDataFontStack} !important;
-    font-weight: 800 !important;
+    font-weight: 600 !important;
     font-size: 16px !important;
     color: #000000 !important;
     text-align: center !important;
