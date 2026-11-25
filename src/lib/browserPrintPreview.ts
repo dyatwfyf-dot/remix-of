@@ -46,6 +46,11 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   const defaultMargin = options.defaultMarginMm !== undefined
     ? `${options.defaultMarginMm}mm`
     : options.margin === "normal" ? "8mm" : "3mm";
+  // Reserve enough page-bottom space for the automatic page-number footer.
+  const defaultPageBottomMargin = `${Math.max(6, Number.parseFloat(defaultMargin) || 0)}mm`;
+  const defaultPageMargins = `${defaultMargin} ${defaultMargin} ${defaultPageBottomMargin} ${defaultMargin}`;
+    ? `${options.defaultMarginMm}mm`
+    : options.margin === "normal" ? "8mm" : "3mm";
   const hasEmbeddedLetterhead = tableHtml.includes("report-letterhead");
   // The toolbar owns page geometry; ignore conflicting declarations from tab CSS.
   const stripPageRules = (css: string) => {
@@ -82,7 +87,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   <style id="dynamic-page-rule">
     @page {
       size: ${paperSize} ${defaultOrientation};
-      margin: ${defaultMargin};
+      margin: ${defaultPageMargins};
       ${pageNumberMarginBoxCss}
     }
   </style>
@@ -1120,7 +1125,8 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
           <option value="1">متقارب جداً (1.0)</option>
           <option value="1.2">ضيق (1.2)</option>
           <option value="1.35">متوسط (1.35)</option>
-          <option value="1.45" selected>عادي (1.45)</option>
+          <option value="1.4" selected>عادي (1.4)</option>
+          <option value="1.45">مريح (1.45)</option>
           <option value="1.6">واسع (1.6)</option>
           <option value="1.8">واسع جداً (1.8)</option>
           <option value="2">مزدوج (2.0)</option>
@@ -1198,7 +1204,10 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       const pageNumberMarginRule = ${JSON.stringify(pageNumberMarginBoxCss)};
       const buildDynamicPageRule = function(pageSize, orientation, pageMargin, important) {
         const priority = important ? ' !important' : '';
-        return '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargin + priority + '; ' + pageNumberMarginRule + ' }';
+        const requestedMargin = Number.parseFloat(pageMargin);
+        const footerMargin = Math.max(6, Number.isFinite(requestedMargin) ? requestedMargin : 3) + 'mm';
+        const pageMargins = pageMargin + ' ' + pageMargin + ' ' + footerMargin + ' ' + pageMargin;
+        return '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargins + priority + '; ' + pageNumberMarginRule + ' }';
       };
       // Apply live controls after all report-specific CSS so no fixed !important rule can cancel them.
       const liveSettingsStyle = document.createElement('style');
@@ -1221,7 +1230,6 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
           '#paperContainer #tableContainer table th .pdf-cell-text,',
           '#paperContainer #tableContainer table td .pdf-cell-text { font-size: inherit !important; line-height: inherit !important; }',
           '@media print {',
-          '  ' + pageRule,
           '  html, body { margin: 0 !important; padding: 0 !important; }',
           '  .sheet-viewport { margin: 0 !important; padding: 0 !important; }',
           '  #paperContainer.sheet-paper { width: 100% !important; padding: ' + pageMargin + ' !important; margin: 0 auto !important; }',
@@ -1643,7 +1651,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       parsed.querySelectorAll("script").forEach((script) => script.remove());
       const printOverrides = parsed.createElement("style");
       printOverrides.textContent = `
-        @page { size: ${paperSize} ${defaultOrientation}; margin: ${defaultMargin}; ${pageNumberMarginBoxCss} }
+        @page { size: ${paperSize} ${defaultOrientation}; margin: ${defaultPageMargins}; ${pageNumberMarginBoxCss} }
         html, body { width: 100% !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; background: #fff !important; }
         .sheet-viewport { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
         .sheet-paper { width: 100% !important; min-width: 0 !important; min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 0 !important; transform: none !important; box-shadow: none !important; border-radius: 0 !important; }
