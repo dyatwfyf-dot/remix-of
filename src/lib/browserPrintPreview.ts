@@ -4,7 +4,14 @@ import { reportLetterheadHtml } from "./printTableHtml";
 import { reportTableThemeCss } from "./reportTheme";
 import { printReportHtmlAsync } from "./nativePrinter";
 import { excelLikePrintTablesCss } from "./excelLikePrintTablesCss";
-import { reportArabicFontFacesCss, reportArabicFontStack } from "./reportArabicFonts";
+import { reportArabicFontFacesCss, reportDataFontStack, reportHeadingFontStack } from "./reportArabicFonts";
+
+const pageNumberMarginBoxCss = `@bottom-center {
+  content: "صفحة " counter(page) " من " counter(pages);
+  font-family: "Cairo", sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+}`;
 
 interface OpenBrowserPrintPreviewOptions {
   title: string;
@@ -41,7 +48,28 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     : options.margin === "normal" ? "8mm" : "3mm";
   const hasEmbeddedLetterhead = tableHtml.includes("report-letterhead");
   // The toolbar owns page geometry; ignore conflicting declarations from tab CSS.
-  const stripPageRules = (css: string) => css.replace(/@page\s*[^{}]*\{[^{}]*\}/gi, "");
+  const stripPageRules = (css: string) => {
+    let output = "";
+    let cursor = 0;
+    const pageRulePattern = /@page\\b[^{}]*\\{/gi;
+    let match: RegExpExecArray | null;
+
+    while ((match = pageRulePattern.exec(css)) !== null) {
+      let depth = 1;
+      let end = pageRulePattern.lastIndex;
+      for (; end < css.length && depth > 0; end += 1) {
+        if (css[end] === "{") depth += 1;
+        else if (css[end] === "}") depth -= 1;
+      }
+      if (depth !== 0) continue;
+
+      output += css.slice(cursor, match.index);
+      cursor = end;
+      pageRulePattern.lastIndex = end;
+    }
+
+    return output + css.slice(cursor);
+  };
   const safeContentCss = stripPageRules(contentCss);
   const safeFinalCss = stripPageRules(finalCss);
 
@@ -55,6 +83,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     @page {
       size: ${paperSize} ${defaultOrientation};
       margin: ${defaultMargin};
+      ${pageNumberMarginBoxCss}
     }
   </style>
   <style>
@@ -62,7 +91,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       --print-cell-font-size: 16px;
       --print-header-font-size: 16px;
       --print-cell-padding: 4px 5px;
-      --print-cell-line-height: 1.45;
+      --print-cell-line-height: 1.4;
     }
 
     *, *::before, *::after {
@@ -72,7 +101,8 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     body {
-      font-family: ${reportArabicFontStack} !important;
+      font-family: ${reportDataFontStack} !important;
+      counter-reset: pageNumber;
       direction: rtl;
       background: #525659;
       color: #000000 !important;
@@ -244,7 +274,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-title-ar {
-      font-family: ${reportArabicFontStack} !important;
+      font-family: ${stack} !important;
       font-size: 13.5px !important;
       font-weight: 900 !important;
       line-height: 1.3 !important;
@@ -252,7 +282,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-sub-ar {
-      font-family: ${reportArabicFontStack} !important;
+      font-family: ${stack} !important;
       font-size: 12px !important;
       font-weight: 800 !important;
       line-height: 1.3 !important;
@@ -260,7 +290,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-branch-ar {
-      font-family: ${reportArabicFontStack} !important;
+      font-family: ${stack} !important;
       font-size: 12.5px !important;
       font-weight: 900 !important;
       line-height: 1.3 !important;
@@ -278,7 +308,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-bismillah {
-      font-family: ${reportArabicFontStack} !important;
+      font-family: ${stack} !important;
       font-size: 14.5px !important;
       font-weight: 900 !important;
       color: #000000 !important;
@@ -299,7 +329,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-title-en {
-      font-family: ${reportArabicFontStack} !important;
+      font-family: ${stack} !important;
       font-size: 12px !important;
       font-weight: 900 !important;
       line-height: 1.25 !important;
@@ -307,7 +337,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-sub-en {
-      font-family: ${reportArabicFontStack} !important;
+      font-family: ${stack} !important;
       font-size: 10.5px !important;
       font-weight: 800 !important;
       line-height: 1.25 !important;
@@ -315,7 +345,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-branch-en {
-      font-family: ${reportArabicFontStack} !important;
+      font-family: ${stack} !important;
       font-size: 11px !important;
       font-weight: 900 !important;
       line-height: 1.25 !important;
@@ -408,7 +438,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
 
     .num, .numeric-cell, .date-cell, .compact-cell, .ref-cell, .idx {
       direction: ltr !important;
-      font-family: ${reportArabicFontStack} !important;
+      font-family: ${reportDataFontStack} !important;
       font-weight: 800 !important;
       white-space: nowrap !important;
       word-break: keep-all !important;
@@ -528,7 +558,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       align-items: end !important;
     }
     #tableContainer .sig-title {
-      font-family: ${reportArabicFontStack} !important;
+      font-family: ${stack} !important;
       font-weight: 900 !important;
       font-size: 16px !important;
       color: #000000 !important;
@@ -540,7 +570,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       overflow-wrap: anywhere !important;
     }
     #tableContainer .sig-name {
-      font-family: ${reportArabicFontStack} !important;
+      font-family: ${stack} !important;
       font-weight: 800 !important;
       font-size: 16px !important;
       color: #000000 !important;
@@ -767,7 +797,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       min-width: 0 !important;
       max-width: none !important;
       padding: 4px 5px !important;
-      font-family: ${reportArabicFontStack} !important;
+      font-family: ${reportDataFontStack} !important;
       font-size: 16px !important;
       line-height: var(--print-cell-line-height, 1.45) !important;
       text-align: center !important;
@@ -975,6 +1005,76 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
 
       /* Shared content-measured Excel-like layout for every printed table. */
     ${excelLikePrintTablesCss}
+
+    /* Central heading/data typography shared by every report tab. */
+    #paperContainer .letterhead-title-ar,
+    #paperContainer .letterhead-bismillah,
+    #tableContainer .report-title,
+    #tableContainer .doc-title-cell h1,
+    #tableContainer .reports-print-heading h1 {
+      font-family: ${reportHeadingFontStack} !important;
+      font-weight: 900 !important;
+      color: #000000 !important;
+    }
+    #tableContainer table thead th,
+    #tableContainer table thead th .pdf-cell-text,
+    .preview-report-content table thead th,
+    .preview-report-content table thead th .pdf-cell-text {
+      font-family: ${reportHeadingFontStack} !important;
+      font-weight: 800 !important;
+      font-size: var(--print-header-font-size, 16px) !important;
+      color: #000000 !important;
+    }
+    #tableContainer table tbody td,
+    #tableContainer table tbody td .pdf-cell-text,
+    .preview-report-content table tbody td,
+    .preview-report-content table tbody td .pdf-cell-text {
+      font-family: ${reportDataFontStack} !important;
+      font-weight: 500 !important;
+      color: #000000 !important;
+      line-height: var(--print-cell-line-height, 1.4) !important;
+      padding: var(--print-cell-padding, 4px 5px) !important;
+      font-variant-numeric: tabular-nums !important;
+      font-feature-settings: "tnum" 1 !important;
+    }
+    #tableContainer table tbody td.num,
+    #tableContainer table tbody td.numeric-cell,
+    #tableContainer table tbody td.amount-cell,
+    #tableContainer table tbody td.financial-amount-cell,
+    #tableContainer table tbody td.reports-numeric-cell,
+    #tableContainer table tbody td.reports-no-wrap-cell,
+    .preview-report-content table tbody td.num,
+    .preview-report-content table tbody td.numeric-cell,
+    .preview-report-content table tbody td.amount-cell,
+    .preview-report-content table tbody td.financial-amount-cell,
+    .preview-report-content table tbody td.reports-numeric-cell,
+    .preview-report-content table tbody td.reports-no-wrap-cell {
+      font-family: ${reportDataFontStack} !important;
+      font-weight: 700 !important;
+      font-variant-numeric: tabular-nums !important;
+      font-feature-settings: "tnum" 1 !important;
+    }
+    #tableContainer .sig-title,
+    .preview-report-content .sig-title {
+      font-family: ${reportHeadingFontStack} !important;
+      font-weight: 900 !important;
+      color: #000000 !important;
+    }
+    #tableContainer .sig-name,
+    .preview-report-content .sig-name {
+      font-family: ${reportDataFontStack} !important;
+      font-weight: 600 !important;
+      color: #000000 !important;
+    }
+    @media print {
+      body { counter-reset: pageNumber; }
+      #tableContainer table tbody tr.total-row > td,
+      #tableContainer table tbody tr.report-grand-total-row > td,
+      .preview-report-content table tbody tr.total-row > td,
+      .preview-report-content table tbody tr.report-grand-total-row > td {
+        color: #ffffff !important;
+      }
+    }
 </style>
 </head>
 <body>
@@ -1091,14 +1191,20 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       const paperContainer = document.getElementById('paperContainer');
       const tableContainer = document.getElementById('tableContainer');
       const dynamicRule = document.getElementById('dynamic-page-rule');
+      const pageNumberMarginRule = ${JSON.stringify(pageNumberMarginBoxCss)};
+      const buildDynamicPageRule = function(pageSize, orientation, pageMargin, important) {
+        const priority = important ? ' !important' : '';
+        return '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargin + priority + '; ' + pageNumberMarginRule + ' }';
+      };
       // Apply live controls after all report-specific CSS so no fixed !important rule can cancel them.
       const liveSettingsStyle = document.createElement('style');
       liveSettingsStyle.id = 'live-print-settings';
       function refreshLiveSettingsCss(pageSize, orientation, pageMargin) {
         // This node is always the final stylesheet, so toolbar values override
         // report-specific rules in both the preview and the browser print dialog.
+        const pageRule = buildDynamicPageRule(pageSize, orientation, pageMargin, true);
         liveSettingsStyle.textContent = [
-          '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargin + ' !important; }',
+          pageRule,
           ':root { --print-page-margin: ' + pageMargin + '; }',
           '#paperContainer.sheet-paper { padding: ' + pageMargin + ' !important; margin: 0 auto !important; }',
           '#paperContainer #tableContainer table th,',
@@ -1111,7 +1217,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
           '#paperContainer #tableContainer table th .pdf-cell-text,',
           '#paperContainer #tableContainer table td .pdf-cell-text { font-size: inherit !important; line-height: inherit !important; }',
           '@media print {',
-          '  @page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargin + ' !important; }',
+          '  ' + pageRule,
           '  html, body { margin: 0 !important; padding: 0 !important; }',
           '  .sheet-viewport { margin: 0 !important; padding: 0 !important; }',
           '  #paperContainer.sheet-paper { width: 100% !important; padding: ' + pageMargin + ' !important; margin: 0 auto !important; }',
@@ -1418,7 +1524,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
 
         tableContainer.style.width = '100%';
         const pageMargin = margin;
-        dynamicRule.textContent = '@page { size: ' + pageSize + ' ' + orientation + '; margin: ' + pageMargin + '; }';
+        dynamicRule.textContent = buildDynamicPageRule(pageSize, orientation, pageMargin, false);
         document.head.appendChild(dynamicRule);
         refreshLiveSettingsCss(pageSize, orientation, pageMargin);
 
@@ -1533,7 +1639,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       parsed.querySelectorAll("script").forEach((script) => script.remove());
       const printOverrides = parsed.createElement("style");
       printOverrides.textContent = `
-        @page { size: ${paperSize} ${defaultOrientation}; margin: ${defaultMargin}; }
+        @page { size: ${paperSize} ${defaultOrientation}; margin: ${defaultMargin}; ${pageNumberMarginBoxCss} }
         html, body { width: 100% !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; background: #fff !important; }
         .sheet-viewport { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
         .sheet-paper { width: 100% !important; min-width: 0 !important; min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 0 !important; transform: none !important; box-shadow: none !important; border-radius: 0 !important; }
