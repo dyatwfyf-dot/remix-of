@@ -487,6 +487,8 @@ ${reportArabicFontFacesCss}
 #tableContainer .reports-unpaid-name-grid{display:flex!important;flex-wrap:wrap!important;justify-content:center!important;gap:6px 10px!important;width:100%!important;direction:rtl!important;align-items:center!important}
 #tableContainer .reports-unpaid-name-item{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:fit-content!important;max-width:100%!important;min-width:0!important;min-height:auto!important;flex:0 1 auto!important;padding:4px 12px!important;border:1px solid #d6b95f!important;border-radius:4px!important;background-color:#fff8df!important;color:#171717!important;text-align:center!important;box-sizing:border-box!important;break-inside:avoid!important;page-break-inside:avoid!important}
 #tableContainer .reports-unpaid-name-text{display:block!important;width:auto!important;max-width:100%!important;min-width:0!important;text-align:center!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;font-weight:850!important}
+#tableContainer table.reports-data-table tbody tr.reports-unpaid-heading-row{break-after:avoid!important;page-break-after:avoid!important}
+#tableContainer table.reports-data-table tbody tr.reports-unpaid-name-row{break-before:avoid!important;page-break-before:avoid!important;break-inside:avoid!important;page-break-inside:avoid!important}
 #tableContainer .reports-unpaid-name-delete{display:none!important}
 #tableContainer table.reports-data-table tr.signature-block-row,#tableContainer table.reports-data-table tr.signature-block-row>td{background:#fff!important;color:#000!important;page-break-inside:avoid!important;break-inside:avoid!important}
 #tableContainer table.reports-data-table tr.signature-block-row>td{padding:5px 8px!important;border:0!important}
@@ -2767,7 +2769,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                     if (row.summaryLevel === "fee-unpaid-heading" || row.summaryLevel === "fee-unpaid-name") {
                       const names = [String(row.trainee || ""), String(row.unpaidTrainee2 || "")].filter(Boolean);
                       return (
-                        <tr key={String(row.id)} className={row.summaryLevel === "fee-unpaid-heading" ? "bg-amber-100 text-amber-950" : "bg-white text-black"}>
+                        <tr key={String(row.id)} className={row.summaryLevel === "fee-unpaid-heading" ? "reports-unpaid-heading-row bg-amber-100 text-amber-950" : "reports-unpaid-name-row bg-white text-black"}>
                           <td colSpan={sourceConfig.columns.length + 2} className="border border-black px-3 py-2 text-center font-bold">
                             {row.summaryLevel === "fee-unpaid-heading" ? String(row.trainee || "") : (
                               <div className="reports-unpaid-name-grid" dir="rtl">
