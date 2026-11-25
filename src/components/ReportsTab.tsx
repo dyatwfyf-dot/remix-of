@@ -1123,6 +1123,7 @@ export default function ReportsTab() {
   };
   
   const youssefRows = useMemo < ReportRow[] > (() => {
+    if (source !== "youssefLoan") return [];
     const matched = accounts
       .filter((row) => {
         const d = normalizeDate(row.date);
@@ -1181,9 +1182,10 @@ export default function ReportsTab() {
     result.push({ id: "sig-3", description: signaturesMeta.sig3Dept, name: signaturesMeta.sig3Name, summaryLevel: "signature" });
     
     return result;
-  }, [accounts, youssefOpeningBalance, period, year, selectedMonthSet, loanManualData, signaturesMeta]);
+  }, [source, accounts, youssefOpeningBalance, period, year, selectedMonthSet, loanManualData, signaturesMeta]);
   
   const tawfiqRows = useMemo < ReportRow[] > (() => {
+    if (source !== "tawfiqCustody") return [];
     const matched = accounts
       .filter((row) => {
         const d = normalizeDate(row.date);
@@ -1242,74 +1244,83 @@ export default function ReportsTab() {
     result.push({ id: "sig-3", description: signaturesMeta.sig3Dept, name: signaturesMeta.sig3Name, summaryLevel: "signature" });
     
     return result;
-  }, [accounts, tawfiqOpeningBalance, period, year, selectedMonthSet, loanManualData, signaturesMeta]);
+  }, [source, accounts, tawfiqOpeningBalance, period, year, selectedMonthSet, loanManualData, signaturesMeta]);
   
   const hafizaRows = useMemo < ReportRow[] > (
     () =>
-    hafiza
-    .filter((row) => inPeriod(row.date))
-    .map((row) => ({
-      date: row.date,
-      description: row.description || "—",
-      name: row.name || "—",
-      hafizaNo: row.hafizaNo || "—",
-      amount: amountValue(row.hafizaAmount),
-      income: amountValue(row.income ?? row.notifyAmount),
-    })),
-    [hafiza, year, selectedMonthSet, period]
+    source !== "hafiza" && source !== "combined"
+      ? []
+      : hafiza
+          .filter((row) => inPeriod(row.date))
+          .map((row) => ({
+            date: row.date,
+            description: row.description || "—",
+            name: row.name || "—",
+            hafizaNo: row.hafizaNo || "—",
+            amount: amountValue(row.hafizaAmount),
+            income: amountValue(row.income ?? row.notifyAmount),
+          })),
+    [source, hafiza, year, selectedMonthSet, period]
   );
   
   const accountRows = useMemo < ReportRow[] > (
     () =>
-    accounts
-    .filter((row) => inPeriod(row.date))
-    .sort((a, b) => String(a.date).localeCompare(String(b.date)))
-    .map((row) => ({
-      date: row.date,
-      description: row.description || "—",
-      name: row.name || "—",
-      income: amountValue(row.income),
-      expense: amountValue(row.expense),
-      docNo: row.checkNo ? `شيك: ${row.checkNo}` : row.notifyNo ? `إشعار: ${row.notifyNo}` : row.hafizaNo ? `حافظة: ${row.hafizaNo}` : "—",
-    })),
-    [accounts, year, selectedMonthSet, period]
+    source !== "account" && source !== "expenses" && source !== "combined"
+      ? []
+      : accounts
+          .filter((row) => inPeriod(row.date))
+          .sort((a, b) => String(a.date).localeCompare(String(b.date)))
+          .map((row) => ({
+            date: row.date,
+            description: row.description || "—",
+            name: row.name || "—",
+            income: amountValue(row.income),
+            expense: amountValue(row.expense),
+            docNo: row.checkNo ? `شيك: ${row.checkNo}` : row.notifyNo ? `إشعار: ${row.notifyNo}` : row.hafizaNo ? `حافظة: ${row.hafizaNo}` : "—",
+          })),
+    [source, accounts, year, selectedMonthSet, period]
   );
   
   const expenseRows = useMemo < ReportRow[] > (
     () =>
-    accountRows
-    .filter((row) => Number(row.expense) > 0)
-    .map((row) => ({
-      date: row.date,
-      item: row.description,
-      name: row.name,
-      expense: amountValue(row.expense),
-    })),
-    [accountRows]
+    source !== "expenses" && source !== "combined"
+      ? []
+      : accountRows
+          .filter((row) => Number(row.expense) > 0)
+          .map((row) => ({
+            date: row.date,
+            item: row.description,
+            name: row.name,
+            expense: amountValue(row.expense),
+          })),
+    [source, accountRows]
   );
   
   const revenueRows = useMemo < ReportRow[] > (
     () =>
-    Object.entries(revenue)
-    .map(([key, amount]) => {
-      const parts = key.split("-");
-      const rowYear = Number(parts[0]);
-      const rowMonth = Number(parts[1]) - 1;
-      return {
-        date: `${MONTHS[rowMonth] || parts[1]} ${rowYear}`,
-        item: revenueName(key),
-        amount: amountValue(amount),
-        _year: rowYear,
-        _month: rowMonth,
-      };
-    })
-    .filter((row) => (period === "all" ? row._year >= 2026 : row._year === year && selectedMonthSet.has(row._month as number)))
-    .map(({ _year, _month, ...row }) => row),
-    [revenue, year, selectedMonthSet, period]
+    source !== "revenue" && source !== "combined"
+      ? []
+      : Object.entries(revenue)
+          .map(([key, amount]) => {
+            const parts = key.split("-");
+            const rowYear = Number(parts[0]);
+            const rowMonth = Number(parts[1]) - 1;
+            return {
+              date: `${MONTHS[rowMonth] || parts[1]} ${rowYear}`,
+              item: revenueName(key),
+              amount: amountValue(amount),
+              _year: rowYear,
+              _month: rowMonth,
+            };
+          })
+          .filter((row) => (period === "all" ? row._year >= 2026 : row._year === year && selectedMonthSet.has(row._month as number)))
+          .map(({ _year, _month, ...row }) => row),
+    [source, revenue, year, selectedMonthSet, period]
   );
   
   // قائمة الأسماء مصدرها تبويب بيانات المتدربين، مع استخدام الحوافظ لجلب سجلات الدفع المطابقة فقط.
   const traineeRoster = useMemo(() => {
+    if (source !== "trainee" && source !== "feeTotals" && source !== "traineeFeeStatus") return [];
     const financialNameHeaders = ["اسم المتدرب حسب الشهادة", "اسم المتدرب", "اسم الطالب", "الاسم الكامل", "الاسم"]
       .map(traineeNameKey);
     const financialRoster = (traineeFinancialRecords || []).flatMap((record: TraineeFinancialRecord) => {
@@ -1326,7 +1337,7 @@ export default function ReportsTab() {
       }];
     });
     return financialRoster.length ? financialRoster : trainees || [];
-  }, [traineeFinancialRecords, trainees]);
+  }, [source, traineeFinancialRecords, trainees]);
   
   const traineeRosterByName = useMemo(() => {
     const roster = new Map < string,
@@ -1365,6 +1376,7 @@ export default function ReportsTab() {
   );
   
   const traineeRows = useMemo < ReportRow[] > (() => {
+    if (source !== "trainee") return [];
     const payments = matchedTraineeHafiza.flatMap(({ row, trainee: rosterTrainee }) => {
       const date = normalizeDate(row.notifyDate || row.date);
       const trainee = rosterTrainee.name;
@@ -1622,9 +1634,10 @@ export default function ReportsTab() {
     });
     
     return result;
-  }, [matchedTraineeHafiza, selectedTrainee, selectedFees, selectedBatches, traineeGrouping, traineeDisplayMode, traineeRosterByName, deletedUnpaidFeeNames]);
+  }, [source, matchedTraineeHafiza, selectedTrainee, selectedFees, selectedBatches, traineeGrouping, traineeDisplayMode, traineeRosterByName, deletedUnpaidFeeNames]);
   
   const feeTotalsRows = useMemo < ReportRow[] > (() => {
+    if (source !== "feeTotals") return [];
     const totals = new Map < string,
       number > ();
     hafiza.forEach((row) => {
@@ -1641,9 +1654,10 @@ export default function ReportsTab() {
       .map(([category, amount]) => ({ category, source: "حوافظ التوريد", amount }));
     const grandTotal = rows.reduce((sum, row) => sum + amountValue(row.amount), 0);
     return grandTotal > 0 ? [...rows, { category: "الإجمالي الكلي لجميع الرسوم", source: "حوافظ التوريد", amount: grandTotal, total: "نعم" }] : rows;
-  }, [hafiza, selectedTrainee]);
+  }, [source, hafiza, selectedTrainee]);
   
   const traineeFeeStatusRows = useMemo < ReportRow[] > (() => {
+    if (source !== "traineeFeeStatus") return [];
     type HafizaTraineeSummary = {
       trainee: string;
       batches: Set < string > ;
@@ -1879,7 +1893,7 @@ export default function ReportsTab() {
       statusKey: status.key,
     }));
     return [...summaryRows, ...detailRows];
-  }, [hafiza, trainees, traineeFinancialRecords]);
+  }, [source, hafiza, trainees, traineeFinancialRecords]);
   const sourceConfig = useMemo < { title: string;columns: TabCol[] } > (() => {
     if (source === "youssefLoan") {
       return {

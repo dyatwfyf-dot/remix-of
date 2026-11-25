@@ -1,4 +1,4 @@
-import * as XLSX from "xlsx";
+import type * as XLSXTypes from "xlsx";
 import type { Account, Hafiza, Installment, Journal } from "./store";
 import { INSTALLMENT_MONTHS } from "./store";
 import monthlySchema from "@/data/monthlyStatement.json";
@@ -221,8 +221,8 @@ export function matchStatementAccount(raw: string): string | null {
   return scored[0].name;
 }
 
-function buildJournalSheet(journal: Journal[]): XLSX.WorkSheet {
-  const ws: XLSX.WorkSheet = {};
+function buildJournalSheet(journal: Journal[], XLSX: typeof XLSXTypes): XLSXTypes.WorkSheet {
+  const ws: XLSXTypes.WorkSheet = {};
 
   for (const [letter, val] of Object.entries(TEMPLATE.top1)) {
     ws[`${letter}1`] = { v: val, t: typeof val === "number" ? "n" : "s" };
@@ -248,7 +248,7 @@ function buildJournalSheet(journal: Journal[]): XLSX.WorkSheet {
   }
 
   let row = 5;
-  const merges: XLSX.Range[] = TEMPLATE.merges.map((m) => XLSX.utils.decode_range(m));
+  const merges: XLSXTypes.Range[] = TEMPLATE.merges.map((m) => XLSX.utils.decode_range(m));
 
   const firstDebitColLetter = XLSX.utils.encode_col(DEBIT_FIRST - 1);
   const lastDebitColLetter = XLSX.utils.encode_col(DEBIT_LAST - 1);
@@ -298,7 +298,7 @@ function buildJournalSheet(journal: Journal[]): XLSX.WorkSheet {
   const lastRow = Math.max(row - 1, 5);
   ws["!ref"] = `A1:${XLSX.utils.encode_col(lastCol - 1)}${lastRow}`;
 
-  const cols: XLSX.ColInfo[] = [];
+  const cols: XLSXTypes.ColInfo[] = [];
   for (let i = 1; i <= lastCol; i++) {
     const letter = XLSX.utils.encode_col(i - 1);
     const w = TEMPLATE.widths[letter];
@@ -319,9 +319,10 @@ export async function exportToExcel(
   },
   reportDate?: string,
 ) {
+  const XLSX = await import("xlsx");
   const dateValue = reportDate || new Date().toISOString().slice(0, 10);
   const reportDateLabel = formatReportDate(dateValue);
-  const sourceSheets: { name: string; source: XLSX.WorkSheet; title: string; count: number }[] = [];
+  const sourceSheets: { name: string; source: XLSXTypes.WorkSheet; title: string; count: number }[] = [];
 
   const hafizaRows = data.hafiza.map((h, i) => ({
     م: i + 1,
@@ -374,7 +375,7 @@ export async function exportToExcel(
   });
   sourceSheets.push({
     name: JOURNAL_SHEET_NAME,
-    source: buildJournalSheet(data.journal),
+    source: buildJournalSheet(data.journal, XLSX),
     title: "قيود اليومية",
     count: data.journal.length,
   });
@@ -432,6 +433,7 @@ export async function importFromExcel(
   only?: ImportKind,
   _fileName?: string,
 ) {
+  const XLSX = await import("xlsx");
   const buf = source instanceof ArrayBuffer ? source : await source.arrayBuffer();
   const wb = XLSX.read(buf);
 
@@ -516,7 +518,7 @@ export async function importFromExcel(
     return 0;
   };
 
-  const sheetToRows = (sheet: XLSX.WorkSheet): Record<string, unknown>[] => {
+  const sheetToRows = (sheet: XLSXTypes.WorkSheet): Record<string, unknown>[] => {
     const aoa = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
       header: 1,
       defval: "",
@@ -547,7 +549,7 @@ export async function importFromExcel(
   };
 
   const parseRevenueSheet = (
-    sheet: XLSX.WorkSheet,
+    sheet: XLSXTypes.WorkSheet,
     sheetName: string,
   ): Record<string, number> | null => {
     const aoa = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
@@ -600,7 +602,7 @@ export async function importFromExcel(
     return out;
   };
 
-  const parseJournalTemplate = (sheet: XLSX.WorkSheet): Journal[] | null => {
+  const parseJournalTemplate = (sheet: XLSXTypes.WorkSheet): Journal[] | null => {
     const aoa = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
       header: 1,
       defval: "",
@@ -759,7 +761,7 @@ export async function importFromExcel(
     return 0;
   };
 
-  const parseMonthlySheet = (sheet: XLSX.WorkSheet, sheetName: string): Journal[] => {
+  const parseMonthlySheet = (sheet: XLSXTypes.WorkSheet, sheetName: string): Journal[] => {
     const aoa = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
       header: 1,
       defval: "",
@@ -1207,7 +1209,7 @@ export async function importFromExcel(
   return result;
 }
 
-function buildMonthlySheet(journal: Journal[], year: number, month: number): XLSX.WorkSheet {
+function buildMonthlySheet(journal: Journal[], year: number, month: number, XLSX: typeof XLSXTypes): XLSXTypes.WorkSheet {
   const map: Record<string, { prevD: number; prevC: number; curD: number; curC: number }> = {};
   STATEMENT_GROUPS.forEach((g) =>
     g.accounts.forEach((a) => (map[normName(a)] = { prevD: 0, prevC: 0, curD: 0, curC: 0 })),
@@ -1322,7 +1324,7 @@ function buildMonthlySheet(journal: Journal[], year: number, month: number): XLS
   return ws;
 }
 
-function buildQuarterlySheet(journal: Journal[], year: number, quarter: number): XLSX.WorkSheet {
+function buildQuarterlySheet(journal: Journal[], year: number, quarter: number, XLSX: typeof XLSXTypes): XLSXTypes.WorkSheet {
   const startMonth = (quarter - 1) * 3 + 1;
   const endMonth = quarter * 3;
   const map: Record<string, { prevD: number; prevC: number; curD: number; curC: number }> = {};
@@ -1444,12 +1446,13 @@ function buildQuarterlySheet(journal: Journal[], year: number, quarter: number):
 }
 
 export async function exportMonthlyStatement(journal: Journal[], year: number, reportDate?: string) {
+  const XLSX = await import("xlsx");
   const dateValue = reportDate || new Date().toISOString().slice(0, 10);
   const reportDateLabel = formatReportDate(dateValue);
   const workbook = await createExcelWorkbook();
   const imageId = await loadReportLetterhead(workbook);
   for (let m = 1; m <= 12; m++) {
-    const source = buildMonthlySheet(journal, year, m);
+    const source = buildMonthlySheet(journal, year, m, XLSX);
     const range = XLSX.utils.decode_range(source["!ref"] || "A1");
     appendXlsxSheet(
       workbook,
@@ -1467,7 +1470,7 @@ export async function exportMonthlyStatement(journal: Journal[], year: number, r
   }
   const qNames = ["الأول", "الثاني", "الثالث", "الرابع"];
   for (let q = 1; q <= 4; q++) {
-    const source = buildQuarterlySheet(journal, year, q);
+    const source = buildQuarterlySheet(journal, year, q, XLSX);
     const range = XLSX.utils.decode_range(source["!ref"] || "A1");
     appendXlsxSheet(
       workbook,
@@ -1566,7 +1569,8 @@ function buildPeriodicStatementSheet(
   endMonth: number,
   periodLabel: string,
   movementLabel: string,
-): XLSX.WorkSheet {
+  XLSX: typeof XLSXTypes,
+): XLSXTypes.WorkSheet {
   const { map, groups, title, office, gov } = buildMonthlyStatementRows(
     journal,
     year,
@@ -1667,6 +1671,7 @@ export async function exportPeriodicStatement(
   year: number,
   selection: ReportPeriodSelection & { reportDate?: string },
 ) {
+  const XLSX = await import("xlsx");
   const { startMonth, endMonth } = getPeriodRange(selection);
   const periodLabel = getReportPeriodLabel(selection);
   const movementLabel = getReportMovementLabel(selection);
@@ -1678,6 +1683,7 @@ export async function exportPeriodicStatement(
     endMonth,
     periodLabel,
     movementLabel,
+    XLSX,
   );
   const range = XLSX.utils.decode_range(source["!ref"] || "A1");
   const workbook = await createExcelWorkbook();
@@ -1702,7 +1708,8 @@ function buildRevenueSheet(
   revenue: Record<string, number>,
   year: number,
   month: number,
-): XLSX.WorkSheet {
+  XLSX: typeof XLSXTypes,
+): XLSXTypes.WorkSheet {
   const getVal = (m: number, key: string) => revenue[`${year}-${m}-${key}`] || 0;
   const sumPrev = (key: string) => {
     let s = 0;
@@ -1746,8 +1753,8 @@ function buildRevenueSheet(
     grandPrev += cPrev;
   });
 
-  const ws: XLSX.WorkSheet = {};
-  const merges: XLSX.Range[] = [];
+  const ws: XLSXTypes.WorkSheet = {};
+  const merges: XLSXTypes.Range[] = [];
 
   ws["I2"] = { v: "كشف الحساب الشهري للموارد", t: "s" };
   merges.push(XLSX.utils.decode_range("E2:F2"));
@@ -1870,12 +1877,13 @@ export async function exportRevenueStatement(
   year: number,
   reportDate?: string,
 ) {
+  const XLSX = await import("xlsx");
   const dateValue = reportDate || new Date().toISOString().slice(0, 10);
   const reportDateLabel = formatReportDate(dateValue);
   const workbook = await createExcelWorkbook();
   const imageId = await loadReportLetterhead(workbook);
   for (let m = 1; m <= 12; m++) {
-    const source = buildRevenueSheet(revenue, year, m);
+    const source = buildRevenueSheet(revenue, year, m, XLSX);
     const range = XLSX.utils.decode_range(source["!ref"] || "A1");
     appendXlsxSheet(
       workbook,

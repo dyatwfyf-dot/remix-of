@@ -10,6 +10,7 @@ import {
 
 import appCss from "../styles.css?url";
 import { useEffect } from "react";
+import { Capacitor } from "@capacitor/core";
 import { initPwa } from "@/lib/pwa";
 import { ReportDateProvider } from "@/lib/reportDate";
 import OfflineStatus from "@/components/OfflineStatus";
@@ -124,6 +125,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: React.ReactNode }) {
+  const isCapacitorSpa =
+    typeof document !== "undefined" &&
+    (document.documentElement.classList.contains("apk-compact") || Capacitor.isNativePlatform());
+
+  if (isCapacitorSpa) {
+    return <>{children}</>;
+  }
+
   return (
     <html lang="ar" dir="rtl">
       <head>

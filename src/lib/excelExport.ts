@@ -1,4 +1,4 @@
-import { saveBlobToInternalStorage } from "@/lib/nativeFileStorage";
+import { deliverBlobToUser, saveBlobToInternalStorage } from "@/lib/nativeFileStorage";
 
 export type ExcelPalette = {
   header: string;
@@ -364,8 +364,12 @@ export async function downloadWorkbook(workbook: ExcelWorkbook, fileName: string
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });
 
-  const internalUri = await saveBlobToInternalStorage(blob, fileName);
-  if (internalUri) return;
+  try {
+    if (await deliverBlobToUser(blob, fileName)) return;
+  } catch {
+    const internalUri = await saveBlobToInternalStorage(blob, fileName);
+    if (internalUri) return;
+  }
 
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");

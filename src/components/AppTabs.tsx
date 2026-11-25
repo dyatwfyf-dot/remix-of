@@ -3,14 +3,23 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
   FileSpreadsheet, Plus, Trash2, Upload, Download, FileText, Printer, Eraser,
 } from "lucide-react";
-import * as XLSX from "xlsx";
+
+const encodeExcelCol = (colIndex: number): string => {
+  let n = colIndex;
+  let s = "";
+  while (n >= 0) {
+    s = String.fromCharCode((n % 26) + 65) + s;
+    n = Math.floor(n / 26) - 1;
+  }
+  return s;
+};
 import { useReportDate } from "@/lib/reportDate";
 import { toast } from "sonner";
 import { reportLetterheadHtml, runningLetterheadCss } from "@/lib/printTableHtml";
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import { downloadReportDocumentPdf } from "@/lib/reportPdf";
 import { importUsageInWorker } from "@/lib/excelImportWorkerClient";
-import { saveBlobToInternalStorage } from "@/lib/nativeFileStorage";
+import { deliverBlobToUser, saveBlobToInternalStorage } from "@/lib/nativeFileStorage";
 
 
 const mainHeaders = ["رقم الاستمارة", "كشف التسوية", "التاريخ", "البيان"];
@@ -531,7 +540,7 @@ const AppTabs: React.FC = () => {
       }
       disp.getColumn(col).width = Math.min(22, Math.max(col <= 4 ? 12 : 9, maxLength + 2));
     }
-    disp.pageSetup.printArea = `A1:${XLSX.utils.encode_col(Math.min(allCols.length, 16384) - 1)}${Math.max(1, disp.rowCount)}`;
+    disp.pageSetup.printArea = `A1:${encodeExcelCol(Math.min(allCols.length, 16384) - 1)}${Math.max(1, disp.rowCount)}`;
     disp.pageSetup.printTitlesRow = "2:2";
     disp.headerFooter = {
       oddFooter: '&L&"Arial"المجلس اليمني للاختصاصات الطبية&C&"Arial"صفحة &P من &N&R&"Arial"فرع صعدة',
@@ -567,7 +576,7 @@ const AppTabs: React.FC = () => {
       fitToHeight: 0,
       margins: { left: 0.25, right: 0.25, top: 0.35, bottom: 0.35, header: 0.15, footer: 0.15 },
     };
-    flat.pageSetup.printArea = `A1:${XLSX.utils.encode_col(Math.min(allCols.length + 1, 16384) - 1)}${Math.max(1, flat.rowCount)}`;
+    flat.pageSetup.printArea = `A1:${encodeExcelCol(Math.min(allCols.length + 1, 16384) - 1)}${Math.max(1, flat.rowCount)}`;
     flat.pageSetup.printTitlesRow = "1:1";
     flat.headerFooter = {
       oddFooter: '&L&"Arial"المجلس اليمني للاختصاصات الطبية&C&"Arial"صفحة &P من &N&R&"Arial"فرع صعدة',
@@ -575,10 +584,17 @@ const AppTabs: React.FC = () => {
     const buf = await wb.xlsx.writeBuffer();
     const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
     const fileName = `الاستخدامات-${reportDate}.xlsx`;
-    const internalUri = await saveBlobToInternalStorage(blob, fileName);
-    if (internalUri) {
-      toast.success("تم حفظ ملف Excel داخل تخزين التطبيق");
-      return;
+    try {
+      if (await deliverBlobToUser(blob, fileName)) {
+        toast.success("تم تجهيز ملف Excel للحفظ أو المشاركة");
+        return;
+      }
+    } catch {
+      const internalUri = await saveBlobToInternalStorage(blob, fileName);
+      if (internalUri) {
+        toast.success("تم حفظ ملف Excel داخل تخزين التطبيق");
+        return;
+      }
     }
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

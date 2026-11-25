@@ -12,7 +12,7 @@ const config: CapacitorConfig = {
     allowMixedContent: false,
     captureInput: true,
     webContentsDebuggingEnabled: false,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#F5EFE6",
   },
 };
 

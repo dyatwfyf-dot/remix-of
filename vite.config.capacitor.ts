@@ -26,8 +26,30 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: false,
     assetsInlineLimit: 0,
+    chunkSizeWarningLimit: 900,
     rollupOptions: {
       input: resolve(process.cwd(), "capacitor.html"),
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return undefined;
+          if (id.includes("/react/") || id.includes("/react-dom/") || id.includes("/scheduler/")) {
+            return "vendor-react";
+          }
+          if (id.includes("@tanstack/")) {
+            return "vendor-tanstack";
+          }
+          if (id.includes("@capacitor/")) {
+            return "vendor-capacitor";
+          }
+          if (id.includes("lucide-react")) {
+            return "vendor-icons";
+          }
+          if (id.includes("@radix-ui/")) {
+            return "vendor-radix";
+          }
+          return undefined;
+        },
+      },
     },
   },
 });

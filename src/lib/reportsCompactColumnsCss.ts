@@ -1,10 +1,15 @@
 // Shared compact column sizing for report tables (screen, print preview, print, PDF).
 // Numeric/date cells stay on one line; long text wraps without truncation.
 
+const taggedSerialTables = new WeakMap<HTMLTableElement, number>();
+
 /** Mark serial-number columns (م, #, مسلسل) and keep their cells sized to their contents. */
 export function tagSerialColumns(root: ParentNode) {
   const serialHeader = /^(?:م|#|المسلسل|مسلسل|التسلسل|تسلسل|م\.?|no\.?|s\.?no\.?)$/i;
   root.querySelectorAll("table").forEach((table) => {
+    const rowCount = table.rows.length;
+    if (taggedSerialTables.get(table) === rowCount) return;
+    taggedSerialTables.set(table, rowCount);
     const headers = Array.from(table.querySelectorAll("thead tr:first-child th, thead tr:first-child td, tr:first-child th, tr:first-child td"));
     const index = headers.findIndex((cell) => serialHeader.test((cell.textContent || "").replace(/[\s.]/g, "").trim()));
     if (index < 0) return;
@@ -16,7 +21,7 @@ export function tagSerialColumns(root: ParentNode) {
 }
 
 /** Same logic as an inline script for the standalone preview window. */
-export const tagSerialColumnsScript = `(${tagSerialColumns.toString()})(document);`;
+export const tagSerialColumnsScript = `((root)=>{const serialHeader=/^(?:م|#|المسلسل|مسلسل|التسلسل|تسلسل|م\\.?|no\\.?|s\\.?no\\.?)$/i;root.querySelectorAll("table").forEach((table)=>{const headers=Array.from(table.querySelectorAll("thead tr:first-child th, thead tr:first-child td, tr:first-child th, tr:first-child td"));const index=headers.findIndex((cell)=>serialHeader.test((cell.textContent||"").replace(/[\\s.]/g,"").trim()));if(index<0)return;table.querySelectorAll("tr").forEach((row)=>{const cell=row.children.item(index);if(cell)cell.classList.add("serial-number-column");});});})(document);`;
 
 /** Classifies each cell of report tables under `root` as numeric (no wrap) or text (wrap). */
 export function tagReportCells(root: ParentNode) {

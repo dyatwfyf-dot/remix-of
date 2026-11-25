@@ -1,4 +1,4 @@
-import { lazy, Suspense, startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Toaster, toast } from "sonner";
 
@@ -206,6 +206,11 @@ const getInitialTab = (): Tab => {
   return isTabValue(tab) ? tab : "installments";
 };
 
+// ابدأ تحميل التبويب الافتتاحي فور تحميل الوحدة في المتصفح لتقليل زمن الإقلاع.
+if (typeof window !== "undefined") {
+  preloadTab(getInitialTab());
+}
+
 function Index() {
   const [activeTab, setActiveTab] = useState<Tab>(() => getInitialTab());
   const activeTabRef = useRef(activeTab);
@@ -225,6 +230,42 @@ function Index() {
 
   useEffect(() => {
     setIsMounted(true);
+
+    // حمّل بقية التبويبات تدريجياً في وقت الخمول بعد الرسم الأولي ليكون التنقل بينها فورياً.
+    const remaining = tabs.map((t) => t.value).filter((t) => !preloadedTabs.has(t));
+    if (remaining.length === 0) return;
+
+    let cancelled = false;
+    let timerId: number | null = null;
+    let idleId: number | null = null;
+    const win = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+
+    let idx = 0;
+    const scheduleNext = () => {
+      if (cancelled || idx >= remaining.length) return;
+      const run = () => {
+        if (cancelled || idx >= remaining.length) return;
+        preloadTab(remaining[idx++]);
+        scheduleNext();
+      };
+      if (typeof win.requestIdleCallback === "function") {
+        idleId = win.requestIdleCallback(run, { timeout: 600 });
+      } else {
+        timerId = window.setTimeout(run, 120);
+      }
+    };
+
+    timerId = window.setTimeout(scheduleNext, 250);
+    return () => {
+      cancelled = true;
+      if (timerId !== null) window.clearTimeout(timerId);
+      if (idleId !== null && typeof win.cancelIdleCallback === "function") {
+        win.cancelIdleCallback(idleId);
+      }
+    };
   }, []);
 
   // Tag only tables affected by DOM insertions; batch work to one animation frame.
@@ -293,7 +334,7 @@ function Index() {
         tabHistoryRef.current = [tab];
       }
       activeTabRef.current = tab;
-      startTransition(() => setActiveTab(tab));
+      setActiveTab(tab);
     };
 
     window.addEventListener("popstate", handlePopState);
@@ -312,7 +353,7 @@ function Index() {
 
     activeTabRef.current = "installments";
     tabHistoryRef.current = ["installments"];
-    startTransition(() => setActiveTab("installments"));
+    setActiveTab("installments");
     const url = new URL(window.location.href);
     url.searchParams.delete("tab");
     window.history.replaceState(
@@ -338,9 +379,10 @@ function Index() {
   const handleTabChange = (tab: Tab) => {
     if (tab === activeTabRef.current) return;
 
+    preloadTab(tab);
     activeTabRef.current = tab;
     tabHistoryRef.current = [...tabHistoryRef.current, tab];
-    startTransition(() => setActiveTab(tab));
+    setActiveTab(tab);
     const url = new URL(window.location.href);
     if (tab === "installments") url.searchParams.delete("tab");
     else url.searchParams.set("tab", tab);

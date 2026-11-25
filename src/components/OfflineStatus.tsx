@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
+import { Capacitor } from "@capacitor/core";
 import { WifiOff } from "lucide-react";
 
 const CONNECTIVITY_CHECK_INTERVAL_MS = 15_000;
 const CONNECTIVITY_CHECK_TIMEOUT_MS = 5_000;
 
 export default function OfflineStatus() {
+  const isNative = typeof window !== "undefined" && Capacitor.isNativePlatform();
   const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
+    if (isNative) return;
+
     let disposed = false;
     let activeController: AbortController | null = null;
 
@@ -46,7 +50,10 @@ export default function OfflineStatus() {
       void checkConnectivity();
     };
 
-    void checkConnectivity();
+    if (!navigator.onLine) {
+      setIsOffline(true);
+    }
+    const initialProbeId = window.setTimeout(checkConnectivity, 2500);
     window.addEventListener("offline", handleOffline);
     window.addEventListener("online", handleOnline);
     const intervalId = window.setInterval(
@@ -57,13 +64,14 @@ export default function OfflineStatus() {
     return () => {
       disposed = true;
       activeController?.abort();
+      window.clearTimeout(initialProbeId);
       window.clearInterval(intervalId);
       window.removeEventListener("offline", handleOffline);
       window.removeEventListener("online", handleOnline);
     };
-  }, []);
+  }, [isNative]);
 
-  if (!isOffline) return null;
+  if (isNative || !isOffline) return null;
 
   return (
     <div

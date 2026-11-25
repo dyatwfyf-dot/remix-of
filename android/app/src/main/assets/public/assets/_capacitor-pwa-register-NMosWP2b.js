@@ -1,0 +1,1 @@
+var e=async()=>()=>{};export{e as registerSW};

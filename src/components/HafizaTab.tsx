@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from "react";
-import "./HafizaTab.css";
 import { useStore, type Trainee } from "@/lib/store";
 import { useShallow } from "zustand/react/shallow";
 import { fmt, today } from "@/lib/format";

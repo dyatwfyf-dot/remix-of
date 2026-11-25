@@ -1,6 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import "./TraineeFinancialDataTab.css";
-import * as XLSX from "xlsx";
 import {
   Download,
   FileSpreadsheet,
@@ -19,6 +18,7 @@ import database from "@/data/traineeFinancialDatabase.json";
 import { useStore, type TraineeFinancialRecord } from "@/lib/store";
 import { isRegistrationFeeDescription } from "@/lib/feeClassification";
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
+import { deliverBlobToUser, isNativeFileStorageAvailable, saveBlobToInternalStorage } from "@/lib/nativeFileStorage";
 import { escapeHtml, reportLetterheadHtml } from "@/lib/printTableHtml";
 import { calculateTraineeFeeSchedule, recalculateTraineeFinancialRecord, STUDY_YEARS_HEADER, TRAINEE_FEE_SCHEDULE_HEADERS } from "@/lib/traineeFinancialCalculations";
 
@@ -128,6 +128,7 @@ export default function TraineeFinancialDataTab() {
     return Array.from(options.entries()).sort((a, b) => a[1].localeCompare(b[1], "ar", { numeric: true }));
   }, [records]);
   const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [draft, setDraft] = useState<TraineeFinancialRecord>({});
   const [sort, setSort] = useState<{ key: string; desc: boolean } | null>(null);
@@ -425,26 +426,50 @@ export default function TraineeFinancialDataTab() {
     return summaries;
   }, [records, hafiza]);
 
-  const getFeePaymentSummary = (row: TraineeFinancialRecord) => {
-    const paid = feePaymentSummaryByTrainee.get(normalizeTraineeName(row[HEADERS[2]])) || {
-      registrationPaid: 0,
-      examsPaid: 0,
-    };
-    const registrationDue = parseAmount(row["رسوم القيد والتسجيل"]);
-    const examsDue = parseAmount(row["إجمالي رسوم الامتحانات"]);
+  const feePaymentSummaryByRow = useMemo(() => {
+    const map = new Map<
+      TraineeFinancialRecord,
+      {
+        registrationPaid: number;
+        examsPaid: number;
+        totalPaid: number;
+        registrationStatus: string;
+        examsStatus: string;
+        remaining: number;
+      }
+    >();
     const status = (due: number, amountPaid: number) =>
       due <= 0 ? "غير مستحق" : amountPaid <= 0 ? "غير مسدد" : amountPaid < due ? "مسدد جزئياً" : "مسدد";
-    return {
-      ...paid,
-      totalPaid: paid.registrationPaid + paid.examsPaid,
-      registrationStatus: status(registrationDue, paid.registrationPaid),
-      examsStatus: status(examsDue, paid.examsPaid),
-      remaining: Math.max(0, registrationDue - paid.registrationPaid) + Math.max(0, examsDue - paid.examsPaid),
+    (records || []).forEach((row) => {
+      const paid = feePaymentSummaryByTrainee.get(normalizeTraineeName(row[HEADERS[2]])) || {
+        registrationPaid: 0,
+        examsPaid: 0,
+      };
+      const registrationDue = parseAmount(row["رسوم القيد والتسجيل"]);
+      const examsDue = parseAmount(row["إجمالي رسوم الامتحانات"]);
+      map.set(row, {
+        ...paid,
+        totalPaid: paid.registrationPaid + paid.examsPaid,
+        registrationStatus: status(registrationDue, paid.registrationPaid),
+        examsStatus: status(examsDue, paid.examsPaid),
+        remaining: Math.max(0, registrationDue - paid.registrationPaid) + Math.max(0, examsDue - paid.examsPaid),
+      });
+    });
+    return map;
+  }, [records, feePaymentSummaryByTrainee]);
+
+  const getFeePaymentSummary = (row: TraineeFinancialRecord) =>
+    feePaymentSummaryByRow.get(row) || {
+      registrationPaid: 0,
+      examsPaid: 0,
+      totalPaid: 0,
+      registrationStatus: "غير مستحق",
+      examsStatus: "غير مستحق",
+      remaining: 0,
     };
-  };
 
   const visibleRows = useMemo(() => {
-    const q = normalize(query).toLocaleLowerCase("ar");
+    const q = normalize(deferredQuery).toLocaleLowerCase("ar");
     const filtered = (records || [])
       .map((row, index) => ({ row, index }))
       .filter(
@@ -466,7 +491,7 @@ export default function TraineeFinancialDataTab() {
       });
     }
     return filtered;
-  }, [records, query, sort, tableColumns, batchStudyStartDates, feeScheduleByRecord, feePaymentSummaryByTrainee]);
+  }, [records, deferredQuery, sort, tableColumns, batchStudyStartDates, feeScheduleByRecord, feePaymentSummaryByRow]);
 
   const startEdit = (index: number) => {
     setEditingIndex(index);
@@ -502,7 +527,8 @@ export default function TraineeFinancialDataTab() {
     toast.success("تم حذف الصف");
   };
 
-  const exportExcel = () => {
+  const exportExcel = async () => {
+    const XLSX = await import("xlsx");
     const aoa: unknown[][] = [
       [TITLE],
       [RULES],
@@ -520,6 +546,19 @@ export default function TraineeFinancialDataTab() {
     };
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, sheet, SHEET_NAME.slice(0, 31));
+    if (isNativeFileStorageAvailable()) {
+      const buffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      try {
+        await deliverBlobToUser(blob, "بيانات_المتدربين.xlsx");
+      } catch {
+        await saveBlobToInternalStorage(blob, "بيانات_المتدربين.xlsx");
+      }
+      toast.success("تم تصدير بيانات المتدربين");
+      return;
+    }
     XLSX.writeFile(workbook, "بيانات_المتدربين.xlsx");
     toast.success("تم تصدير بيانات المتدربين");
   };
@@ -568,6 +607,7 @@ export default function TraineeFinancialDataTab() {
     event.target.value = "";
     if (!file) return;
     try {
+      const XLSX = await import("xlsx");
       const workbook = XLSX.read(await file.arrayBuffer(), { type: "array", cellDates: true });
       let imported: TraineeFinancialRecord[] | null = null;
       let nextCustomColumns = customColumns;

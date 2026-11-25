@@ -47,10 +47,24 @@ const feeCategory = (value: unknown): number => {
   return -1;
 };
 
+const normalizedAliasCache = new WeakMap<string[], string[]>();
+const getNormalizedAliases = (aliases: string[]) => {
+  let cached = normalizedAliasCache.get(aliases);
+  if (!cached) {
+    cached = aliases.map((alias) => normalize(alias));
+    normalizedAliasCache.set(aliases, cached);
+  }
+  return cached;
+};
+
 const recordValue = (record: TraineeFinancialRecord, aliases: string[]) => {
-  const entries = Object.entries(record);
   for (const alias of aliases) {
-    const key = normalize(alias);
+    const direct = record[alias];
+    if (direct !== undefined && String(direct).trim()) return direct;
+  }
+  const entries = Object.entries(record);
+  const normalizedAliases = getNormalizedAliases(aliases);
+  for (const key of normalizedAliases) {
     const match = entries.find(([header]) => normalize(header) === key)?.[1];
     if (match !== undefined && String(match).trim()) return match;
   }

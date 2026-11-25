@@ -1,0 +1,1 @@
+var e=e=>String(e||``).trim().replace(/[ًٌٍَُِّْـ]/g,``).replace(/[إأآ]/g,`ا`).replace(/\s+/g,` `),t=t=>{let n=e(t);return/(?:رسوم\s+(?:ال)?قيد\s+و\s*(?:ال)?تسجيل|(?:ال)?قيد\s+رسوم\s+و\s*(?:ال)?تسجيل)/.test(n)};export{t};

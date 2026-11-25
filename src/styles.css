@@ -305,7 +305,7 @@ overflow-wrap:anywhere !important;
 
   /* عمود البيان في الحساب الجاري يظل محتواه محصوراً في سطرين */
   .accounts-ledger-table .accounts-ledger-description {
-    width: autox;
+    width: auto;
     min-width:50px;
     max-width: auto;
   }
@@ -335,7 +335,7 @@ overflow-wrap:anywhere !important;
   .journal-ledger-table .journal-ledger-description > span {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2px;
+    -webkit-line-clamp: 2;
     overflow: hidden;
   }
 
@@ -1559,4 +1559,31 @@ table:has(> tbody tr:first-child th:first-child:is(.serial-number-column, [data-
     height: 24px !important;
   }
   .app-tab-nav-item > span:last-child { font-size: 8px !important; }
+}
+
+/* تحسينات الأداء والاستجابة على هواتف شاومي (MIUI / HyperOS WebView) داخل APK */
+html.apk-compact,
+body.apk-compact {
+  background-color: #F5EFE6 !important;
+  overscroll-behavior: none;
+}
+
+.apk-compact .apk-tabs-ui {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.apk-compact .app-main-nav {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  background-color: rgba(245, 239, 230, 0.98) !important;
+  transform: translateZ(0);
+}
+
+.apk-compact .app-tab-nav-items {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+.apk-compact .app-tab-content {
+  contain: layout style;
 }

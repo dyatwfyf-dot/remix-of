@@ -1,0 +1,2 @@
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/web-COdW1H3c.js","assets/vendor-capacitor-CGjsZc7I.js","assets/rolldown-runtime-COiEfhsA.js"])))=>i.map(i=>d[i]);
+import{a as e,l as t}from"./vendor-capacitor-CGjsZc7I.js";var n=t(`Printer`,{web:()=>e(()=>import(`./web-COdW1H3c.js`).then(e=>new e.PrinterWeb),__vite__mapDeps([0,1,2]))});export{n as Printer};

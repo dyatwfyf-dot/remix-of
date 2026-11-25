@@ -1,0 +1,164 @@
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/exceljs.min-DqPyZ1yt.js","assets/rolldown-runtime-COiEfhsA.js"])))=>i.map(i=>d[i]);
+import{i as e}from"./rolldown-runtime-COiEfhsA.js";import{C as t,F as n,L as r,P as i,R as a,s as o,st as s,u as c,w as l}from"./vendor-icons-B1CCHuqf.js";import{n as u}from"./vendor-react-bFf7IZBE.js";import{h as d,p as f}from"./capacitor-BGs8GKJp.js";import{_ as p,c as m,h,s as g,t as _}from"./browserPrintPreview-Bn6IQjSD.js";import{t as ee}from"./reportPdf-Bzyf0cU6.js";import{r as te}from"./excelImportWorkerClient-DM-WNWEM.js";import{a as v}from"./vendor-capacitor-CGjsZc7I.js";var y=e(s()),b=u(),x=`/app/applet/src/components/AppTabs.tsx`,S=e=>{let t=e,n=``;for(;t>=0;)n=String.fromCharCode(t%26+65)+n,t=Math.floor(t/26)-1;return n},C=[`رقم الاستمارة`,`كشف التسوية`,`التاريخ`,`البيان`],w=`app-tabs-usages-v1`,T={TOTAL_ALL:`FFE5DFEC`,BAB_TOTAL:`FFDBEEF3`,FASL:`FFFDE9D9`,BAND:`FFC6D9F0`,DARK:`FF0B3D6D`,GOLD:`FFFFD54A`,CUR:`FFDBEAFE`,PREV:`FFE2E8F0`},E=`اجمالي الاستخدامات.اجمالي الباب الاول.الفصل الاول_باب1.المرتبات الاساسية.اجور تعاقدية.اجور عمل اضافي.مكافات.طبيعة عمل.بدل ريف.بدل سكن.بدل تحديث.الفصل الثاني_باب1.ح/حكومة.اصابة عمل.اجمالي الباب الثاني.الفصل الاول_باب2.مياه.انارة.ادوات كتابية.نشر واعلان.اتصالات.مؤتمرات واحتفالات.نفقات النظافة.اخرى.نقل مهام.انتقالات داخلية.ايجار مباني.ادوية ومستلزمات طبية.اغذية وملبوسات.اخرى_2.الفصل الثاني_باب2.صيانة مباني.وقود وزيوت.قطع غيار وصيانة وسائل النقل.قطع غيار وصيانة الالات والمعدات والاثاث.اجمالي الباب الرابع.مركز صحي قحزة.وحدة الغسيل الكلوي.مشروع دعم الكلى.الصالة والمطبخ.مركز صحي.الامانات`.split(`.`),D=[...C,...E],O=D.length+1,k=e=>e.includes(`اجمالي`)||e.includes(`الفصل`),A=e=>e===`اجمالي عام الاستخدامات`?T.TOTAL_ALL:e.includes(`اجمالي الباب`)?T.BAB_TOTAL:e.includes(`الفصل`)?T.FASL:void 0,ne=e=>e===`اجمالي عام الاستخدامات`?`u-f u-f-total`:e.includes(`اجمالي الباب`)?`u-f u-f-bab`:`u-f u-f-fasl`,j=[{id:1,name:`يناير`},{id:2,name:`فبراير`},{id:3,name:`مارس`},{id:4,name:`أبريل`},{id:5,name:`مايو`},{id:6,name:`يونيو`},{id:7,name:`يوليو`},{id:8,name:`أغسطس`},{id:9,name:`سبتمبر`},{id:10,name:`أكتوبر`},{id:11,name:`نوفمبر`},{id:12,name:`ديسمبر`}],M=e=>{if(e===``||e==null)return``;let t=Number(e);return isNaN(t)?e:new Intl.NumberFormat(`en-US`,{maximumFractionDigits:2}).format(t)},N=(e,t)=>t.reduce((t,n)=>{let r=Number(e[n]);return t+(isNaN(r)?0:r)},0),P=e=>{let t={...e},n=N(t,[`المرتبات الاساسية`,`اجور تعاقدية`,`اجور عمل اضافي`,`مكافات`,`طبيعة عمل`,`بدل ريف`,`بدل سكن`,`بدل تحديث`]),r=N(t,[`ح/حكومة`,`اصابة عمل`]);t[`الفصل الاول_باب1`]=n,t[`الفصل الثاني_باب1`]=r,t[`اجمالي الباب الاول`]=n+r;let i=N(t,[`مياه`,`انارة`,`ادوات كتابية`,`نشر واعلان`,`اتصالات`,`مؤتمرات واحتفالات`,`نفقات النظافة`,`اخرى`,`نقل مهام`,`انتقالات داخلية`,`ايجار مباني`,`ادوية ومستلزمات طبية`,`اغذية وملبوسات`,`اخرى_2`]),a=N(t,[`صيانة مباني`,`وقود وزيوت`,`قطع غيار وصيانة وسائل النقل`,`قطع غيار وصيانة الالات والمعدات والاثاث`]);return t[`الفصل الاول_باب2`]=i,t[`الفصل الثاني_باب2`]=a,t[`اجمالي الباب الثاني`]=i+a,t[`اجمالي الباب الرابع`]=N(t,[`مركز صحي قحزة`,`وحدة الغسيل الكلوي`,`مشروع دعم الكلى`,`الصالة والمطبخ`,`مركز صحي`,`الامانات`]),t[`اجمالي عام الاستخدامات`]=t[`اجمالي الباب الاول`]+t[`اجمالي الباب الثاني`]+t[`اجمالي الباب الرابع`],t},F=e=>{let t=e.length;return t>18?9:t>15?10:t>12?11:12},I=y.memo(({rowId:e,field:t,value:n,onCommit:r})=>{let i=String(n??``),a=t===`التاريخ`,o=t===`البيان`||t===`كشف التسوية`,s=t===`البيان`;if(a)return(0,b.jsxDEV)(`input`,{type:`date`,value:i,onChange:n=>r(e,t,n.target.value),dir:`ltr`,className:`u-input w-full min-w-[128px] rounded-md px-1 py-1 text-center text-[11px] leading-tight`},void 0,!1,{fileName:x,lineNumber:196,columnNumber:7},void 0);let c=o?12:F(i),l=/^[\d.,\-]*$/.test(i),u=o?`rtl`:l?`ltr`:`rtl`;return(0,b.jsxDEV)(`div`,{className:`relative`,style:{minWidth:s?190:o?100:56,maxWidth:s?300:o?180:void 0},children:[(0,b.jsxDEV)(`span`,{"aria-hidden":`true`,className:`invisible block px-1.5 py-1 leading-snug text-center`,style:{fontSize:c,whiteSpace:o?`pre-wrap`:`pre`,wordBreak:o?`break-word`:`normal`,direction:u},children:[i,`​ `]},void 0,!0,{fileName:x,lineNumber:218,columnNumber:7},void 0),o?(0,b.jsxDEV)(`textarea`,{value:i,onChange:n=>r(e,t,n.target.value),dir:`rtl`,rows:1,className:`u-input absolute inset-0 h-full w-full resize-none overflow-hidden rounded-md px-1.5 py-1 text-center leading-snug`,style:{fontSize:c}},void 0,!1,{fileName:x,lineNumber:232,columnNumber:9},void 0):(0,b.jsxDEV)(`input`,{type:`text`,value:i,onChange:n=>r(e,t,n.target.value),dir:u,className:`u-input absolute inset-0 h-full w-full rounded-md px-1.5 text-center`,style:{fontSize:c}},void 0,!1,{fileName:x,lineNumber:241,columnNumber:9},void 0)]},void 0,!0,{fileName:x,lineNumber:211,columnNumber:5},void 0)});I.displayName=`EditableCell`;var L=y.memo(({value:e})=>{let t=String(M(e)??``);return(0,b.jsxDEV)(`div`,{className:`whitespace-nowrap px-1.5 py-1 text-center font-bold tabular-nums`,style:{fontSize:F(t)},dir:`ltr`,children:t},void 0,!1,{fileName:x,lineNumber:258,columnNumber:5},void 0)});L.displayName=`FormulaCell`;var R=`
+<tr>
+  <th rowspan="4">رقم الاستمارة</th><th rowspan="4">كشف التسوية</th>
+  <th rowspan="4">التاريخ</th><th rowspan="4">البيان</th>
+  <th rowspan="4" class="c-total">اجمالي الاستخدامات</th>
+  <th colspan="13" class="c-bab">اجمالي الباب الاول</th>
+  <th colspan="21" class="c-bab">اجمالي الباب الثاني</th>
+  <th colspan="7" class="c-bab">اجمالي الباب الرابع</th>
+  <th rowspan="4">إجراء</th>
+</tr>
+<tr>
+  <th rowspan="3" class="c-bab">الإجمالي</th>
+  <th colspan="10" class="c-fasl">الفصل الاول</th>
+  <th colspan="2" class="c-fasl">الفصل الثاني</th>
+  <th rowspan="3" class="c-bab">الإجمالي</th>
+  <th colspan="15" class="c-fasl">الفصل الاول</th>
+  <th colspan="5" class="c-fasl">الفصل الثاني</th>
+  <th rowspan="3" class="c-bab">الإجمالي</th>
+  <th rowspan="3">مركز صحي قحزة</th><th rowspan="3">وحدة الغسيل الكلوي</th>
+  <th rowspan="3">مشروع دعم الكلى</th><th rowspan="3">الصالة والمطبخ</th>
+  <th rowspan="3">مركز صحي</th><th rowspan="3">الامانات</th>
+</tr>
+<tr>
+  <th rowspan="2" class="c-fasl">إجمالي ف1</th>
+  <th colspan="8" class="c-band">المرتبات والأجور</th>
+  <th rowspan="2" class="c-fasl">إجمالي ف2</th>
+  <th rowspan="2">ح/حكومة</th><th rowspan="2">اصابة عمل</th>
+  <th rowspan="2" class="c-fasl">إجمالي ف1</th>
+  <th rowspan="2">مياه</th><th rowspan="2">انارة</th><th rowspan="2">ادوات كتابية</th>
+  <th rowspan="2">نشر واعلان</th><th rowspan="2">اتصالات</th><th rowspan="2">مؤتمرات</th>
+  <th rowspan="2">نظافة</th><th rowspan="2">اخرى</th><th rowspan="2">نقل مهام</th>
+  <th rowspan="2">انتقالات</th><th rowspan="2">ايجار مباني</th><th rowspan="2">ادوية</th>
+  <th rowspan="2">اغذية</th><th rowspan="2">اخرى2</th>
+  <th rowspan="2" class="c-fasl">إجمالي ف2</th>
+  <th rowspan="2">صيانة مباني</th><th rowspan="2">وقود وزيوت</th>
+  <th rowspan="2">قطع غيار نقل</th><th rowspan="2">قطع غيار معدات</th>
+</tr>
+<tr>
+  <th>اساسية</th><th>تعاقدية</th><th>اضافي</th><th>مكافات</th>
+  <th>طبيعة عمل</th><th>بدل ريف</th><th>بدل سكن</th><th>تحديث</th>
+</tr>`,z=()=>{let{reportDate:s,reportDateLabel:u}=d(),[N,F]=(0,y.useState)(()=>{try{return JSON.parse(localStorage.getItem(w)||`[]`)}catch{return[]}}),[z,B]=(0,y.useState)(1),V=(0,y.useRef)(null),H=(0,y.useRef)(N),U=(0,y.useRef)(null);(0,y.useEffect)(()=>(H.current=N,U.current&&clearTimeout(U.current),U.current=setTimeout(()=>{try{localStorage.setItem(w,JSON.stringify(H.current))}catch(e){console.error(`[Storage] Failed to persist usage rows`,e)}U.current=null},80),()=>{U.current&&clearTimeout(U.current)}),[N]),(0,y.useEffect)(()=>{let e=()=>{U.current&&clearTimeout(U.current);try{localStorage.setItem(w,JSON.stringify(H.current))}catch(e){console.error(`[Storage] Failed to flush usage rows`,e)}U.current=null};return window.addEventListener(`pagehide`,e),()=>{window.removeEventListener(`pagehide`,e),e()}},[]);let W=(0,y.useCallback)(e=>N.filter(t=>t.monthId===e),[N]),G=e=>{let t={id:`${Date.now()}-${Math.random().toString(36).slice(2,8)}`,monthId:e};return C.forEach(e=>t[e]=``),E.forEach(e=>t[e]=``),P(t)};(0,y.useEffect)(()=>{F(e=>{let t={};e.forEach(e=>t[e.monthId]=(t[e.monthId]||0)+1);let n=[];return j.forEach(e=>{t[e.id]||n.push(G(e.id),G(e.id))}),n.length?[...e,...n]:e})},[]);let K=(0,y.useCallback)((e,t,n)=>{F(r=>r.map(r=>r.id===e?P({...r,[t]:n}):r))},[]),q=e=>F(t=>[...t,G(e)]),J=e=>{window.confirm(`هل تريد حذف هذا السطر؟`)&&F(t=>t.filter(t=>t.id!==e))},Y=()=>{if(!window.confirm(`سيتم حذف جميع بيانات كل الأشهر نهائياً. هل أنت متأكد؟`))return;let e=[];j.forEach(t=>e.push(G(t.id),G(t.id))),F(e)},X=(e,t)=>e.reduce((e,n)=>e+(Number(n[t])||0),0),Z=e=>{let t=W(e),n=N.filter(t=>t.monthId<e),r=N.filter(t=>t.monthId<=e);return{current:e=>X(t,e),before:e=>X(n,e),cumulative:e=>X(r,e)}},re=()=>V.current?.click(),ie=async e=>{let t=e.target.files?.[0];if(t){e.target.value=``;try{let e=await te(t,z);if(!e.length){f.error(`لم يتم العثور على صفوف استخدامات صالحة في ملف Excel`);return}let n=new Set(e.map(e=>e.monthId));F(t=>[...t.filter(e=>!n.has(e.monthId)),...e]),f.success(`تم استيراد ${e.length} صف إلى ${n.size} شهر`)}catch(e){console.error(`[Excel] Usage import failed`,e),f.error(`تعذّر قراءة الملف. تأكد أنه ملف Excel صالح أو صادر من هذا الجدول.`)}}},Q={top:{style:`thin`,color:{argb:`FF000000`}},left:{style:`thin`,color:{argb:`FF000000`}},bottom:{style:`thin`,color:{argb:`FF000000`}},right:{style:`thin`,color:{argb:`FF000000`}}},ae=async()=>{let t=new(await(v(async()=>{let{default:t}=await import(`./exceljs.min-DqPyZ1yt.js`).then(t=>e(t.default));return{default:t}},__vite__mapDeps([0,1])))).default.Workbook,n=t.addWorksheet(`عرض`,{views:[{rightToLeft:!0,state:`frozen`,ySplit:2}],properties:{defaultRowHeight:20,tabColor:{argb:T.DARK}},pageSetup:{orientation:`landscape`,paperSize:9,fitToPage:!0,fitToWidth:1,fitToHeight:0,horizontalDpi:300,verticalDpi:300,margins:{left:.25,right:.25,top:.35,bottom:.35,header:.15,footer:.15}}});n.mergeCells(1,1,1,D.length);let r=n.getCell(1,1);r.value=`سجل مفردات الاستخدامات والنفقات العامة`,r.font={bold:!0,size:14,color:{argb:T.DARK}},r.alignment={horizontal:`center`,vertical:`middle`,wrapText:!0,shrinkToFit:!0},n.getRow(1).height=28;let i=n.getRow(2);i.height=40,D.forEach((e,t)=>{let n=i.getCell(t+1);n.value=e,n.font={bold:!0,size:9},n.alignment={horizontal:`center`,vertical:`middle`,wrapText:!0,shrinkToFit:!0},n.border=Q;let r=A(e);r&&(n.fill={type:`pattern`,pattern:`solid`,fgColor:{argb:r}})}),n.getColumn(1).width=12,D.forEach((e,t)=>n.getColumn(t+1).width=t<4?14:11);let a=3;j.forEach(e=>{let t=W(e.id),r=Z(e.id);n.mergeCells(a,1,a,D.length);let i=n.getCell(a,1);i.value=`شهر ${e.name}`,i.font={bold:!0,color:{argb:T.GOLD}},i.fill={type:`pattern`,pattern:`solid`,fgColor:{argb:T.DARK}},i.alignment={horizontal:`right`,vertical:`middle`,wrapText:!0,shrinkToFit:!0},a++,t.forEach(e=>{D.forEach((t,r)=>{let i=n.getCell(a,r+1),o=e[t];i.value=typeof o==`number`?o:o===``?``:isNaN(Number(o))?o:Number(o),i.alignment={horizontal:`center`,vertical:`middle`,wrapText:!0,shrinkToFit:!0},i.font={size:9,bold:k(t)},i.border=Q;let s=A(t);s&&(i.fill={type:`pattern`,pattern:`solid`,fgColor:{argb:s}})}),a++});let o=(e,t,r,i)=>{n.mergeCells(a,1,a,4);let o=n.getCell(a,1);o.value=e,o.font={bold:!0,color:{argb:i}},o.alignment={horizontal:`right`,vertical:`middle`,wrapText:!0,shrinkToFit:!0},o.fill={type:`pattern`,pattern:`solid`,fgColor:{argb:r}},E.forEach((e,o)=>{let s=n.getCell(a,5+o);s.value=t(e)||``,s.font={bold:!0,size:9,color:{argb:i}},s.alignment={horizontal:`center`,vertical:`middle`,wrapText:!0,shrinkToFit:!0},s.border=Q,s.fill={type:`pattern`,pattern:`solid`,fgColor:{argb:r}}}),a++};o(`إجمالي شهر ${e.name}`,r.current,T.CUR,T.DARK),o(`إجمالي الأشهر السابقة (قبل ${e.name})`,r.before,T.PREV,`FF334155`),o(`الإجمالي العام (حتى ${e.name})`,r.cumulative,T.DARK,T.GOLD)});for(let e=1;e<=D.length;e++){let t=D[e-1].length;for(let r=1;r<=n.rowCount;r++){let i=n.getCell(r,e).value;t=Math.max(t,String(i??``).length)}n.getColumn(e).width=Math.min(22,Math.max(e<=4?12:9,t+2))}n.pageSetup.printArea=`A1:${S(Math.min(D.length,16384)-1)}${Math.max(1,n.rowCount)}`,n.pageSetup.printTitlesRow=`2:2`,n.headerFooter={oddFooter:`&L&"Arial"المجلس اليمني للاختصاصات الطبية&C&"Arial"صفحة &P من &N&R&"Arial"فرع صعدة`};let o=t.addWorksheet(`بيانات`,{views:[{rightToLeft:!0}]});o.addRow([`monthId`,...D]),o.getRow(1).height=34,o.getRow(1).eachCell({includeEmpty:!0},e=>{e.font={bold:!0,size:9,color:{argb:`FFFFFFFF`}},e.fill={type:`pattern`,pattern:`solid`,fgColor:{argb:T.DARK}},e.alignment={horizontal:`center`,vertical:`middle`,wrapText:!0,shrinkToFit:!0},e.border=Q}),j.forEach(e=>W(e.id).forEach(t=>o.addRow([e.id,...D.map(e=>t[e])]))),o.eachRow({includeEmpty:!0},e=>{e.eachCell({includeEmpty:!0},e=>{e.alignment={horizontal:`center`,vertical:`middle`,wrapText:!0,shrinkToFit:!0},e.border=Q})}),D.forEach((e,t)=>{let n=Math.max(e.length,...o.getColumn(t+2).values.slice(1).map(e=>String(e??``).length));o.getColumn(t+2).width=Math.min(22,Math.max(9,n+2))}),o.pageSetup={orientation:`landscape`,paperSize:9,fitToPage:!0,fitToWidth:1,fitToHeight:0,margins:{left:.25,right:.25,top:.35,bottom:.35,header:.15,footer:.15}},o.pageSetup.printArea=`A1:${S(Math.min(D.length+1,16384)-1)}${Math.max(1,o.rowCount)}`,o.pageSetup.printTitlesRow=`1:1`,o.headerFooter={oddFooter:`&L&"Arial"المجلس اليمني للاختصاصات الطبية&C&"Arial"صفحة &P من &N&R&"Arial"فرع صعدة`};let c=await t.xlsx.writeBuffer(),l=new Blob([c],{type:`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`}),u=`الاستخدامات-${s}.xlsx`;try{if(await h(l,u)){f.success(`تم تجهيز ملف Excel للحفظ أو المشاركة`);return}}catch{if(await p(l,u)){f.success(`تم حفظ ملف Excel داخل تخزين التطبيق`);return}}let d=URL.createObjectURL(l),m=document.createElement(`a`);m.href=d,m.download=u,m.click(),URL.revokeObjectURL(d)},$=()=>{let e=e=>e>0?M(e):`-`,t=``;return j.forEach(n=>{let r=W(n.id),i=Z(n.id);t+=`<tr class="month"><td colspan="${O}">شهر ${n.name}</td></tr>`,r.forEach((e,n)=>{t+=`<tr class="${n%2==0?`u-row-a`:`u-row-b`}">`,C.forEach(n=>{t+=`<td class="${n===`التاريخ`?`date-cell`:n===`رقم الاستمارة`?`num numeric-cell`:`text-cell`}">${e[n]??``}</td>`}),E.forEach(n=>{let r=n===`اجمالي الاستخدامات`?` formula-total`:n.includes(`اجمالي الباب`)?` formula-bab`:n.includes(`الفصل`)?` formula-fasl`:``,i=`num numeric-cell${k(n)?` formula`+r:``}`;t+=`<td class="${i}">${e[n]===``||e[n]===void 0?``:M(e[n])}</td>`}),t+=`<td class="text-cell"></td></tr>`});let a=(t,n,r)=>{let i=`<tr class="${n}"><td class="text-cell" colspan="4">${t}</td>`;return E.forEach(t=>i+=`<td class="num numeric-cell">${e(r(t))}</td>`),i+=`<td class="text-cell"></td></tr>`,i};t+=a(`إجمالي شهر ${n.name}`,`t-cur`,i.current),t+=a(`إجمالي الأشهر السابقة (قبل ${n.name})`,`t-prev`,i.before),t+=a(`الإجمالي العام (حتى ${n.name})`,`t-cum`,i.cumulative)}),`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+    <title>سجل مفردات الاستخدامات والنفقات العامة - ${u}</title>
+    <style>
+      @font-face { font-family: "Cairo"; src: url("/fonts/Cairo-Variable.ttf") format("truetype"); font-style: normal; font-weight: 100 900; font-display: swap; }
+    </style>
+    <style>
+      @page { size: A4 landscape; margin: 3mm; }
+      * { box-sizing: border-box; }
+      html, body { margin:0; padding:0; }
+      body { font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif; direction:rtl; color:#000 !important; padding:0 1px; width:100%; font-weight:700 !important; }
+.report-letterhead-block { display:flex; width:100%; max-width:none; height:30mm; min-height:30mm; max-height:30mm; overflow:hidden; align-items:stretch; justify-content:center; margin:0 0 3mm; page-break-before:avoid; page-break-after:avoid; }
+      h2 { text-align:center; color:#000 !important; margin:0 0 3mm; font-weight:800; }
+.report-date { text-align:center; color:#000 !important; margin:0 0 5px; font-size:18px; font-weight:700; }
+      table { width:100%; max-width:100%; min-width:0; border-collapse:collapse; table-layout:fixed !important; font-size:9px; }
+      th, td { border:1px solid #000; padding:2px 2px !important; text-align:center; vertical-align:middle; white-space:normal; overflow:visible; overflow-wrap:anywhere; word-break:normal; hyphens:none; line-height:1.15; font-size:9px; color:#173d31 !important; font-weight:700 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      .num, .numeric-cell, .date-cell { min-width:0; white-space:nowrap !important; overflow:visible; overflow-wrap:normal; word-break:keep-all; hyphens:none; font-family:Cairo, sans-serif !important; font-size:8.5px !important; font-variant-numeric:tabular-nums; direction:ltr; }
+      .text-cell { width:auto; white-space:normal; overflow-wrap:anywhere; word-break:normal; }
+      .report-letterhead-cell { padding:0 !important; border:0 !important; width:100%; }
+      thead th { background:#e6f3ec !important; color:#0b3d2e !important; font-weight:800 !important; white-space:normal !important; }
+      thead .c-total { background:#fbe7a1 !important; color:#5a3d00 !important; }
+      thead .c-bab { background:#0f5132 !important; color:#f5d76e !important; }
+      thead .c-fasl { background:#a9d8c3 !important; color:#0b3d2e !important; }
+      thead .c-band { background:#f3dfa2 !important; color:#5a3d00 !important; }
+      thead tr:nth-child(2) th[rowspan="3"]:not(.c-bab),
+      thead tr:nth-child(3) th[rowspan="2"]:not(.c-fasl),
+      thead tr:last-child th {
+        writing-mode:vertical-rl !important; text-orientation:mixed !important;
+        white-space:nowrap !important; min-width:6mm !important; width:6mm !important;
+        height:27mm !important; padding:2px 1px !important; line-height:1.05 !important;
+      }
+      thead tr:last-child th { height:22mm !important; }
+      td.formula { background:#e7f5ee !important; color:#0f5132 !important; }
+      td.formula-total { background:#fdf1c4 !important; color:#5a3d00 !important; }
+      td.formula-bab { background:#d3ebdf !important; color:#0b3d2e !important; }
+      td.formula-fasl { background:#e7f5ee !important; color:#0f5132 !important; }
+      tbody tr.u-row-a td { background:#ffffff !important; }
+      tbody tr.u-row-b td { background:#f3faf6 !important; }
+      tr.month td { background:#0f5132 !important; color:#f5d76e !important; font-weight:800 !important; text-align:center; padding:4px !important; }
+      tr.t-cur td { background:#d3ebdf !important; color:#0b3d2e !important; font-weight:800 !important; }
+      tr.t-prev td { background:#efe8d6 !important; color:#5b4a2a !important; font-weight:800 !important; }
+      tr.t-cum td { background:#0f5132 !important; color:#f5d76e !important; font-weight:800 !important; }
+      tr.t-cur td:first-child, tr.t-prev td:first-child, tr.t-cum td:first-child { text-align:center; padding-right:4px; }
+
+      /* ألوان نسخة الطباعة مطابقة حرفياً لألوان واجهة الشاشة.
+         هذه المحددات تتجاوز الثيم العام الذي يفرض ألواناً موحدة على كل التقارير. */
+      #paperContainer #tableContainer table.usage-print-table thead th,
+      #report-source table.usage-print-table thead th {
+        background:#e6f3ec !important; background-color:#e6f3ec !important;
+        color:#0b3d2e !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table thead th.c-total,
+      #report-source table.usage-print-table thead th.c-total {
+        background:#fbe7a1 !important; background-color:#fbe7a1 !important; color:#5a3d00 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table thead th.c-bab,
+      #report-source table.usage-print-table thead th.c-bab {
+        background:#0f5132 !important; background-color:#0f5132 !important; color:#f5d76e !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table thead th.c-fasl,
+      #report-source table.usage-print-table thead th.c-fasl {
+        background:#a9d8c3 !important; background-color:#a9d8c3 !important; color:#0b3d2e !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table thead th.c-band,
+      #report-source table.usage-print-table thead th.c-band {
+        background:#f3dfa2 !important; background-color:#f3dfa2 !important; color:#5a3d00 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table td.formula,
+      #report-source table.usage-print-table td.formula {
+        background:#e7f5ee !important; background-color:#e7f5ee !important; color:#0f5132 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table td.formula-total,
+      #report-source table.usage-print-table td.formula-total {
+        background:#fdf1c4 !important; background-color:#fdf1c4 !important; color:#5a3d00 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table td.formula-bab,
+      #report-source table.usage-print-table td.formula-bab {
+        background:#d3ebdf !important; background-color:#d3ebdf !important; color:#0b3d2e !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table td.formula-fasl,
+      #report-source table.usage-print-table td.formula-fasl {
+        background:#e7f5ee !important; background-color:#e7f5ee !important; color:#0f5132 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table tbody tr.u-row-a > td,
+      #report-source table.usage-print-table tbody tr.u-row-a > td {
+        background:#ffffff !important; background-color:#ffffff !important; color:#173d31 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table tbody tr.u-row-b > td,
+      #report-source table.usage-print-table tbody tr.u-row-b > td {
+        background:#f3faf6 !important; background-color:#f3faf6 !important; color:#173d31 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table tbody tr.month > td,
+      #report-source table.usage-print-table tbody tr.month > td {
+        background:linear-gradient(90deg,#0f5132,#14746f) !important;
+        background-color:#0f5132 !important; color:#f5d76e !important; font-weight:800 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table tbody tr.t-cur > td,
+      #report-source table.usage-print-table tbody tr.t-cur > td {
+        background:#d3ebdf !important; background-color:#d3ebdf !important; color:#0b3d2e !important; font-weight:800 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table tbody tr.t-prev > td,
+      #report-source table.usage-print-table tbody tr.t-prev > td {
+        background:#efe8d6 !important; background-color:#efe8d6 !important; color:#5b4a2a !important; font-weight:800 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table tbody tr.t-cum > td,
+      #report-source table.usage-print-table tbody tr.t-cum > td {
+        background:#0f5132 !important; background-color:#0f5132 !important; color:#f5d76e !important; font-weight:800 !important;
+      }
+      #paperContainer #tableContainer table.usage-print-table tbody tr.t-cur > td *,
+      #paperContainer #tableContainer table.usage-print-table tbody tr.t-prev > td *,
+      #paperContainer #tableContainer table.usage-print-table tbody tr.t-cum > td *,
+      #report-source table.usage-print-table tbody tr.t-cur > td *,
+      #report-source table.usage-print-table tbody tr.t-prev > td *,
+      #report-source table.usage-print-table tbody tr.t-cum > td * { color:inherit !important; }
+
+      @media print { @page { size:A4 landscape; margin:3mm; } }
+      ${m}
+    </style></head><body>
+    ${g()}
+    <h2>سجل مفردات الاستخدامات والنفقات العامة</h2>
+    <div class="report-date">تاريخ التقرير: ${u}</div>
+    <table class="usage-print-table"><thead>${R}</thead><tbody>${t}</tbody></table>
+    </body></html>`};return(0,b.jsxDEV)(`div`,{className:`mizan-usage-tab usage-emerald sheet-tabs-ui apk-tabs-ui space-y-3 font-cairo p-2`,dir:`rtl`,children:[(0,b.jsxDEV)(`div`,{className:`u-card p-3 space-y-3`,children:[(0,b.jsxDEV)(`div`,{className:`flex min-w-0 items-center justify-between gap-2`,children:[(0,b.jsxDEV)(`div`,{className:`flex min-w-0 items-center gap-2`,children:[(0,b.jsxDEV)(`span`,{className:`grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[#0f5132] via-[#14746f] to-[#1a8f86] text-[#f5d76e] shadow-md`,children:(0,b.jsxDEV)(n,{className:`w-5 h-5`},void 0,!1,{fileName:x,lineNumber:798,columnNumber:15},void 0)},void 0,!1,{fileName:x,lineNumber:797,columnNumber:13},void 0),(0,b.jsxDEV)(`div`,{className:`min-w-0`,children:[(0,b.jsxDEV)(`h2`,{className:`truncate text-[15px] font-extrabold text-[#0f3a2b]`,children:`سجل مفردات الاستخدامات`},void 0,!1,{fileName:x,lineNumber:801,columnNumber:15},void 0),(0,b.jsxDEV)(`p`,{className:`truncate text-[12px] font-bold text-[#5c8573]`,children:`النفقات العامة شهراً بشهر`},void 0,!1,{fileName:x,lineNumber:802,columnNumber:15},void 0)]},void 0,!0,{fileName:x,lineNumber:800,columnNumber:13},void 0)]},void 0,!0,{fileName:x,lineNumber:796,columnNumber:11},void 0),(0,b.jsxDEV)(`select`,{value:z,onChange:e=>B(Number(e.target.value)),className:`shrink-0 rounded-xl border border-[#b5d5c7] bg-[#f1f8f4] px-2.5 py-2 text-[12px] font-bold text-[#0f3a2b] focus:outline-none focus:ring-2 focus:ring-[#14746f]/40`,title:`الشهر الافتراضي للاستيراد (إن لم يحتوِ الملف عمود الشهر)`,children:j.map(e=>(0,b.jsxDEV)(`option`,{value:e.id,children:e.name},e.id,!1,{fileName:x,lineNumber:811,columnNumber:32},void 0))},void 0,!1,{fileName:x,lineNumber:805,columnNumber:11},void 0)]},void 0,!0,{fileName:x,lineNumber:795,columnNumber:9},void 0),(0,b.jsxDEV)(`div`,{className:`usage-actions-row`,"aria-label":`الإجراءات الرئيسية`,children:[(0,b.jsxDEV)(`button`,{onClick:re,className:`usage-action-btn bg-[#0f5132] text-white`,children:[(0,b.jsxDEV)(o,{className:`w-4 h-4`},void 0,!1,{fileName:x,lineNumber:816,columnNumber:13},void 0),` `,(0,b.jsxDEV)(`span`,{children:`استيراد Excel`},void 0,!1,{fileName:x,lineNumber:816,columnNumber:44},void 0)]},void 0,!0,{fileName:x,lineNumber:815,columnNumber:11},void 0),(0,b.jsxDEV)(`button`,{onClick:ae,className:`usage-action-btn bg-[#14746f] text-white`,children:[(0,b.jsxDEV)(a,{className:`w-4 h-4`},void 0,!1,{fileName:x,lineNumber:819,columnNumber:13},void 0),` `,(0,b.jsxDEV)(`span`,{children:`تصدير Excel`},void 0,!1,{fileName:x,lineNumber:819,columnNumber:46},void 0)]},void 0,!0,{fileName:x,lineNumber:818,columnNumber:11},void 0),(0,b.jsxDEV)(`button`,{onClick:async()=>{try{await ee($(),`سجل النفقات-${s}`,`landscape`),f.success(`تم فتح واجهة الطباعة؛ اختر «حفظ كملف PDF» لإتمام التصدير`)}catch(e){console.error(e),f.error(`تعذر فتح واجهة تصدير سجل النفقات`)}},className:`usage-action-btn bg-[#b7791f] text-white`,children:[(0,b.jsxDEV)(i,{className:`w-4 h-4`},void 0,!1,{fileName:x,lineNumber:822,columnNumber:13},void 0),` `,(0,b.jsxDEV)(`span`,{children:`تصدير PDF`},void 0,!1,{fileName:x,lineNumber:822,columnNumber:46},void 0)]},void 0,!0,{fileName:x,lineNumber:821,columnNumber:11},void 0),(0,b.jsxDEV)(`button`,{onClick:()=>{let e=$(),t=new DOMParser().parseFromString(e,`text/html`);t.querySelectorAll(`script`).forEach(e=>e.remove()),_({title:`سجل مفردات الاستخدامات والنفقات العامة`,reportDateLabel:u,tableHtml:t.body.innerHTML,contentCss:Array.from(t.querySelectorAll(`style`)).map(e=>e.textContent||``).join(`
+`),defaultOrientation:`landscape`,defaultPageSize:`A4`,defaultMarginMm:3})||f.error(`تم منع فتح نافذة الطباعة، يرجى السماح بالنوافذ المنبثقة`)},className:`usage-action-btn bg-[#1f3d36] text-white`,children:[(0,b.jsxDEV)(t,{className:`w-4 h-4`},void 0,!1,{fileName:x,lineNumber:825,columnNumber:13},void 0),` `,(0,b.jsxDEV)(`span`,{children:`طباعة`},void 0,!1,{fileName:x,lineNumber:825,columnNumber:45},void 0)]},void 0,!0,{fileName:x,lineNumber:824,columnNumber:11},void 0),(0,b.jsxDEV)(`button`,{onClick:Y,className:`usage-action-btn bg-[#a4432f] text-white`,children:[(0,b.jsxDEV)(r,{className:`w-4 h-4`},void 0,!1,{fileName:x,lineNumber:828,columnNumber:13},void 0),` `,(0,b.jsxDEV)(`span`,{children:`مسح الكل`},void 0,!1,{fileName:x,lineNumber:828,columnNumber:44},void 0)]},void 0,!0,{fileName:x,lineNumber:827,columnNumber:11},void 0)]},void 0,!0,{fileName:x,lineNumber:814,columnNumber:9},void 0),(0,b.jsxDEV)(`input`,{ref:V,type:`file`,accept:`.xlsx,.xls`,onChange:ie,className:`hidden`},void 0,!1,{fileName:x,lineNumber:831,columnNumber:9},void 0)]},void 0,!0,{fileName:x,lineNumber:794,columnNumber:7},void 0),(0,b.jsxDEV)(`div`,{className:`u-scroll w-full`,style:{maxHeight:`70vh`},children:(0,b.jsxDEV)(`table`,{className:`u-table text-center`,children:[(0,b.jsxDEV)(`thead`,{className:`u-thead`,dangerouslySetInnerHTML:{__html:R}},void 0,!1,{fileName:x,lineNumber:836,columnNumber:11},void 0),(0,b.jsxDEV)(`tbody`,{children:j.map(e=>{let t=W(e.id),n=Z(e.id);return(0,b.jsxDEV)(y.Fragment,{children:[(0,b.jsxDEV)(`tr`,{className:`u-month`,children:(0,b.jsxDEV)(`td`,{colSpan:O,children:[`شهر `,e.name,(0,b.jsxDEV)(`button`,{onClick:()=>q(e.id),className:`mr-4 inline-flex items-center gap-1 rounded-lg bg-[#f5d76e] px-2.5 py-1 text-xs font-extrabold text-[#0f3a2b] shadow-sm hover:bg-[#ffe28a] active:scale-[0.98]`,children:[(0,b.jsxDEV)(l,{className:`w-3 h-3`},void 0,!1,{fileName:x,lineNumber:854,columnNumber:25},void 0),` إضافة سطر`]},void 0,!0,{fileName:x,lineNumber:850,columnNumber:23},void 0)]},void 0,!0,{fileName:x,lineNumber:848,columnNumber:21},void 0)},void 0,!1,{fileName:x,lineNumber:847,columnNumber:19},void 0),t.map((e,t)=>(0,b.jsxDEV)(`tr`,{className:`u-row ${t%2==0?`u-row-a`:`u-row-b`}`,children:[C.map(t=>(0,b.jsxDEV)(`td`,{className:`u-cell`,children:(0,b.jsxDEV)(I,{rowId:e.id,field:t,value:e[t],onCommit:K},void 0,!1,{fileName:x,lineNumber:864,columnNumber:27},void 0)},t,!1,{fileName:x,lineNumber:863,columnNumber:25},void 0)),E.map(t=>{let n=k(t);return(0,b.jsxDEV)(`td`,{className:`u-cell ${n?ne(t):``}`,children:n?(0,b.jsxDEV)(L,{value:e[t]},void 0,!1,{fileName:x,lineNumber:872,columnNumber:31},void 0):(0,b.jsxDEV)(I,{rowId:e.id,field:t,value:e[t],onCommit:K},void 0,!1,{fileName:x,lineNumber:874,columnNumber:31},void 0)},t,!1,{fileName:x,lineNumber:870,columnNumber:27},void 0)}),(0,b.jsxDEV)(`td`,{className:`u-cell`,children:(0,b.jsxDEV)(`button`,{onClick:()=>J(e.id),className:`grid h-7 w-7 mx-auto place-items-center rounded-lg text-[#b4432f] hover:bg-[#fbe4df] active:scale-95`,title:`حذف السطر`,children:(0,b.jsxDEV)(c,{className:`w-4 h-4`},void 0,!1,{fileName:x,lineNumber:886,columnNumber:27},void 0)},void 0,!1,{fileName:x,lineNumber:881,columnNumber:25},void 0)},void 0,!1,{fileName:x,lineNumber:880,columnNumber:23},void 0)]},e.id,!0,{fileName:x,lineNumber:861,columnNumber:21},void 0)),(0,b.jsxDEV)(`tr`,{className:`u-cur`,children:[(0,b.jsxDEV)(`td`,{colSpan:4,className:`u-label`,children:[`إجمالي شهر `,e.name]},void 0,!0,{fileName:x,lineNumber:894,columnNumber:21},void 0),E.map(e=>(0,b.jsxDEV)(`td`,{children:(0,b.jsxDEV)(L,{value:n.current(e)},void 0,!1,{fileName:x,lineNumber:897,columnNumber:25},void 0)},e,!1,{fileName:x,lineNumber:896,columnNumber:23},void 0)),(0,b.jsxDEV)(`td`,{className:`u-blank`},void 0,!1,{fileName:x,lineNumber:900,columnNumber:21},void 0)]},void 0,!0,{fileName:x,lineNumber:893,columnNumber:19},void 0),(0,b.jsxDEV)(`tr`,{className:`u-prev`,children:[(0,b.jsxDEV)(`td`,{colSpan:4,className:`u-label`,children:[`إجمالي الأشهر السابقة (قبل `,e.name,`)`]},void 0,!0,{fileName:x,lineNumber:905,columnNumber:21},void 0),E.map(e=>(0,b.jsxDEV)(`td`,{children:(0,b.jsxDEV)(L,{value:n.before(e)},void 0,!1,{fileName:x,lineNumber:908,columnNumber:25},void 0)},e,!1,{fileName:x,lineNumber:907,columnNumber:23},void 0)),(0,b.jsxDEV)(`td`,{className:`u-blank`},void 0,!1,{fileName:x,lineNumber:911,columnNumber:21},void 0)]},void 0,!0,{fileName:x,lineNumber:904,columnNumber:19},void 0),(0,b.jsxDEV)(`tr`,{className:`u-cum`,children:[(0,b.jsxDEV)(`td`,{colSpan:4,className:`u-label`,children:[`الإجمالي العام (حتى `,e.name,`)`]},void 0,!0,{fileName:x,lineNumber:916,columnNumber:21},void 0),E.map(e=>(0,b.jsxDEV)(`td`,{children:(0,b.jsxDEV)(L,{value:n.cumulative(e)},void 0,!1,{fileName:x,lineNumber:919,columnNumber:25},void 0)},e,!1,{fileName:x,lineNumber:918,columnNumber:23},void 0)),(0,b.jsxDEV)(`td`,{className:`u-blank`},void 0,!1,{fileName:x,lineNumber:922,columnNumber:21},void 0)]},void 0,!0,{fileName:x,lineNumber:915,columnNumber:19},void 0)]},e.id,!0,{fileName:x,lineNumber:845,columnNumber:17},void 0)})},void 0,!1,{fileName:x,lineNumber:839,columnNumber:11},void 0)]},void 0,!0,{fileName:x,lineNumber:835,columnNumber:9},void 0)},void 0,!1,{fileName:x,lineNumber:834,columnNumber:7},void 0)]},void 0,!0,{fileName:x,lineNumber:791,columnNumber:5},void 0)};export{z as default};

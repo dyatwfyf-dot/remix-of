@@ -1652,7 +1652,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
 </body>
 </html>`;
 
-  if (Capacitor.isNativePlatform() && !options.autoDownloadPdf) {
+  if (Capacitor.isNativePlatform()) {
     try {
       const parsed = new DOMParser().parseFromString(html, "text/html");
       parsed.querySelector(".preview-toolbar")?.remove();

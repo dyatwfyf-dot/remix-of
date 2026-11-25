@@ -9,7 +9,7 @@ on:
       - "public/**"
       - "scripts/**"
       - "package.json"
-      - "pnpm-lock.yaml"
+      - "package-lock.json"
       - "capacitor.config.ts"
       - "vite.config.*"
       - "capacitor.html"
@@ -21,7 +21,7 @@ on:
       - "public/**"
       - "scripts/**"
       - "package.json"
-      - "pnpm-lock.yaml"
+      - "package-lock.json"
       - "capacitor.config.ts"
       - "vite.config.*"
       - "capacitor.html"
@@ -43,26 +43,19 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v5
 
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          version: 10
-
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm install --no-audit --no-fund
 
       - name: Type-check application
-        run: pnpm exec tsc --noEmit --pretty false
+        run: npx tsc --noEmit --pretty false
 
       - name: Build web application
-        run: pnpm run build
+        run: npm run build
 
       - name: Build Capacitor web assets
-        run: pnpm run build:android:web
+        run: npm run build:android:web

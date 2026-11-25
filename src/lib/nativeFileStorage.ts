@@ -67,12 +67,15 @@ export async function deliverBlobToUser(blob: Blob, fileName: string): Promise<b
   if (!isNativeFileStorageAvailable()) return false;
   const uri = await saveBlobToInternalStorage(blob, fileName);
   if (!uri) return false;
+  const isPdf = /\.pdf$/i.test(fileName);
+  const isExcel = /\.xlsx?$/i.test(fileName);
+  const fileKindLabel = isPdf ? "PDF" : isExcel ? "Excel" : "";
   const { Share } = await import("@capacitor/share");
   await Share.share({
     title: fileName,
-    text: "ملف PDF تم إنشاؤه من التطبيق",
+    text: fileKindLabel ? `ملف ${fileKindLabel} تم تصديره من تطبيق مِيزان` : "ملف تم تصديره من تطبيق مِيزان",
     url: uri,
-    dialogTitle: "حفظ أو مشاركة ملف PDF",
+    dialogTitle: fileKindLabel ? `حفظ أو مشاركة ملف ${fileKindLabel}` : "حفظ أو مشاركة الملف",
   });
   return true;
 }
