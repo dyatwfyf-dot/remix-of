@@ -1049,6 +1049,7 @@ table:has(> tbody tr:first-child th:first-child:is(.serial-number-column, [data-
 .mizan-reports-tab .reports-print-heading,
 .mizan-reports-tab .reports-print-heading * {
   font-family: "Cairo", sans-serif !important;
+  font-weight: 800 !important;
 }
 #tableContainer table.reports-data-table tbody td,
 #tableContainer table.reports-data-table tbody td *,
