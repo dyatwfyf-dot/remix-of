@@ -484,9 +484,11 @@ ${reportArabicFontFacesCss}
 #tableContainer table.reports-data-table th.rc-text,#tableContainer table.reports-data-table td.rc-text,#tableContainer table.reports-data-table td.reports-description-cell,#tableContainer table.reports-data-table td.reports-text-cell{white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere!important}
 #tableContainer table.reports-data-table tr.signature-spacer-row>td{height:3mm!important;padding:0!important;border:0!important;background:#fff!important}
 #tableContainer table.reports-data-table tr.reports-bank-pending-row>td{background:#fff4cc!important;background-color:#fff4cc!important;color:#3b2f12!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-#tableContainer .reports-unpaid-name-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:3mm!important;width:100%!important;direction:rtl!important;align-items:stretch!important}
-#tableContainer .reports-unpaid-name-item{display:flex!important;align-items:center!important;justify-content:center!important;min-width:0!important;min-height:10mm!important;padding:2mm!important;border:1px solid #d6b95f!important;border-radius:2mm!important;background:#fff8df!important;color:#171717!important;text-align:center!important;box-sizing:border-box!important;break-inside:avoid!important;page-break-inside:avoid!important}
-#tableContainer .reports-unpaid-name-text{display:block!important;width:100%!important;min-width:0!important;text-align:center!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;font-weight:850!important}
+#tableContainer .reports-unpaid-name-grid{display:flex!important;flex-wrap:wrap!important;justify-content:center!important;gap:6px 10px!important;width:100%!important;direction:rtl!important;align-items:center!important}
+#tableContainer .reports-unpaid-name-item{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:fit-content!important;max-width:100%!important;min-width:0!important;min-height:auto!important;flex:0 1 auto!important;padding:4px 12px!important;border:1px solid #d6b95f!important;border-radius:4px!important;background-color:#fff8df!important;color:#171717!important;text-align:center!important;box-sizing:border-box!important;break-inside:avoid!important;page-break-inside:avoid!important}
+#tableContainer .reports-unpaid-name-text{display:block!important;width:auto!important;max-width:100%!important;min-width:0!important;text-align:center!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;font-weight:850!important}
+#tableContainer table.reports-data-table tbody tr.reports-unpaid-heading-row{break-after:avoid!important;page-break-after:avoid!important}
+#tableContainer table.reports-data-table tbody tr.reports-unpaid-name-row{break-before:avoid!important;page-break-before:avoid!important;break-inside:avoid!important;page-break-inside:avoid!important}
 #tableContainer .reports-unpaid-name-delete{display:none!important}
 #tableContainer table.reports-data-table tr.signature-block-row,#tableContainer table.reports-data-table tr.signature-block-row>td{background:#fff!important;color:#000!important;page-break-inside:avoid!important;break-inside:avoid!important}
 #tableContainer table.reports-data-table tr.signature-block-row>td{padding:5px 8px!important;border:0!important}
@@ -2053,67 +2055,39 @@ export default function ReportsTab() {
     }
     
     const isCustodySource = source === "youssefLoan" || source === "tawfiqCustody";
+    const compareRowsByActiveColumn = (a: ReportRow, b: ReportRow) => {
+      const aVal = a[activeSortCol];
+      const bVal = b[activeSortCol];
+      const aMissing = aVal === undefined || aVal === null;
+      const bMissing = bVal === undefined || bVal === null;
+      if (aMissing || bMissing) return aMissing === bMissing ? 0 : aMissing ? 1 : -1;
+      const numA = Number(aVal);
+      const numB = Number(bVal);
+      if (!isNaN(numA) && !isNaN(numB)) {
+        return activeSortDir === "asc" ? numA - numB : numB - numA;
+      }
+      const strA = String(aVal);
+      const strB = String(bVal);
+      return activeSortDir === "asc" ? strA.localeCompare(strB, "ar") : strB.localeCompare(strA, "ar");
+    };
+
     const orderedRows = isCustodySource || (source === "trainee" && !traineeHasUserSorted) ?
-      filtered : [...filtered].sort((a, b) => {
-        // عند الفرز فقط، يبقى إجمالي الرسم العام في النهاية، بينما تتبع إجماليات المتدرب اسمه.
-        if (source === "trainee") {
-          const aIsFeeUnpaid = a.summaryLevel === "fee-unpaid-heading" || a.summaryLevel === "fee-unpaid-name";
-          const bIsFeeUnpaid = b.summaryLevel === "fee-unpaid-heading" || b.summaryLevel === "fee-unpaid-name";
-          if (aIsFeeUnpaid !== bIsFeeUnpaid) return aIsFeeUnpaid ? 1 : -1;
-          if (aIsFeeUnpaid && bIsFeeUnpaid) {
-            const aRank = a.summaryLevel === "fee-unpaid-heading" ? 0 : 1;
-            const bRank = b.summaryLevel === "fee-unpaid-heading" ? 0 : 1;
-            if (aRank !== bRank) return aRank - bRank;
-            return String(a.trainee || "").localeCompare(String(b.trainee || ""), "ar");
-          }
-          const aIsFeeRoster = a.summaryLevel === "trainee-fee-roster";
-          const bIsFeeRoster = b.summaryLevel === "trainee-fee-roster";
-          if (aIsFeeRoster !== bIsFeeRoster) return aIsFeeRoster ? 1 : -1;
-          if (aIsFeeRoster && bIsFeeRoster) {
-            return TRAINEE_PAYMENT_FEE_CATEGORIES.indexOf(a.category as typeof TRAINEE_PAYMENT_FEE_CATEGORIES[number]) -
-              TRAINEE_PAYMENT_FEE_CATEGORIES.indexOf(b.category as typeof TRAINEE_PAYMENT_FEE_CATEGORIES[number]);
-          }
-          const aIsFeeGrandTotal = a.summaryLevel === "fee";
-          const bIsFeeGrandTotal = b.summaryLevel === "fee";
-          if (aIsFeeGrandTotal !== bIsFeeGrandTotal) return aIsFeeGrandTotal ? 1 : -1;
-          if (aIsFeeGrandTotal && bIsFeeGrandTotal) return 0;
-          
-          // إبقاء كل إجماليات المتدرب معه عند الترتيب بأي عمود.
-          const aTrainee = String(a.trainee ?? a.name ?? "").trim();
-          const bTrainee = String(b.trainee ?? b.name ?? "").trim();
-          if (aTrainee && bTrainee) {
-            const traineeOrder = aTrainee.localeCompare(bTrainee, "ar") *
-              (activeSortCol === "trainee" || activeSortCol === "name" ?
-                activeSortDir === "asc" ? 1 : -1 :
-                1);
-            if (traineeOrder !== 0) return traineeOrder;
-          }
-          
-          const rowRank = (row: ReportRow) =>
-            row.summaryLevel === "detail" ? 0 :
-            row.summaryLevel === "period" ? 1 :
-            row.summaryLevel === "trainee-fee-total" ? 2 :
-            row.summaryLevel === "trainee-name-total" ? 3 :
-            row.summaryLevel === "total" || row.total === "نعم" ? 4 :
-            row.summaryLevel === "trainee-fee-roster" ? 5 : 0;
-          const rankDiff = rowRank(a) - rowRank(b);
-          if (rankDiff !== 0) return rankDiff;
-        }
-        const aVal = a[activeSortCol];
-        const bVal = b[activeSortCol];
-        const aMissing = aVal === undefined || aVal === null;
-        const bMissing = bVal === undefined || bVal === null;
-        if (aMissing || bMissing) return aMissing === bMissing ? 0 : aMissing ? 1 : -1;
-        const numA = Number(aVal);
-        const numB = Number(bVal);
-        if (!isNaN(numA) && !isNaN(numB)) {
-          return activeSortDir === "asc" ? numA - numB : numB - numA;
-        }
-        const strA = String(aVal);
-        const strB = String(bVal);
-        return activeSortDir === "asc" ? strA.localeCompare(strB, "ar") : strB.localeCompare(strA, "ar");
-      });
-    
+      filtered :
+      source === "trainee" ?
+      (() => {
+        // في كشف مدفوعات المتدربين: تُفرز عمليات السداد التفصيلية فقط.
+        // تبقى جميع صفوف الملخص وعناوين الرسوم ومجموعات غير المسددين في مواضعها الأصلية،
+        // وبذلك يظل عنوان كل رسم متبوعاً بأسماء غير المسددين الخاصة به دون فصل أو خلط.
+        const sortedDetailRows = filtered
+          .filter((row) => row.summaryLevel === "detail")
+          .sort(compareRowsByActiveColumn);
+        let detailIndex = 0;
+        return filtered.map((row) =>
+          row.summaryLevel === "detail" ? sortedDetailRows[detailIndex++] : row
+        );
+      })() :
+      [...filtered].sort(compareRowsByActiveColumn);
+
     // احتساب إجمالي المبلغ من السجلات الظاهرة فقط، مع منع جمع صفوف الملخص
     // مع تفاصيلها مرة أخرى في كشف المتدربين.
     const detailRows = orderedRows.filter((row) => row.summaryLevel === "detail");
@@ -2795,7 +2769,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                     if (row.summaryLevel === "fee-unpaid-heading" || row.summaryLevel === "fee-unpaid-name") {
                       const names = [String(row.trainee || ""), String(row.unpaidTrainee2 || "")].filter(Boolean);
                       return (
-                        <tr key={String(row.id)} className={row.summaryLevel === "fee-unpaid-heading" ? "bg-amber-100 text-amber-950" : "bg-white text-black"}>
+                        <tr key={String(row.id)} className={row.summaryLevel === "fee-unpaid-heading" ? "reports-unpaid-heading-row bg-amber-100 text-amber-950" : "reports-unpaid-name-row bg-white text-black"}>
                           <td colSpan={sourceConfig.columns.length + 2} className="border border-black px-3 py-2 text-center font-bold">
                             {row.summaryLevel === "fee-unpaid-heading" ? String(row.trainee || "") : (
                               <div className="reports-unpaid-name-grid" dir="rtl">
