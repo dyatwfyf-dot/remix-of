@@ -51,7 +51,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
   const stripPageRules = (css: string) => {
     let output = "";
     let cursor = 0;
-    const pageRulePattern = /@page\\b[^{}]*\\{/gi;
+    const pageRulePattern = /@page[^{}]*[{]/gi;
     let match: RegExpExecArray | null;
 
     while ((match = pageRulePattern.exec(css)) !== null) {
@@ -274,7 +274,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-title-ar {
-      font-family: ${stack} !important;
+      font-family: ${reportHeadingFontStack} !important;
       font-size: 13.5px !important;
       font-weight: 900 !important;
       line-height: 1.3 !important;
@@ -282,7 +282,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-sub-ar {
-      font-family: ${stack} !important;
+      font-family: ${reportDataFontStack} !important;
       font-size: 12px !important;
       font-weight: 800 !important;
       line-height: 1.3 !important;
@@ -290,7 +290,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-branch-ar {
-      font-family: ${stack} !important;
+      font-family: ${reportDataFontStack} !important;
       font-size: 12.5px !important;
       font-weight: 900 !important;
       line-height: 1.3 !important;
@@ -308,7 +308,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-bismillah {
-      font-family: ${stack} !important;
+      font-family: ${reportHeadingFontStack} !important;
       font-size: 14.5px !important;
       font-weight: 900 !important;
       color: #000000 !important;
@@ -329,7 +329,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-title-en {
-      font-family: ${stack} !important;
+      font-family: ${reportHeadingFontStack} !important;
       font-size: 12px !important;
       font-weight: 900 !important;
       line-height: 1.25 !important;
@@ -337,7 +337,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-sub-en {
-      font-family: ${stack} !important;
+      font-family: ${reportDataFontStack} !important;
       font-size: 10.5px !important;
       font-weight: 800 !important;
       line-height: 1.25 !important;
@@ -345,7 +345,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     }
 
     .letterhead-branch-en {
-      font-family: ${stack} !important;
+      font-family: ${reportDataFontStack} !important;
       font-size: 11px !important;
       font-weight: 900 !important;
       line-height: 1.25 !important;
@@ -558,7 +558,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       align-items: end !important;
     }
     #tableContainer .sig-title {
-      font-family: ${stack} !important;
+      font-family: ${reportHeadingFontStack} !important;
       font-weight: 900 !important;
       font-size: 16px !important;
       color: #000000 !important;
@@ -570,7 +570,7 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
       overflow-wrap: anywhere !important;
     }
     #tableContainer .sig-name {
-      font-family: ${stack} !important;
+      font-family: ${reportDataFontStack} !important;
       font-weight: 800 !important;
       font-size: 16px !important;
       color: #000000 !important;
@@ -1069,9 +1069,13 @@ export function openBrowserPrintPreview(options: OpenBrowserPrintPreviewOptions)
     @media print {
       body { counter-reset: pageNumber; }
       #tableContainer table tbody tr.total-row > td,
+      #tableContainer table tbody tr.total-row > td *,
       #tableContainer table tbody tr.report-grand-total-row > td,
+      #tableContainer table tbody tr.report-grand-total-row > td *,
       .preview-report-content table tbody tr.total-row > td,
-      .preview-report-content table tbody tr.report-grand-total-row > td {
+      .preview-report-content table tbody tr.total-row > td *,
+      .preview-report-content table tbody tr.report-grand-total-row > td,
+      .preview-report-content table tbody tr.report-grand-total-row > td * {
         color: #ffffff !important;
       }
     }
