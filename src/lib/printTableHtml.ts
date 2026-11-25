@@ -144,7 +144,7 @@ export const tablePrintStyles = `
   ${reportArabicFontFacesCss}
   @page {
     size: A4;
-    margin: 3mm;
+    margin: 3mm 3mm 6mm;
     @bottom-center {
       content: "صفحة " counter(page) " من " counter(pages);
       font-family: "Cairo", sans-serif;
@@ -178,7 +178,6 @@ export const tablePrintStyles = `
     font-weight: 900 !important;
     color: #000000 !important;
     text-align: center;
-    color: #000000 !important;
     margin: 0 0 4px;
     font-size: 22px;
     font-weight: 900;
@@ -308,7 +307,7 @@ export const tablePrintStyles = `
   #tableContainer table thead th[data-col-key="description"] {
     background: linear-gradient(180deg, #fff4a3 0%, #ffd700 48%, #d99b00 100%) !important;
     background-color: #ffd700 !important;
-    color: #3b2600 !important;
+    color: #000000 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
