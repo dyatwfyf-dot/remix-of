@@ -575,6 +575,8 @@ const reportsTabPrintTypographyCss = `
   color:#000000!important;
   font-family:${reportHeadingFontStack}!important;
   font-weight:900!important;
+  font-size:inherit!important;
+  line-height:inherit!important;
 }
 #tableContainer table.reports-data-table tbody td *,
 #tableContainer table.reports-fee-status-table tbody td *,
@@ -583,6 +585,8 @@ const reportsTabPrintTypographyCss = `
   color:#000000!important;
   font-family:${reportArabicFontStack}!important;
   font-weight:800!important;
+  font-size:inherit!important;
+  line-height:inherit!important;
 }
 #tableContainer table.reports-data-table th.rc-num,
 #tableContainer table.reports-data-table td.rc-num,
@@ -2460,26 +2464,12 @@ export default function ReportsTab() {
     const printOrientation = settings.orientation || (source === "traineeFeeStatus" ? "landscape" : "portrait");
     const printPageSize = settings.pageSize || "A4";
     const marginMm = settings.margin === "narrow" ? 2 : settings.margin === "wide" ? 10 : settings.margin === "normal" ? 6 : (isCustodyReport ? 5 : 6);
-    const pageWidthMm = printOrientation === "landscape" ? 297 : 210;
-    const visibleColumnCount = Math.max(1,
-      sourceConfig.columns.filter((column) => !settings.hiddenColumns.includes(column.key)).length +
-      (settings.hiddenColumns.includes("idx") ? 0 : 1));
-    const configuredFontSize = settings.fontMode === "manual" ?
-      Math.max(5, Math.min(14, settings.fontSize)) :
-      Math.max(7, Math.min(13, (pageWidthMm - marginMm * 2) / (visibleColumnCount * 2.35)));
-    const fontSizePx = source === "traineeFeeStatus" ?
-      Math.max(12, Math.min(14, configuredFontSize + 2)) :
-      source === "trainee" ?
-      Math.max(14, Math.min(16, configuredFontSize + 3)) :
-      isCustodyReport ?
-      Math.max(12, Math.min(14, configuredFontSize + 3)) :
-      configuredFontSize;
     const tableHtml = buildReportsScreenPrintHtml(source, settings.showHeader ? reportDateLabel : "", reportRecordCount, settings);
     const finalCss = `
    #tableContainer .reports-print-table-shell { width:100%!important; min-width:0!important; 
    max-width: auto!important; overflow:visible!important; }
    #tableContainer table.reports-data-table { width:100%!important; min-width:0!important;
-   #tableContainer table.reports-data-table tr, #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td, #tableContainer table.reports-data-table .pdf-cell-text { page-break-inside:avoid!important; break-inside:avoid!important; font-size:var(--print-cell-font-size, ${fontSizePx}px)!important; line-height:var(--print-cell-line-height, 1.45)!important; }
+   #tableContainer table.reports-data-table tr, #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td, #tableContainer table.reports-data-table .pdf-cell-text { page-break-inside:avoid!important; break-inside:avoid!important; font-size:var(--print-cell-font-size,16px)!important; line-height:var(--print-cell-line-height, 1.45)!important; }
 
    #tableContainer table.reports-data-table thead { display:table-header-group!important; }
    #tableContainer table.reports-data-table tbody { display:table-row-group!important; }
@@ -2493,7 +2483,7 @@ export default function ReportsTab() {
     #tableContainer .reports-unpaid-name-claim,
     #tableContainer .reports-unpaid-name-delete { display:none!important; }
    ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table { width:100%!important; min-width:0!important; max-width:auto!important; table-layout:auto!important; border-collapse:collapse!important; } #tableContainer table.reports-fee-status-table th, #tableContainer table.reports-fee-status-table td { box-sizing:border-box!important; min-width:0!important; max-width:100%!important; font-size:var(--print-cell-font-size,16px)!important; color:#000000!important; font-weight:800!important; border:1px solid #000000!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; padding-left:3px!important; padding-right:3px!important; vertical-align:middle!important; } #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th { white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; line-height:1.25!important; } #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th > div, #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th > div > span { display:block!important; width:100%!important; min-width:0!important; white-space:normal!important; overflow-wrap:anywhere!important; }` : ""}
-   ${source === "trainee" ? `#tableContainer table.reports-trainee-payment-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:auto!important; } #tableContainer table.reports-trainee-payment-table thead tr.reports-column-header-row th { font-size:${fontSizePx}px!important; white-space:normal!important; overflow-wrap:anywhere!important; } #tableContainer table.reports-trainee-payment-table tbody tr > td { font-size:${fontSizePx}px!important; white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important; } #tableContainer table.reports-trainee-payment-table tbody td.reports-numeric-cell { white-space:nowrap!important; overflow-wrap:normal!important; }` : ""}
+   ${source === "trainee" ? `#tableContainer table.reports-trainee-payment-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:auto!important; } #tableContainer table.reports-trainee-payment-table thead tr.reports-column-header-row th { font-size:var(--print-header-font-size,16px)!important; white-space:normal!important; overflow-wrap:anywhere!important; } #tableContainer table.reports-trainee-payment-table tbody tr > td { font-size:var(--print-cell-font-size,16px)!important; white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important; } #tableContainer table.reports-trainee-payment-table tbody td.reports-numeric-cell { white-space:nowrap!important; overflow-wrap:normal!important; }` : ""}
    ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:fixed!important; border-collapse:collapse!important; direction:rtl!important; text-align:center!important; font-family:${reportDataFontStack}!important; } #tableContainer table.reports-fee-status-table thead th { font-family:${reportHeadingFontStack}!important; background:linear-gradient(180deg,#fff7d7 0%,#f3d778 100%)!important; background-color:#f3d778!important; color:#000000!important; border:1px solid #000000!important; font-size:var(--print-header-font-size,16px)!important; font-weight:900!important; line-height:1.4!important; padding:6px 4px!important; text-align:center!important; vertical-align:middle!important; white-space:normal!important; overflow-wrap:anywhere!important; -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; } #tableContainer table.reports-fee-status-table tbody td { background:#fff!important; background-color:#fff!important; color:#000000!important; border:1px solid #000000!important; font-family:${reportArabicFontStack}!important; font-size:var(--print-cell-font-size,16px)!important; font-weight:800!important; line-height:1.45!important; padding:5px 4px!important; text-align:center!important; vertical-align:middle!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; } #tableContainer table.reports-fee-status-table tbody tr:hover td { background:inherit!important; }` : ""}
    ${isCustodyReport ? custodyPortraitPrintCss : ""}
    ${isCustodyReport ? `
