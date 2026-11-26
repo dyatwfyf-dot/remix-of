@@ -100,6 +100,55 @@ const displayColumnHeader = (header: string) => ({
   "موعد السريري الشفوي": "حالة السريري الشفوي",
 }[header] || header);
 
+const TABLE_META_HEADERS = [...VISIBLE_BASE_HEADERS.slice(0, 6), "بداية الدراسة"] as const;
+
+const FEE_TABLE_GROUPS = [
+  {
+    title: "رسوم القيد والتسجيل",
+    className: "fee-group-registration",
+    columns: [
+      { header: "موعد استحقاق القيد والتسجيل", label: "موعد الاستحقاق" },
+      { header: "حالة سداد رسوم القيد والتسجيل", label: "حالة السداد" },
+      { header: "رسوم القيد والتسجيل", label: "قيمة الرسم" },
+    ],
+  },
+  {
+    title: "امتحان الكتابي الأول",
+    className: "fee-group-first-written",
+    columns: [
+      { header: "موعد الكتابي الأول المتوقع", label: "موعد الامتحان" },
+      { header: "موعد الكتابي الأول", label: "الحالة" },
+      { header: "رسم الكتابي الأول", label: "الرسم" },
+    ],
+  },
+  {
+    title: "امتحان الكتابي النهائي",
+    className: "fee-group-final-written",
+    columns: [
+      { header: "موعد الكتابي النهائي المتوقع", label: "موعد الامتحان" },
+      { header: "موعد الكتابي النهائي", label: "الحالة" },
+      { header: "رسم الكتابي النهائي", label: "الرسم" },
+    ],
+  },
+  {
+    title: "الامتحان السريري الشفوي",
+    className: "fee-group-clinical",
+    columns: [
+      { header: "موعد السريري الشفوي المتوقع", label: "موعد الامتحان" },
+      { header: "موعد السريري الشفوي", label: "الحالة" },
+      { header: "رسم السريري الشفوي", label: "الرسم" },
+    ],
+  },
+] as const;
+
+const TABLE_PAYMENT_SUMMARY_HEADERS = PAYMENT_SUMMARY_HEADERS.filter(
+  (header) => header !== "حالة سداد رسوم القيد والتسجيل",
+);
+const TABLE_TOTAL_HEADERS = [
+  "إجمالي رسوم الامتحانات",
+  "إجمالي المستحق الكلي (ريال)",
+] as const;
+
 export default function TraineeFinancialDataTab() {
   const records = useStore((state) => state.traineeFinancialRecords);
   const setRecords = useStore((state) => state.setTraineeFinancialRecords);
@@ -111,7 +160,16 @@ export default function TraineeFinancialDataTab() {
   const installments2026 = useStore((state) => state.installments);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const columns = useMemo(() => [...VISIBLE_BASE_HEADERS, ...customColumns], [customColumns]);
+  // أعمدة عرض الجدول مجمعة حسب كل رسم، مع إبقاء الحقول السنوية في سجل التحرير فقط.
   const tableColumns = useMemo(() => [
+    ...TABLE_META_HEADERS,
+    ...FEE_TABLE_GROUPS.flatMap((group) => group.columns.map((column) => column.header)),
+    ...TABLE_PAYMENT_SUMMARY_HEADERS,
+    ...TABLE_TOTAL_HEADERS,
+    ...customColumns,
+  ], [customColumns]);
+  // يحافظ ملف Excel على كامل الحقول الأصلية، بما فيها بيانات الأقساط المخفية من عرض الجدول.
+  const exportColumns = useMemo(() => [
     ...VISIBLE_BASE_HEADERS.slice(0, 6),
     ...TRAINEE_FEE_SCHEDULE_HEADERS,
     ...VISIBLE_BASE_HEADERS.slice(6),
@@ -533,16 +591,16 @@ export default function TraineeFinancialDataTab() {
       [TITLE],
       [RULES],
       [],
-      tableColumns,
-      ...records.map((row) => tableColumns.map((header) => getDisplayValue(row, header))),
+      exportColumns,
+      ...records.map((row) => exportColumns.map((header) => getDisplayValue(row, header))),
     ];
     const sheet = XLSX.utils.aoa_to_sheet(aoa);
     sheet["!views"] = [{ rightToLeft: true }];
-    sheet["!cols"] = tableColumns.map((header) => ({
+    sheet["!cols"] = exportColumns.map((header) => ({
       wch: Math.min(34, Math.max(14, header.length + 4)),
     }));
     sheet["!autofilter"] = {
-      ref: `A4:${XLSX.utils.encode_col(tableColumns.length - 1)}${records.length + 4}`,
+      ref: `A4:${XLSX.utils.encode_col(exportColumns.length - 1)}${records.length + 4}`,
     };
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, sheet, SHEET_NAME.slice(0, 31));
@@ -561,28 +619,52 @@ export default function TraineeFinancialDataTab() {
     }
     XLSX.writeFile(workbook, "بيانات_المتدربين.xlsx");
     toast.success("تم تصدير بيانات المتدربين");
-  };
-
-
-  const printTraineeDataTable = () => {
-    const tableHead = tableColumns.map((header) => `<th>${escapeHtml(displayColumnHeader(header))}</th>`).join("");
+  }  const printTraineeDataTable = () => {
+    const metaHeaders = TABLE_META_HEADERS.map(
+      (header) => `<th rowspan="2" class="meta-header">${escapeHtml(displayColumnHeader(header))}</th>`,
+    ).join("");
+    const feeGroupHeaders = FEE_TABLE_GROUPS.map(
+      (group) => `<th colspan="3" class="fee-category-group ${group.className}">${escapeHtml(group.title)}</th>`,
+    ).join("");
+    const summaryColumnCount = TABLE_PAYMENT_SUMMARY_HEADERS.length + TABLE_TOTAL_HEADERS.length;
+    const summaryGroupHeader = summaryColumnCount
+      ? `<th colspan="${summaryColumnCount}" class="fee-category-group fee-group-summary">ملخص السداد والإجماليات</th>`
+      : "";
+    const customGroupHeader = customColumns.length
+      ? `<th colspan="${customColumns.length}" class="fee-category-group fee-group-custom">حقول إضافية</th>`
+      : "";
+    const subHeaders = [
+      ...FEE_TABLE_GROUPS.flatMap((group) => group.columns.map((column) => column.label)),
+      ...TABLE_PAYMENT_SUMMARY_HEADERS.map(displayColumnHeader),
+      ...TABLE_TOTAL_HEADERS.map(displayColumnHeader),
+      ...customColumns,
+    ].map((label) => `<th class="fee-subcolumn">${escapeHtml(label)}</th>`).join("");
+    const tableHead = `<tr>${metaHeaders}${feeGroupHeaders}${summaryGroupHeader}${customGroupHeader}<th rowspan="2" class="meta-header actions-header">إجراءات</th></tr><tr>${subHeaders}</tr>`;
     const tableBody = visibleRows.map(({ row }) =>
       `<tr>${tableColumns.map((header) => `<td>${escapeHtml(getDisplayValue(row, header))}</td>`).join("")}</tr>`,
     ).join("");
-    const firstFinancialIndex = tableColumns.indexOf(HEADERS[6]);
+    const firstFinancialIndex = tableColumns.indexOf(FEE_TABLE_GROUPS[0].columns[0].header);
     const footerCells = tableColumns.slice(firstFinancialIndex).map((header) => {
       if (!CURRENCY_COLUMNS.has(header)) return "<td></td>";
       const total = visibleRows.reduce((sum, item) => sum + parseAmount(getDisplayValue(item.row, header)), 0);
       return `<td class="amount">${total.toLocaleString("en-US")}</td>`;
     }).join("");
-    const tableHtml = `${reportLetterheadHtml()}<h1>${escapeHtml(TITLE)}</h1><p class="rule-line">${escapeHtml(RULES)}</p><p class="record-count">عدد السجلات المعروضة: ${visibleRows.length}</p><table><thead><tr>${tableHead}</tr></thead><tbody>${tableBody || `<tr><td colspan="${tableColumns.length}">لا توجد سجلات مطابقة</td></tr>`}</tbody><tfoot><tr><td colspan="${firstFinancialIndex}" class="total-label">الإجمالي العام للسجلات المعروضة</td>${footerCells}</tr></tfoot></table><p class="report-date">تاريخ الطباعة: ${new Date().toLocaleDateString("ar-YE")}</p>`;
+    const tableHtml = `${reportLetterheadHtml()}<h1>${escapeHtml(TITLE)}</h1><p class="rule-line">${escapeHtml(RULES)}</p><p class="record-count">عدد السجلات المعروضة: ${visibleRows.length}</p><table><thead>${tableHead}</thead><tbody>${tableBody || `<tr><td colspan="${tableColumns.length + 1}">لا توجد سجلات مطابقة</td></tr>`}</tbody><tfoot><tr><td colspan="${firstFinancialIndex}" class="total-label">الإجمالي العام للسجلات المعروضة</td>${footerCells}<td></td></tr></tfoot></table><p class="report-date">تاريخ الطباعة: ${new Date().toLocaleDateString("ar-YE")}</p>`;
     const contentCss = `
       h1 { text-align:center; font-size:16px; margin:3mm 0; font-weight:900; }
       .rule-line { text-align:center; font-size:8px; font-weight:800; margin:2mm 0; }
       .record-count { text-align:right; font-size:8px; font-weight:800; margin:2mm 0; }
       table { width:100%; border-collapse:collapse; table-layout:auto; font-size:7px; }
       th,td { border:1px solid #000; padding:1mm .6mm; text-align:center; vertical-align:middle; white-space:normal; overflow-wrap:anywhere; line-height:1.25; }
-      thead th { background:linear-gradient(180deg,#f5d76e,#d8a928) !important; color:#111 !important; font-weight:900; }
+      thead tr:first-child th { background:linear-gradient(180deg,#174f73,#082e4b) !important; color:#fff !important; font-weight:900; }
+      thead tr:nth-child(2) th { background:#f4e4b5 !important; color:#17212b !important; font-weight:800; }
+      thead th.fee-category-group { background:linear-gradient(180deg,#d9b45d,#a8751e) !important; color:#fff !important; }
+      thead th.fee-group-registration { background:linear-gradient(180deg,#168b83,#075c59) !important; }
+      thead th.fee-group-first-written { background:linear-gradient(180deg,#2d77a8,#164c75) !important; }
+      thead th.fee-group-final-written { background:linear-gradient(180deg,#7256a4,#493476) !important; }
+      thead th.fee-group-clinical { background:linear-gradient(180deg,#b06a38,#7b3f20) !important; }
+      thead th.fee-group-summary { background:linear-gradient(180deg,#4b6175,#293d50) !important; }
+      thead th.fee-group-custom { background:linear-gradient(180deg,#667b4d,#3f512f) !important; }
       tbody td { background:#fff !important; color:#111 !important; }
       tbody tr:nth-child(even) td { background:#f4f8fc !important; }
       tfoot td { background:#dbeafe !important; color:#111 !important; font-weight:900; }
@@ -592,7 +674,7 @@ export default function TraineeFinancialDataTab() {
       @media print { @page { size:A3 landscape; margin:6mm; } }
     `;
     const opened = openBrowserPrintPreview({
-      title: "جدول بيانات المتدربين ومواعيد استحقاق الرسوم",
+      title: "جدول بيانات المتدربين ومواعيد وحالات الرسوم",
       tableHtml,
       contentCss,
       defaultOrientation: "landscape",
@@ -846,41 +928,74 @@ export default function TraineeFinancialDataTab() {
           style={{ width: "max-content", minWidth: "100%", tableLayout: "auto" }}
         >
           <thead className="sticky top-0 z-10 text-white">
-            <tr>
-              {tableColumns.map((header) => (
-                <th
-                  key={header}
-                  className="min-w-[100px] max-w-[240px] border border-slate-500 bg-[#126c8e] px-2 py-2 text-[15px] font-white leading-6 text-white"
-                >
+            <tr className="trainee-data-group-header-row">
+              {TABLE_META_HEADERS.map((header) => (
+                <th key={header} rowSpan={2} className="min-w-[100px] max-w-[240px] border border-slate-500 px-2 py-2 text-[15px] font-black leading-6 text-white">
                   <button
                     type="button"
-                    onClick={() =>
-                      setSort((current) =>
-                        current?.key === header
-                          ? { key: header, desc: !current.desc }
-                          : { key: header, desc: false },
-                      )
-                    }
+                    onClick={() => setSort((current) => current?.key === header ? { key: header, desc: !current.desc } : { key: header, desc: false })}
                     className="whitespace-normal break-words"
                   >
                     {displayColumnHeader(header)}
                     {sort?.key === header ? (sort.desc ? " ↓" : " ↑") : " ↕"}
                   </button>
-                  {customColumns.includes(header) && (
-                    <button
-                      type="button"
-                      title={`حذف العمود ${header}`}
-                      onClick={() => removeColumn(header)}
-                      className="mr-1 rounded bg-white/20 px-1 text-white"
-                    >
-                      ×
-                    </button>
-                  )}
                 </th>
               ))}
-              <th className="min-w-[100px] max-w-[220px] border border-slate-500 bg-[#126c8e] px-2 py-2 text-[15px] font-white leading-6 text-white">
+              {FEE_TABLE_GROUPS.map((group) => (
+                <th key={group.title} colSpan={group.columns.length} className={`fee-category-group ${group.className} border border-slate-500 px-2 py-2 text-[14px] font-black leading-5 text-white`}>
+                  {group.title}
+                </th>
+              ))}
+              <th colSpan={TABLE_PAYMENT_SUMMARY_HEADERS.length + TABLE_TOTAL_HEADERS.length} className="fee-category-group fee-group-summary border border-slate-500 px-2 py-2 text-[14px] font-black leading-5 text-white">
+                ملخص السداد والإجماليات
+              </th>
+              {customColumns.length > 0 && (
+                <th colSpan={customColumns.length} className="fee-category-group fee-group-custom border border-slate-500 px-2 py-2 text-[14px] font-black leading-5 text-white">
+                  حقول إضافية
+                </th>
+              )}
+              <th rowSpan={2} className="min-w-[100px] max-w-[220px] border border-slate-500 bg-[#126c8e] px-2 py-2 text-[15px] font-black leading-6 text-white">
                 إجراءات
               </th>
+            </tr>
+            <tr className="trainee-data-subheader-row">
+              {FEE_TABLE_GROUPS.flatMap((group) => group.columns).map((column) => (
+                <th key={column.header} className="fee-subcolumn min-w-[92px] max-w-[170px] border border-slate-400 px-2 py-2 text-[12px] font-extrabold text-slate-900">
+                  <button
+                    type="button"
+                    onClick={() => setSort((current) => current?.key === column.header ? { key: column.header, desc: !current.desc } : { key: column.header, desc: false })}
+                    className="whitespace-normal break-words"
+                  >
+                    {column.label}
+                    {sort?.key === column.header ? (sort.desc ? " ↓" : " ↑") : " ↕"}
+                  </button>
+                </th>
+              ))}
+              {[...TABLE_PAYMENT_SUMMARY_HEADERS, ...TABLE_TOTAL_HEADERS].map((header) => (
+                <th key={header} className="fee-subcolumn min-w-[100px] max-w-[190px] border border-slate-400 px-2 py-2 text-[12px] font-extrabold text-slate-900">
+                  <button
+                    type="button"
+                    onClick={() => setSort((current) => current?.key === header ? { key: header, desc: !current.desc } : { key: header, desc: false })}
+                    className="whitespace-normal break-words"
+                  >
+                    {displayColumnHeader(header)}
+                    {sort?.key === header ? (sort.desc ? " ↓" : " ↑") : " ↕"}
+                  </button>
+                </th>
+              ))}
+              {customColumns.map((header) => (
+                <th key={header} className="fee-subcolumn min-w-[100px] max-w-[190px] border border-slate-400 px-2 py-2 text-[12px] font-extrabold text-slate-900">
+                  <span className="whitespace-normal break-words">{header}</span>
+                  <button
+                    type="button"
+                    title={`حذف العمود ${header}`}
+                    onClick={() => removeColumn(header)}
+                    className="mr-1 rounded bg-rose-100 px-1 text-rose-800"
+                  >
+                    ×
+                  </button>
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
@@ -929,12 +1044,12 @@ export default function TraineeFinancialDataTab() {
           <tfoot className="bg-[#e2eef5] font-extrabold text-black">
             <tr>
               <td
-                colSpan={tableColumns.indexOf(HEADERS[6])}
+                colSpan={tableColumns.indexOf(FEE_TABLE_GROUPS[0].columns[0].header)}
                 className="border border-slate-500 px-2 py-2 text-right text-[14px] font-black text-black"
               >
                 الإجمالي العام ({records.length} متدربًا)
               </td>
-              {tableColumns.slice(tableColumns.indexOf(HEADERS[6])).map((header) => (
+              {tableColumns.slice(tableColumns.indexOf(FEE_TABLE_GROUPS[0].columns[0].header)).map((header) => (
                 <td key={header} className="max-w-[280px] border border-slate-500 px-2 py-2 text-[14px] font-black text-black [overflow-wrap:anywhere]">
                   {totals[header] !== undefined
                     ? Number(totals[header]).toLocaleString("en-US")
