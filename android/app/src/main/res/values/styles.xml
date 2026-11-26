@@ -18,5 +18,8 @@
 
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="android:background">@drawable/app_splash</item>
+        <item name="android:windowSplashScreenBackground">#082847</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/app_icon</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">#082847</item>
     </style>
 </resources>
