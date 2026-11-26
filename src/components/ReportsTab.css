@@ -51,7 +51,7 @@
 .reports-table-scroll .reports-data-table .reports-unpaid-name-actions{display:inline-flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;max-width:100%}
 .reports-table-scroll .reports-data-table .reports-unpaid-name-claim{display:inline-flex;align-items:center;justify-content:center;gap:4px;flex:0 0 auto;border:0;border-radius:7px;background:#dbeafe;color:#075985;padding:5px 8px;font-size:11px;font-weight:800;white-space:nowrap}
 .reports-table-scroll .reports-data-table .reports-unpaid-name-claim:hover{background:#bfdbfe}
-.reports-table-scroll .reports-data-table .reports-unpaid-name-grid[data-fee-category="قسط الرسوم الدراسية السنوية"] .reports-unpaid-name-item{background-color:#edf7ed!important;border-color:#7aa985!important}
+.reports-table-scroll .reports-data-table .reports-unpaid-name-delete{display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;border:0;border-radius:7px;background:#ffe4e6;color:#be123c;padding:5px 8px;font-size:11px;font-weight:800;white-space:nowrap}
 .reports-table-scroll .reports-data-table .reports-unpaid-name-grid[data-fee-category="قسط الرسوم الدراسية السنوية"] .reports-unpaid-name-item{background-color:#edf7ed!important;border-color:#7aa985!important}
 .reports-table-scroll .reports-data-table .reports-unpaid-name-grid[data-fee-category="رسوم قيد وتسجيل"] .reports-unpaid-name-item{background-color:#fff5dc!important;border-color:#d4a94b!important}
 .reports-table-scroll .reports-data-table .reports-unpaid-name-grid[data-fee-category="رسوم امتحان الكتابي الأول"] .reports-unpaid-name-item{background-color:#eaf2ff!important;border-color:#7c9ecb!important}
