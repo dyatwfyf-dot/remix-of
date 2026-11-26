@@ -1589,13 +1589,6 @@ body.apk-compact {
 }
 
 
-/* Restore the document's normal scale in browser print and print-preview output. */
-@media print {
-  .apk-tabs-ui {
-    zoom: 1 !important;
-  }
-}
-
 
 /* Screen-only typography polish: clearer controls and column headings without changing print/PDF styling. */
 @media screen {
