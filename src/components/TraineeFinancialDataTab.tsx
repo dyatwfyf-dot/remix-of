@@ -100,7 +100,7 @@ const displayColumnHeader = (header: string) => ({
   "موعد السريري الشفوي": "حالة السريري الشفوي",
 }[header] || header);
 
-const TABLE_META_HEADERS = [...VISIBLE_BASE_HEADERS.slice(0, 6), "بداية الدراسة"] as const;
+const TABLE_META_HEADERS = [...VISIBLE_BASE_HEADERS.slice(0, 6).filter((header) => header !== STUDY_YEARS_HEADER), "بداية الدراسة"] as const;
 
 const FEE_TABLE_GROUPS = [
   {
@@ -599,7 +599,7 @@ export default function TraineeFinancialDataTab() {
     sheet["!cols"] = exportColumns.map((header) => ({
       wch: Math.min(34, Math.max(14, header.length + 4)),
       // إخفاء حقول الأقساط السنوية في ملف العرض مع الاحتفاظ بقيمها لاستيرادها دون فقدان.
-      hidden: header === "مواعيد استحقاق الأقساط السنوية" || header === "الأقساط الدراسية المستحقة",
+      hidden: header === STUDY_YEARS_HEADER || header === "مواعيد استحقاق الأقساط السنوية" || header === "الأقساط الدراسية المستحقة",
     }));
     sheet["!autofilter"] = {
       ref: `A4:${XLSX.utils.encode_col(exportColumns.length - 1)}${records.length + 4}`,
