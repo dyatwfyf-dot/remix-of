@@ -237,12 +237,12 @@ export default function TraineeFinancialDataTab() {
     };
     const rawKey = (value: unknown) => String(value ?? "")
       .normalize("NFKC")
-      .replace(/[\\u0610-\\u061A\\u064B-\\u065F\\u0670\\u06D6-\\u06ED]/g, "")
-      .replace(/[\\u0640\\u200B-\\u200F\\uFEFF]/g, "")
-      .replace(/\\s+/g, " ")
+      .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g, "")
+      .replace(/[\u0640\u200B-\u200F\uFEFF]/g, "")
+      .replace(/\s+/g, " ")
       .trim()
       .toLocaleLowerCase("ar");
-    const compactKey = (value: unknown) => rawKey(value).replace(/[^\\p{L}\\p{N}]/gu, "");
+    const compactKey = (value: unknown) => rawKey(value).replace(/[^\p{L}\p{N}]/gu, "");
     const differsByOneCharacter = (left: string, right: string) => {
       const a = Array.from(left);
       const b = Array.from(right);
