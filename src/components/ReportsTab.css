@@ -1341,3 +1341,81 @@
   .mizan-reports-tab .reports-filter-grid > * { min-width: 0 !important; }
   .mizan-reports-tab .report-option-picker-trigger { font-size: 10px !important; }
 }
+
+
+/* Print-only financial report typography parity with reportDocumentCss. */
+@media print {
+  .mizan-reports-tab table.reports-data-table,
+  .mizan-reports-tab table.reports-fee-status-table,
+  .mizan-reports-tab table.reports-custody-print-table,
+  .mizan-reports-tab table.reports-trainee-payment-table {
+    color:#000000!important;
+    font-family:var(--font-report)!important;
+  }
+  .mizan-reports-tab table.reports-data-table th,
+  .mizan-reports-tab table.reports-data-table td,
+  .mizan-reports-tab table.reports-fee-status-table th,
+  .mizan-reports-tab table.reports-fee-status-table td,
+  .mizan-reports-tab table.reports-custody-print-table th,
+  .mizan-reports-tab table.reports-custody-print-table td,
+  .mizan-reports-tab table.reports-trainee-payment-table th,
+  .mizan-reports-tab table.reports-trainee-payment-table td {
+    color:#000000!important;
+    font-family:var(--font-report)!important;
+    font-size:var(--print-cell-font-size,16px)!important;
+    font-weight:800!important;
+    line-height:var(--print-cell-line-height,1.45)!important;
+    border:1px solid #000000!important;
+  }
+  .mizan-reports-tab table.reports-data-table thead th,
+  .mizan-reports-tab table.reports-fee-status-table thead th,
+  .mizan-reports-tab table.reports-custody-print-table thead th,
+  .mizan-reports-tab table.reports-trainee-payment-table thead th {
+    color:#000000!important;
+    font-family:"Cairo",sans-serif!important;
+    font-weight:900!important;
+  }
+  .mizan-reports-tab table.reports-data-table th *,
+  .mizan-reports-tab table.reports-data-table td *,
+  .mizan-reports-tab table.reports-fee-status-table th *,
+  .mizan-reports-tab table.reports-fee-status-table td *,
+  .mizan-reports-tab table.reports-custody-print-table th *,
+  .mizan-reports-tab table.reports-custody-print-table td *,
+  .mizan-reports-tab table.reports-trainee-payment-table th *,
+  .mizan-reports-tab table.reports-trainee-payment-table td * {
+    color:#000000!important;
+    font-weight:800!important;
+  }
+  .mizan-reports-tab table.reports-data-table thead th *,
+  .mizan-reports-tab table.reports-fee-status-table thead th *,
+  .mizan-reports-tab table.reports-custody-print-table thead th *,
+  .mizan-reports-tab table.reports-trainee-payment-table thead th * {
+    font-family:"Cairo",sans-serif!important;
+    font-weight:900!important;
+  }
+  .mizan-reports-tab table.reports-data-table td.reports-numeric-cell,
+  .mizan-reports-tab table.reports-data-table td.rc-num,
+  .mizan-reports-tab table.reports-data-table td.reports-no-wrap-cell,
+  .mizan-reports-tab table.reports-data-table td.date-cell,
+  .mizan-reports-tab table.reports-data-table td[data-col-key="idx"],
+  .mizan-reports-tab table.reports-fee-status-table td.reports-numeric-cell,
+  .mizan-reports-tab table.reports-fee-status-table td.rc-num,
+  .mizan-reports-tab table.reports-fee-status-table td.date-cell,
+  .mizan-reports-tab table.reports-custody-print-table td.reports-numeric-cell,
+  .mizan-reports-tab table.reports-custody-print-table td.rc-num,
+  .mizan-reports-tab table.reports-custody-print-table td.date-cell,
+  .mizan-reports-tab table.reports-trainee-payment-table td.reports-numeric-cell,
+  .mizan-reports-tab table.reports-trainee-payment-table td.rc-num,
+  .mizan-reports-tab table.reports-trainee-payment-table td.date-cell {
+    color:#000000!important;
+    font-weight:800!important;
+    font-variant-numeric:tabular-nums!important;
+    font-feature-settings:"tnum" 1!important;
+  }
+  .mizan-reports-tab .reports-print-heading,
+  .mizan-reports-tab .reports-print-heading * {
+    color:#000000!important;
+    font-family:"Cairo",sans-serif!important;
+    font-weight:900!important;
+  }
+}
