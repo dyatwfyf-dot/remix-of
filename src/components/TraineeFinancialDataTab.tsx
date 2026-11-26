@@ -621,7 +621,9 @@ export default function TraineeFinancialDataTab() {
     }
     XLSX.writeFile(workbook, "بيانات_المتدربين.xlsx");
     toast.success("تم تصدير بيانات المتدربين");
-  }  const printTraineeDataTable = () => {
+  };
+
+  const printTraineeDataTable = () => {
     const metaHeaders = TABLE_META_HEADERS.map(
       (header) => `<th rowspan="2" class="meta-header">${escapeHtml(displayColumnHeader(header))}</th>`,
     ).join("");
