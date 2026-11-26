@@ -1,7 +1,7 @@
 {
-  "name": "مِيزان | النظام المالي",
-  "short_name": "مِيزان",
-  "description": "مِيزان — نظام مالي عصري لإدارة القيود والحوافظ والأقساط والتقارير",
+  "name": "المجلس الطبي",
+  "short_name": "المجلس الطبي",
+  "description": "المجلس الطبي — النظام الإداري والمالي للمجلس اليمني للاختصاصات الطبية",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
@@ -14,6 +14,8 @@
     "minimal-ui"
   ],
   "categories": [
+    "medical",
+    "health",
     "finance",
     "productivity"
   ],
