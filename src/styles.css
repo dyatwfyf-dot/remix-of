@@ -1587,3 +1587,11 @@ body.apk-compact {
 .apk-compact .app-tab-content {
   contain: layout style;
 }
+
+
+/* Restore the document's normal scale in browser print and print-preview output. */
+@media print {
+  .apk-tabs-ui {
+    zoom: 1 !important;
+  }
+}
