@@ -57,7 +57,7 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "theme-color", content: "#337799" },
+      { name: "theme-color", content: "#0d4777" },
     ],
     links: [
       { rel: "manifest", href: "/manifest.json" },
