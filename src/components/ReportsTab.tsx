@@ -417,6 +417,73 @@ const TRAINEE_PAYMENT_FEE_CATEGORIES = [
   "رسوم البحث العلمي والرسالة",
 ] as const;
 
+const TRAINEE_REPORT_SELECTION_STORAGE_KEY = "reports-trainee-payment-selection-v1";
+
+interface TraineeReportSelection {
+  selectedTrainee: string;
+  selectedFees: string[];
+  selectedBatches: string[];
+  traineeGrouping: TraineeGrouping;
+  traineeDisplayMode: TraineeDisplayMode;
+  traineeSortColumn: string;
+  traineeSortDirection: "asc" | "desc";
+  traineeHasUserSorted: boolean;
+}
+
+const readSavedTraineeReportSelection = (): TraineeReportSelection => {
+  const defaults: TraineeReportSelection = {
+    selectedTrainee: "all",
+    selectedFees: [],
+    selectedBatches: [],
+    traineeGrouping: "month",
+    traineeDisplayMode: "both",
+    traineeSortColumn: "notifyDate",
+    traineeSortDirection: "asc",
+    traineeHasUserSorted: false,
+  };
+
+  try {
+    const saved = window.localStorage.getItem(TRAINEE_REPORT_SELECTION_STORAGE_KEY);
+    const parsed: unknown = saved ? JSON.parse(saved) : null;
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return defaults;
+
+    const value = parsed as Record<string, unknown>;
+    return {
+      selectedTrainee:
+        typeof value.selectedTrainee === "string" && value.selectedTrainee.trim()
+          ? value.selectedTrainee
+          : defaults.selectedTrainee,
+      selectedFees: Array.isArray(value.selectedFees)
+        ? value.selectedFees.filter(
+            (fee): fee is string =>
+              typeof fee === "string" &&
+              TRAINEE_PAYMENT_FEE_CATEGORIES.includes(
+                fee as (typeof TRAINEE_PAYMENT_FEE_CATEGORIES)[number],
+              ),
+          )
+        : defaults.selectedFees,
+      selectedBatches: Array.isArray(value.selectedBatches)
+        ? value.selectedBatches.filter(
+            (batch): batch is string => typeof batch === "string" && batch.trim().length > 0,
+          )
+        : defaults.selectedBatches,
+      traineeGrouping: value.traineeGrouping === "year" ? "year" : defaults.traineeGrouping,
+      traineeDisplayMode:
+        value.traineeDisplayMode === "detail" || value.traineeDisplayMode === "summary"
+          ? value.traineeDisplayMode
+          : defaults.traineeDisplayMode,
+      traineeSortColumn:
+        typeof value.traineeSortColumn === "string" && value.traineeSortColumn.trim()
+          ? value.traineeSortColumn
+          : defaults.traineeSortColumn,
+      traineeSortDirection: value.traineeSortDirection === "desc" ? "desc" : defaults.traineeSortDirection,
+      traineeHasUserSorted: value.traineeHasUserSorted === true,
+    };
+  } catch {
+    return defaults;
+  }
+};
+
 const canonicalTraineePaymentFeeCategory = (value: unknown): string | null => {
   const text = normalizeFeeDescription(value);
   if (!text) return null;
@@ -950,9 +1017,10 @@ export default function ReportsTab() {
   const [year, setYear] = useState < number > (fiscalYear);
   const [month, setMonth] = useState < number > (new Date().getMonth());
   
-  const [selectedTrainee, setSelectedTrainee] = useState < string > ("all");
-  const [selectedFees, setSelectedFees] = useState<string[]>([]);
-  const [selectedBatches, setSelectedBatches] = useState<string[]>([]);
+  const [savedTraineeReportSelection] = useState<TraineeReportSelection>(() => readSavedTraineeReportSelection());
+  const [selectedTrainee, setSelectedTrainee] = useState<string>(() => savedTraineeReportSelection.selectedTrainee);
+  const [selectedFees, setSelectedFees] = useState<string[]>(() => savedTraineeReportSelection.selectedFees);
+  const [selectedBatches, setSelectedBatches] = useState<string[]>(() => savedTraineeReportSelection.selectedBatches);
   const [selectedTraineeFeeStatus, setSelectedTraineeFeeStatus] = useState < string > ("all");
   const [feeDemandTrainee, setFeeDemandTrainee] = useState < ReportRow | null > (null);
   const [feeDemandIncludeRegistration, setFeeDemandIncludeRegistration] = useState(false);
@@ -969,14 +1037,43 @@ export default function ReportsTab() {
     } catch {}
     return { department: "الشؤون المالية", director: "", signer: "" };
   });
-  const [traineeGrouping, setTraineeGrouping] = useState < TraineeGrouping > ("month");
-  const [traineeDisplayMode, setTraineeDisplayMode] = useState < TraineeDisplayMode > ("both");
+  const [traineeGrouping, setTraineeGrouping] = useState<TraineeGrouping>(() => savedTraineeReportSelection.traineeGrouping);
+  const [traineeDisplayMode, setTraineeDisplayMode] = useState<TraineeDisplayMode>(() => savedTraineeReportSelection.traineeDisplayMode);
   
   const [sortColumn, setSortColumn] = useState < string > ("date");
   const [sortDirection, setSortDirection] = useState < "asc" | "desc" > ("asc");
-  const [traineeSortColumn, setTraineeSortColumn] = useState < string > ("notifyDate");
-  const [traineeSortDirection, setTraineeSortDirection] = useState < "asc" | "desc" > ("asc");
-  const [traineeHasUserSorted, setTraineeHasUserSorted] = useState(false);
+  const [traineeSortColumn, setTraineeSortColumn] = useState<string>(() => savedTraineeReportSelection.traineeSortColumn);
+  const [traineeSortDirection, setTraineeSortDirection] = useState<"asc" | "desc">(() => savedTraineeReportSelection.traineeSortDirection);
+  const [traineeHasUserSorted, setTraineeHasUserSorted] = useState(() => savedTraineeReportSelection.traineeHasUserSorted);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        TRAINEE_REPORT_SELECTION_STORAGE_KEY,
+        JSON.stringify({
+          selectedTrainee,
+          selectedFees,
+          selectedBatches,
+          traineeGrouping,
+          traineeDisplayMode,
+          traineeSortColumn,
+          traineeSortDirection,
+          traineeHasUserSorted,
+        } satisfies TraineeReportSelection),
+      );
+    } catch (error) {
+      console.error("تعذر حفظ اختيارات كشف مدفوعات المتدربين:", error);
+    }
+  }, [
+    selectedTrainee,
+    selectedFees,
+    selectedBatches,
+    traineeGrouping,
+    traineeDisplayMode,
+    traineeSortColumn,
+    traineeSortDirection,
+    traineeHasUserSorted,
+  ]);
   const [deletedRows, setDeletedRows] = useState < Set < string >> (new Set());
   const [deletedFeeStatusRows, setDeletedFeeStatusRows] = useState < Set < string >> (() => {
     try {
