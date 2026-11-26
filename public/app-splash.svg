@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1500" role="img" aria-labelledby="title desc">
+<title id="title">المجلس الطبي</title><desc id="desc">هوية بصرية للمجلس الطبي ونظامه الإداري والمالي</desc>
+<defs>
+ <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#78b5eb"/><stop offset=".48" stop-color="#f7f2e9"/><stop offset="1" stop-color="#d6e6ef"/></linearGradient>
+ <linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#09233e"/><stop offset=".58" stop-color="#0d4b79"/><stop offset="1" stop-color="#071a30"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff1b5"/><stop offset=".3" stop-color="#e4b54e"/><stop offset=".65" stop-color="#a76c17"/><stop offset="1" stop-color="#ffe5a0"/></linearGradient>
+ <linearGradient id="white" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#dbe7ef"/></linearGradient>
+ <filter id="deep" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur in="SourceAlpha" stdDeviation="14"/><feOffset dy="12"/><feComponentTransfer><feFuncA type="linear" slope=".4"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="900" height="1500" fill="url(#sky)"/>
+<circle cx="450" cy="360" r="300" fill="#fff" opacity=".22"/>
+<path d="M0 1050h900v450H0z" fill="url(#navy)"/>
+<path d="M0 1050c180-70 300 10 450-20s270-65 450 0v90H0z" fill="#d8a844" opacity=".92"/>
+<g opacity=".22" fill="#fff"><circle cx="120" cy="170" r="70"/><circle cx="205" cy="155" r="98"/><circle cx="730" cy="210" r="105"/><circle cx="800" cy="175" r="65"/></g>
+<!-- institutional building -->
+<g transform="translate(80 820)" filter="url(#deep)">
+ <path d="M0 190l370-165 370 165v32H0z" fill="#dbb86d" stroke="#fff0bd" stroke-width="6"/>
+ <path d="M24 220h692v245H24z" fill="#e9dfd0" stroke="#bd8e42" stroke-width="7"/>
+ <path d="M0 220h740v28H0z" fill="url(#gold)"/>
+ <g fill="#0c426c" stroke="#f8e1a4" stroke-width="7">
+  <path d="M75 252h68v185H75zM190 252h68v185h-68zM482 252h68v185h-68zM597 252h68v185h-68z"/>
+  <path d="M300 265h140v172H300z"/>
+ </g>
+ <path d="M320 437v-88a50 50 0 0 1 100 0v88z" fill="#0b3659" stroke="#e9bd69" stroke-width="7"/>
+ <path d="M0 465h740v30H0z" fill="url(#gold)"/>
+ <path d="M335 135h70v22h-70z" fill="#0b3c64"/>
+ <path d="M370 24l34 110h-68z" fill="#f6e6bd" stroke="#b47b22" stroke-width="7"/>
+</g>
+<!-- medical device / record emblem -->
+<g transform="translate(150 135)" filter="url(#deep)">
+ <circle cx="300" cy="300" r="240" fill="none" stroke="#a36a17" stroke-width="28"/>
+ <circle cx="300" cy="290" r="240" fill="none" stroke="url(#gold)" stroke-width="18"/>
+ <path d="M265 95h70v72h72v70h-72v72h-70v-72h-72v-70h72z" fill="url(#white)" stroke="url(#gold)" stroke-width="10" stroke-linejoin="round"/>
+ <path d="M300 70v310" stroke="url(#gold)" stroke-width="22" stroke-linecap="round"/>
+ <circle cx="300" cy="66" r="28" fill="url(#gold)" stroke="#fff2c2" stroke-width="5"/>
+ <path d="M300 165c-88 5-90 74-18 96 65 20 68 64 18 83-34 13-58 4-75-18M300 165c88 5 90 74 18 96-65 20-68 64-18 83 34 13 58 4 75-18" fill="none" stroke="url(#gold)" stroke-width="17" stroke-linecap="round"/>
+ <path d="M65 393h125l25-20 23 42 34-94 32 94 22-22h108l25 22 23-40 32 40h126" fill="none" stroke="url(#gold)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+ <path d="M130 450c58-32 108-22 170 10 62-32 112-42 170-10v78c-58-32-108-22-170 10-62-32-112-42-170-10z" fill="url(#white)" stroke="url(#gold)" stroke-width="8" stroke-linejoin="round"/>
+ <path d="M300 460v78M154 475c48-16 91-9 127 10M446 475c-48-16-91-9-127 10M154 503c48-16 91-9 127 10M446 503c-48-16-91-9-127 10" stroke="#6b879c" stroke-width="6" fill="none" stroke-linecap="round"/>
+</g>
+<g transform="translate(450 665)">
+ <path d="M-62-42c-50 20-50 100 0 132M-62-42c-38 8-54 42-38 70" fill="none" stroke="#bd2029" stroke-width="23" stroke-linecap="round"/>
+ <path d="M-12 15h92v28h-92z" fill="#ce2029"/>
+ <path d="M-12 43h92v28h-92z" fill="#fff"/>
+ <path d="M-12 71h92v28h-92z" fill="#111"/>
+</g>
+<text x="450" y="1200" text-anchor="middle" direction="rtl" unicode-bidi="plaintext" font-family="Cairo, 'Noto Sans Arabic', sans-serif" font-size="82" font-weight="900" fill="#fff" style="paint-order:stroke;stroke:#061c33;stroke-width:2">المجلس الطبي</text>
+<path d="M140 1245h620" stroke="url(#gold)" stroke-width="8" stroke-linecap="round"/>
+<text x="450" y="1315" text-anchor="middle" direction="rtl" unicode-bidi="plaintext" font-family="Cairo, 'Noto Sans Arabic', sans-serif" font-size="35" font-weight="700" fill="#f8ead0">النظام الإداري والمالي للمجلس اليمني للاختصاصات الطبية</text>
+<text x="450" y="1400" text-anchor="middle" direction="rtl" unicode-bidi="plaintext" font-family="Cairo, 'Noto Sans Arabic', sans-serif" font-size="28" font-weight="600" fill="#d9e8f4">قيود يومية • حوافظ • أقساط • تقارير</text>
+<path d="M110 1450h680" stroke="#d8a844" stroke-width="4" opacity=".8"/>
+</svg>

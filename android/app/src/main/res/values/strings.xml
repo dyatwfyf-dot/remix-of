@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">مِيزان</string>
-    <string name="title_activity_main">مِيزان | النظام المالي</string>
+    <string name="app_name">المجلس الطبي</string>
+    <string name="title_activity_main">المجلس الطبي</string>
     <string name="package_name">ye.medicalcouncil.financial</string>
     <string name="custom_url_scheme">ye.medicalcouncil.financial</string>
 </resources>

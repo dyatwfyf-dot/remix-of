@@ -73,7 +73,7 @@ export async function deliverBlobToUser(blob: Blob, fileName: string): Promise<b
   const { Share } = await import("@capacitor/share");
   await Share.share({
     title: fileName,
-    text: fileKindLabel ? `ملف ${fileKindLabel} تم تصديره من تطبيق مِيزان` : "ملف تم تصديره من تطبيق مِيزان",
+    text: fileKindLabel ? `ملف ${fileKindLabel} تم تصديره من تطبيق المجلس الطبي` : "ملف تم تصديره من تطبيق المجلس الطبي",
     url: uri,
     dialogTitle: fileKindLabel ? `حفظ أو مشاركة ملف ${fileKindLabel}` : "حفظ أو مشاركة الملف",
   });

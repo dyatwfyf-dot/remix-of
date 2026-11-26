@@ -4,13 +4,13 @@
  * the same root URL and provide offline navigation/static-asset caching.
  */
 const CACHE_PREFIX = "mizan-offline-";
-const CACHE_NAME = `${CACHE_PREFIX}shell-v1`;
+const CACHE_NAME = `${CACHE_PREFIX}shell-v2`;
 const APP_ROOT = new URL("./", self.registration.scope).href;
 const OFFLINE_ASSETS = [
   APP_ROOT,
   new URL("manifest.json", APP_ROOT).href,
-  new URL("icon-192.png", APP_ROOT).href,
-  new URL("icon-512.png", APP_ROOT).href,
+  new URL("app-logo.svg", APP_ROOT).href,
+  new URL("app-splash.svg", APP_ROOT).href,
 ];
 
 function isSameOrigin(url) {

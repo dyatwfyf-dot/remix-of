@@ -2,7 +2,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
   appId: "ye.medicalcouncil.financial",
-  appName: "مِيزان",
+  appName: "المجلس الطبي",
   webDir: "dist",
   loggingBehavior: "none",
   server: {
@@ -12,7 +12,7 @@ const config: CapacitorConfig = {
     allowMixedContent: false,
     captureInput: true,
     webContentsDebuggingEnabled: false,
-    backgroundColor: "#F5EFE6",
+    backgroundColor: "#082847",
   },
 };
 

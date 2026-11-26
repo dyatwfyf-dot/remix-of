@@ -1,12 +1,12 @@
 {
-  "name": "مِيزان | النظام المالي",
-  "short_name": "مِيزان",
-  "description": "مِيزان — نظام مالي عصري لإدارة القيود والحوافظ والأقساط والتقارير",
+  "name": "المجلس الطبي",
+  "short_name": "المجلس الطبي",
+  "description": "المجلس الطبي — النظام الإداري والمالي للمجلس اليمني للاختصاصات الطبية",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f5f2ea",
-  "theme_color": "#2e6b8a",
+  "background_color": "#082847",
+  "theme_color": "#0d4777",
   "lang": "ar",
   "dir": "rtl",
   "display_override": [
@@ -14,32 +14,22 @@
     "minimal-ui"
   ],
   "categories": [
+    "medical",
+    "health",
     "finance",
     "productivity"
   ],
   "icons": [
     {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
+      "src": "/app-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
+      "src": "/app-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "maskable"
     }
   ]
