@@ -90,25 +90,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "default" },
       { name: "format-detection", content: "telephone=no" },
-      { title: "مِيزان | النظام المالي" },
-      { name: "description", content: "مِيزان — نظام مالي عصري لإدارة القيود والحوافظ والأقساط والتقارير" },
+      { title: "المجلس الطبي" },
+      { name: "description", content: "المجلس الطبي — النظام الإداري والمالي للمجلس اليمني للاختصاصات الطبية" },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "مِيزان | النظام المالي" },
+      { property: "og:title", content: "المجلس الطبي" },
       { property: "og:description", content: "إدارة القيود اليومية والحوافظ والأقساط والتقارير المالية بسهولة ووضوح." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "مِيزان | النظام المالي" },
+      { name: "twitter:title", content: "المجلس الطبي" },
       { name: "twitter:description", content: "إدارة القيود اليومية والحوافظ والأقساط والتقارير المالية بسهولة ووضوح." },
       {
         property: "og:image",
         content:
-          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/6c7998d6-30eb-43ef-ba5a-44d267b39f88",
+          "/app-splash.png",
       },
       {
         name: "twitter:image",
         content:
-          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/6c7998d6-30eb-43ef-ba5a-44d267b39f88",
+          "/app-splash.png",
       },
     ],
     links: [
