@@ -420,7 +420,7 @@ function Index() {
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
               <h1 className="app-brand-title truncate whitespace-nowrap text-[clamp(0.72rem,2.35vw,1.2rem)] font-black tracking-normal text-white leading-tight">
-                المجلس اليمني للاختصاصات الطبية
+                المجلس الطبي
               </h1>
               <p className="hidden min-w-0 items-center gap-1.5 truncate text-[clamp(0.62rem,1.45vw,0.75rem)] font-medium leading-snug text-[#e8f0f8] sm:flex">
                 <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[#b8d4e8]"></span>
