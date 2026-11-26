@@ -9,7 +9,7 @@
  box-shadow:inset 0 2px 0 rgba(255,255,255,.62),inset 0 -2px 0 rgba(0,35,60,.34),0 3px 6px rgba(15,23,42,.2);
  -webkit-print-color-adjust:exact; print-color-adjust:exact;
 }
-.mizan-trainee-financial-tab .trainee-data-table thead th:nth-child(2) {
+.mizan-trainee-financial-tab .trainee-data-table thead tr:first-child th:nth-child(2) {
   position: sticky !important;
   top: 0 !important;
   right: 0 !important;
@@ -65,7 +65,7 @@
 }
 @media(max-width:640px) {
  .mizan-trainee-financial-tab .trainee-data-table thead th { min-width:94px; max-width:170px; padding:7px 5px!important; font-size:11px!important; }
- .mizan-trainee-financial-tab .trainee-data-table thead th:nth-child(2),
+ .mizan-trainee-financial-tab .trainee-data-table thead tr:first-child th:nth-child(2),
  .mizan-trainee-financial-tab .trainee-data-table tbody td:nth-child(2) {
    width: 108px !important;
    min-width: 108px !important;
@@ -73,4 +73,81 @@
  }
  .mizan-trainee-financial-tab .trainee-data-table tbody td:nth-child(2) { top:auto!important; bottom:auto!important; }
  .mizan-trainee-financial-tab .trainee-data-table tbody td { padding:6px 5px!important; font-size:11px!important; }
+}
+
+/* رؤوس جدول الرسوم على مستويين: فئة الرسم ثم الموعد والحالة والقيمة */
+.mizan-trainee-financial-tab .trainee-data-table thead tr:first-child th {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 32 !important;
+  height: 46px;
+  vertical-align: middle !important;
+  background: linear-gradient(180deg,#246b8d 0%,#104968 100%) !important;
+  border-color: #0b3b59 !important;
+}
+.mizan-trainee-financial-tab .trainee-data-table thead tr:nth-child(2) th {
+  position: sticky !important;
+  top: 46px !important;
+  z-index: 30 !important;
+  min-width: 88px;
+  padding: 7px 5px !important;
+  white-space: normal !important;
+  line-height: 1.35 !important;
+  background: linear-gradient(180deg,#f8e9bd 0%,#e9cc80 100%) !important;
+  color: #152b3c !important;
+  border-color: #a88a45 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.8), 0 2px 3px rgba(15,23,42,.12);
+}
+.mizan-trainee-financial-tab .trainee-data-table thead th.fee-category-group {
+  color: #fff !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  text-align: center !important;
+  white-space: normal !important;
+}
+.mizan-trainee-financial-tab .trainee-data-table thead th.fee-group-registration {
+  background: linear-gradient(180deg,#168b83 0%,#075c59 100%) !important;
+  border-color: #064e4b !important;
+}
+.mizan-trainee-financial-tab .trainee-data-table thead th.fee-group-first-written {
+  background: linear-gradient(180deg,#2d77a8 0%,#164c75 100%) !important;
+  border-color: #103e62 !important;
+}
+.mizan-trainee-financial-tab .trainee-data-table thead th.fee-group-final-written {
+  background: linear-gradient(180deg,#7256a4 0%,#493476 100%) !important;
+  border-color: #3d2b67 !important;
+}
+.mizan-trainee-financial-tab .trainee-data-table thead th.fee-group-clinical {
+  background: linear-gradient(180deg,#b06a38 0%,#7b3f20 100%) !important;
+  border-color: #683317 !important;
+}
+.mizan-trainee-financial-tab .trainee-data-table thead th.fee-group-summary {
+  background: linear-gradient(180deg,#4b6175 0%,#293d50 100%) !important;
+  border-color: #1e3142 !important;
+}
+.mizan-trainee-financial-tab .trainee-data-table thead th.fee-group-custom {
+  background: linear-gradient(180deg,#667b4d 0%,#3f512f 100%) !important;
+  border-color: #354426 !important;
+}
+.mizan-trainee-financial-tab .trainee-data-table thead tr:nth-child(2) th button {
+  color: inherit !important;
+  font-weight: 900 !important;
+}
+@media(max-width:640px) {
+  .mizan-trainee-financial-tab .trainee-data-table thead tr:first-child th {
+    height: 42px;
+    min-width: 82px;
+    padding: 6px 4px !important;
+    font-size: 11px !important;
+  }
+  .mizan-trainee-financial-tab .trainee-data-table thead tr:nth-child(2) th {
+    top: 42px !important;
+    min-width: 76px;
+    max-width: 130px;
+    padding: 6px 3px !important;
+    font-size: 10px !important;
+  }
+  .mizan-trainee-financial-tab .trainee-data-table thead th.fee-category-group {
+    font-size: 11px !important;
+  }
 }
