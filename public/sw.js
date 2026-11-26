@@ -9,10 +9,8 @@ const APP_ROOT = new URL("./", self.registration.scope).href;
 const OFFLINE_ASSETS = [
   APP_ROOT,
   new URL("manifest.json", APP_ROOT).href,
-  new URL("icon-192.png", APP_ROOT).href,
-  new URL("icon-512.png", APP_ROOT).href,
   new URL("app-logo.svg", APP_ROOT).href,
-  new URL("app-splash.png", APP_ROOT).href,
+  new URL("app-splash.svg", APP_ROOT).href,
 ];
 
 function isSameOrigin(url) {
