@@ -103,12 +103,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:image",
         content:
-          "/app-splash.png",
+          "/app-splash.svg",
       },
       {
         name: "twitter:image",
         content:
-          "/app-splash.png",
+          "/app-splash.svg",
       },
     ],
     links: [
