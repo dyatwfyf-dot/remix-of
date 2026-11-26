@@ -1023,6 +1023,8 @@ export default function ReportsTab() {
   const [selectedBatches, setSelectedBatches] = useState<string[]>(() => savedTraineeReportSelection.selectedBatches);
   const [selectedTraineeFeeStatus, setSelectedTraineeFeeStatus] = useState < string > ("all");
   const [feeDemandTrainee, setFeeDemandTrainee] = useState < ReportRow | null > (null);
+  const [feeDemandIncludeTuition, setFeeDemandIncludeTuition] = useState(false);
+  const [feeDemandTuitionAmount, setFeeDemandTuitionAmount] = useState(300000);
   const [feeDemandIncludeRegistration, setFeeDemandIncludeRegistration] = useState(false);
   const [feeDemandIncludeExam, setFeeDemandIncludeExam] = useState(true);
   const [feeDemandIncludeFinalWritten, setFeeDemandIncludeFinalWritten] = useState(false);
@@ -2450,6 +2452,21 @@ export default function ReportsTab() {
     }
   };
 
+  const openUnpaidTraineeFeeDemand = (traineeName: string, category: string) => {
+    setFeeDemandIncludeTuition(category === "قسط الرسوم الدراسية السنوية");
+    setFeeDemandIncludeRegistration(category === "رسوم قيد وتسجيل");
+    setFeeDemandIncludeExam(category === "رسوم امتحان الكتابي الأول");
+    setFeeDemandIncludeFinalWritten(category === "رسوم امتحان الكتابي النهائي");
+    setFeeDemandIncludeOralScientific(category === "رسوم البحث العلمي والرسالة");
+    setFeeDemandIncludeOralClinical(category === "رسوم الامتحان السريري الشفوي");
+    setFeeDemandTrainee({
+      trainee: traineeName,
+      registrationPaid: 0,
+      examPaid: 0,
+      claimFeeCategory: category,
+    });
+  };
+
   const printFeeDemand = () => {
     if (!feeDemandTrainee) return;
     const escapeHtml = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
@@ -2460,12 +2477,17 @@ export default function ReportsTab() {
       "'": "&#39;",
     })[char] || char);
     const traineeName = String(feeDemandTrainee.trainee || feeDemandTrainee.name || "").trim();
+    const selectedFeeCategory = String(feeDemandTrainee.claimFeeCategory || "");
+    const scientificFeeLabel = selectedFeeCategory === "رسوم البحث العلمي والرسالة"
+      ? selectedFeeCategory
+      : "رسوم امتحان العلمي الشفوي";
     const outstandingFees = [
+      { label: "قسط الرسوم الدراسية السنوية", amount: feeDemandIncludeTuition ? Math.max(0, amountValue(feeDemandTuitionAmount)) : 0 },
       { label: "رسوم القيد والتسجيل", amount: feeDemandIncludeRegistration && amountValue(feeDemandTrainee.registrationPaid) <= 0 ? Math.max(0, amountValue(feeDemandRegistrationAmount)) : 0 },
       { label: "رسوم امتحان الكتابي الأول", amount: feeDemandIncludeExam && amountValue(feeDemandTrainee.examPaid) <= 0 ? Math.max(0, amountValue(feeDemandExamAmount)) : 0 },
       { label: "رسوم امتحان الكتابي النهائي", amount: feeDemandIncludeFinalWritten ? 30000 : 0 },
-      { label: "رسوم امتحان العلمي الشفوي", amount: feeDemandIncludeOralScientific ? 100000 : 0 },
-      { label: "رسوم امتحان شفوي/سريري", amount: feeDemandIncludeOralClinical ? 30000 : 0 },
+      { label: scientificFeeLabel, amount: feeDemandIncludeOralScientific ? 100000 : 0 },
+      { label: "رسوم الامتحان السريري الشفوي", amount: feeDemandIncludeOralClinical ? 30000 : 0 },
     ].filter((fee) => fee.amount > 0);
     if (!outstandingFees.length) {
       toast.info("لا توجد رسوم مستحقة غير مسددة لهذا المتدرب");
@@ -2901,18 +2923,40 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                     else rowStyle = "bg-white text-slate-900";
 
                     if (row.summaryLevel === "fee-unpaid-heading" || row.summaryLevel === "fee-unpaid-name") {
-                      const names = [String(row.trainee || ""), String(row.unpaidTrainee2 || ""), String(row.unpaidTrainee3 || "")].filter(Boolean);
+                      const isEmptyUnpaidNameRow = String(row.id || "").startsWith("unpaid-fee-empty-");
+                      const names = isEmptyUnpaidNameRow
+                        ? []
+                        : [String(row.trainee || ""), String(row.unpaidTrainee2 || ""), String(row.unpaidTrainee3 || "")].filter(Boolean);
                       return (
                         <tr key={String(row.id)} className={row.summaryLevel === "fee-unpaid-heading" ? "reports-unpaid-heading-row bg-amber-100 text-amber-950" : "reports-unpaid-name-row bg-white text-black"}>
                           <td colSpan={sourceConfig.columns.length + 2} className="border border-black px-3 py-2 text-center font-bold">
                             {row.summaryLevel === "fee-unpaid-heading" ? String(row.trainee || "") : (
                               <div className="reports-unpaid-name-grid" data-fee-category={String(row.category || "")} dir="rtl">
-                                {names.map((name) => (
+                                {isEmptyUnpaidNameRow ? (
+                                  <span className="reports-unpaid-name-text">{String(row.trainee || "")}</span>
+                                ) : names.map((name) => (
                                   <div key={name} className="reports-unpaid-name-item">
                                     <span className="reports-unpaid-name-text">{name}</span>
-                                    <button type="button" onClick={() => setDeletedUnpaidFeeNames((previous) => { const next = new Set(previous); next.add(`${String(row.category || "")}|${traineeNameKey(name)}`); return next; })} className="reports-unpaid-name-delete print:hidden" title={`حذف ${name} من قائمة غير المسددين`} aria-label={`حذف ${name} من قائمة غير المسددين`}>
-                                      <Trash2 className="h-3.5 w-3.5" /> حذف
-                                    </button>
+                                    <div className="reports-unpaid-name-actions print:hidden">
+                                      <button
+                                        type="button"
+                                        onClick={() => openUnpaidTraineeFeeDemand(name, String(row.category || ""))}
+                                        className="reports-unpaid-name-claim"
+                                        title={`إنشاء مطالبة مالية لـ ${name} عن ${String(row.category || "الرسوم غير المسددة")}`}
+                                        aria-label={`مطالبة مالية للمتدرب ${name} عن ${String(row.category || "الرسوم غير المسددة")}`}
+                                      >
+                                        <ClipboardList className="h-3.5 w-3.5" /> مطالبة
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => setDeletedUnpaidFeeNames((previous) => { const next = new Set(previous); next.add(`${String(row.category || "")}|${traineeNameKey(name)}`); return next; })}
+                                        className="reports-unpaid-name-delete"
+                                        title={`حذف ${name} من قائمة غير المسددين`}
+                                        aria-label={`حذف ${name} من قائمة غير المسددين`}
+                                      >
+                                        <Trash2 className="h-3.5 w-3.5" /> حذف
+                                      </button>
+                                    </div>
                                   </div>
                                 ))}
                               </div>
@@ -3192,12 +3236,17 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
         (() => {
           const registrationUnpaid = amountValue(feeDemandTrainee.registrationPaid) <= 0;
           const examUnpaid = amountValue(feeDemandTrainee.examPaid) <= 0;
+          const selectedFeeCategory = String(feeDemandTrainee.claimFeeCategory || "");
+          const scientificFeeLabel = selectedFeeCategory === "رسوم البحث العلمي والرسالة"
+            ? selectedFeeCategory
+            : "رسوم امتحان العلمي الشفوي";
           const unpaidItems = [
+            { label: "قسط الرسوم الدراسية السنوية", amount: feeDemandIncludeTuition ? Math.max(0, amountValue(feeDemandTuitionAmount)) : 0 },
             { label: "رسوم القيد والتسجيل", amount: feeDemandIncludeRegistration && registrationUnpaid ? Math.max(0, amountValue(feeDemandRegistrationAmount)) : 0 },
             { label: "رسوم امتحان الكتابي الأول", amount: feeDemandIncludeExam && examUnpaid ? Math.max(0, amountValue(feeDemandExamAmount)) : 0 },
             { label: "رسوم امتحان الكتابي النهائي", amount: feeDemandIncludeFinalWritten ? 30000 : 0 },
-            { label: "رسوم امتحان العلمي الشفوي", amount: feeDemandIncludeOralScientific ? 100000 : 0 },
-            { label: "رسوم امتحان شفوي/سريري", amount: feeDemandIncludeOralClinical ? 30000 : 0 },
+            { label: scientificFeeLabel, amount: feeDemandIncludeOralScientific ? 100000 : 0 },
+            { label: "رسوم الامتحان السريري الشفوي", amount: feeDemandIncludeOralClinical ? 30000 : 0 },
           ].filter((fee) => fee.amount > 0);
           return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setFeeDemandTrainee(null); }}>
@@ -3208,7 +3257,14 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
             </div>
                    <div className="mb-4 rounded-xl border border-sky-200 bg-sky-50 p-3 text-right">
               <h3 className="mb-2 font-black text-slate-800">تحديد الرسوم المطلوب إدراجها في المطالبة</h3>
+              {selectedFeeCategory && <p className="mb-2 text-sm font-bold text-sky-800">نوع الرسم المحدد من قائمة غير المسددين: {selectedFeeCategory}</p>}
               <div className="grid gap-3 sm:grid-cols-2">
+                <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
+                  <input type="checkbox" checked={feeDemandIncludeTuition} onChange={(event) => setFeeDemandIncludeTuition(event.target.checked)} />
+                  <span className="flex-1">قسط الرسوم الدراسية السنوية</span>
+                  <input type="number" min="0" value={feeDemandTuitionAmount} onChange={(event) => setFeeDemandTuitionAmount(Math.max(0, Number(event.target.value) || 0))} className="w-28 rounded border border-slate-300 px-2 py-1 text-center" aria-label="مبلغ القسط الدراسي السنوي" />
+                  <span>ريال</span>
+                </label>
                 {registrationUnpaid && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
                   <input type="checkbox" checked={feeDemandIncludeRegistration} onChange={(event) => setFeeDemandIncludeRegistration(event.target.checked)} />
                   <span className="flex-1">رسوم القيد والتسجيل</span>
@@ -3228,7 +3284,7 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                 </label>
                 <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
                   <input type="checkbox" checked={feeDemandIncludeOralScientific} onChange={(event) => setFeeDemandIncludeOralScientific(event.target.checked)} />
-                  <span className="flex-1">رسوم امتحان العلمي الشفوي</span>
+                  <span className="flex-1">{scientificFeeLabel}</span>
                   <strong className="whitespace-nowrap">100,000 ريال</strong>
                 </label>
                 <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
