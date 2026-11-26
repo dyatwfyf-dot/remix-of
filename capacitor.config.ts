@@ -2,7 +2,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
   appId: "ye.medicalcouncil.financial",
-  appName: "مِيزان",
+  appName: "المجلس الطبي",
   webDir: "dist",
   loggingBehavior: "none",
   server: {
