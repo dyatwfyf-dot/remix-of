@@ -44,13 +44,13 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "مِيزان | النظام المالي" },
+      { title: "المجلس الطبي" },
       {
         name: "description",
         content:
-          "مِيزان — نظام مالي عصري لإدارة القيود والحوافظ والأقساط والتقارير",
+          "المجلس الطبي — النظام الإداري والمالي للمجلس اليمني للاختصاصات الطبية",
       },
-      { property: "og:title", content: "مِيزان | النظام المالي" },
+      { property: "og:title", content: "المجلس الطبي" },
       {
         property: "og:description",
         content: "إدارة القيود اليومية والحوافظ والأقساط والتقارير المالية بسهولة ووضوح.",
@@ -415,7 +415,7 @@ function Index() {
         {/* الشعار واسم المجلس، وشريط السنة المالية بحجم مدمج في يسار الاسم */}
         <div className="flex min-w-0 flex-nowrap items-center gap-2">
           <div className="app-brand-logo relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/35 bg-white/15 p-1 shadow-lg shadow-[#102f46]/20 sm:h-11 sm:w-11">
-            <img src="/app-logo.png" alt="شعار مِيزان" className="h-full w-full object-contain" />
+            <img src="/app-logo.png" alt="شعار المجلس الطبي" className="h-full w-full object-contain" />
           </div>
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -425,7 +425,7 @@ function Index() {
               <p className="hidden min-w-0 items-center gap-1.5 truncate text-[clamp(0.62rem,1.45vw,0.75rem)] font-medium leading-snug text-[#e8f0f8] sm:flex">
                 <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[#b8d4e8]"></span>
                 <span className="truncate">
-                  النظام المالي — المجلس اليمني للاختصاصات الطبية
+                  النظام الإداري والمالي للمجلس اليمني للاختصاصات الطبية
                 </span>
               </p>
             </div>
