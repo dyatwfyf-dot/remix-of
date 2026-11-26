@@ -506,6 +506,7 @@ function Index() {
             جارٍ تجهيز النظام…
           </div>
         ) : (
+          <>
           {mountedTabs.has("trainee-data") && (
             <div style={{ display: activeTab === "trainee-data" ? "block" : "none" }} aria-hidden={activeTab !== "trainee-data"}>
               <Suspense fallback={<div className="p-6 text-center text-xs font-semibold text-[#2e6b8a]" role="status">جارٍ تحميل بيانات المتدربين…</div>}><TraineeFinancialDataTab /></Suspense>
@@ -556,6 +557,7 @@ function Index() {
               <Suspense fallback={<div className="p-6 text-center text-xs font-semibold text-[#2e6b8a]" role="status">جارٍ تحميل سجل النفقات…</div>}><AppTabs /></Suspense>
             </div>
           )}
+          </>
         )}
       </div>
 
