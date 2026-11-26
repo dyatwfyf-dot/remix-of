@@ -56,6 +56,20 @@ const normalize = (value: unknown) =>
   String(value ?? "")
     .trim()
     .replace(/\s+/g, " ");
+const normalizeTraineeName = (value: unknown) =>
+  String(value ?? "")
+    .trim()
+    .replace(/[ًٌٍَُِّْـ]/g, "")
+    .replace(/[إأآ]/g, "ا")
+    .replace(/ى/g, "ي")
+    .replace(/[ـ،,.]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(" ")
+    .filter(Boolean)
+    .sort()
+    .join(" ");
+
 
 const normalizeAcademicStatus = (value: unknown) =>
   String(value ?? "")
@@ -215,19 +229,6 @@ export default function TraineeFinancialDataTab() {
       }),
     );
   };
-
-  const normalizeTraineeName = (value: unknown) =>
-    normalize(value)
-      .replace(/[ًٌٍَُِّْـ]/g, "")
-      .replace(/[إأآ]/g, "ا")
-      .replace(/ى/g, "ي")
-      .replace(/[ـ،,.]/g, " ")
-      .replace(/\s+/g, " ")
-      .trim()
-      .split(" ")
-      .filter(Boolean)
-      .sort()
-      .join(" ");
 
   // تدقيق مستقل للأسماء: لا يغير المطابقة المالية أو أي بيانات محفوظة.
   const nameAuditByName = useMemo(() => {
