@@ -598,6 +598,8 @@ export default function TraineeFinancialDataTab() {
     sheet["!views"] = [{ rightToLeft: true }];
     sheet["!cols"] = exportColumns.map((header) => ({
       wch: Math.min(34, Math.max(14, header.length + 4)),
+      // إخفاء حقول الأقساط السنوية في ملف العرض مع الاحتفاظ بقيمها لاستيرادها دون فقدان.
+      hidden: header === "مواعيد استحقاق الأقساط السنوية" || header === "الأقساط الدراسية المستحقة",
     }));
     sheet["!autofilter"] = {
       ref: `A4:${XLSX.utils.encode_col(exportColumns.length - 1)}${records.length + 4}`,
