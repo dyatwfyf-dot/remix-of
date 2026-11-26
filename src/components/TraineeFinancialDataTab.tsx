@@ -247,7 +247,7 @@ export default function TraineeFinancialDataTab() {
     const differsByOneCharacter = (left: string, right: string) => {
       const a = Array.from(left);
       const b = Array.from(right);
-      if (a.length < 8 || b.length < 8 || Math.abs(a.length - b.length) > 1 || left === right) return false;
+      if (a.length < 6 || b.length < 6 || Math.abs(a.length - b.length) > 1 || left === right) return false;
       let i = 0;
       let j = 0;
       let edits = 0;
