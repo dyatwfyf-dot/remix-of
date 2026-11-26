@@ -219,6 +219,24 @@ function Index() {
   const tabHistoryRef = useRef<Tab[]>([getInitialTab()]);
   const [pwaInstallable, setPwaInstallable] = useState<boolean>(false);
   const [feeNotificationsOpen, setFeeNotificationsOpen] = useState(false);
+  // حجم عرض التطبيق: 90% افتراضياً مع حفظ اختيار المستخدم محلياً.
+  const [displayScale, setDisplayScale] = useState<number>(() => {
+    if (typeof window === "undefined") return 90;
+    try {
+      const saved = Number(window.localStorage.getItem("mizan-display-scale"));
+      return [85, 90, 95, 100].includes(saved) ? saved : 90;
+    } catch {
+      return 90;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem("mizan-display-scale", String(displayScale));
+    } catch {
+      // يظل تغيير الحجم فعالاً حتى عند تعطيل التخزين المحلي.
+    }
+  }, [displayScale]);
   const traineeFinancialRecords = useStore((state) => state.traineeFinancialRecords);
   const hafiza = useStore((state) => state.hafiza);
   const feeNotifications = useMemo(
@@ -406,6 +424,7 @@ function Index() {
   return (
     <div
       className="apk-tabs-ui w-full min-h-[100dvh] bg-[#F5EFE6] selection:bg-[#d5b35b]/30 text-base"
+      style={{ zoom: displayScale / 100 }}
       dir="rtl"
     >
       {/* قسم الهيدر العلوي */}
@@ -430,6 +449,20 @@ function Index() {
               </p>
             </div>
             {isMounted && <div className="shrink-0"><YearSelector /></div>}
+            <label className="flex shrink-0 items-center gap-1 rounded-lg border border-white/25 bg-white/10 px-1.5 py-1 text-[10px] font-bold text-white sm:gap-1.5 sm:px-2 sm:text-xs">
+              <span>العرض</span>
+              <select
+                aria-label="حجم عرض التطبيق"
+                value={displayScale}
+                onChange={(event) => setDisplayScale(Number(event.target.value))}
+                className="max-w-[3.5rem] rounded-md border border-white/30 bg-white px-1 py-1 text-[11px] font-extrabold text-[#244b61] outline-none focus:ring-2 focus:ring-[#e8c76d] sm:max-w-[4rem] sm:text-xs"
+              >
+                <option value={85}>85%</option>
+                <option value={90}>90%</option>
+                <option value={95}>95%</option>
+                <option value={100}>100%</option>
+              </select>
+            </label>
           </div>
         </div>
 
