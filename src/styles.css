@@ -1595,3 +1595,81 @@ body.apk-compact {
     zoom: 1 !important;
   }
 }
+
+
+/* Screen-only typography polish: clearer controls and column headings without changing print/PDF styling. */
+@media screen {
+  .apk-tabs-ui :is(button, [role="button"]) {
+    font-family: "Cairo", sans-serif !important;
+    font-size: clamp(13px, 0.9rem, 15px) !important;
+    font-weight: 800 !important;
+    line-height: 1.35 !important;
+    letter-spacing: 0 !important;
+    text-rendering: optimizeLegibility;
+  }
+
+  .apk-tabs-ui table thead th {
+    font-family: "Cairo", sans-serif !important;
+    font-size: clamp(12px, 0.84rem, 13.5px) !important;
+    font-weight: 900 !important;
+    line-height: 1.4 !important;
+    letter-spacing: 0 !important;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Keep header labels and sort controls aligned with each header's own foreground color. */
+  .apk-tabs-ui table thead th :where(span, div, p, label, strong, b, small, a, button) {
+    font-family: "Cairo", sans-serif !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
+    letter-spacing: inherit !important;
+    color: inherit !important;
+  }
+
+  /* Use a deep, calm ink color only when a header has no explicit text-color utility. */
+  :where(.apk-tabs-ui table thead th:not([class*="text-"])) {
+    color: #26394b;
+  }
+
+  /* Main navigation: high contrast on the dark cards and warm dark text on the active gold card. */
+  .app-tab-nav-item > span:last-child {
+    font-family: "Cairo", sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 900 !important;
+    line-height: 1.25 !important;
+    letter-spacing: 0 !important;
+    text-shadow: 0 1px 2px rgba(10, 22, 30, 0.55);
+  }
+
+  .app-tab-nav-item:not(.is-active) > span:last-child {
+    color: #fff !important;
+  }
+
+  .app-tab-nav-item.is-active > span:last-child {
+    color: #4b3509 !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.42);
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .apk-tabs-ui :is(button, [role="button"]) {
+    font-size: clamp(12px, 3.5vw, 13.5px) !important;
+  }
+
+  .apk-tabs-ui table thead th {
+    font-size: clamp(11.5px, 3.3vw, 13px) !important;
+    line-height: 1.35 !important;
+  }
+
+  .app-tab-nav-item > span:last-child {
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+  }
+}
+
+@media screen and (max-width: 380px) {
+  .app-tab-nav-item > span:last-child {
+    font-size: 9.5px !important;
+  }
+}
