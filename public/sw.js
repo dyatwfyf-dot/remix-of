@@ -11,7 +11,7 @@ const OFFLINE_ASSETS = [
   new URL("manifest.json", APP_ROOT).href,
   new URL("icon-192.png", APP_ROOT).href,
   new URL("icon-512.png", APP_ROOT).href,
-  new URL("app-logo.png", APP_ROOT).href,
+  new URL("app-logo.svg", APP_ROOT).href,
   new URL("app-splash.png", APP_ROOT).href,
 ];
 
