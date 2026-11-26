@@ -3289,6 +3289,11 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                   <span className="flex-1">رسوم امتحان الكتابي النهائي</span>
                   <strong className="whitespace-nowrap">30,000 ريال</strong>
                 </label>}
+                {!selectedFeeCategory && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
+                  <input type="checkbox" checked={feeDemandIncludeOralScientific} onChange={(event) => setFeeDemandIncludeOralScientific(event.target.checked)} />
+                  <span className="flex-1">رسوم امتحان العلمي الشفوي</span>
+                  <strong className="whitespace-nowrap">100,000 ريال</strong>
+                </label>}
                 {(!selectedFeeCategory || selectedFeeCategory === "رسوم البحث العلمي والرسالة") && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
                   <input type="checkbox" checked={feeDemandIncludeResearch} onChange={(event) => setFeeDemandIncludeResearch(event.target.checked)} />
                   <span className="flex-1">رسوم البحث العلمي والرسالة</span>
