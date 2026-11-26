@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+<title id="title">شعار المجلس الطبي</title>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071d35"/><stop offset=".52" stop-color="#0d4777"/><stop offset="1" stop-color="#06182d"/></linearGradient>
+  <radialGradient id="glow" cx=".48" cy=".35" r=".68"><stop stop-color="#2e85b7" stop-opacity=".7"/><stop offset="1" stop-color="#071d35" stop-opacity="0"/></radialGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff3bb"/><stop offset=".22" stop-color="#f7d77b"/><stop offset=".52" stop-color="#c68b22"/><stop offset=".76" stop-color="#ffe6a0"/><stop offset="1" stop-color="#8e5b0e"/></linearGradient>
+  <linearGradient id="silver" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset=".55" stop-color="#e6edf3"/><stop offset="1" stop-color="#a6b8c9"/></linearGradient>
+  <linearGradient id="page" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fffef8"/><stop offset="1" stop-color="#d9e5ed"/></linearGradient>
+  <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur in="SourceAlpha" stdDeviation="9"/><feOffset dy="9"/><feComponentTransfer><feFuncA type="linear" slope=".55"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect x="8" y="8" width="496" height="496" rx="108" fill="url(#bg)" stroke="#d7a63e" stroke-width="7"/>
+<rect x="15" y="15" width="482" height="482" rx="101" fill="url(#glow)"/>
+<circle cx="256" cy="224" r="176" fill="none" stroke="#6c4817" stroke-width="17" opacity=".65" filter="url(#shadow)"/>
+<circle cx="256" cy="216" r="170" fill="none" stroke="url(#gold)" stroke-width="14"/>
+<circle cx="256" cy="216" r="155" fill="none" stroke="#ffe9a9" stroke-opacity=".55" stroke-width="2"/>
+<g filter="url(#shadow)">
+  <path d="M226 104h60v54h54v60h-54v54h-60v-54h-54v-60h54z" fill="url(#silver)" stroke="url(#gold)" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M256 94v211" stroke="#80520f" stroke-width="19" stroke-linecap="round"/>
+  <path d="M256 95v208" stroke="url(#gold)" stroke-width="13" stroke-linecap="round"/>
+  <circle cx="256" cy="88" r="19" fill="url(#gold)" stroke="#fff0b7" stroke-width="4"/>
+  <path d="M256 150c-64 6-71 51-20 67 49 15 52 44 20 56-23 9-40 2-50-13" fill="none" stroke="#7b4d11" stroke-width="17" stroke-linecap="round"/>
+  <path d="M256 150c-64 6-71 51-20 67 49 15 52 44 20 56-23 9-40 2-50-13" fill="none" stroke="url(#gold)" stroke-width="11" stroke-linecap="round"/>
+  <path d="M256 150c64 6 71 51 20 67-49 15-52 44-20 56 23 9 40 2 50-13" fill="none" stroke="#7b4d11" stroke-width="17" stroke-linecap="round"/>
+  <path d="M256 150c64 6 71 51 20 67-49 15-52 44-20 56 23 9 40 2 50-13" fill="none" stroke="url(#gold)" stroke-width="11" stroke-linecap="round"/>
+</g>
+<path d="M24 332h105l16-14 17 27 24-73 25 73 15-14h62l16 14 17-27 24 0 18 27 18-27h107" fill="none" stroke="#5f3c0d" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" opacity=".8"/>
+<path d="M24 326h105l16-14 17 27 24-73 25 73 15-14h62l16 14 17-27 24 0 18 27 18-27h107" fill="none" stroke="url(#gold)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<g filter="url(#shadow)">
+  <path d="M54 386c59-29 119-28 202 7v82c-83-35-143-37-202-7z" fill="url(#page)" stroke="url(#gold)" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M458 386c-59-29-119-28-202 7v82c83-35 143-37 202-7z" fill="url(#page)" stroke="url(#gold)" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M256 393v82" stroke="#a87822" stroke-width="7"/>
+  <path d="M87 405c49-17 97-11 142 7M81 426c52-15 99-9 148 10M74 448c55-12 103-5 155 12M425 405c-49-17-97-11-142 7M431 426c-52-15-99-9-148 10M438 448c-55-12-103-5-155 12" fill="none" stroke="#536f88" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+  <path d="M52 478h408l-22 15H74z" fill="url(#gold)" stroke="#ffe5a0" stroke-width="3"/>
+</g>
+<g filter="url(#shadow)">
+  <path d="M398 366v-28c0-7 11-12 24-12s24 5 24 12v28c0 7-11 12-24 12s-24-5-24-12z" fill="url(#gold)" stroke="#ffe5a0" stroke-width="3"/>
+  <ellipse cx="422" cy="338" rx="24" ry="9" fill="#f7dc91" stroke="#fff0c2" stroke-width="3"/>
+  <path d="M398 351c0 7 11 12 24 12s24-5 24-12M398 363c0 7 11 12 24 12s24-5 24-12" fill="none" stroke="#8c5a13" stroke-width="3"/>
+</g>
+</svg>
