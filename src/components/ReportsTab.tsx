@@ -528,38 +528,143 @@ const classifyCustodyRecord = (description: unknown): "youssef" | "tawfiq" | "ot
   return "other";
 };
 
+const reportsTabPrintTypographyCss = `
+/* One print typography system for every ReportsTab report table. */
+#tableContainer .reports-print-heading,
+#tableContainer .reports-print-heading * {
+  color:#000000!important;
+  font-family:${reportHeadingFontStack}!important;
+  font-weight:900!important;
+}
+#tableContainer table.reports-data-table,
+#tableContainer table.reports-fee-status-table,
+#tableContainer table.reports-custody-print-table,
+#tableContainer table.reports-trainee-payment-table {
+  color:#000000!important;
+  font-family:${reportArabicFontStack}!important;
+}
+#tableContainer table.reports-data-table th,
+#tableContainer table.reports-data-table td,
+#tableContainer table.reports-fee-status-table th,
+#tableContainer table.reports-fee-status-table td,
+#tableContainer table.reports-custody-print-table th,
+#tableContainer table.reports-custody-print-table td,
+#tableContainer table.reports-trainee-payment-table th,
+#tableContainer table.reports-trainee-payment-table td {
+  box-sizing:border-box!important;
+  border:1px solid #000000!important;
+  color:#000000!important;
+  font-family:${reportArabicFontStack}!important;
+  font-size:var(--print-cell-font-size,16px)!important;
+  font-weight:800!important;
+  line-height:var(--print-cell-line-height,1.45)!important;
+}
+#tableContainer table.reports-data-table thead th,
+#tableContainer table.reports-fee-status-table thead th,
+#tableContainer table.reports-custody-print-table thead th,
+#tableContainer table.reports-trainee-payment-table thead th {
+  color:#000000!important;
+  font-family:${reportHeadingFontStack}!important;
+  font-size:var(--print-header-font-size,16px)!important;
+  font-weight:900!important;
+}
+#tableContainer table.reports-data-table thead th *,
+#tableContainer table.reports-fee-status-table thead th *,
+#tableContainer table.reports-custody-print-table thead th *,
+#tableContainer table.reports-trainee-payment-table thead th * {
+  color:#000000!important;
+  font-family:${reportHeadingFontStack}!important;
+  font-weight:900!important;
+  font-size:inherit!important;
+  line-height:inherit!important;
+}
+#tableContainer table.reports-data-table tbody td *,
+#tableContainer table.reports-fee-status-table tbody td *,
+#tableContainer table.reports-custody-print-table tbody td *,
+#tableContainer table.reports-trainee-payment-table tbody td * {
+  color:#000000!important;
+  font-family:${reportArabicFontStack}!important;
+  font-weight:800!important;
+  font-size:inherit!important;
+  line-height:inherit!important;
+}
+#tableContainer table.reports-data-table th.rc-num,
+#tableContainer table.reports-data-table td.rc-num,
+#tableContainer table.reports-data-table td.reports-numeric-cell,
+#tableContainer table.reports-data-table td.reports-no-wrap-cell,
+#tableContainer table.reports-data-table td.date-cell,
+#tableContainer table.reports-data-table td[data-col-key="idx"],
+#tableContainer table.reports-fee-status-table td.reports-numeric-cell,
+#tableContainer table.reports-fee-status-table td.rc-num,
+#tableContainer table.reports-fee-status-table td.date-cell,
+#tableContainer table.reports-custody-print-table td.reports-numeric-cell,
+#tableContainer table.reports-custody-print-table td.rc-num,
+#tableContainer table.reports-custody-print-table td.date-cell,
+#tableContainer table.reports-trainee-payment-table td.reports-numeric-cell,
+#tableContainer table.reports-trainee-payment-table td.rc-num,
+#tableContainer table.reports-trainee-payment-table td.date-cell {
+  color:#000000!important;
+  font-family:${reportArabicFontStack}!important;
+  font-variant-numeric:tabular-nums!important;
+  font-feature-settings:"tnum" 1!important;
+  font-weight:800!important;
+}
+#tableContainer table.reports-data-table tbody tr.total-row>td,
+#tableContainer table.reports-data-table tbody tr.report-grand-total-row>td,
+#tableContainer table.reports-fee-status-table tbody tr.total-row>td,
+#tableContainer table.reports-fee-status-table tbody tr.report-grand-total-row>td,
+#tableContainer table.reports-custody-print-table tbody tr.total-row>td,
+#tableContainer table.reports-custody-print-table tbody tr.report-grand-total-row>td,
+#tableContainer table.reports-trainee-payment-table tbody tr.total-row>td,
+#tableContainer table.reports-trainee-payment-table tbody tr.report-grand-total-row>td {
+  color:#000000!important;
+  font-weight:900!important;
+}
+#tableContainer table.reports-data-table tbody tr.total-row>td *,
+#tableContainer table.reports-data-table tbody tr.report-grand-total-row>td *,
+#tableContainer table.reports-fee-status-table tbody tr.total-row>td *,
+#tableContainer table.reports-fee-status-table tbody tr.report-grand-total-row>td *,
+#tableContainer table.reports-custody-print-table tbody tr.total-row>td *,
+#tableContainer table.reports-custody-print-table tbody tr.report-grand-total-row>td *,
+#tableContainer table.reports-trainee-payment-table tbody tr.total-row>td *,
+#tableContainer table.reports-trainee-payment-table tbody tr.report-grand-total-row>td * {
+  color:#000000!important;
+  font-weight:900!important;
+}
+`;
+
 const reportsTabPrintCss = `
 ${reportArabicFontFacesCss}
-#tableContainer .reports-print-heading{margin:0 auto 4mm!important;padding:2mm 0!important;text-align:center!important;direction:rtl!important;color:#142b3d!important;page-break-after:avoid!important}
-#tableContainer .reports-print-heading h1{margin:0!important;color:#142b3d!important;font-weight:800!important;font-size:18px!important;font-family:${reportHeadingFontStack}!important}
-#tableContainer .reports-print-heading .reports-print-sub{margin-top:1.5mm!important;color:#334b5e!important;font:800 15px/1.4 ${reportHeadingFontStack}!important;font-family:${reportHeadingFontStack}!important}
-#tableContainer table.reports-data-table{width:100%!important;min-width:0!important;max-width:100%!important;margin:0 auto!important;border-collapse:collapse!important;table-layout:auto!important;direction:rtl!important;text-align:center!important;color:#111!important;font-family:${reportDataFontStack}!important}
-#tableContainer table.reports-data-table th,#tableContainer table.reports-data-table td{box-sizing:border-box!important;border:1px solid #17212b!important;padding:5px!important;text-align:center!important;vertical-align:middle!important;font-family:${reportDataFontStack}!important;font-size:var(--print-cell-font-size,14px)!important;font-weight:600!important;line-height:var(--print-cell-line-height,1.45)!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-#tableContainer table.reports-data-table thead th{font-family:${reportHeadingFontStack}!important;font-weight:800!important}
-#tableContainer table.reports-data-table thead tr.reports-column-header-row>th{font-family:${reportHeadingFontStack}!important;font-weight:800!important}
-#tableContainer table.reports-data-table tbody td{font-family:${reportDataFontStack}!important}
-#tableContainer table.reports-data-table tbody td.reports-numeric-cell,#tableContainer table.reports-data-table tbody td.rc-num,#tableContainer table.reports-data-table tbody td[data-col-key="idx"],#tableContainer table.reports-data-table tbody td.reports-no-wrap-cell{font-family:${reportDataFontStack}!important;font-variant-numeric:tabular-nums!important;font-feature-settings:"tnum" 1!important;font-weight:700!important}
-#tableContainer table.reports-fee-status-table thead th{font-family:${reportHeadingFontStack}!important;font-weight:800!important}
-#tableContainer table.reports-fee-status-table tbody td{font-family:${reportDataFontStack}!important}
+#tableContainer .reports-print-heading{margin:0 auto 4mm!important;padding:2mm 0!important;text-align:center!important;direction:rtl!important;color:#000000!important;font-family:${reportHeadingFontStack}!important;font-weight:900!important;page-break-after:avoid!important}
+#tableContainer .reports-print-heading h1{margin:0!important;color:#000000!important;font-weight:900!important;font-size:18px!important;font-family:${reportHeadingFontStack}!important}
+#tableContainer .reports-print-heading .reports-print-sub{margin-top:1.5mm!important;color:#000000!important;font:900 15px/1.4 ${reportHeadingFontStack}!important;font-family:${reportHeadingFontStack}!important}
+#tableContainer table.reports-data-table{width:100%!important;min-width:0!important;max-width:100%!important;margin:0 auto!important;border-collapse:collapse!important;table-layout:auto!important;direction:rtl!important;text-align:center!important;color:#000000!important;font-family:${reportArabicFontStack}!important}
+#tableContainer table.reports-data-table th,#tableContainer table.reports-data-table td{box-sizing:border-box!important;border:1px solid #000000!important;padding:5px!important;text-align:center!important;vertical-align:middle!important;color:#000000!important;font-family:${reportArabicFontStack}!important;font-size:var(--print-cell-font-size,16px)!important;font-weight:800!important;line-height:var(--print-cell-line-height,1.45)!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+#tableContainer table.reports-data-table thead th{font-family:${reportHeadingFontStack}!important;color:#000000!important;font-weight:900!important}
+#tableContainer table.reports-data-table thead tr.reports-column-header-row>th{font-family:${reportHeadingFontStack}!important;color:#000000!important;font-weight:900!important}
+#tableContainer table.reports-data-table tbody td{font-family:${reportArabicFontStack}!important;color:#000000!important;font-weight:800!important}
+#tableContainer table.reports-data-table tbody td.reports-numeric-cell,#tableContainer table.reports-data-table tbody td.rc-num,#tableContainer table.reports-data-table tbody td[data-col-key="idx"],#tableContainer table.reports-data-table tbody td.reports-no-wrap-cell,#tableContainer table.reports-data-table tbody td.date-cell{font-family:${reportArabicFontStack}!important;color:#000000!important;font-variant-numeric:tabular-nums!important;font-feature-settings:"tnum" 1!important;font-weight:800!important}
+#tableContainer table.reports-fee-status-table thead th{font-family:${reportHeadingFontStack}!important;color:#000000!important;font-weight:900!important}
+#tableContainer table.reports-fee-status-table tbody td{font-family:${reportArabicFontStack}!important;color:#000000!important;font-weight:800!important}
 #tableContainer table.reports-data-table thead{display:table-header-group!important}
-#tableContainer table.reports-data-table thead tr.reports-column-header-row>th{background:linear-gradient(180deg,#fff8d9,#f5d978 48%,#d7a92e)!important;color:#111!important;font-size:var(--print-header-font-size,14px)!important;font-weight:800!important;white-space:normal!important;overflow-wrap:anywhere!important}
-#tableContainer table.reports-data-table tbody>tr>td{background:#fff!important;color:#111!important;white-space:normal!important;overflow-wrap:anywhere!important}
+#tableContainer table.reports-data-table thead tr.reports-column-header-row>th{background:linear-gradient(180deg,#fff8d9,#f5d978 48%,#d7a92e)!important;color:#000000!important;font-size:var(--print-header-font-size,16px)!important;font-weight:900!important;white-space:normal!important;overflow-wrap:anywhere!important}
+#tableContainer table.reports-data-table tbody>tr>td{background:#fff!important;color:#000000!important;font-weight:800!important;white-space:normal!important;overflow-wrap:anywhere!important}
 #tableContainer table.reports-data-table tbody tr.total-row>td,#tableContainer table.reports-data-table tbody tr.report-grand-total-row>td{background:#0871ce!important;color:#fff!important;font-weight:900!important}
 #tableContainer table.reports-data-table tbody tr.total-row>td *,#tableContainer table.reports-data-table tbody tr.report-grand-total-row>td *{background:transparent!important;color:#fff!important}
-#tableContainer table.reports-data-table tbody tr.reports-trainee-total-row:not(.total-row):not(.report-grand-total-row)>td{background:#d9f0ec!important;color:#102c2a!important;font-weight:900!important}
-#tableContainer table.reports-data-table tbody tr.reports-trainee-summary-row:not(.total-row):not(.report-grand-total-row)>td{background:#fff4d9!important;color:#211b0c!important;font-weight:850!important}
-#tableContainer table.reports-data-table tbody tr.reports-fee-row:not(.total-row):not(.report-grand-total-row)>td{background:#e8f1f7!important;color:#142b3d!important;font-weight:900!important}
-#tableContainer table.reports-data-table tbody tr.reports-period-row:not(.total-row):not(.report-grand-total-row)>td{background:#e9eef3!important;color:#17212b!important;font-weight:900!important}
-#tableContainer table.reports-data-table thead tr.reports-custody-title-row>th,#tableContainer table.reports-data-table thead tr.reports-custody-date-row>th{position:static!important;background:#fff!important;color:#142b3d!important}
+#tableContainer table.reports-data-table tbody tr.reports-trainee-total-row:not(.total-row):not(.report-grand-total-row)>td{background:#d9f0ec!important;color:#000000!important;font-weight:900!important}
+#tableContainer table.reports-data-table tbody tr.reports-trainee-summary-row:not(.total-row):not(.report-grand-total-row)>td{background:#fff4d9!important;color:#000000!important;font-weight:800!important}
+#tableContainer table.reports-data-table tbody tr.reports-fee-row:not(.total-row):not(.report-grand-total-row)>td{background:#e8f1f7!important;color:#000000!important;font-weight:800!important}
+#tableContainer table.reports-data-table tbody tr.reports-period-row:not(.total-row):not(.report-grand-total-row)>td{background:#e9eef3!important;color:#000000!important;font-weight:800!important}
+#tableContainer table.reports-data-table thead tr.reports-custody-title-row>th,#tableContainer table.reports-data-table thead tr.reports-custody-date-row>th{position:static!important;background:#fff!important;color:#000000!important;font-family:${reportHeadingFontStack}!important;font-weight:900!important}
 #tableContainer table.reports-data-table thead tr.reports-custody-title-row>th{font-size:18px!important;font-weight:900!important}
-#tableContainer table.reports-data-table thead tr.reports-custody-date-row>th{font-size:14px!important;font-weight:800!important}
+#tableContainer table.reports-data-table thead tr.reports-custody-date-row>th{font-size:var(--print-header-font-size,16px)!important;font-weight:900!important;color:#000000!important}
 #tableContainer table.reports-data-table th.rc-num,#tableContainer table.reports-data-table td.rc-num,#tableContainer table.reports-data-table td.reports-numeric-cell,#tableContainer table.reports-data-table td.reports-no-wrap-cell,#tableContainer table.reports-data-table td[data-col-key="idx"]{white-space:nowrap!important;word-break:keep-all!important;overflow-wrap:normal!important}
 #tableContainer table.reports-data-table th.rc-text,#tableContainer table.reports-data-table td.rc-text,#tableContainer table.reports-data-table td.reports-description-cell,#tableContainer table.reports-data-table td.reports-text-cell{white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere!important}
 #tableContainer table.reports-data-table tr.signature-spacer-row>td{height:3mm!important;padding:0!important;border:0!important;background:#fff!important}
-#tableContainer table.reports-data-table tr.reports-bank-pending-row>td{background:#fff4cc!important;background-color:#fff4cc!important;color:#3b2f12!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+#tableContainer table.reports-data-table tr.reports-bank-pending-row>td{background:#fff4cc!important;background-color:#fff4cc!important;color:#000000!important;font-weight:800!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 #tableContainer .reports-unpaid-name-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;justify-items:center!important;gap:8px 10px!important;width:100%!important;direction:rtl!important;align-items:center!important}
-#tableContainer .reports-unpaid-name-item{display:inline-flex!important;align-items:center!important;justify-content:center!important;justify-self:center!important;width:fit-content!important;max-width:100%!important;min-width:0!important;min-height:auto!important;padding:4px 12px!important;border:1px solid #d6b95f!important;border-radius:4px!important;background-color:#fff8df!important;color:#171717!important;text-align:center!important;box-sizing:border-box!important;break-inside:avoid!important;page-break-inside:avoid!important}
-#tableContainer .reports-unpaid-name-text{display:block!important;width:auto!important;max-width:100%!important;min-width:0!important;text-align:center!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;font-weight:850!important}
+#tableContainer .reports-unpaid-name-item{display:inline-flex!important;align-items:center!important;justify-content:center!important;justify-self:center!important;width:fit-content!important;max-width:100%!important;min-width:0!important;min-height:auto!important;padding:4px 12px!important;border:1px solid #d6b95f!important;border-radius:4px!important;background-color:#fff8df!important;color:#000000!important;font-family:${reportArabicFontStack}!important;font-weight:800!important;text-align:center!important;box-sizing:border-box!important;break-inside:avoid!important;page-break-inside:avoid!important}
+#tableContainer .reports-unpaid-name-text{display:block!important;width:auto!important;max-width:100%!important;min-width:0!important;text-align:center!important;color:#000000!important;font-family:${reportArabicFontStack}!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;font-weight:800!important}
 #tableContainer .reports-unpaid-name-grid[data-fee-category="قسط الرسوم الدراسية السنوية"] .reports-unpaid-name-item{background-color:#edf7ed!important;border-color:#7aa985!important}
 #tableContainer .reports-unpaid-name-grid[data-fee-category="رسوم قيد وتسجيل"] .reports-unpaid-name-item{background-color:#fff5dc!important;border-color:#d4a94b!important}
 #tableContainer .reports-unpaid-name-grid[data-fee-category="رسوم امتحان الكتابي الأول"] .reports-unpaid-name-item{background-color:#eaf2ff!important;border-color:#7c9ecb!important}
@@ -571,11 +676,12 @@ ${reportArabicFontFacesCss}
 #tableContainer .reports-unpaid-name-actions,#tableContainer .reports-unpaid-name-claim,#tableContainer .reports-unpaid-name-delete{display:none!important}
 #tableContainer table.reports-data-table tr.signature-block-row,#tableContainer table.reports-data-table tr.signature-block-row>td{background:#fff!important;color:#000!important;page-break-inside:avoid!important;break-inside:avoid!important}
 #tableContainer table.reports-data-table tr.signature-block-row>td{padding:5px 8px!important;border:0!important}
-#tableContainer table.reports-data-table tbody td.text-cell,#tableContainer table.reports-data-table tbody td.name-cell,#tableContainer table.reports-data-table tbody td.specialty-cell,#tableContainer table.reports-data-table tbody td.batch-cell,#tableContainer table.reports-data-table tbody td.desc-cell,#tableContainer table.reports-data-table tbody td.details-cell,#tableContainer table.reports-data-table tbody td.description-cell,#tableContainer table.reports-fee-status-table tbody td{white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere!important;font-size:var(--print-cell-font-size,14px)!important;line-height:var(--print-cell-line-height,1.45)!important}
-#tableContainer table.reports-data-table tbody td .pdf-cell-text{font-size:var(--print-cell-font-size,14px)!important;line-height:var(--print-cell-line-height,1.45)!important}
+#tableContainer table.reports-data-table tbody td.text-cell,#tableContainer table.reports-data-table tbody td.name-cell,#tableContainer table.reports-data-table tbody td.specialty-cell,#tableContainer table.reports-data-table tbody td.batch-cell,#tableContainer table.reports-data-table tbody td.desc-cell,#tableContainer table.reports-data-table tbody td.details-cell,#tableContainer table.reports-data-table tbody td.description-cell,#tableContainer table.reports-fee-status-table tbody td{white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere!important;font-size:var(--print-cell-font-size,16px)!important;line-height:var(--print-cell-line-height,1.45)!important}
+#tableContainer table.reports-data-table tbody td .pdf-cell-text{font-size:var(--print-cell-font-size,16px)!important;line-height:var(--print-cell-line-height,1.45)!important}
 #tableContainer .signature-block-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:4mm!important;width:100%!important;direction:rtl!important;align-items:start!important}
 #tableContainer .signature-person{display:flex!important;flex-direction:column!important;align-items:center!important;min-width:0!important;gap:2.5mm!important}
 #tableContainer .signature-person .signature-dept-field,#tableContainer .signature-person .signature-name-field{display:block!important;width:100%!important;min-height:6mm!important;padding:1px 2px!important;border:0!important;color:#000!important;text-align:center!important;font-size:10pt!important;line-height:1.5!important;font-weight:850!important}
+${reportsTabPrintTypographyCss}
 #tableContainer .signature-person .signature-dotted-line{display:block!important;width:72%!important;height:2mm!important;margin:0 auto!important;background-image:radial-gradient(circle,#222 .45px,transparent .65px)!important;background-size:3px 2px!important;background-repeat:repeat-x!important;background-position:center bottom!important}
 `;
 
@@ -2358,41 +2464,27 @@ export default function ReportsTab() {
     const printOrientation = settings.orientation || (source === "traineeFeeStatus" ? "landscape" : "portrait");
     const printPageSize = settings.pageSize || "A4";
     const marginMm = settings.margin === "narrow" ? 2 : settings.margin === "wide" ? 10 : settings.margin === "normal" ? 6 : (isCustodyReport ? 5 : 6);
-    const pageWidthMm = printOrientation === "landscape" ? 297 : 210;
-    const visibleColumnCount = Math.max(1,
-      sourceConfig.columns.filter((column) => !settings.hiddenColumns.includes(column.key)).length +
-      (settings.hiddenColumns.includes("idx") ? 0 : 1));
-    const configuredFontSize = settings.fontMode === "manual" ?
-      Math.max(5, Math.min(14, settings.fontSize)) :
-      Math.max(7, Math.min(13, (pageWidthMm - marginMm * 2) / (visibleColumnCount * 2.35)));
-    const fontSizePx = source === "traineeFeeStatus" ?
-      Math.max(12, Math.min(14, configuredFontSize + 2)) :
-      source === "trainee" ?
-      Math.max(14, Math.min(16, configuredFontSize + 3)) :
-      isCustodyReport ?
-      Math.max(12, Math.min(14, configuredFontSize + 3)) :
-      configuredFontSize;
     const tableHtml = buildReportsScreenPrintHtml(source, settings.showHeader ? reportDateLabel : "", reportRecordCount, settings);
     const finalCss = `
    #tableContainer .reports-print-table-shell { width:100%!important; min-width:0!important; 
    max-width: auto!important; overflow:visible!important; }
    #tableContainer table.reports-data-table { width:100%!important; min-width:0!important;
-   #tableContainer table.reports-data-table tr, #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td, #tableContainer table.reports-data-table .pdf-cell-text { page-break-inside:avoid!important; break-inside:avoid!important; font-size:var(--print-cell-font-size, ${fontSizePx}px)!important; line-height:var(--print-cell-line-height, 1.45)!important; }
+   #tableContainer table.reports-data-table tr, #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td, #tableContainer table.reports-data-table .pdf-cell-text { page-break-inside:avoid!important; break-inside:avoid!important; font-size:var(--print-cell-font-size,16px)!important; line-height:var(--print-cell-line-height, 1.45)!important; }
 
    #tableContainer table.reports-data-table thead { display:table-header-group!important; }
    #tableContainer table.reports-data-table tbody { display:table-row-group!important; }
-   #tableContainer table.reports-data-table tr, #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td, #tableContainer table.reports-data-table .pdf-cell-text { page-break-inside:avoid!important; break-inside:avoid!important; font-size:${fontSizePx}px!important; }
+   #tableContainer table.reports-data-table tr, #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td, #tableContainer table.reports-data-table .pdf-cell-text { page-break-inside:avoid!important; break-inside:avoid!important; font-size:var(--print-cell-font-size,16px)!important; line-height:var(--print-cell-line-height,1.45)!important; }
    #tableContainer table.reports-data-table th, #tableContainer table.reports-data-table td { min-width:0!important; max-width:100%!important; overflow-wrap:anywhere!important; }
-   #tableContainer table.reports-data-table tr.reports-bank-pending-row>td { background:#fff4cc!important; background-color:#fff4cc!important; color:#3b2f12!important; -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
+   #tableContainer table.reports-data-table tr.reports-bank-pending-row>td { background:#fff4cc!important; background-color:#fff4cc!important; color:#000000!important; font-weight:800!important; -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
    #tableContainer .reports-unpaid-name-grid { display:grid!important; grid-template-columns:repeat(3,minmax(0,1fr))!important; justify-items:center!important; align-items:center!important; gap:3mm 4mm!important; width:100%!important; direction:rtl!important; }
-   #tableContainer .reports-unpaid-name-item { display:inline-flex!important; align-items:center!important; justify-content:center!important; justify-self:center!important; width:fit-content!important; max-width:100%!important; min-width:0!important; min-height:auto!important; padding:4px 12px!important; border:1px solid #d6b95f!important; border-radius:4px!important; background-color:#fff8df!important; color:#171717!important; text-align:center!important; box-sizing:border-box!important; break-inside:avoid!important; page-break-inside:avoid!important; }
-   #tableContainer .reports-unpaid-name-text { display:block!important; width:100%!important; min-width:0!important; text-align:center!important; white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important; font-weight:850!important; }
+   #tableContainer .reports-unpaid-name-item { display:inline-flex!important; align-items:center!important; justify-content:center!important; justify-self:center!important; width:fit-content!important; max-width:100%!important; min-width:0!important; min-height:auto!important; padding:4px 12px!important; border:1px solid #d6b95f!important; border-radius:4px!important; background-color:#fff8df!important; color:#000000!important; font-family:${reportArabicFontStack}!important; font-weight:800!important; text-align:center!important; box-sizing:border-box!important; break-inside:avoid!important; page-break-inside:avoid!important; }
+   #tableContainer .reports-unpaid-name-text { display:block!important; width:100%!important; min-width:0!important; text-align:center!important; white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important; color:#000000!important; font-family:${reportArabicFontStack}!important; font-weight:800!important; }
     #tableContainer .reports-unpaid-name-actions,
     #tableContainer .reports-unpaid-name-claim,
     #tableContainer .reports-unpaid-name-delete { display:none!important; }
-   ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table { width:100%!important; min-width:0!important; max-width:auto!important; table-layout:auto!important; border-collapse:collapse!important; } #tableContainer table.reports-fee-status-table th, #tableContainer table.reports-fee-status-table td { box-sizing:border-box!important; min-width:0!important; max-width:100%!important; font-size:${fontSizePx}px!important; color:#111111!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; padding-left:3px!important; padding-right:3px!important; vertical-align:middle!important; } #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th { white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; line-height:1.25!important; } #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th > div, #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th > div > span { display:block!important; width:100%!important; min-width:0!important; white-space:normal!important; overflow-wrap:anywhere!important; }` : ""}
-   ${source === "trainee" ? `#tableContainer table.reports-trainee-payment-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:auto!important; } #tableContainer table.reports-trainee-payment-table thead tr.reports-column-header-row th { font-size:${fontSizePx}px!important; white-space:normal!important; overflow-wrap:anywhere!important; } #tableContainer table.reports-trainee-payment-table tbody tr > td { font-size:${fontSizePx}px!important; white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important; } #tableContainer table.reports-trainee-payment-table tbody td.reports-numeric-cell { white-space:nowrap!important; overflow-wrap:normal!important; }` : ""}
-   ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:fixed!important; border-collapse:collapse!important; direction:rtl!important; text-align:center!important; font-family:${reportDataFontStack}!important; } #tableContainer table.reports-fee-status-table thead th { font-family:${reportHeadingFontStack}!important; background:linear-gradient(180deg,#fff7d7 0%,#f3d778 100%)!important; background-color:#f3d778!important; color:#000!important; border:1px solid #000!important; font-size:14px!important; font-weight:800!important; line-height:1.4!important; padding:6px 4px!important; text-align:center!important; vertical-align:middle!important; white-space:normal!important; overflow-wrap:anywhere!important; -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; } #tableContainer table.reports-fee-status-table tbody td { background:#fff!important; background-color:#fff!important; color:#000!important; border:1px solid #000!important; font-family:${reportDataFontStack}!important; font-size:16px!important; font-weight:700!important; line-height:1.45!important; padding:5px 4px!important; text-align:center!important; vertical-align:middle!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; } #tableContainer table.reports-fee-status-table tbody tr:hover td { background:inherit!important; }` : ""}
+   ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table { width:100%!important; min-width:0!important; max-width:auto!important; table-layout:auto!important; border-collapse:collapse!important; } #tableContainer table.reports-fee-status-table th, #tableContainer table.reports-fee-status-table td { box-sizing:border-box!important; min-width:0!important; max-width:100%!important; font-size:var(--print-cell-font-size,16px)!important; color:#000000!important; font-weight:800!important; border:1px solid #000000!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; padding-left:3px!important; padding-right:3px!important; vertical-align:middle!important; } #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th { white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; line-height:1.25!important; } #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th > div, #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th > div > span { display:block!important; width:100%!important; min-width:0!important; white-space:normal!important; overflow-wrap:anywhere!important; }` : ""}
+   ${source === "trainee" ? `#tableContainer table.reports-trainee-payment-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:auto!important; } #tableContainer table.reports-trainee-payment-table thead tr.reports-column-header-row th { font-size:var(--print-header-font-size,16px)!important; white-space:normal!important; overflow-wrap:anywhere!important; } #tableContainer table.reports-trainee-payment-table tbody tr > td { font-size:var(--print-cell-font-size,16px)!important; white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important; } #tableContainer table.reports-trainee-payment-table tbody td.reports-numeric-cell { white-space:nowrap!important; overflow-wrap:normal!important; }` : ""}
+   ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:fixed!important; border-collapse:collapse!important; direction:rtl!important; text-align:center!important; font-family:${reportDataFontStack}!important; } #tableContainer table.reports-fee-status-table thead th { font-family:${reportHeadingFontStack}!important; background:linear-gradient(180deg,#fff7d7 0%,#f3d778 100%)!important; background-color:#f3d778!important; color:#000000!important; border:1px solid #000000!important; font-size:var(--print-header-font-size,16px)!important; font-weight:900!important; line-height:1.4!important; padding:6px 4px!important; text-align:center!important; vertical-align:middle!important; white-space:normal!important; overflow-wrap:anywhere!important; -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; } #tableContainer table.reports-fee-status-table tbody td { background:#fff!important; background-color:#fff!important; color:#000000!important; border:1px solid #000000!important; font-family:${reportArabicFontStack}!important; font-size:var(--print-cell-font-size,16px)!important; font-weight:800!important; line-height:1.45!important; padding:5px 4px!important; text-align:center!important; vertical-align:middle!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; } #tableContainer table.reports-fee-status-table tbody tr:hover td { background:inherit!important; }` : ""}
    ${isCustodyReport ? custodyPortraitPrintCss : ""}
    ${isCustodyReport ? `
      /* Keep the grand-total amount intact on one line in preview and printed output. */
@@ -2431,22 +2523,22 @@ export default function ReportsTab() {
    ` : ""}
    #tableContainer table.reports-data-table tr.signature-block-row, #tableContainer table.reports-data-table tr.signature-block-row td { page-break-inside:avoid!important; break-inside:avoid!important; }
    #tableContainer .reports-print-heading h1,
-   #tableContainer .reports-print-heading .reports-print-sub { font-family:${reportHeadingFontStack}!important; font-weight:800!important; }
+   #tableContainer .reports-print-heading .reports-print-sub { font-family:${reportHeadingFontStack}!important; color:#000000!important; font-weight:900!important; }
    #tableContainer table.reports-data-table thead th,
-   #tableContainer table.reports-fee-status-table thead th { font-family:${reportHeadingFontStack}!important; font-weight:800!important; }
+   #tableContainer table.reports-fee-status-table thead th { font-family:${reportHeadingFontStack}!important; color:#000000!important; font-weight:900!important; }
    #tableContainer table.reports-data-table tbody td,
-   #tableContainer table.reports-fee-status-table tbody td { font-family:${reportDataFontStack}!important; }
+   #tableContainer table.reports-fee-status-table tbody td { color:#000000!important; font-family:${reportArabicFontStack}!important; font-weight:800!important; }
    #tableContainer table.reports-data-table tbody td.reports-numeric-cell,
    #tableContainer table.reports-data-table tbody td.rc-num,
    #tableContainer table.reports-data-table tbody td[data-col-key="idx"],
-   #tableContainer table.reports-data-table tbody td.reports-no-wrap-cell { font-family:${reportDataFontStack}!important; font-variant-numeric:tabular-nums!important; font-feature-settings:"tnum" 1!important; font-weight:700!important; }
+   #tableContainer table.reports-data-table tbody td.reports-no-wrap-cell { color:#000000!important; font-family:${reportArabicFontStack}!important; font-variant-numeric:tabular-nums!important; font-feature-settings:"tnum" 1!important; font-weight:800!important; }
   `;
     const opened = openBrowserPrintPreview({
       title,
       reportDateLabel: settings.showHeader ? reportDateLabel : "",
       tableHtml,
       contentCss: reportDocumentCss,
-      finalCss: `${reportsTabPrintCss}\n${finalCss}`,
+      finalCss: `${reportsTabPrintCss}\n${finalCss}\n${reportsTabPrintTypographyCss}`,
       defaultOrientation: printOrientation,
       defaultPageSize: printPageSize,
       defaultMarginMm: marginMm,
@@ -2612,7 +2704,7 @@ export default function ReportsTab() {
             columns={sourceConfig.columns}
             printColumns={sourceConfig.columns}
             numericKeys={numericKeys}
-            pdfFinalCss={`${reportsTabPrintCss}\n${isLoanOrCustody ? custodyPortraitPrintCss : ""}`}
+            pdfFinalCss={`${reportsTabPrintCss}\n${isLoanOrCustody ? custodyPortraitPrintCss : ""}\n${reportsTabPrintTypographyCss}`}
             renderPrintTableHtml={(reportDateLabel) => buildReportsScreenPrintHtml(source, reportDateLabel, reportRecordCount)}
             onPrintRequest={() => openReportsPrintSettings("print")}
             onPdfExportRequest={() => openReportsPrintSettings("pdf")}
