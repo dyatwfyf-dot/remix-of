@@ -639,7 +639,7 @@ export default function TraineeFinancialDataTab() {
       ...TABLE_TOTAL_HEADERS.map(displayColumnHeader),
       ...customColumns,
     ].map((label) => `<th class="fee-subcolumn">${escapeHtml(label)}</th>`).join("");
-    const tableHead = `<tr>${metaHeaders}${feeGroupHeaders}${summaryGroupHeader}${customGroupHeader}<th rowspan="2" class="meta-header actions-header">إجراءات</th></tr><tr>${subHeaders}</tr>`;
+    const tableHead = `<tr>${metaHeaders}${feeGroupHeaders}${summaryGroupHeader}${customGroupHeader}</tr><tr>${subHeaders}</tr>`;
     const tableBody = visibleRows.map(({ row }) =>
       `<tr>${tableColumns.map((header) => `<td>${escapeHtml(getDisplayValue(row, header))}</td>`).join("")}</tr>`,
     ).join("");
@@ -649,7 +649,7 @@ export default function TraineeFinancialDataTab() {
       const total = visibleRows.reduce((sum, item) => sum + parseAmount(getDisplayValue(item.row, header)), 0);
       return `<td class="amount">${total.toLocaleString("en-US")}</td>`;
     }).join("");
-    const tableHtml = `${reportLetterheadHtml()}<h1>${escapeHtml(TITLE)}</h1><p class="rule-line">${escapeHtml(RULES)}</p><p class="record-count">عدد السجلات المعروضة: ${visibleRows.length}</p><table><thead>${tableHead}</thead><tbody>${tableBody || `<tr><td colspan="${tableColumns.length + 1}">لا توجد سجلات مطابقة</td></tr>`}</tbody><tfoot><tr><td colspan="${firstFinancialIndex}" class="total-label">الإجمالي العام للسجلات المعروضة</td>${footerCells}<td></td></tr></tfoot></table><p class="report-date">تاريخ الطباعة: ${new Date().toLocaleDateString("ar-YE")}</p>`;
+    const tableHtml = `${reportLetterheadHtml()}<h1>${escapeHtml(TITLE)}</h1><p class="rule-line">${escapeHtml(RULES)}</p><p class="record-count">عدد السجلات المعروضة: ${visibleRows.length}</p><table><thead>${tableHead}</thead><tbody>${tableBody || `<tr><td colspan="${tableColumns.length}">لا توجد سجلات مطابقة</td></tr>`}</tbody><tfoot><tr><td colspan="${firstFinancialIndex}" class="total-label">الإجمالي العام للسجلات المعروضة</td>${footerCells}</tr></tfoot></table><p class="report-date">تاريخ الطباعة: ${new Date().toLocaleDateString("ar-YE")}</p>`;
     const contentCss = `
       h1 { text-align:center; font-size:16px; margin:3mm 0; font-weight:900; }
       .rule-line { text-align:center; font-size:8px; font-weight:800; margin:2mm 0; }
@@ -985,7 +985,14 @@ export default function TraineeFinancialDataTab() {
               ))}
               {customColumns.map((header) => (
                 <th key={header} className="fee-subcolumn min-w-[100px] max-w-[190px] border border-slate-400 px-2 py-2 text-[12px] font-extrabold text-slate-900">
-                  <span className="whitespace-normal break-words">{header}</span>
+                  <button
+                    type="button"
+                    onClick={() => setSort((current) => current?.key === header ? { key: header, desc: !current.desc } : { key: header, desc: false })}
+                    className="whitespace-normal break-words"
+                  >
+                    {header}
+                    {sort?.key === header ? (sort.desc ? " ↓" : " ↑") : " ↕"}
+                  </button>
                   <button
                     type="button"
                     title={`حذف العمود ${header}`}
