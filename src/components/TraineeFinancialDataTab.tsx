@@ -1,6 +1,7 @@
 import React, { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import "./TraineeFinancialDataTab.css";
 import {
+  AlertTriangle,
   Download,
   FileSpreadsheet,
   Pencil,
@@ -227,6 +228,91 @@ export default function TraineeFinancialDataTab() {
       .filter(Boolean)
       .sort()
       .join(" ");
+
+  // تدقيق مستقل للأسماء: لا يغير المطابقة المالية أو أي بيانات محفوظة.
+  const nameAuditByName = useMemo(() => {
+    type NameAudit = {
+      status: "exact" | "variant" | "spacing" | "typo" | "missing";
+      candidate?: string;
+    };
+    const rawKey = (value: unknown) => String(value ?? "")
+      .normalize("NFKC")
+      .replace(/[\\u0610-\\u061A\\u064B-\\u065F\\u0670\\u06D6-\\u06ED]/g, "")
+      .replace(/[\\u0640\\u200B-\\u200F\\uFEFF]/g, "")
+      .replace(/\\s+/g, " ")
+      .trim()
+      .toLocaleLowerCase("ar");
+    const compactKey = (value: unknown) => rawKey(value).replace(/[^\\p{L}\\p{N}]/gu, "");
+    const differsByOneCharacter = (left: string, right: string) => {
+      const a = Array.from(left);
+      const b = Array.from(right);
+      if (a.length < 8 || b.length < 8 || Math.abs(a.length - b.length) > 1 || left === right) return false;
+      let i = 0;
+      let j = 0;
+      let edits = 0;
+      while (i < a.length && j < b.length) {
+        if (a[i] === b[j]) {
+          i += 1;
+          j += 1;
+          continue;
+        }
+        edits += 1;
+        if (edits > 1) return false;
+        if (a.length > b.length) i += 1;
+        else if (b.length > a.length) j += 1;
+        else {
+          i += 1;
+          j += 1;
+        }
+      }
+      if (i < a.length || j < b.length) edits += 1;
+      return edits === 1;
+    };
+
+    const names = Array.from(new Set((hafiza || [])
+      .map((item) => normalize(item.name))
+      .filter(Boolean)));
+    const hafizaNames = names.map((name) => ({
+      name,
+      raw: rawKey(name),
+      canonical: normalizeTraineeName(name),
+      compact: compactKey(name),
+    }));
+    const audits = new Map<string, NameAudit>();
+
+    (records || []).forEach((record) => {
+      const traineeName = normalize(record[HEADERS[2]]);
+      if (!traineeName) return;
+      const raw = rawKey(traineeName);
+      const canonical = normalizeTraineeName(traineeName);
+      const compact = compactKey(traineeName);
+
+      if (hafizaNames.some((item) => item.raw === raw)) {
+        audits.set(traineeName, { status: "exact" });
+        return;
+      }
+      const variant = hafizaNames.find((item) => item.canonical === canonical);
+      if (variant) {
+        audits.set(traineeName, { status: "variant", candidate: variant.name });
+        return;
+      }
+      const spacing = hafizaNames.find((item) => item.compact === compact && compact.length > 0);
+      if (spacing) {
+        audits.set(traineeName, { status: "spacing", candidate: spacing.name });
+        return;
+      }
+      const typo = hafizaNames.find((item) => differsByOneCharacter(compact, item.compact));
+      audits.set(traineeName, typo
+        ? { status: "typo", candidate: typo.name }
+        : { status: "missing" });
+    });
+
+    return audits;
+  }, [records, hafiza]);
+  const nameAuditWarningCount = (records || []).filter((record) => {
+    const name = normalize(record[HEADERS[2]]);
+    return Boolean(name && nameAuditByName.get(name)?.status !== "exact");
+  }).length;
 
   // مزامنة متدربي الدفعة السادسة من جدول أقساط 2026 إلى قاعدة بيانات المتدربين.
   // تتم الإضافة/استكمال الحقول الناقصة فقط، دون تعديل سجلات الأقساط أو بيانات المتدرب الأخرى.
@@ -921,6 +1007,9 @@ export default function TraineeFinancialDataTab() {
         <span className="rounded px-2 py-1 bg-orange-200">موقوف</span>
         <span className="rounded px-2 py-1 bg-sky-100">مؤجل</span>
         <span className="rounded px-2 py-1 bg-emerald-50">مستمر / منتظم</span>
+        <span className="inline-flex items-center gap-1 rounded bg-amber-100 px-2 py-1 text-amber-900" title="يظهر التنبيه عند اختلاف الاسم أو المسافات أو عدم العثور على الاسم في حوافظ التوريد">
+          <AlertTriangle className="h-3.5 w-3.5" /> تدقيق الاسم: {nameAuditWarningCount}
+        </span>
       </div>
       <div
         className="trainee-data-table-wrap overflow-auto rounded-xl border border-slate-400 bg-white shadow-sm"
@@ -1020,7 +1109,35 @@ export default function TraineeFinancialDataTab() {
                     key={header}
                     className="max-w-[280px] border border-slate-300 px-2 py-1.5 text-[14px] font-bold leading-6 text-black [overflow-wrap:anywhere]"
                   >
-                    {formatValue(getDisplayValue(row, header), header)}
+                    {header === HEADERS[2] ? (
+                      <span className="inline-flex max-w-full flex-wrap items-center justify-center gap-1.5">
+                        <span>{formatValue(getDisplayValue(row, header), header)}</span>
+                        {(() => {
+                          const audit = nameAuditByName.get(normalize(row[HEADERS[2]]));
+                          if (!audit || audit.status === "exact") return null;
+                          const badgeText = audit.status === "missing"
+                            ? "غير موجود"
+                            : audit.status === "spacing"
+                              ? "مسافات"
+                              : audit.status === "typo"
+                                ? "اختلاف حرف"
+                                : "اختلاف كتابة";
+                          const detail = audit.status === "missing"
+                            ? "لا يوجد اسم مطابق لهذا المتدرب في حوافظ التوريد."
+                            : `الاسم يحتاج مراجعة. الاسم الأقرب المسجل في الحوافظ: ${audit.candidate}`;
+                          return (
+                            <span
+                              className={`inline-flex items-center gap-0.5 rounded-full border px-1.5 py-0.5 text-[10px] font-black leading-4 ${audit.status === "missing" ? "border-rose-300 bg-rose-100 text-rose-800" : "border-amber-300 bg-amber-100 text-amber-900"}`}
+                              title={detail}
+                              aria-label={detail}
+                            >
+                              <AlertTriangle className="h-3 w-3 shrink-0" />
+                              {badgeText}
+                            </span>
+                          );
+                        })()}
+                      </span>
+                    ) : formatValue(getDisplayValue(row, header), header)}
                   </td>
                 ))}
                 <td className="min-w-[170px] border border-slate-300 bg-white px-1 py-1 text-black">
