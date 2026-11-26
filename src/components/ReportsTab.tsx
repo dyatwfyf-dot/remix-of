@@ -568,7 +568,7 @@ ${reportArabicFontFacesCss}
 #tableContainer .reports-unpaid-name-grid[data-fee-category="رسوم البحث العلمي والرسالة"] .reports-unpaid-name-item{background-color:#e8f6f5!important;border-color:#68a6a2!important}
 #tableContainer table.reports-data-table tbody tr.reports-unpaid-heading-row{break-after:avoid!important;page-break-after:avoid!important}
 #tableContainer table.reports-data-table tbody tr.reports-unpaid-name-row{break-before:avoid!important;page-break-before:avoid!important;break-inside:avoid!important;page-break-inside:avoid!important}
-#tableContainer .reports-unpaid-name-delete{display:none!important}
+#tableContainer .reports-unpaid-name-actions,#tableContainer .reports-unpaid-name-claim,#tableContainer .reports-unpaid-name-delete{display:none!important}
 #tableContainer table.reports-data-table tr.signature-block-row,#tableContainer table.reports-data-table tr.signature-block-row>td{background:#fff!important;color:#000!important;page-break-inside:avoid!important;break-inside:avoid!important}
 #tableContainer table.reports-data-table tr.signature-block-row>td{padding:5px 8px!important;border:0!important}
 #tableContainer table.reports-data-table tbody td.text-cell,#tableContainer table.reports-data-table tbody td.name-cell,#tableContainer table.reports-data-table tbody td.specialty-cell,#tableContainer table.reports-data-table tbody td.batch-cell,#tableContainer table.reports-data-table tbody td.desc-cell,#tableContainer table.reports-data-table tbody td.details-cell,#tableContainer table.reports-data-table tbody td.description-cell,#tableContainer table.reports-fee-status-table tbody td{white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere!important;font-size:var(--print-cell-font-size,14px)!important;line-height:var(--print-cell-line-height,1.45)!important}
@@ -1028,6 +1028,8 @@ export default function ReportsTab() {
   const [feeDemandIncludeFinalWritten, setFeeDemandIncludeFinalWritten] = useState(false);
   const [feeDemandIncludeOralScientific, setFeeDemandIncludeOralScientific] = useState(false);
   const [feeDemandIncludeOralClinical, setFeeDemandIncludeOralClinical] = useState(false);
+  const [feeDemandIncludeResearch, setFeeDemandIncludeResearch] = useState(false);
+  const [feeDemandResearchAmount, setFeeDemandResearchAmount] = useState(0);
   const [feeDemandRegistrationAmount, setFeeDemandRegistrationAmount] = useState(10000);
   const [feeDemandExamAmount, setFeeDemandExamAmount] = useState(30000);
   const [feeDemandSignatures, setFeeDemandSignatures] = useState < { department: string;director: string;signer: string } > (() => {
@@ -1514,13 +1516,8 @@ export default function ReportsTab() {
       }, ];
     });
     
-    // عند اختيار رسم أو أكثر، نعرض تفاصيل السداد للرسوم المحددة.
-    // لا تظهر قوائم غير المسددين إلا عند اختيار كل المتدربين.
-    if (selectedFees.length > 0) {
-      const paidRows = payments.map((row) => ({ ...row, displayType: "تفصيلي", summaryLevel: "detail" as const }));
-      if (selectedTrainee !== "all") return paidRows;
-
-      const unpaidSections: ReportRow[] = selectedFees.flatMap((category) => {
+    const buildUnpaidFeeSections = (categories: readonly string[]): ReportRow[] =>
+      categories.flatMap((category) => {
         const paidNames = new Set(
           payments.filter((row) => row.category === category).map((row) => String(row.trainee || "").trim())
         );
@@ -1556,7 +1553,12 @@ export default function ReportsTab() {
           }]),
         ];
       });
-      return [...paidRows, ...unpaidSections];
+
+    // عند اختيار رسم واحد أو أكثر، تُعرض قوائم غير المسددين لهذه الرسوم.
+    if (selectedFees.length > 0) {
+      const paidRows = payments.map((row) => ({ ...row, displayType: "تفصيلي", summaryLevel: "detail" as const }));
+      if (selectedTrainee !== "all") return paidRows;
+      return [...paidRows, ...buildUnpaidFeeSections(selectedFees)];
     }
 
     // إظهار كل متدرب من القائمة الأساسية لم يظهر اسمه مطلقاً في حوافظ التوريد كغير مسدد.
@@ -1710,6 +1712,12 @@ export default function ReportsTab() {
           summaryLevel: "trainee-name-total",
         }));
       result.push(...nameYearRows);
+    }
+
+    // عند اختيار كل الرسوم، تظهر قوائم غير المسددين لكل فئة على حدة،
+    // وتشمل جميع الدفعات ما لم يحدد المستخدم دفعات بعينها.
+    if (selectedTrainee === "all") {
+      result.push(...buildUnpaidFeeSections(TRAINEE_PAYMENT_FEE_CATEGORIES));
     }
 
     // قائمة ختامية لكل نوع رسم، والأسماء من قاعدة بيانات المتدربين
@@ -2379,7 +2387,9 @@ export default function ReportsTab() {
    #tableContainer .reports-unpaid-name-grid { display:grid!important; grid-template-columns:repeat(3,minmax(0,1fr))!important; justify-items:center!important; align-items:center!important; gap:3mm 4mm!important; width:100%!important; direction:rtl!important; }
    #tableContainer .reports-unpaid-name-item { display:inline-flex!important; align-items:center!important; justify-content:center!important; justify-self:center!important; width:fit-content!important; max-width:100%!important; min-width:0!important; min-height:auto!important; padding:4px 12px!important; border:1px solid #d6b95f!important; border-radius:4px!important; background-color:#fff8df!important; color:#171717!important; text-align:center!important; box-sizing:border-box!important; break-inside:avoid!important; page-break-inside:avoid!important; }
    #tableContainer .reports-unpaid-name-text { display:block!important; width:100%!important; min-width:0!important; text-align:center!important; white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important; font-weight:850!important; }
-   #tableContainer .reports-unpaid-name-delete { display:none!important; }
+    #tableContainer .reports-unpaid-name-actions,
+    #tableContainer .reports-unpaid-name-claim,
+    #tableContainer .reports-unpaid-name-delete { display:none!important; }
    ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table { width:100%!important; min-width:0!important; max-width:auto!important; table-layout:auto!important; border-collapse:collapse!important; } #tableContainer table.reports-fee-status-table th, #tableContainer table.reports-fee-status-table td { box-sizing:border-box!important; min-width:0!important; max-width:100%!important; font-size:${fontSizePx}px!important; color:#111111!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; padding-left:3px!important; padding-right:3px!important; vertical-align:middle!important; } #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th { white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; line-height:1.25!important; } #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th > div, #tableContainer table.reports-fee-status-table thead tr.reports-column-header-row th > div > span { display:block!important; width:100%!important; min-width:0!important; white-space:normal!important; overflow-wrap:anywhere!important; }` : ""}
    ${source === "trainee" ? `#tableContainer table.reports-trainee-payment-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:auto!important; } #tableContainer table.reports-trainee-payment-table thead tr.reports-column-header-row th { font-size:${fontSizePx}px!important; white-space:normal!important; overflow-wrap:anywhere!important; } #tableContainer table.reports-trainee-payment-table tbody tr > td { font-size:${fontSizePx}px!important; white-space:normal!important; overflow-wrap:anywhere!important; word-break:normal!important; } #tableContainer table.reports-trainee-payment-table tbody td.reports-numeric-cell { white-space:nowrap!important; overflow-wrap:normal!important; }` : ""}
    ${source === "traineeFeeStatus" ? `#tableContainer table.reports-fee-status-table { width:100%!important; min-width:0!important; max-width:100%!important; table-layout:fixed!important; border-collapse:collapse!important; direction:rtl!important; text-align:center!important; font-family:${reportDataFontStack}!important; } #tableContainer table.reports-fee-status-table thead th { font-family:${reportHeadingFontStack}!important; background:linear-gradient(180deg,#fff7d7 0%,#f3d778 100%)!important; background-color:#f3d778!important; color:#000!important; border:1px solid #000!important; font-size:14px!important; font-weight:800!important; line-height:1.4!important; padding:6px 4px!important; text-align:center!important; vertical-align:middle!important; white-space:normal!important; overflow-wrap:anywhere!important; -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; } #tableContainer table.reports-fee-status-table tbody td { background:#fff!important; background-color:#fff!important; color:#000!important; border:1px solid #000!important; font-family:${reportDataFontStack}!important; font-size:16px!important; font-weight:700!important; line-height:1.45!important; padding:5px 4px!important; text-align:center!important; vertical-align:middle!important; white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important; } #tableContainer table.reports-fee-status-table tbody tr:hover td { background:inherit!important; }` : ""}
@@ -2450,6 +2460,21 @@ export default function ReportsTab() {
     }
   };
 
+  const openUnpaidTraineeFeeDemand = (traineeName: string, category: string) => {
+    setFeeDemandIncludeRegistration(category === "رسوم قيد وتسجيل");
+    setFeeDemandIncludeExam(category === "رسوم امتحان الكتابي الأول");
+    setFeeDemandIncludeFinalWritten(category === "رسوم امتحان الكتابي النهائي");
+    setFeeDemandIncludeOralScientific(false);
+    setFeeDemandIncludeOralClinical(category === "رسوم الامتحان السريري الشفوي");
+    setFeeDemandIncludeResearch(category === "رسوم البحث العلمي والرسالة");
+    setFeeDemandTrainee({
+      trainee: traineeName,
+      registrationPaid: 0,
+      examPaid: 0,
+      claimFeeCategory: category,
+    });
+  };
+
   const printFeeDemand = () => {
     if (!feeDemandTrainee) return;
     const escapeHtml = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
@@ -2460,12 +2485,17 @@ export default function ReportsTab() {
       "'": "&#39;",
     })[char] || char);
     const traineeName = String(feeDemandTrainee.trainee || feeDemandTrainee.name || "").trim();
+    const selectedFeeCategory = String(feeDemandTrainee.claimFeeCategory || "");
+    const clinicalFeeLabel = selectedFeeCategory === "رسوم الامتحان السريري الشفوي"
+      ? selectedFeeCategory
+      : "رسوم امتحان شفوي/سريري";
     const outstandingFees = [
       { label: "رسوم القيد والتسجيل", amount: feeDemandIncludeRegistration && amountValue(feeDemandTrainee.registrationPaid) <= 0 ? Math.max(0, amountValue(feeDemandRegistrationAmount)) : 0 },
       { label: "رسوم امتحان الكتابي الأول", amount: feeDemandIncludeExam && amountValue(feeDemandTrainee.examPaid) <= 0 ? Math.max(0, amountValue(feeDemandExamAmount)) : 0 },
       { label: "رسوم امتحان الكتابي النهائي", amount: feeDemandIncludeFinalWritten ? 30000 : 0 },
       { label: "رسوم امتحان العلمي الشفوي", amount: feeDemandIncludeOralScientific ? 100000 : 0 },
-      { label: "رسوم امتحان شفوي/سريري", amount: feeDemandIncludeOralClinical ? 30000 : 0 },
+      { label: clinicalFeeLabel, amount: feeDemandIncludeOralClinical ? 30000 : 0 },
+      { label: "رسوم البحث العلمي والرسالة", amount: feeDemandIncludeResearch ? Math.max(0, amountValue(feeDemandResearchAmount)) : 0 },
     ].filter((fee) => fee.amount > 0);
     if (!outstandingFees.length) {
       toast.info("لا توجد رسوم مستحقة غير مسددة لهذا المتدرب");
@@ -2901,18 +2931,42 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                     else rowStyle = "bg-white text-slate-900";
 
                     if (row.summaryLevel === "fee-unpaid-heading" || row.summaryLevel === "fee-unpaid-name") {
-                      const names = [String(row.trainee || ""), String(row.unpaidTrainee2 || ""), String(row.unpaidTrainee3 || "")].filter(Boolean);
+                      const isEmptyUnpaidNameRow = String(row.id || "").startsWith("unpaid-fee-empty-");
+                      const names = isEmptyUnpaidNameRow
+                        ? []
+                        : [String(row.trainee || ""), String(row.unpaidTrainee2 || ""), String(row.unpaidTrainee3 || "")].filter(Boolean);
                       return (
                         <tr key={String(row.id)} className={row.summaryLevel === "fee-unpaid-heading" ? "reports-unpaid-heading-row bg-amber-100 text-amber-950" : "reports-unpaid-name-row bg-white text-black"}>
                           <td colSpan={sourceConfig.columns.length + 2} className="border border-black px-3 py-2 text-center font-bold">
                             {row.summaryLevel === "fee-unpaid-heading" ? String(row.trainee || "") : (
                               <div className="reports-unpaid-name-grid" data-fee-category={String(row.category || "")} dir="rtl">
-                                {names.map((name) => (
+                                {isEmptyUnpaidNameRow ? (
+                                  <span className="reports-unpaid-name-text">{String(row.trainee || "")}</span>
+                                ) : names.map((name) => (
                                   <div key={name} className="reports-unpaid-name-item">
                                     <span className="reports-unpaid-name-text">{name}</span>
-                                    <button type="button" onClick={() => setDeletedUnpaidFeeNames((previous) => { const next = new Set(previous); next.add(`${String(row.category || "")}|${traineeNameKey(name)}`); return next; })} className="reports-unpaid-name-delete print:hidden" title={`حذف ${name} من قائمة غير المسددين`} aria-label={`حذف ${name} من قائمة غير المسددين`}>
-                                      <Trash2 className="h-3.5 w-3.5" /> حذف
-                                    </button>
+                                    <div className="reports-unpaid-name-actions print:hidden">
+                                      {String(row.category || "") !== "قسط الرسوم الدراسية السنوية" && (
+                                        <button
+                                          type="button"
+                                          onClick={() => openUnpaidTraineeFeeDemand(name, String(row.category || ""))}
+                                          className="reports-unpaid-name-claim"
+                                          title={`إنشاء مطالبة مالية لـ ${name} عن ${String(row.category || "الرسوم غير المسددة")}`}
+                                          aria-label={`مطالبة مالية للمتدرب ${name} عن ${String(row.category || "الرسوم غير المسددة")}`}
+                                        >
+                                          <ClipboardList className="h-3.5 w-3.5" /> مطالبة
+                                        </button>
+                                      )}
+                                      <button
+                                        type="button"
+                                        onClick={() => setDeletedUnpaidFeeNames((previous) => { const next = new Set(previous); next.add(`${String(row.category || "")}|${traineeNameKey(name)}`); return next; })}
+                                        className="reports-unpaid-name-delete"
+                                        title={`حذف ${name} من قائمة غير المسددين`}
+                                        aria-label={`حذف ${name} من قائمة غير المسددين`}
+                                      >
+                                        <Trash2 className="h-3.5 w-3.5" /> حذف
+                                      </button>
+                                    </div>
                                   </div>
                                 ))}
                               </div>
@@ -3161,7 +3215,10 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                               {source === "traineeFeeStatus" && row.statusKey && (
                                 <button
                                   type="button"
-                                  onClick={() => setFeeDemandTrainee(row)}
+                                  onClick={() => {
+                                    setFeeDemandIncludeResearch(false);
+                                    setFeeDemandTrainee(row);
+                                  }}
                                   className="inline-flex items-center justify-center gap-1 rounded-md bg-sky-700 px-2 py-1 text-[11px] font-bold text-white hover:bg-sky-800"
                                   title="إنشاء مطالبة مالية بالرسوم غير المسددة فقط"
                                 >
@@ -3192,12 +3249,17 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
         (() => {
           const registrationUnpaid = amountValue(feeDemandTrainee.registrationPaid) <= 0;
           const examUnpaid = amountValue(feeDemandTrainee.examPaid) <= 0;
+          const selectedFeeCategory = String(feeDemandTrainee.claimFeeCategory || "");
+          const clinicalFeeLabel = selectedFeeCategory === "رسوم الامتحان السريري الشفوي"
+            ? selectedFeeCategory
+            : "رسوم امتحان شفوي/سريري";
           const unpaidItems = [
             { label: "رسوم القيد والتسجيل", amount: feeDemandIncludeRegistration && registrationUnpaid ? Math.max(0, amountValue(feeDemandRegistrationAmount)) : 0 },
             { label: "رسوم امتحان الكتابي الأول", amount: feeDemandIncludeExam && examUnpaid ? Math.max(0, amountValue(feeDemandExamAmount)) : 0 },
             { label: "رسوم امتحان الكتابي النهائي", amount: feeDemandIncludeFinalWritten ? 30000 : 0 },
             { label: "رسوم امتحان العلمي الشفوي", amount: feeDemandIncludeOralScientific ? 100000 : 0 },
-            { label: "رسوم امتحان شفوي/سريري", amount: feeDemandIncludeOralClinical ? 30000 : 0 },
+            { label: clinicalFeeLabel, amount: feeDemandIncludeOralClinical ? 30000 : 0 },
+            { label: "رسوم البحث العلمي والرسالة", amount: feeDemandIncludeResearch ? Math.max(0, amountValue(feeDemandResearchAmount)) : 0 },
           ].filter((fee) => fee.amount > 0);
           return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setFeeDemandTrainee(null); }}>
@@ -3208,34 +3270,41 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
             </div>
                    <div className="mb-4 rounded-xl border border-sky-200 bg-sky-50 p-3 text-right">
               <h3 className="mb-2 font-black text-slate-800">تحديد الرسوم المطلوب إدراجها في المطالبة</h3>
+              {selectedFeeCategory && <p className="mb-2 text-sm font-bold text-sky-800">نوع الرسم المحدد من قائمة غير المسددين: {selectedFeeCategory}</p>}
               <div className="grid gap-3 sm:grid-cols-2">
-                {registrationUnpaid && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
+                {(!selectedFeeCategory || selectedFeeCategory === "رسوم قيد وتسجيل") && registrationUnpaid && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
                   <input type="checkbox" checked={feeDemandIncludeRegistration} onChange={(event) => setFeeDemandIncludeRegistration(event.target.checked)} />
                   <span className="flex-1">رسوم القيد والتسجيل</span>
                   <input type="number" min="0" value={feeDemandRegistrationAmount} onChange={(event) => setFeeDemandRegistrationAmount(Math.max(0, Number(event.target.value) || 0))} className="w-28 rounded border border-slate-300 px-2 py-1 text-center" aria-label="مبلغ رسوم القيد والتسجيل" />
                   <span>ريال</span>
                 </label>}
-                {examUnpaid && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
+                {(!selectedFeeCategory || selectedFeeCategory === "رسوم امتحان الكتابي الأول") && examUnpaid && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
                   <input type="checkbox" checked={feeDemandIncludeExam} onChange={(event) => setFeeDemandIncludeExam(event.target.checked)} />
                   <span className="flex-1">رسوم امتحان الكتابي الأول</span>
                   <input type="number" min="0" value={feeDemandExamAmount} onChange={(event) => setFeeDemandExamAmount(Math.max(0, Number(event.target.value) || 0))} className="w-28 rounded border border-slate-300 px-2 py-1 text-center" aria-label="مبلغ رسوم امتحان الكتابي الأول" />
                   <span>ريال</span>
                 </label>}
-                <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
+                {(!selectedFeeCategory || selectedFeeCategory === "رسوم امتحان الكتابي النهائي") && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
                   <input type="checkbox" checked={feeDemandIncludeFinalWritten} onChange={(event) => setFeeDemandIncludeFinalWritten(event.target.checked)} />
                   <span className="flex-1">رسوم امتحان الكتابي النهائي</span>
                   <strong className="whitespace-nowrap">30,000 ريال</strong>
-                </label>
-                <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
+                </label>}
+                {!selectedFeeCategory && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
                   <input type="checkbox" checked={feeDemandIncludeOralScientific} onChange={(event) => setFeeDemandIncludeOralScientific(event.target.checked)} />
                   <span className="flex-1">رسوم امتحان العلمي الشفوي</span>
                   <strong className="whitespace-nowrap">100,000 ريال</strong>
-                </label>
-                <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
+                </label>}
+                {(!selectedFeeCategory || selectedFeeCategory === "رسوم البحث العلمي والرسالة") && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
+                  <input type="checkbox" checked={feeDemandIncludeResearch} onChange={(event) => setFeeDemandIncludeResearch(event.target.checked)} />
+                  <span className="flex-1">رسوم البحث العلمي والرسالة</span>
+                  <input type="number" min="0" value={feeDemandResearchAmount} onChange={(event) => setFeeDemandResearchAmount(Math.max(0, Number(event.target.value) || 0))} className="w-28 rounded border border-slate-300 px-2 py-1 text-center" aria-label="مبلغ رسوم البحث العلمي والرسالة" />
+                  <span>ريال</span>
+                </label>}
+                {(!selectedFeeCategory || selectedFeeCategory === "رسوم الامتحان السريري الشفوي") && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
                   <input type="checkbox" checked={feeDemandIncludeOralClinical} onChange={(event) => setFeeDemandIncludeOralClinical(event.target.checked)} />
-                  <span className="flex-1">رسوم امتحان شفوي/سريري</span>
+                  <span className="flex-1">{clinicalFeeLabel}</span>
                   <strong className="whitespace-nowrap">30,000 ريال</strong>
-                </label>
+                </label>}
               </div>
               <p className="mt-2 text-xs text-slate-600">يُدرج في المطالبة ما تختاره فقط من الرسوم غير المسددة، ويمكن تعديل مبلغ كل رسم قبل الطباعة. الخيار الافتراضي هو رسوم امتحان الكتابي الأول فقط.</p>
             </div>
