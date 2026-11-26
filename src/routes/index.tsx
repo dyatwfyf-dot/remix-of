@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, memo, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Toaster, toast } from "sonner";
 
@@ -20,16 +20,16 @@ import {
 } from "lucide-react";
 
 // تحميل ملفات التبويبات عند فتحها فقط لتقليل حجم التشغيل الأول.
-const HafizaTab = lazy(() => import("@/components/HafizaTab"));
-const AccountTab = lazy(() => import("@/components/AccountTab"));
-const JournalTab = lazy(() => import("@/components/JournalTab"));
-const InstallmentsTab = lazy(() => import("@/components/InstallmentsTab"));
-const TraineeFinancialDataTab = lazy(() => import("@/components/TraineeFinancialDataTab"));
-const MonthlyStatementTab = lazy(() => import("@/components/MonthlyStatementTab"));
-const RevenueTab = lazy(() => import("@/components/RevenueTab"));
-const ExpensesTab = lazy(() => import("@/components/ExpensesTab"));
-const ReportsTab = lazy(() => import("@/components/ReportsTab"));
-const AppTabs = lazy(() => import("@/components/AppTabs"));
+const HafizaTab = memo(lazy(() => import("@/components/HafizaTab")));
+const AccountTab = memo(lazy(() => import("@/components/AccountTab")));
+const JournalTab = memo(lazy(() => import("@/components/JournalTab")));
+const InstallmentsTab = memo(lazy(() => import("@/components/InstallmentsTab")));
+const TraineeFinancialDataTab = memo(lazy(() => import("@/components/TraineeFinancialDataTab")));
+const MonthlyStatementTab = memo(lazy(() => import("@/components/MonthlyStatementTab")));
+const RevenueTab = memo(lazy(() => import("@/components/RevenueTab")));
+const ExpensesTab = memo(lazy(() => import("@/components/ExpensesTab")));
+const ReportsTab = memo(lazy(() => import("@/components/ReportsTab")));
+const AppTabs = memo(lazy(() => import("@/components/AppTabs")));
 
 // استيراد وظائف الـ PWA
 import { canInstall, onInstallAvailability, promptInstall } from "@/lib/pwa";
@@ -213,6 +213,8 @@ if (typeof window !== "undefined") {
 
 function Index() {
   const [activeTab, setActiveTab] = useState<Tab>(() => getInitialTab());
+  // احتفظ بالتبويبات التي فُتحت مرة واحدة لتجنب فكّها وإعادة بنائها عند كل انتقال.
+  const [mountedTabs, setMountedTabs] = useState<Set<Tab>>(() => new Set([getInitialTab()]));
   const activeTabRef = useRef(activeTab);
   const tabHistoryRef = useRef<Tab[]>([getInitialTab()]);
   const [pwaInstallable, setPwaInstallable] = useState<boolean>(false);
@@ -334,6 +336,7 @@ function Index() {
         tabHistoryRef.current = [tab];
       }
       activeTabRef.current = tab;
+      setMountedTabs((current) => current.has(tab) ? current : new Set(current).add(tab));
       setActiveTab(tab);
     };
 
@@ -353,6 +356,7 @@ function Index() {
 
     activeTabRef.current = "installments";
     tabHistoryRef.current = ["installments"];
+    setMountedTabs((current) => current.has("installments") ? current : new Set(current).add("installments"));
     setActiveTab("installments");
     const url = new URL(window.location.href);
     url.searchParams.delete("tab");
@@ -380,6 +384,7 @@ function Index() {
     if (tab === activeTabRef.current) return;
 
     preloadTab(tab);
+    setMountedTabs((current) => current.has(tab) ? current : new Set(current).add(tab));
     activeTabRef.current = tab;
     tabHistoryRef.current = [...tabHistoryRef.current, tab];
     setActiveTab(tab);
@@ -501,28 +506,58 @@ function Index() {
             جارٍ تجهيز النظام…
           </div>
         ) : (
-          <Suspense
-            fallback={
-              <div
-                className="flex min-h-[35vh] items-center justify-center rounded-2xl border border-[#b8d4e8] bg-gold/95 p-6 text-xs font-semibold text-[#2e6b8a]"
-                role="status"
-                aria-live="polite"
-              >
-                جارٍ فتح التبويب…
-              </div>
-            }
-          >
-            {activeTab === "trainee-data" && <TraineeFinancialDataTab />}
-            {activeTab === "installments" && <InstallmentsTab />}
-            {activeTab === "hafiza" && <HafizaTab />}
-            {activeTab === "account" && <AccountTab />}
-            {activeTab === "journal" && <JournalTab />}
-            {activeTab === "monthly" && <MonthlyStatementTab />}
-            {activeTab === "revenue" && <RevenueTab />}
-            {activeTab === "expenses-table" && <ExpensesTab />}
-            {activeTab === "reports" && <ReportsTab />}
-            {activeTab === "general-expenses-ledger" && <AppTabs />}
-          </Suspense>
+          <>
+          {mountedTabs.has("trainee-data") && (
+            <div style={{ display: activeTab === "trainee-data" ? "block" : "none" }} aria-hidden={activeTab !== "trainee-data"}>
+              <Suspense fallback={<div className="p-6 text-center text-xs font-semibold text-[#2e6b8a]" role="status">جارٍ تحميل بيانات المتدربين…</div>}><TraineeFinancialDataTab /></Suspense>
+            </div>
+          )}
+          {mountedTabs.has("installments") && (
+            <div style={{ display: activeTab === "installments" ? "block" : "none" }} aria-hidden={activeTab !== "installments"}>
+              <Suspense fallback={<div className="p-6 text-center text-xs font-semibold text-[#2e6b8a]" role="status">جارٍ تحميل الأقساط…</div>}><InstallmentsTab /></Suspense>
+            </div>
+          )}
+          {mountedTabs.has("hafiza") && (
+            <div style={{ display: activeTab === "hafiza" ? "block" : "none" }} aria-hidden={activeTab !== "hafiza"}>
+              <Suspense fallback={<div className="p-6 text-center text-xs font-semibold text-[#2e6b8a]" role="status">جارٍ تحميل الحوافظ…</div>}><HafizaTab /></Suspense>
+            </div>
+          )}
+          {mountedTabs.has("account") && (
+            <div style={{ display: activeTab === "account" ? "block" : "none" }} aria-hidden={activeTab !== "account"}>
+              <Suspense fallback={<div className="p-6 text-center text-xs font-semibold text-[#2e6b8a]" role="status">جارٍ تحميل الحساب الجاري…</div>}><AccountTab /></Suspense>
+            </div>
+          )}
+          {mountedTabs.has("journal") && (
+            <div style={{ display: activeTab === "journal" ? "block" : "none" }} aria-hidden={activeTab !== "journal"}>
+              <Suspense fallback={<div className="p-6 text-center text-xs font-semibold text-[#2e6b8a]" role="status">جارٍ تحميل القيود اليومية…</div>}><JournalTab /></Suspense>
+            </div>
+          )}
+          {mountedTabs.has("monthly") && (
+            <div style={{ display: activeTab === "monthly" ? "block" : "none" }} aria-hidden={activeTab !== "monthly"}>
+              <Suspense fallback={<div className="p-6 text-center text-xs font-semibold text-[#2e6b8a]" role="status">جارٍ تحميل الكشف الشهري…</div>}><MonthlyStatementTab /></Suspense>
+            </div>
+          )}
+          {mountedTabs.has("revenue") && (
+            <div style={{ display: activeTab === "revenue" ? "block" : "none" }} aria-hidden={activeTab !== "revenue"}>
+              <Suspense fallback={<div className="p-6 text-center text-xs font-semibold text-[#2e6b8a]" role="status">جارٍ تحميل الإيرادات…</div>}><RevenueTab /></Suspense>
+            </div>
+          )}
+          {mountedTabs.has("expenses-table") && (
+            <div style={{ display: activeTab === "expenses-table" ? "block" : "none" }} aria-hidden={activeTab !== "expenses-table"}>
+              <Suspense fallback={<div className="p-6 text-center text-xs font-semibold text-[#2e6b8a]" role="status">جارٍ تحميل المصروفات…</div>}><ExpensesTab /></Suspense>
+            </div>
+          )}
+          {mountedTabs.has("reports") && (
+            <div style={{ display: activeTab === "reports" ? "block" : "none" }} aria-hidden={activeTab !== "reports"}>
+              <Suspense fallback={<div className="p-6 text-center text-xs font-semibold text-[#2e6b8a]" role="status">جارٍ تحميل التقارير…</div>}><ReportsTab /></Suspense>
+            </div>
+          )}
+          {mountedTabs.has("general-expenses-ledger") && (
+            <div style={{ display: activeTab === "general-expenses-ledger" ? "block" : "none" }} aria-hidden={activeTab !== "general-expenses-ledger"}>
+              <Suspense fallback={<div className="p-6 text-center text-xs font-semibold text-[#2e6b8a]" role="status">جارٍ تحميل سجل النفقات…</div>}><AppTabs /></Suspense>
+            </div>
+          )}
+          </>
         )}
       </div>
 
