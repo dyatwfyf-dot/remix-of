@@ -61,8 +61,8 @@ export const Route = createFileRoute("/")({
     ],
     links: [
       { rel: "manifest", href: "/manifest.json" },
-      { rel: "icon", href: "/favicon.ico" },
-      { rel: "apple-touch-icon", href: "/icon-192.png" },
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+      { rel: "apple-touch-icon", href: "/app-logo.svg" },
     ],
   }),
 });
@@ -415,7 +415,7 @@ function Index() {
         {/* الشعار واسم المجلس، وشريط السنة المالية بحجم مدمج في يسار الاسم */}
         <div className="flex min-w-0 flex-nowrap items-center gap-2">
           <div className="app-brand-logo relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/35 bg-white/15 p-1 shadow-lg shadow-[#102f46]/20 sm:h-11 sm:w-11">
-            <img src="/app-logo.png" alt="شعار المجلس الطبي" className="h-full w-full object-contain" />
+            <img src="/app-logo.svg" alt="شعار المجلس الطبي" className="h-full w-full object-contain" />
           </div>
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
