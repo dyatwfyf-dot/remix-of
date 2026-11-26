@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:pathData="M0,0h108v108h-108z" android:fillColor="#082847"/>
+    <path android:pathData="M10,53a44,44 0,1 0,88 0a44,44 0,1 0,-88 0"
+        android:fillColor="#00000000" android:strokeWidth="4" android:strokeColor="#D7A544"/>
+    <path android:pathData="M43,23h22v17h17v22h-17v17h-22v-17h-17v-22h17z"
+        android:strokeWidth="2.5" android:strokeColor="#E8BD66">
+        <aapt:attr name="android:fillColor"><gradient android:type="linear" android:startX="0" android:startY="20" android:endX="0" android:endY="80"><item android:color="#FFFFFF" android:offset="0"/><item android:color="#DCE6EF" android:offset="1"/></gradient></aapt:attr>
+    </path>
+    <path android:pathData="M54,20v55" android:strokeWidth="4.5" android:strokeColor="#F4CF79" android:strokeLineCap="round"/>
+    <path android:pathData="M54,34c-24,3 -26,19 -7,26c17,6 18,19 7,23c-9,3 -16,0 -21,-7M54,34c24,3 26,19 7,26c-17,6 -18,19 -7,23c9,3 16,0 21,-7"
+        android:fillColor="#00000000" android:strokeWidth="4.5" android:strokeColor="#D89F37" android:strokeLineCap="round"/>
+    <path android:pathData="M5,82h18l5,-5 5,9 8,-20 8,20 5,-5h18l5,5 7,-10 6,10h13"
+        android:fillColor="#00000000" android:strokeWidth="2.5" android:strokeColor="#F4CF79" android:strokeLineJoin="round" android:strokeLineCap="round"/>
+    <path android:pathData="M14,88c13,-7 27,-5 40,3c13,-8 27,-10 40,-3v12c-13,-7 -27,-5 -40,3c-13,-8 -27,-10 -40,-3z"
+        android:strokeWidth="2" android:strokeColor="#D7A544">
+        <aapt:attr name="android:fillColor"><gradient android:type="linear" android:startX="0" android:startY="85" android:endX="0" android:endY="103"><item android:color="#FFFFFF" android:offset="0"/><item android:color="#C8D7E3" android:offset="1"/></gradient></aapt:attr>
+    </path>
+</vector>
