@@ -2481,13 +2481,16 @@ export default function ReportsTab() {
     const scientificFeeLabel = selectedFeeCategory === "رسوم البحث العلمي والرسالة"
       ? selectedFeeCategory
       : "رسوم امتحان العلمي الشفوي";
+    const clinicalFeeLabel = selectedFeeCategory === "رسوم الامتحان السريري الشفوي"
+      ? selectedFeeCategory
+      : "رسوم امتحان شفوي/سريري";
     const outstandingFees = [
       { label: "قسط الرسوم الدراسية السنوية", amount: feeDemandIncludeTuition ? Math.max(0, amountValue(feeDemandTuitionAmount)) : 0 },
       { label: "رسوم القيد والتسجيل", amount: feeDemandIncludeRegistration && amountValue(feeDemandTrainee.registrationPaid) <= 0 ? Math.max(0, amountValue(feeDemandRegistrationAmount)) : 0 },
       { label: "رسوم امتحان الكتابي الأول", amount: feeDemandIncludeExam && amountValue(feeDemandTrainee.examPaid) <= 0 ? Math.max(0, amountValue(feeDemandExamAmount)) : 0 },
       { label: "رسوم امتحان الكتابي النهائي", amount: feeDemandIncludeFinalWritten ? 30000 : 0 },
       { label: scientificFeeLabel, amount: feeDemandIncludeOralScientific ? 100000 : 0 },
-      { label: "رسوم الامتحان السريري الشفوي", amount: feeDemandIncludeOralClinical ? 30000 : 0 },
+      { label: clinicalFeeLabel, amount: feeDemandIncludeOralClinical ? 30000 : 0 },
     ].filter((fee) => fee.amount > 0);
     if (!outstandingFees.length) {
       toast.info("لا توجد رسوم مستحقة غير مسددة لهذا المتدرب");
@@ -3205,7 +3208,10 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
                               {source === "traineeFeeStatus" && row.statusKey && (
                                 <button
                                   type="button"
-                                  onClick={() => setFeeDemandTrainee(row)}
+                                  onClick={() => {
+                                    setFeeDemandIncludeTuition(false);
+                                    setFeeDemandTrainee(row);
+                                  }}
                                   className="inline-flex items-center justify-center gap-1 rounded-md bg-sky-700 px-2 py-1 text-[11px] font-bold text-white hover:bg-sky-800"
                                   title="إنشاء مطالبة مالية بالرسوم غير المسددة فقط"
                                 >
@@ -3240,13 +3246,16 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
           const scientificFeeLabel = selectedFeeCategory === "رسوم البحث العلمي والرسالة"
             ? selectedFeeCategory
             : "رسوم امتحان العلمي الشفوي";
+          const clinicalFeeLabel = selectedFeeCategory === "رسوم الامتحان السريري الشفوي"
+            ? selectedFeeCategory
+            : "رسوم امتحان شفوي/سريري";
           const unpaidItems = [
             { label: "قسط الرسوم الدراسية السنوية", amount: feeDemandIncludeTuition ? Math.max(0, amountValue(feeDemandTuitionAmount)) : 0 },
             { label: "رسوم القيد والتسجيل", amount: feeDemandIncludeRegistration && registrationUnpaid ? Math.max(0, amountValue(feeDemandRegistrationAmount)) : 0 },
             { label: "رسوم امتحان الكتابي الأول", amount: feeDemandIncludeExam && examUnpaid ? Math.max(0, amountValue(feeDemandExamAmount)) : 0 },
             { label: "رسوم امتحان الكتابي النهائي", amount: feeDemandIncludeFinalWritten ? 30000 : 0 },
             { label: scientificFeeLabel, amount: feeDemandIncludeOralScientific ? 100000 : 0 },
-            { label: "رسوم الامتحان السريري الشفوي", amount: feeDemandIncludeOralClinical ? 30000 : 0 },
+            { label: clinicalFeeLabel, amount: feeDemandIncludeOralClinical ? 30000 : 0 },
           ].filter((fee) => fee.amount > 0);
           return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setFeeDemandTrainee(null); }}>
@@ -3259,39 +3268,39 @@ else if (isTotal) rowStyle = "bg-[#0437bb] font-bold text-white total-row";
               <h3 className="mb-2 font-black text-slate-800">تحديد الرسوم المطلوب إدراجها في المطالبة</h3>
               {selectedFeeCategory && <p className="mb-2 text-sm font-bold text-sky-800">نوع الرسم المحدد من قائمة غير المسددين: {selectedFeeCategory}</p>}
               <div className="grid gap-3 sm:grid-cols-2">
-                <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
+                {(!selectedFeeCategory || selectedFeeCategory === "قسط الرسوم الدراسية السنوية") && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
                   <input type="checkbox" checked={feeDemandIncludeTuition} onChange={(event) => setFeeDemandIncludeTuition(event.target.checked)} />
                   <span className="flex-1">قسط الرسوم الدراسية السنوية</span>
                   <input type="number" min="0" value={feeDemandTuitionAmount} onChange={(event) => setFeeDemandTuitionAmount(Math.max(0, Number(event.target.value) || 0))} className="w-28 rounded border border-slate-300 px-2 py-1 text-center" aria-label="مبلغ القسط الدراسي السنوي" />
                   <span>ريال</span>
-                </label>
-                {registrationUnpaid && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
+                </label>}
+                {(!selectedFeeCategory || selectedFeeCategory === "رسوم قيد وتسجيل") && registrationUnpaid && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
                   <input type="checkbox" checked={feeDemandIncludeRegistration} onChange={(event) => setFeeDemandIncludeRegistration(event.target.checked)} />
                   <span className="flex-1">رسوم القيد والتسجيل</span>
                   <input type="number" min="0" value={feeDemandRegistrationAmount} onChange={(event) => setFeeDemandRegistrationAmount(Math.max(0, Number(event.target.value) || 0))} className="w-28 rounded border border-slate-300 px-2 py-1 text-center" aria-label="مبلغ رسوم القيد والتسجيل" />
                   <span>ريال</span>
                 </label>}
-                {examUnpaid && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
+                {(!selectedFeeCategory || selectedFeeCategory === "رسوم امتحان الكتابي الأول") && examUnpaid && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
                   <input type="checkbox" checked={feeDemandIncludeExam} onChange={(event) => setFeeDemandIncludeExam(event.target.checked)} />
                   <span className="flex-1">رسوم امتحان الكتابي الأول</span>
                   <input type="number" min="0" value={feeDemandExamAmount} onChange={(event) => setFeeDemandExamAmount(Math.max(0, Number(event.target.value) || 0))} className="w-28 rounded border border-slate-300 px-2 py-1 text-center" aria-label="مبلغ رسوم امتحان الكتابي الأول" />
                   <span>ريال</span>
                 </label>}
-                <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
+                {(!selectedFeeCategory || selectedFeeCategory === "رسوم امتحان الكتابي النهائي") && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
                   <input type="checkbox" checked={feeDemandIncludeFinalWritten} onChange={(event) => setFeeDemandIncludeFinalWritten(event.target.checked)} />
                   <span className="flex-1">رسوم امتحان الكتابي النهائي</span>
                   <strong className="whitespace-nowrap">30,000 ريال</strong>
-                </label>
-                <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
+                </label>}
+                {(!selectedFeeCategory || selectedFeeCategory === "رسوم البحث العلمي والرسالة") && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
                   <input type="checkbox" checked={feeDemandIncludeOralScientific} onChange={(event) => setFeeDemandIncludeOralScientific(event.target.checked)} />
                   <span className="flex-1">{scientificFeeLabel}</span>
                   <strong className="whitespace-nowrap">100,000 ريال</strong>
-                </label>
-                <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
+                </label>}
+                {(!selectedFeeCategory || selectedFeeCategory === "رسوم الامتحان السريري الشفوي") && <label className="flex items-center gap-2 rounded-lg bg-white p-2 font-bold text-slate-800">
                   <input type="checkbox" checked={feeDemandIncludeOralClinical} onChange={(event) => setFeeDemandIncludeOralClinical(event.target.checked)} />
-                  <span className="flex-1">رسوم امتحان شفوي/سريري</span>
+                  <span className="flex-1">{clinicalFeeLabel}</span>
                   <strong className="whitespace-nowrap">30,000 ريال</strong>
-                </label>
+                </label>}
               </div>
               <p className="mt-2 text-xs text-slate-600">يُدرج في المطالبة ما تختاره فقط من الرسوم غير المسددة، ويمكن تعديل مبلغ كل رسم قبل الطباعة. الخيار الافتراضي هو رسوم امتحان الكتابي الأول فقط.</p>
             </div>
