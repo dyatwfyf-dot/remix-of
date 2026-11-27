@@ -1081,8 +1081,8 @@ export default function TraineeFinancialDataTab() {
         </div>
         <div className="mt-3 rounded-xl border border-[#b8d4e8] bg-white/90 p-3 shadow-sm">
           <h3 className="mb-2 font-black text-[#17324d]">ملخص المتدربين حسب الدفعة</h3>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
-            {batchOptions.map(([key, label]) => {
+          <div className="grid grid-cols-3 gap-2">
+            {batchOptions.map(([key, label], batchIndex) => {
               const batchRecords = (records || []).filter((record) => normalizeBatchKey(record[HEADERS[3]]) === key);
               const counts = { withdrawn: 0, graduates: 0, dismissed: 0, active: 0 };
               batchRecords.forEach((record) => {
@@ -1093,16 +1093,16 @@ export default function TraineeFinancialDataTab() {
                 else if (["مستمر", "مستمره", "منتظم", "منتظمه", "على راس العمل"].includes(status)) counts.active += 1;
               });
               return (
-                <div key={key} className="rounded-xl border border-slate-200 bg-slate-50 p-2.5">
-                  <div className="mb-2 flex items-center justify-between gap-2">
-                    <span className="font-black text-[#17324d]">{label}</span>
-                    <span className="rounded-lg bg-[#17324d] px-2 py-1 text-xs font-black text-white">{batchRecords.length} متدرب</span>
+                <div key={key} className={"trainee-batch-summary-card trainee-batch-summary-card-" + (batchIndex % 6) + " min-w-0 rounded-xl border p-2"}>
+                  <div className="mb-2 flex min-w-0 flex-col items-center gap-1 text-center">
+                    <span className="w-full break-words text-[11px] font-black leading-tight">{label}</span>
+                    <span className="trainee-batch-summary-count rounded-lg px-2 py-1 text-[10px] font-black">{batchRecords.length} متدرب</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-1.5 text-[11px] font-bold">
-                    <span className="rounded-md bg-red-100 px-2 py-1.5 text-red-800">منسحب: {counts.withdrawn}</span>
-                    <span className="rounded-md bg-green-100 px-2 py-1.5 text-green-800">متخرج: {counts.graduates}</span>
-                    <span className="rounded-md bg-yellow-100 px-2 py-1.5 text-yellow-900">مفصول: {counts.dismissed}</span>
-                    <span className="rounded-md bg-emerald-100 px-2 py-1.5 text-emerald-900">مستمر: {counts.active}</span>
+                  <div className="grid grid-cols-2 gap-1 text-[9px] font-extrabold leading-tight">
+                    <span className="min-w-0 break-words rounded-md bg-red-100 px-1 py-1.5 text-center text-red-800">منسحب: {counts.withdrawn}</span>
+                    <span className="min-w-0 break-words rounded-md bg-green-100 px-1 py-1.5 text-center text-green-800">متخرج: {counts.graduates}</span>
+                    <span className="min-w-0 break-words rounded-md bg-yellow-100 px-1 py-1.5 text-center text-yellow-900">مفصول: {counts.dismissed}</span>
+                    <span className="min-w-0 break-words rounded-md bg-emerald-100 px-1 py-1.5 text-center text-emerald-900">مستمر: {counts.active}</span>
                   </div>
                 </div>
               );
@@ -1226,8 +1226,8 @@ export default function TraineeFinancialDataTab() {
               </th>
             </tr>
             <tr className="trainee-data-subheader-row">
-              {FEE_TABLE_GROUPS.flatMap((group) => group.columns).map((column) => (
-                <th key={column.header} className="fee-subcolumn min-w-[92px] max-w-[170px] border border-slate-400 px-2 py-2 text-[12px] font-extrabold text-slate-900">
+              {FEE_TABLE_GROUPS.flatMap((group) => group.columns.map((column) => ({ ...column, groupClassName: group.className }))).map((column) => (
+                <th key={column.header} className={`fee-subcolumn ${column.groupClassName}-sub min-w-[92px] max-w-[170px] border border-slate-400 px-2 py-2 text-[12px] font-extrabold text-slate-900`}>
                   <button
                     type="button"
                     onClick={() => setSort((current) => current?.key === column.header ? { key: column.header, desc: !current.desc } : { key: column.header, desc: false })}
@@ -1239,7 +1239,7 @@ export default function TraineeFinancialDataTab() {
                 </th>
               ))}
               {[...TABLE_PAYMENT_SUMMARY_HEADERS, ...TABLE_TOTAL_HEADERS].map((header) => (
-                <th key={header} className="fee-subcolumn min-w-[100px] max-w-[190px] border border-slate-400 px-2 py-2 text-[12px] font-extrabold text-slate-900">
+                <th key={header} className="fee-subcolumn fee-group-summary-sub min-w-[100px] max-w-[190px] border border-slate-400 px-2 py-2 text-[12px] font-extrabold text-slate-900">
                   <button
                     type="button"
                     onClick={() => setSort((current) => current?.key === header ? { key: header, desc: !current.desc } : { key: header, desc: false })}
@@ -1251,7 +1251,7 @@ export default function TraineeFinancialDataTab() {
                 </th>
               ))}
               {customColumns.map((header) => (
-                <th key={header} className="fee-subcolumn min-w-[100px] max-w-[190px] border border-slate-400 px-2 py-2 text-[12px] font-extrabold text-slate-900">
+                <th key={header} className="fee-subcolumn fee-group-custom-sub min-w-[100px] max-w-[190px] border border-slate-400 px-2 py-2 text-[12px] font-extrabold text-slate-900">
                   <button
                     type="button"
                     onClick={() => setSort((current) => current?.key === header ? { key: header, desc: !current.desc } : { key: header, desc: false })}
