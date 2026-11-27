@@ -1093,7 +1093,7 @@ export default function TraineeFinancialDataTab() {
                 else if (["مستمر", "مستمره", "منتظم", "منتظمه", "على راس العمل"].includes(status)) counts.active += 1;
               });
               return (
-                <div key={key} className={\`trainee-batch-summary-card trainee-batch-summary-card-\${batchIndex % 6} min-w-0 rounded-xl border p-2\`}>
+                <div key={key} className={"trainee-batch-summary-card trainee-batch-summary-card-" + (batchIndex % 6) + " min-w-0 rounded-xl border p-2"}>
                   <div className="mb-2 flex min-w-0 flex-col items-center gap-1 text-center">
                     <span className="w-full break-words text-[11px] font-black leading-tight">{label}</span>
                     <span className="trainee-batch-summary-count rounded-lg px-2 py-1 text-[10px] font-black">{batchRecords.length} متدرب</span>
