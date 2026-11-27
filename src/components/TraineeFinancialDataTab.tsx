@@ -876,7 +876,7 @@ export default function TraineeFinancialDataTab() {
               </p>
             </div>
           </div>
-          <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3 xl:w-auto xl:grid-cols-5">
+          <div className="grid w-full grid-cols-3 gap-2 sm:grid-cols-3 xl:w-auto xl:grid-cols-3">
             <button type="button" onClick={addRow} className="flex min-h-[68px] flex-col items-center justify-center gap-1 rounded-xl border border-white/70 bg-gradient-to-br from-sky-500 via-blue-600 to-blue-800 px-2 py-2 text-xs font-black text-white shadow-[inset_0_2px_0_rgba(255,255,255,.45),0_4px_0_#173575,0_7px_12px_rgba(15,23,42,.18)] active:translate-y-0.5">
               <Plus className="h-5 w-5" /> إضافة صف
             </button>
@@ -917,7 +917,7 @@ export default function TraineeFinancialDataTab() {
           <h2 className="font-black text-[#17324d]">بداية الدراسة حسب الدفعة</h2>
           <span className="rounded-lg bg-[#2e6b8a] px-2 py-1 text-[10px] font-extrabold text-white">من 2021 فصاعداً</span>
         </div>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 xl:grid-cols-3">
           {batchOptions.map(([key, label]) => (
             <label key={key} className="flex min-w-0 flex-col gap-1 rounded-xl border border-[#c4d9e8] bg-white/90 p-2 text-xs font-extrabold text-slate-700 shadow-sm">
               <span>{label}</span>
@@ -935,6 +935,36 @@ export default function TraineeFinancialDataTab() {
               />
             </label>
           ))}
+        </div>
+        <div className="mt-3 rounded-xl border border-[#b8d4e8] bg-white/90 p-3 shadow-sm">
+          <h3 className="mb-2 font-black text-[#17324d]">ملخص المتدربين حسب الدفعة</h3>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+            {batchOptions.map(([key, label]) => {
+              const batchRecords = (records || []).filter((record) => normalizeBatchKey(record[HEADERS[3]]) === key);
+              const counts = { withdrawn: 0, graduates: 0, dismissed: 0, active: 0 };
+              batchRecords.forEach((record) => {
+                const status = normalizeAcademicStatus(record["الحالة الأكاديمية"]);
+                if (["منسحب", "منسحبه", "انسحب", "انسحبت", "منقطع", "منقطعه", "مستقيل", "مستقيله"].includes(status)) counts.withdrawn += 1;
+                else if (["متخرج", "متخرجه", "خريج", "خريجه"].includes(status)) counts.graduates += 1;
+                else if (["مفصول", "مفصوله", "فصل", "راسب", "راسبه"].includes(status)) counts.dismissed += 1;
+                else if (["مستمر", "مستمره", "منتظم", "منتظمه", "على راس العمل"].includes(status)) counts.active += 1;
+              });
+              return (
+                <div key={key} className="rounded-xl border border-slate-200 bg-slate-50 p-2.5">
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <span className="font-black text-[#17324d]">{label}</span>
+                    <span className="rounded-lg bg-[#17324d] px-2 py-1 text-xs font-black text-white">{batchRecords.length} متدرب</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5 text-[11px] font-bold">
+                    <span className="rounded-md bg-red-100 px-2 py-1.5 text-red-800">منسحب: {counts.withdrawn}</span>
+                    <span className="rounded-md bg-green-100 px-2 py-1.5 text-green-800">متخرج: {counts.graduates}</span>
+                    <span className="rounded-md bg-yellow-100 px-2 py-1.5 text-yellow-900">مفصول: {counts.dismissed}</span>
+                    <span className="rounded-md bg-emerald-100 px-2 py-1.5 text-emerald-900">مستمر: {counts.active}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
         <p className="mt-2 text-[11px] font-semibold leading-5 text-slate-600">
           تُحدّث تواريخ القيد والأقساط السنوية ومواعيد الامتحانات التقديرية تلقائياً عند تغيير التاريخ. مواعيد الامتحانات تقديرية وفق تسلسل المستويات الحالي، أما إثبات السداد الفعلي فيبقى من «حوافظ التوريد» فقط.
