@@ -724,15 +724,31 @@ export default function TraineeFinancialDataTab() {
     const customGroupHeader = customColumns.length
       ? `<th colspan="${customColumns.length}" class="fee-category-group fee-group-custom">حقول إضافية</th>`
       : "";
-    const subHeaders = [
-      ...FEE_TABLE_GROUPS.flatMap((group) => group.columns.map((column) => column.label)),
+    const feeSubHeaders = FEE_TABLE_GROUPS.flatMap((group) =>
+      group.columns.map((column) =>
+        `<th class="fee-subcolumn ${group.className}-sub">${escapeHtml(column.label)}</th>`,
+      ),
+    ).join("");
+    const summarySubHeaders = [
       ...TABLE_PAYMENT_SUMMARY_HEADERS.map(displayColumnHeader),
       ...TABLE_TOTAL_HEADERS.map(displayColumnHeader),
-      ...customColumns,
-    ].map((label) => `<th class="fee-subcolumn">${escapeHtml(label)}</th>`).join("");
-    const tableHead = `<tr>${metaHeaders}${feeGroupHeaders}${summaryGroupHeader}${customGroupHeader}</tr><tr>${subHeaders}</tr>`;
-    const tableBody = visibleRows.map(({ row }) =>
-      `<tr>${tableColumns.map((header) => `<td>${escapeHtml(getDisplayValue(row, header))}</td>`).join("")}</tr>`,
+    ].map((label) => `<th class="fee-subcolumn fee-group-summary-sub">${escapeHtml(label)}</th>`).join("");
+    const customSubHeaders = customColumns
+      .map((label) => `<th class="fee-subcolumn fee-group-custom-sub">${escapeHtml(label)}</th>`)
+      .join("");
+    const tableHead = `<tr>${metaHeaders}${feeGroupHeaders}${summaryGroupHeader}${customGroupHeader}</tr><tr>${feeSubHeaders}${summarySubHeaders}${customSubHeaders}</tr>`;
+    const getPrintStatusClass = (value: unknown) => {
+      const status = normalizeAcademicStatus(value);
+      if (["منسحب", "منسحبه", "انسحب", "انسحبت", "منقطع", "منقطعه", "مستقيل", "مستقيله"].includes(status)) return "status-withdrawn";
+      if (["مفصول", "مفصوله", "فصل", "راسب", "راسبه"].includes(status)) return "status-dismissed";
+      if (["متخرج", "متخرجه", "خريج", "خريجه"].includes(status)) return "status-graduate";
+      if (["موقوف", "موقوفه", "معتذر", "معتذره"].includes(status)) return "status-paused";
+      if (["مؤجل", "مؤجله"].includes(status)) return "status-postponed";
+      if (["مستمر", "مستمره", "منتظم", "منتظمه", "على راس العمل"].includes(status)) return "status-active";
+      return "";
+    };
+    const tableBody = visibleRows.map(({ row, index }) =>
+      `<tr class="${getPrintStatusClass(row["الحالة الأكاديمية"]) || (index % 2 ? "row-even" : "row-odd")}">${tableColumns.map((header) => `<td>${escapeHtml(getDisplayValue(row, header))}</td>`).join("")}</tr>`,
     ).join("");
     const firstFinancialIndex = tableColumns.indexOf(FEE_TABLE_GROUPS[0].columns[0].header);
     const footerCells = tableColumns.slice(firstFinancialIndex).map((header) => {
@@ -746,19 +762,32 @@ export default function TraineeFinancialDataTab() {
       .rule-line { text-align:center; font-size:8px; font-weight:800; margin:2mm 0; }
       .record-count { text-align:right; font-size:8px; font-weight:800; margin:2mm 0; }
       table { width:100%; border-collapse:collapse; table-layout:auto; font-size:7px; }
-      th,td { border:1px solid #000; padding:1mm .6mm; text-align:center; vertical-align:middle; white-space:normal; overflow-wrap:anywhere; line-height:1.25; }
-      thead tr:first-child th { background:linear-gradient(180deg,#174f73,#082e4b) !important; color:#fff !important; font-weight:900; }
-      thead tr:nth-child(2) th { background:#f4e4b5 !important; color:#17212b !important; font-weight:800; }
-      thead th.fee-category-group { background:linear-gradient(180deg,#d9b45d,#a8751e) !important; color:#fff !important; }
+      th,td { border:1px solid #000 !important; padding:1mm .6mm; text-align:center; vertical-align:middle; white-space:normal; overflow-wrap:anywhere; line-height:1.25; font-family:"Cairo",sans-serif; font-weight:800; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      thead tr:first-child th { background:linear-gradient(180deg,#246b8d 0%,#104968 100%) !important; color:#fff !important; font-weight:900; }
+      thead tr:nth-child(2) th { background:#f4e4b5 !important; color:#17212b !important; font-weight:900; }
+      thead th.fee-category-group { color:#fff !important; }
       thead th.fee-group-registration { background:linear-gradient(180deg,#168b83,#075c59) !important; }
       thead th.fee-group-first-written { background:linear-gradient(180deg,#2d77a8,#164c75) !important; }
       thead th.fee-group-final-written { background:linear-gradient(180deg,#7256a4,#493476) !important; }
       thead th.fee-group-clinical { background:linear-gradient(180deg,#b06a38,#7b3f20) !important; }
       thead th.fee-group-summary { background:linear-gradient(180deg,#4b6175,#293d50) !important; }
       thead th.fee-group-custom { background:linear-gradient(180deg,#667b4d,#3f512f) !important; }
+      thead th.fee-group-registration-sub { background:linear-gradient(180deg,#d5f1ed,#a9ddd5) !important; color:#064e4b !important; border-color:#168b83 !important; }
+      thead th.fee-group-first-written-sub { background:linear-gradient(180deg,#dceefa,#b8d9ed) !important; color:#103e62 !important; border-color:#2d77a8 !important; }
+      thead th.fee-group-final-written-sub { background:linear-gradient(180deg,#eee8f8,#d8c9ee) !important; color:#3d2b67 !important; border-color:#7256a4 !important; }
+      thead th.fee-group-clinical-sub { background:linear-gradient(180deg,#f8e7d9,#edc9ae) !important; color:#683317 !important; border-color:#b06a38 !important; }
+      thead th.fee-group-summary-sub { background:linear-gradient(180deg,#e1e8ef,#c5d2df) !important; color:#1e3142 !important; border-color:#71869a !important; }
+      thead th.fee-group-custom-sub { background:linear-gradient(180deg,#e8eedf,#cbd9b8) !important; color:#354426 !important; border-color:#667b4d !important; }
       tbody td { background:#fff !important; color:#111 !important; }
-      tbody tr:nth-child(even) td { background:#f4f8fc !important; }
-      tfoot td { background:#dbeafe !important; color:#111 !important; font-weight:900; }
+      tbody tr.row-even td { background:#f0f9ff !important; }
+      tbody tr.row-odd td { background:#fff !important; }
+      tbody tr.status-withdrawn td { background:#fecaca !important; }
+      tbody tr.status-dismissed td { background:#fef08a !important; }
+      tbody tr.status-graduate td { background:#bbf7d0 !important; }
+      tbody tr.status-paused td { background:#fed7aa !important; }
+      tbody tr.status-postponed td { background:#e0f2fe !important; }
+      tbody tr.status-active td { background:#d1fae5 !important; }
+      tfoot td { background:linear-gradient(180deg,#bfdbfe 0%,#60a5fa 48%,#1d4ed8 100%) !important; color:#fff !important; font-weight:900; border-color:#1e40af !important; }
       .total-label { text-align:right; }
       .amount { direction:ltr; white-space:nowrap; font-variant-numeric:tabular-nums; }
       .report-date { margin-top:4mm; text-align:left; font-size:8px; }
