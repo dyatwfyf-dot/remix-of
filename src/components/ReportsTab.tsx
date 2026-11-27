@@ -948,6 +948,22 @@ const buildReportsScreenPrintHtml = (
     }
   }
   
+  // Keep the grand-total text white in colored browser previews and printouts
+  // for both the Youssef loan and Tawfiq custody reports. The cloned cells above
+  // receive inline computed colors, so override both cells and nested text nodes here.
+  if (isCustodyReport && settings?.colored !== false) {
+    table.querySelectorAll<HTMLTableRowElement>(
+      "tbody tr.total-row, tbody tr.report-grand-total-row",
+    ).forEach((row) => {
+      Array.from(row.cells).forEach((cell) => {
+        cell.style.setProperty("color", "#ffffff", "important");
+        cell.querySelectorAll<HTMLElement>("*").forEach((element) => {
+          element.style.setProperty("color", "#ffffff", "important");
+        });
+      });
+    });
+  }
+
   // Preserve the exact screen colors for the two categorized fee totals in print/PDF.
   if (settings?.colored !== false) {
     ["reports-exam-fee-total-row", "reports-tuition-fee-total-row", "reports-registration-fee-total-row"].forEach((rowClass) => {
