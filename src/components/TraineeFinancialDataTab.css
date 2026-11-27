@@ -151,3 +151,55 @@
     font-size: 11px !important;
   }
 }
+
+
+/* ملخص الدفعات: ثلاثة كروت في كل صف مع تمييز مستقل لكل دفعة */
+.mizan-trainee-financial-tab .trainee-batch-summary-card {
+  min-width: 0;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.82), 0 2px 7px rgba(15,23,42,.08);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.mizan-trainee-financial-tab .trainee-batch-summary-card .trainee-batch-summary-count {
+  background: rgba(255,255,255,.84);
+  color: #172b4d;
+  border: 1px solid rgba(30,64,90,.16);
+}
+.mizan-trainee-financial-tab .trainee-batch-summary-card-0 { background: linear-gradient(145deg,#eaf5ff,#cfe7fb); border-color:#80b8df; }
+.mizan-trainee-financial-tab .trainee-batch-summary-card-1 { background: linear-gradient(145deg,#e9f8f1,#ccebdc); border-color:#83c6a5; }
+.mizan-trainee-financial-tab .trainee-batch-summary-card-2 { background: linear-gradient(145deg,#f2edff,#ddd2fa); border-color:#b4a0e5; }
+.mizan-trainee-financial-tab .trainee-batch-summary-card-3 { background: linear-gradient(145deg,#fff5df,#f7e0ae); border-color:#dfbd72; }
+.mizan-trainee-financial-tab .trainee-batch-summary-card-4 { background: linear-gradient(145deg,#fff0f1,#f5d1d7); border-color:#dfa1ad; }
+.mizan-trainee-financial-tab .trainee-batch-summary-card-5 { background: linear-gradient(145deg,#e8f7fa,#c9eaf0); border-color:#83c5d1; }
+
+/* تلوين الرؤوس الفرعية لكل أعمدة الرسوم بلون مجموعة الرسم نفسها */
+.mizan-trainee-financial-tab .trainee-data-table thead tr:nth-child(2) th.fee-group-registration-sub {
+  background: linear-gradient(180deg,#d5f1ed,#a9ddd5) !important;
+  color:#064e4b !important;
+  border-color:#168b83 !important;
+}
+.mizan-trainee-financial-tab .trainee-data-table thead tr:nth-child(2) th.fee-group-first-written-sub {
+  background: linear-gradient(180deg,#dceefa,#b8d9ed) !important;
+  color:#103e62 !important;
+  border-color:#2d77a8 !important;
+}
+.mizan-trainee-financial-tab .trainee-data-table thead tr:nth-child(2) th.fee-group-final-written-sub {
+  background: linear-gradient(180deg,#eee8f8,#d8c9ee) !important;
+  color:#3d2b67 !important;
+  border-color:#7256a4 !important;
+}
+.mizan-trainee-financial-tab .trainee-data-table thead tr:nth-child(2) th.fee-group-clinical-sub {
+  background: linear-gradient(180deg,#f8e7d9,#edc9ae) !important;
+  color:#683317 !important;
+  border-color:#b06a38 !important;
+}
+.mizan-trainee-financial-tab .trainee-data-table thead tr:nth-child(2) th.fee-group-summary-sub {
+  background: linear-gradient(180deg,#e1e8ef,#c5d2df) !important;
+  color:#1e3142 !important;
+  border-color:#71869a !important;
+}
+.mizan-trainee-financial-tab .trainee-data-table thead tr:nth-child(2) th.fee-group-custom-sub {
+  background: linear-gradient(180deg,#e8eedf,#cbd9b8) !important;
+  color:#354426 !important;
+  border-color:#667b4d !important;
+}
