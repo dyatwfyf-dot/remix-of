@@ -756,7 +756,7 @@ export default function TraineeFinancialDataTab() {
       const total = visibleRows.reduce((sum, item) => sum + parseAmount(getDisplayValue(item.row, header)), 0);
       return `<td class="amount">${total.toLocaleString("en-US")}</td>`;
     }).join("");
-    const tableHtml = `${reportLetterheadHtml()}<h1>${escapeHtml(TITLE)}</h1><p class="rule-line">${escapeHtml(RULES)}</p><p class="record-count">عدد السجلات المعروضة: ${visibleRows.length}</p><table><thead>${tableHead}</thead><tbody>${tableBody || `<tr><td colspan="${tableColumns.length}">لا توجد سجلات مطابقة</td></tr>`}</tbody><tfoot><tr><td colspan="${firstFinancialIndex}" class="total-label">الإجمالي العام للسجلات المعروضة</td>${footerCells}</tr></tfoot></table><p class="report-date">تاريخ الطباعة: ${new Date().toLocaleDateString("ar-YE")}</p>`;
+    const tableHtml = `${reportLetterheadHtml()}<h1>${escapeHtml(TITLE)}</h1><p class="rule-line">${escapeHtml(RULES)}</p><p class="record-count">عدد السجلات المعروضة: ${visibleRows.length}</p><table class="trainee-data-print-table"><thead>${tableHead}</thead><tbody>${tableBody || `<tr><td colspan="${tableColumns.length}">لا توجد سجلات مطابقة</td></tr>`}</tbody><tfoot><tr><td colspan="${firstFinancialIndex}" class="total-label">الإجمالي العام للسجلات المعروضة</td>${footerCells}</tr></tfoot></table><p class="report-date">تاريخ الطباعة: ${new Date().toLocaleDateString("ar-YE")}</p>`;
     const contentCss = `
       h1 { text-align:center; font-size:16px; margin:3mm 0; font-weight:900; }
       .rule-line { text-align:center; font-size:8px; font-weight:800; margin:2mm 0; }
@@ -791,6 +791,120 @@ export default function TraineeFinancialDataTab() {
       .total-label { text-align:right; }
       .amount { direction:ltr; white-space:nowrap; font-variant-numeric:tabular-nums; }
       .report-date { margin-top:4mm; text-align:left; font-size:8px; }
+
+      /* أولوية أعلى من القواعد العامة اللاحقة في browserPrintPreview؛ خاصة بهذا الجدول فقط. */
+      #paperContainer #tableContainer table.trainee-data-print-table th,
+      #paperContainer #tableContainer table.trainee-data-print-table td {
+        border:1px solid #000 !important;
+        font-family:"Cairo",sans-serif !important;
+        font-weight:800 !important;
+        -webkit-print-color-adjust:exact !important;
+        print-color-adjust:exact !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table thead tr:first-child th {
+        background:linear-gradient(180deg,#246b8d 0%,#104968 100%) !important;
+        color:#fff !important;
+        font-weight:900 !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table thead th.fee-group-registration {
+        background:linear-gradient(180deg,#168b83,#075c59) !important;
+        color:#fff !important;
+        border-color:#064e4b !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table thead th.fee-group-first-written {
+        background:linear-gradient(180deg,#2d77a8,#164c75) !important;
+        color:#fff !important;
+        border-color:#103e62 !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table thead th.fee-group-final-written {
+        background:linear-gradient(180deg,#7256a4,#493476) !important;
+        color:#fff !important;
+        border-color:#3d2b67 !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table thead th.fee-group-clinical {
+        background:linear-gradient(180deg,#b06a38,#7b3f20) !important;
+        color:#fff !important;
+        border-color:#683317 !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table thead th.fee-group-summary {
+        background:linear-gradient(180deg,#4b6175,#293d50) !important;
+        color:#fff !important;
+        border-color:#1e3142 !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table thead th.fee-group-custom {
+        background:linear-gradient(180deg,#667b4d,#3f512f) !important;
+        color:#fff !important;
+        border-color:#354426 !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table thead tr:nth-child(2) th {
+        background:linear-gradient(180deg,#f4e4b5,#e9cc80) !important;
+        color:#17212b !important;
+        font-weight:900 !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table thead th.fee-group-registration-sub {
+        background:linear-gradient(180deg,#d5f1ed,#a9ddd5) !important;
+        color:#064e4b !important;
+        border-color:#168b83 !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table thead th.fee-group-first-written-sub {
+        background:linear-gradient(180deg,#dceefa,#b8d9ed) !important;
+        color:#103e62 !important;
+        border-color:#2d77a8 !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table thead th.fee-group-final-written-sub {
+        background:linear-gradient(180deg,#eee8f8,#d8c9ee) !important;
+        color:#3d2b67 !important;
+        border-color:#7256a4 !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table thead th.fee-group-clinical-sub {
+        background:linear-gradient(180deg,#f8e7d9,#edc9ae) !important;
+        color:#683317 !important;
+        border-color:#b06a38 !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table thead th.fee-group-summary-sub {
+        background:linear-gradient(180deg,#e1e8ef,#c5d2df) !important;
+        color:#1e3142 !important;
+        border-color:#71869a !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table thead th.fee-group-custom-sub {
+        background:linear-gradient(180deg,#e8eedf,#cbd9b8) !important;
+        color:#354426 !important;
+        border-color:#667b4d !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody td {
+        background:#fff !important;
+        color:#111 !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody tr.row-even td {
+        background:#f0f9ff !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody tr.row-odd td {
+        background:#fff !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody tr.status-withdrawn td {
+        background:#fecaca !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody tr.status-dismissed td {
+        background:#fef08a !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody tr.status-graduate td {
+        background:#bbf7d0 !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody tr.status-paused td {
+        background:#fed7aa !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody tr.status-postponed td {
+        background:#e0f2fe !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody tr.status-active td {
+        background:#ecfdf5 !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tfoot td {
+        background:linear-gradient(180deg,#bfdbfe 0%,#60a5fa 48%,#1d4ed8 100%) !important;
+        color:#fff !important;
+        font-weight:900 !important;
+        border-color:#1e40af !important;
+      }
       @media print { @page { size:A3 landscape; margin:6mm; } }
     `;
     const opened = openBrowserPrintPreview({
