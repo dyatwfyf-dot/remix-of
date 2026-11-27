@@ -955,7 +955,7 @@ export default function TraineeFinancialDataTab() {
                     <span className="font-black text-[#17324d]">{label}</span>
                     <span className="rounded-lg bg-[#17324d] px-2 py-1 text-xs font-black text-white">{batchRecords.length} متدرب</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-1.5 text-[11px] font-bold">
+                  <div className="grid grid-cols-3 gap-1.5 text-[11px] font-bold">
                     <span className="rounded-md bg-red-100 px-2 py-1.5 text-red-800">منسحب: {counts.withdrawn}</span>
                     <span className="rounded-md bg-green-100 px-2 py-1.5 text-green-800">متخرج: {counts.graduates}</span>
                     <span className="rounded-md bg-yellow-100 px-2 py-1.5 text-yellow-900">مفصول: {counts.dismissed}</span>
