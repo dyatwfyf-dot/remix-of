@@ -21,7 +21,7 @@ import { isRegistrationFeeDescription } from "@/lib/feeClassification";
 import { openBrowserPrintPreview } from "@/lib/browserPrintPreview";
 import { deliverBlobToUser, isNativeFileStorageAvailable, saveBlobToInternalStorage } from "@/lib/nativeFileStorage";
 import { escapeHtml, reportLetterheadHtml } from "@/lib/printTableHtml";
-import { calculateTraineeFeeSchedule, recalculateTraineeFinancialRecord, STUDY_YEARS_HEADER, TRAINEE_FEE_SCHEDULE_HEADERS } from "@/lib/traineeFinancialCalculations";
+import { calculateTraineeFeeSchedule, isRegistrationFeeExemptBatch, recalculateTraineeFinancialRecord, STUDY_YEARS_HEADER, TRAINEE_FEE_SCHEDULE_HEADERS } from "@/lib/traineeFinancialCalculations";
 
 const HEADERS = database.headers as string[];
 const REGISTRY_HEADER = HEADERS[1];
@@ -169,20 +169,32 @@ export default function TraineeFinancialDataTab() {
   const setRecords = useStore((state) => state.setTraineeFinancialRecords);
   const customColumns = useStore((state) => state.traineeFinancialCustomColumns);
   const setCustomColumns = useStore((state) => state.setTraineeFinancialCustomColumns);
+  const hiddenColumns = useStore((state) => state.traineeFinancialHiddenColumns || []);
+  const setHiddenColumns = useStore((state) => state.setTraineeFinancialHiddenColumns);
   const batchStudyStartDates = useStore((state) => state.traineeBatchStudyStartDates || {});
   const setBatchStudyStartDates = useStore((state) => state.setTraineeBatchStudyStartDates);
   const hafiza = useStore((state) => state.hafiza);
   const installments2026 = useStore((state) => state.installments);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const columns = useMemo(() => [...VISIBLE_BASE_HEADERS, ...customColumns], [customColumns]);
-  // أعمدة عرض الجدول مجمعة حسب كل رسم، مع إبقاء الحقول السنوية في سجل التحرير فقط.
+  const visibleMetaHeaders = useMemo(() => TABLE_META_HEADERS.filter((header) => !hiddenColumns.includes(header)), [hiddenColumns]);
+  const visibleFeeGroups = useMemo(
+    () => FEE_TABLE_GROUPS.map((group) => ({ ...group, columns: group.columns.filter((column) => !hiddenColumns.includes(column.header)) }))
+      .filter((group) => group.columns.length > 0),
+    [hiddenColumns],
+  );
+  const visibleSummaryHeaders = useMemo(
+    () => [...TABLE_PAYMENT_SUMMARY_HEADERS, ...TABLE_TOTAL_HEADERS].filter((header) => !hiddenColumns.includes(header)),
+    [hiddenColumns],
+  );
+  const visibleCustomColumns = useMemo(() => customColumns.filter((header) => !hiddenColumns.includes(header)), [customColumns, hiddenColumns]);
+  // إزالة العمود من العرض فقط؛ القيم الأصلية تظل محفوظة ويمكن استعادتها.
   const tableColumns = useMemo(() => [
-    ...TABLE_META_HEADERS,
-    ...FEE_TABLE_GROUPS.flatMap((group) => group.columns.map((column) => column.header)),
-    ...TABLE_PAYMENT_SUMMARY_HEADERS,
-    ...TABLE_TOTAL_HEADERS,
-    ...customColumns,
-  ], [customColumns]);
+    ...visibleMetaHeaders,
+    ...visibleFeeGroups.flatMap((group) => group.columns.map((column) => column.header)),
+    ...visibleSummaryHeaders,
+    ...visibleCustomColumns,
+  ], [visibleMetaHeaders, visibleFeeGroups, visibleSummaryHeaders, visibleCustomColumns]);
   // يحافظ ملف Excel على كامل الحقول الأصلية، بما فيها بيانات الأقساط المخفية من عرض الجدول.
   const exportColumns = useMemo(() => [
     ...VISIBLE_BASE_HEADERS.slice(0, 6),
@@ -218,17 +230,18 @@ export default function TraineeFinancialDataTab() {
     toast.success(`تمت إضافة العمود «${name}»`);
   };
 
-  const removeColumn = (name: string) => {
-    if (!window.confirm(`حذف العمود «${name}» وبياناته من جميع الصفوف؟`)) return;
-    setCustomColumns(customColumns.filter((column) => column !== name));
-    setRecords(
-      records.map((row) => {
-        const next = { ...row };
-        delete next[name];
-        return next;
-      }),
-    );
+  const hideColumn = (name: string) => {
+    if (!window.confirm(`إزالة العمود «${name}» من الجدول؟ ستبقى بياناته محفوظة ويمكن استعادته لاحقاً.`)) return;
+    setHiddenColumns(Array.from(new Set([...hiddenColumns, name])));
+    if (sort?.key === name) setSort(null);
+    toast.success(`تمت إزالة العمود «${name}» من العرض مع الاحتفاظ ببياناته`);
   };
+  const restoreHiddenColumns = () => {
+    setHiddenColumns([]);
+    toast.success("تمت استعادة جميع الأعمدة المخفية");
+  };
+  const getFeeGroupForColumn = (header: string) => FEE_TABLE_GROUPS.find((group) => group.columns.some((column) => column.header === header));
+  const isFirstColumnInFeeGroup = (header: string) => visibleFeeGroups.some((group) => group.columns[0]?.header === header);
 
   // تدقيق مستقل للأسماء: لا يغير المطابقة المالية أو أي بيانات محفوظة.
   const nameAuditByName = useMemo(() => {
@@ -516,6 +529,11 @@ export default function TraineeFinancialDataTab() {
   }, [records, batchStudyStartDates]);
 
   const getDisplayValue = (row: TraineeFinancialRecord, header: string) => {
+    if (header === "رسوم القيد والتسجيل" && isRegistrationFeeExemptBatch(row[HEADERS[3]])) return 0;
+    if (header === "إجمالي المستحق الكلي (ريال)") {
+      return (isRegistrationFeeExemptBatch(row[HEADERS[3]]) ? 0 : parseAmount(row["رسوم القيد والتسجيل"])) +
+        parseAmount(row["الأقساط الدراسية المستحقة"]) + parseAmount(row["إجمالي رسوم الامتحانات"]);
+    }
     if (TRAINEE_FEE_SCHEDULE_HEADERS.includes(header as (typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number])) {
       const schedule = feeScheduleByRecord.get(row);
       return schedule?.[header as (typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number]] ?? "";
@@ -590,7 +608,7 @@ export default function TraineeFinancialDataTab() {
         registrationPaid: 0,
         examsPaid: 0,
       };
-      const registrationDue = parseAmount(row["رسوم القيد والتسجيل"]);
+      const registrationDue = isRegistrationFeeExemptBatch(row[HEADERS[3]]) ? 0 : parseAmount(row["رسوم القيد والتسجيل"]);
       const examsDue = parseAmount(row["إجمالي رسوم الامتحانات"]);
       map.set(row, {
         ...paid,
@@ -711,30 +729,29 @@ export default function TraineeFinancialDataTab() {
   };
 
   const printTraineeDataTable = () => {
-    const metaHeaders = TABLE_META_HEADERS.map(
+    const metaHeaders = visibleMetaHeaders.map(
       (header) => `<th rowspan="2" class="meta-header">${escapeHtml(displayColumnHeader(header))}</th>`,
     ).join("");
-    const feeGroupHeaders = FEE_TABLE_GROUPS.map(
-      (group) => `<th colspan="3" class="fee-category-group ${group.className}">${escapeHtml(group.title)}</th>`,
+    const feeGroupHeaders = visibleFeeGroups.map(
+      (group) => `<th colspan="${group.columns.length}" class="fee-category-group ${group.className} fee-group-start">${escapeHtml(group.title)}</th>`,
     ).join("");
-    const summaryColumnCount = TABLE_PAYMENT_SUMMARY_HEADERS.length + TABLE_TOTAL_HEADERS.length;
+    const summaryColumnCount = visibleSummaryHeaders.length;
     const summaryGroupHeader = summaryColumnCount
-      ? `<th colspan="${summaryColumnCount}" class="fee-category-group fee-group-summary">ملخص السداد والإجماليات</th>`
+      ? `<th colspan="${summaryColumnCount}" class="fee-category-group fee-group-summary fee-group-start">ملخص السداد والإجماليات</th>`
       : "";
-    const customGroupHeader = customColumns.length
-      ? `<th colspan="${customColumns.length}" class="fee-category-group fee-group-custom">حقول إضافية</th>`
+    const customGroupHeader = visibleCustomColumns.length
+      ? `<th colspan="${visibleCustomColumns.length}" class="fee-category-group fee-group-custom fee-group-start">حقول إضافية</th>`
       : "";
-    const feeSubHeaders = FEE_TABLE_GROUPS.flatMap((group) =>
-      group.columns.map((column) =>
-        `<th class="fee-subcolumn ${group.className}-sub">${escapeHtml(column.label)}</th>`,
+    const feeSubHeaders = visibleFeeGroups.flatMap((group) =>
+      group.columns.map((column, index) =>
+        `<th class="fee-subcolumn ${group.className}-sub ${index === 0 ? "fee-group-start" : ""}">${escapeHtml(column.label)}</th>`,
       ),
     ).join("");
-    const summarySubHeaders = [
-      ...TABLE_PAYMENT_SUMMARY_HEADERS.map(displayColumnHeader),
-      ...TABLE_TOTAL_HEADERS.map(displayColumnHeader),
-    ].map((label) => `<th class="fee-subcolumn fee-group-summary-sub">${escapeHtml(label)}</th>`).join("");
-    const customSubHeaders = customColumns
-      .map((label) => `<th class="fee-subcolumn fee-group-custom-sub">${escapeHtml(label)}</th>`)
+    const summarySubHeaders = visibleSummaryHeaders
+      .map((header, index) => `<th class="fee-subcolumn fee-group-summary-sub ${index === 0 ? "fee-group-start" : ""}">${escapeHtml(displayColumnHeader(header))}</th>`)
+      .join("");
+    const customSubHeaders = visibleCustomColumns
+      .map((label, index) => `<th class="fee-subcolumn fee-group-custom-sub ${index === 0 ? "fee-group-start" : ""}">${escapeHtml(label)}</th>`)
       .join("");
     const tableHead = `<tr>${metaHeaders}${feeGroupHeaders}${summaryGroupHeader}${customGroupHeader}</tr><tr>${feeSubHeaders}${summarySubHeaders}${customSubHeaders}</tr>`;
     const getPrintStatusClass = (value: unknown) => {
@@ -748,9 +765,15 @@ export default function TraineeFinancialDataTab() {
       return "";
     };
     const tableBody = visibleRows.map(({ row, index }) =>
-      `<tr class="${getPrintStatusClass(row["الحالة الأكاديمية"]) || (index % 2 ? "row-even" : "row-odd")}">${tableColumns.map((header) => `<td>${escapeHtml(getDisplayValue(row, header))}</td>`).join("")}</tr>`,
+      `<tr class="${getPrintStatusClass(row["الحالة الأكاديمية"]) || (index % 2 ? "row-even" : "row-odd")}">${tableColumns.map((header) => {
+        const group = getFeeGroupForColumn(header);
+        const groupStart = isFirstColumnInFeeGroup(header) || visibleSummaryHeaders[0] === header || visibleCustomColumns[0] === header;
+        const groupClass = group ? group.className : visibleSummaryHeaders.includes(header) ? "fee-group-summary" : visibleCustomColumns.includes(header) ? "fee-group-custom" : "";
+        return `<td class="${groupClass}-cell ${groupStart ? "fee-group-start" : ""}">${escapeHtml(getDisplayValue(row, header))}</td>`;
+      }).join("")}</tr>`,
     ).join("");
-    const firstFinancialIndex = tableColumns.indexOf(FEE_TABLE_GROUPS[0].columns[0].header);
+    const firstFinancialHeader = visibleFeeGroups[0]?.columns[0]?.header || visibleSummaryHeaders[0] || visibleCustomColumns[0];
+    const firstFinancialIndex = firstFinancialHeader ? tableColumns.indexOf(firstFinancialHeader) : tableColumns.length;
     const footerCells = tableColumns.slice(firstFinancialIndex).map((header) => {
       if (!CURRENCY_COLUMNS.has(header)) return "<td></td>";
       const total = visibleRows.reduce((sum, item) => sum + parseAmount(getDisplayValue(item.row, header)), 0);
@@ -763,6 +786,7 @@ export default function TraineeFinancialDataTab() {
       .record-count { text-align:right; font-size:8px; font-weight:800; margin:2mm 0; }
       table { width:100%; border-collapse:collapse; table-layout:auto; font-size:7px; }
       th,td { border:1px solid #000 !important; padding:1mm .6mm; text-align:center; vertical-align:middle; white-space:normal; overflow-wrap:anywhere; line-height:1.25; font-family:"Cairo",sans-serif; font-weight:800; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      .fee-group-start { border-inline-start:4px double #17212b !important; }
       thead tr:first-child th { background:linear-gradient(180deg,#246b8d 0%,#104968 100%) !important; color:#fff !important; font-weight:900; }
       thead tr:nth-child(2) th { background:#f4e4b5 !important; color:#17212b !important; font-weight:900; }
       thead th.fee-category-group { color:#fff !important; }
@@ -1026,6 +1050,11 @@ export default function TraineeFinancialDataTab() {
             <button type="button" onClick={addColumn} className="flex min-h-[68px] flex-col items-center justify-center gap-1 rounded-xl border border-white/70 bg-gradient-to-br from-violet-500 via-purple-600 to-purple-800 px-2 py-2 text-xs font-black text-white shadow-[inset_0_2px_0_rgba(255,255,255,.45),0_4px_0_#4c1d95,0_7px_12px_rgba(15,23,42,.18)] active:translate-y-0.5">
               <Plus className="h-5 w-5" /> إضافة عمود
             </button>
+            {hiddenColumns.length > 0 && (
+              <button type="button" onClick={restoreHiddenColumns} className="flex min-h-[68px] flex-col items-center justify-center gap-1 rounded-xl border border-white/70 bg-gradient-to-br from-slate-500 via-slate-600 to-slate-800 px-2 py-2 text-xs font-black text-white shadow-[inset_0_2px_0_rgba(255,255,255,.35),0_4px_0_#334155,0_7px_12px_rgba(15,23,42,.18)] active:translate-y-0.5">
+                <RotateCcw className="h-5 w-5" /> استعادة الأعمدة ({hiddenColumns.length})
+              </button>
+            )}
             <button type="button" onClick={() => fileInputRef.current?.click()} className="flex min-h-[68px] flex-col items-center justify-center gap-1 rounded-xl border border-white/70 bg-gradient-to-br from-teal-400 via-teal-600 to-teal-800 px-2 py-2 text-xs font-black text-white shadow-[inset_0_2px_0_rgba(255,255,255,.45),0_4px_0_#115e59,0_7px_12px_rgba(15,23,42,.18)] active:translate-y-0.5">
               <Upload className="h-5 w-5" /> استيراد Excel
             </button>
@@ -1196,7 +1225,7 @@ export default function TraineeFinancialDataTab() {
         >
           <thead className="sticky top-0 z-10 text-white">
             <tr className="trainee-data-group-header-row">
-              {TABLE_META_HEADERS.map((header) => (
+              {visibleMetaHeaders.map((header) => (
                 <th key={header} rowSpan={2} className="min-w-[100px] max-w-[240px] border border-slate-500 px-2 py-2 text-[15px] font-black leading-6 text-white">
                   <button
                     type="button"
@@ -1206,18 +1235,21 @@ export default function TraineeFinancialDataTab() {
                     {displayColumnHeader(header)}
                     {sort?.key === header ? (sort.desc ? " ↓" : " ↑") : " ↕"}
                   </button>
+                  <button type="button" title={`إزالة العمود ${header} من الجدول`} onClick={() => hideColumn(header)} className="mr-1 rounded bg-rose-100 px-1 text-rose-800">×</button>
                 </th>
               ))}
-              {FEE_TABLE_GROUPS.map((group) => (
-                <th key={group.title} colSpan={group.columns.length} className={`fee-category-group ${group.className} border border-slate-500 px-2 py-2 text-[14px] font-black leading-5 text-white`}>
+              {visibleFeeGroups.map((group) => (
+                <th key={group.title} colSpan={group.columns.length} className={`fee-category-group ${group.className} fee-group-start border border-slate-500 px-2 py-2 text-[14px] font-black leading-5 text-white`}>
                   {group.title}
                 </th>
               ))}
-              <th colSpan={TABLE_PAYMENT_SUMMARY_HEADERS.length + TABLE_TOTAL_HEADERS.length} className="fee-category-group fee-group-summary border border-slate-500 px-2 py-2 text-[14px] font-black leading-5 text-white">
-                ملخص السداد والإجماليات
-              </th>
-              {customColumns.length > 0 && (
-                <th colSpan={customColumns.length} className="fee-category-group fee-group-custom border border-slate-500 px-2 py-2 text-[14px] font-black leading-5 text-white">
+              {visibleSummaryHeaders.length > 0 && (
+                <th colSpan={visibleSummaryHeaders.length} className="fee-category-group fee-group-summary fee-group-start border border-slate-500 px-2 py-2 text-[14px] font-black leading-5 text-white">
+                  ملخص السداد والإجماليات
+                </th>
+              )}
+              {visibleCustomColumns.length > 0 && (
+                <th colSpan={visibleCustomColumns.length} className="fee-category-group fee-group-custom fee-group-start border border-slate-500 px-2 py-2 text-[14px] font-black leading-5 text-white">
                   حقول إضافية
                 </th>
               )}
@@ -1226,8 +1258,8 @@ export default function TraineeFinancialDataTab() {
               </th>
             </tr>
             <tr className="trainee-data-subheader-row">
-              {FEE_TABLE_GROUPS.flatMap((group) => group.columns.map((column) => ({ ...column, groupClassName: group.className }))).map((column) => (
-                <th key={column.header} className={`fee-subcolumn ${column.groupClassName}-sub min-w-[92px] max-w-[170px] border border-slate-400 px-2 py-2 text-[12px] font-extrabold text-slate-900`}>
+              {visibleFeeGroups.flatMap((group) => group.columns.map((column, index) => ({ ...column, groupClassName: group.className, groupStart: index === 0 }))).map((column) => (
+                <th key={column.header} className={`fee-subcolumn ${column.groupClassName}-sub ${column.groupStart ? "fee-group-start" : ""} min-w-[92px] max-w-[170px] border border-slate-400 px-2 py-2 text-[12px] font-extrabold text-slate-900`}>
                   <button
                     type="button"
                     onClick={() => setSort((current) => current?.key === column.header ? { key: column.header, desc: !current.desc } : { key: column.header, desc: false })}
@@ -1238,8 +1270,8 @@ export default function TraineeFinancialDataTab() {
                   </button>
                 </th>
               ))}
-              {[...TABLE_PAYMENT_SUMMARY_HEADERS, ...TABLE_TOTAL_HEADERS].map((header) => (
-                <th key={header} className="fee-subcolumn fee-group-summary-sub min-w-[100px] max-w-[190px] border border-slate-400 px-2 py-2 text-[12px] font-extrabold text-slate-900">
+              {visibleSummaryHeaders.map((header, index) => (
+                <th key={header} className={`fee-subcolumn fee-group-summary-sub ${index === 0 ? "fee-group-start" : ""} min-w-[100px] max-w-[190px] border border-slate-400 px-2 py-2 text-[12px] font-extrabold text-slate-900`}>
                   <button
                     type="button"
                     onClick={() => setSort((current) => current?.key === header ? { key: header, desc: !current.desc } : { key: header, desc: false })}
@@ -1250,8 +1282,8 @@ export default function TraineeFinancialDataTab() {
                   </button>
                 </th>
               ))}
-              {customColumns.map((header) => (
-                <th key={header} className="fee-subcolumn fee-group-custom-sub min-w-[100px] max-w-[190px] border border-slate-400 px-2 py-2 text-[12px] font-extrabold text-slate-900">
+              {visibleCustomColumns.map((header, index) => (
+                <th key={header} className={`fee-subcolumn fee-group-custom-sub ${index === 0 ? "fee-group-start" : ""} min-w-[100px] max-w-[190px] border border-slate-400 px-2 py-2 text-[12px] font-extrabold text-slate-900`}>
                   <button
                     type="button"
                     onClick={() => setSort((current) => current?.key === header ? { key: header, desc: !current.desc } : { key: header, desc: false })}
@@ -1263,7 +1295,7 @@ export default function TraineeFinancialDataTab() {
                   <button
                     type="button"
                     title={`حذف العمود ${header}`}
-                    onClick={() => removeColumn(header)}
+                    onClick={() => hideColumn(header)}
                     className="mr-1 rounded bg-rose-100 px-1 text-rose-800"
                   >
                     ×
@@ -1278,10 +1310,14 @@ export default function TraineeFinancialDataTab() {
                 key={`${index}-${String(row[HEADERS[2]] ?? "")}`}
                 className={getAcademicStatusRowClass(row["الحالة الأكاديمية"]) || (index % 2 ? "bg-slate-50" : "bg-white")}
               >
-                {tableColumns.map((header) => (
+                {tableColumns.map((header) => {
+                  const group = getFeeGroupForColumn(header);
+                  const groupClass = group ? group.className : visibleSummaryHeaders.includes(header) ? "fee-group-summary" : visibleCustomColumns.includes(header) ? "fee-group-custom" : "";
+                  const groupStart = isFirstColumnInFeeGroup(header) || visibleSummaryHeaders[0] === header || visibleCustomColumns[0] === header;
+                  return (
                   <td
                     key={header}
-                    className="max-w-[280px] border border-slate-300 px-2 py-1.5 text-[14px] font-bold leading-6 text-black [overflow-wrap:anywhere]"
+                    className={`max-w-[280px] border border-slate-300 px-2 py-1.5 text-[14px] font-bold leading-6 text-black [overflow-wrap:anywhere] ${groupClass}-cell ${groupStart ? "fee-group-start" : ""}`}
                   >
                     {header === HEADERS[2] ? (
                       <span className="inline-flex max-w-full flex-wrap items-center justify-center gap-1.5">
@@ -1313,7 +1349,8 @@ export default function TraineeFinancialDataTab() {
                       </span>
                     ) : formatValue(getDisplayValue(row, header), header)}
                   </td>
-                ))}
+                  );
+                })}
                 <td className="min-w-[170px] border border-slate-300 bg-white px-1 py-1 text-black">
                   <button
                     type="button"
@@ -1346,12 +1383,22 @@ export default function TraineeFinancialDataTab() {
           <tfoot className="bg-[#e2eef5] font-extrabold text-black">
             <tr>
               <td
-                colSpan={tableColumns.indexOf(FEE_TABLE_GROUPS[0].columns[0].header)}
+                colSpan={visibleFeeGroups[0]?.columns[0]?.header
+                  ? tableColumns.indexOf(visibleFeeGroups[0].columns[0].header)
+                  : (visibleSummaryHeaders[0] || visibleCustomColumns[0])
+                    ? tableColumns.indexOf(visibleSummaryHeaders[0] || visibleCustomColumns[0])
+                    : tableColumns.length}
                 className="border border-slate-500 px-2 py-2 text-right text-[14px] font-black text-black"
               >
                 الإجمالي العام ({records.length} متدربًا)
               </td>
-              {tableColumns.slice(tableColumns.indexOf(FEE_TABLE_GROUPS[0].columns[0].header)).map((header) => (
+              {tableColumns.slice(
+                visibleFeeGroups[0]?.columns[0]?.header
+                  ? tableColumns.indexOf(visibleFeeGroups[0].columns[0].header)
+                  : (visibleSummaryHeaders[0] || visibleCustomColumns[0])
+                    ? tableColumns.indexOf(visibleSummaryHeaders[0] || visibleCustomColumns[0])
+                    : tableColumns.length,
+              ).map((header) => (
                 <td key={header} className="max-w-[280px] border border-slate-500 px-2 py-2 text-[14px] font-black text-black [overflow-wrap:anywhere]">
                   {totals[header] !== undefined
                     ? Number(totals[header]).toLocaleString("en-US")
