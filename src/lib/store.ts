@@ -120,6 +120,7 @@ type State = {
   trainees: Trainee[];
   traineeFinancialRecords: TraineeFinancialRecord[];
   traineeFinancialCustomColumns: string[];
+  traineeFinancialHiddenColumns: string[];
   traineeBatchStudyStartDates: Record<string, string>;
   hafiza: Hafiza[];
   hafizas: Hafiza[];
@@ -158,6 +159,7 @@ type State = {
   importTrainees: (trainees: Trainee[]) => void;
   setTraineeFinancialRecords: (records: TraineeFinancialRecord[]) => void;
   setTraineeFinancialCustomColumns: (columns: string[]) => void;
+  setTraineeFinancialHiddenColumns: (columns: string[]) => void;
   setTraineeBatchStudyStartDates: (dates: Record<string, string>) => void;
 
   addHafiza: (h: Omit<Hafiza, "id">) => Hafiza;
@@ -347,6 +349,7 @@ export const useStore = create<State>()(
       traineeFinancialRecords: (seedTraineeFinancialDatabase as { rows: TraineeFinancialRecord[] })
         .rows,
       traineeFinancialCustomColumns: ["الحالة الأكاديمية"],
+      traineeFinancialHiddenColumns: [],
       // بداية الدفعة الأولى المسجلة سابقاً؛ بقية الدفعات يحدد تاريخها من واجهة التبويب.
       traineeBatchStudyStartDates: { "الاولى": "2022-11-01" },
       hafiza: [],
@@ -638,6 +641,8 @@ export const useStore = create<State>()(
       setTraineeFinancialRecords: (records) => set({ traineeFinancialRecords: records }),
       setTraineeFinancialCustomColumns: (columns) =>
         set({ traineeFinancialCustomColumns: columns }),
+      setTraineeFinancialHiddenColumns: (columns) =>
+        set({ traineeFinancialHiddenColumns: columns }),
       setTraineeBatchStudyStartDates: (dates) =>
         set({ traineeBatchStudyStartDates: dates }),
 
@@ -855,6 +860,7 @@ export const useStore = create<State>()(
               ...(d.traineeFinancialCustomColumns ?? s.traineeFinancialCustomColumns),
               "الحالة الأكاديمية",
             ])),
+            traineeFinancialHiddenColumns: d.traineeFinancialHiddenColumns ?? s.traineeFinancialHiddenColumns,
             journal: d.journal
               ? [
                   ...s.journal,
@@ -905,6 +911,7 @@ export const useStore = create<State>()(
         trainees: get().trainees,
         traineeFinancialRecords: get().traineeFinancialRecords,
         traineeFinancialCustomColumns: get().traineeFinancialCustomColumns,
+        traineeFinancialHiddenColumns: get().traineeFinancialHiddenColumns,
         traineeBatchStudyStartDates: get().traineeBatchStudyStartDates,
         hafiza: get().hafiza,
         hafizas: get().hafizas,
@@ -930,6 +937,7 @@ export const useStore = create<State>()(
           journal: [],
           traineeFinancialRecords: [],
           traineeFinancialCustomColumns: [],
+          traineeFinancialHiddenColumns: [],
           traineeBatchStudyStartDates: { "الاولى": "2022-11-01" },
           installments: [],
           installments2025: [],
@@ -944,6 +952,7 @@ export const useStore = create<State>()(
               ...s,
               traineeFinancialRecords: [],
               traineeFinancialCustomColumns: [],
+              traineeFinancialHiddenColumns: [],
               traineeBatchStudyStartDates: { "الاولى": "2022-11-01" },
             };
           return { ...s, [tab]: [] };
@@ -1010,6 +1019,7 @@ export const useStore = create<State>()(
         trainees: state.trainees,
         traineeFinancialRecords: state.traineeFinancialRecords,
         traineeFinancialCustomColumns: state.traineeFinancialCustomColumns,
+        traineeFinancialHiddenColumns: state.traineeFinancialHiddenColumns,
         traineeBatchStudyStartDates: state.traineeBatchStudyStartDates,
         hafiza: state.hafiza,
         hafizas: state.hafizas,
