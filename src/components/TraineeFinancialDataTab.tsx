@@ -7,6 +7,7 @@ import {
   Pencil,
   Plus,
   Printer,
+  RotateCcw,
   Save,
   Search,
   Trash2,
@@ -1268,6 +1269,7 @@ export default function TraineeFinancialDataTab() {
                     {column.label}
                     {sort?.key === column.header ? (sort.desc ? " ↓" : " ↑") : " ↕"}
                   </button>
+                  <button type="button" title={`إزالة العمود ${column.header} من الجدول`} onClick={() => hideColumn(column.header)} className="mr-1 rounded bg-rose-100 px-1 text-rose-800">×</button>
                 </th>
               ))}
               {visibleSummaryHeaders.map((header, index) => (
@@ -1280,6 +1282,7 @@ export default function TraineeFinancialDataTab() {
                     {displayColumnHeader(header)}
                     {sort?.key === header ? (sort.desc ? " ↓" : " ↑") : " ↕"}
                   </button>
+                  <button type="button" title={`إزالة العمود ${header} من الجدول`} onClick={() => hideColumn(header)} className="mr-1 rounded bg-rose-100 px-1 text-rose-800">×</button>
                 </th>
               ))}
               {visibleCustomColumns.map((header, index) => (
