@@ -2611,41 +2611,229 @@ export default function ReportsTab() {
     }
     const outstandingFeeText = outstandingFees.map((fee) => `${fee.label} (${fee.amount.toLocaleString("en-US")} ريال)`).join(" و");
     const title = `مطالبة مالية بسداد الرسوم - ${traineeName}`;
-    const tableHtml = `<article class="fee-demand-letter" dir="rtl" style="text-align: center; font-size: 18px; line-height: 2.2; font-family: ${reportArabicFontStack};">
-   <h1 style="font-size: 20px; font-weight: bold; margin-bottom: 25px;">مطالبة مالية بسداد الرسوم</h1>
-   <p class="letter-date" style="text-align: right; font-size: 16px;">التاريخ: ${escapeHtml(reportDateLabel)}</p>
-   <p class="salutation" style="margin: 18px 0; font-size: 20px; text-align: right;">الأخ-الدكتور// <strong>${escapeHtml(traineeName)}</strong>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    المحتــرم
-</p>
-   <p style="margin: 15px 0; text-align: center;">تحية طيبة وبعد،</p>
-   <p style="margin: 15px 0;text-align: center;text-decoration: underline; font-weight: bold; color: red;"><strong>الموضوع: مطالبة بسداد ${escapeHtml(outstandingFeeText)}</strong></p>
-   <p style="margin: 15px 0; text-align: center;font-size: 18px">بالإشارة إلى الموضوع أعلاه، نرجو منكم المبادرة إلى سداد الرسوم المحددة في هذه المطالبة وغير المسددة، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
-   <p style="margin: 15px 0;text-align: center;font-weight: bold; color: #000;">نأمل منكم سرعة سداد المستحقات المالية التي عليكم.
-   وفي حال عدم السداد، سيتم اتخاذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
-   <p class="thanks" style="margin: 30px 0;text-align: center">شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير،،،،</p>
-   <div class="letter-signatures" style="display: flex; justify-content: space-between; margin-top: 60px; text-align: center; font-size: 16px;">
-    <div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">الصندوق</label><strong style="display: block; margin-bottom: 15px;">${escapeHtml(feeDemandSignatures.department)}</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>
-    <div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">الشؤون المالية</label><strong style="display: block; margin-bottom: 15px;">${escapeHtml(feeDemandSignatures.director)}</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>
-    <div style="flex: 1;"><label style="display: block; font-weight: bold; margin-bottom: 8px;">رئيس فرع المجلس </label><strong style="display: block; margin-bottom: 15px;">${escapeHtml(feeDemandSignatures.signer)}</strong><span style="display: block; border-bottom: 1px dotted #000; width: 80%; margin: 0 auto;"></span></div>
-   </div>
-  </article>`;
+    const tableHtml = \`<article class="fee-demand-letter" dir="rtl">
+   <header class="letter-heading">
+    <h1 class="letter-title">مطالبة مالية بسداد الرسوم</h1>
+   </header>
+   <p class="letter-date"><span class="date-label">التاريخ:</span><strong class="date-value">\${escapeHtml(reportDateLabel)}</strong></p>
+   <p class="letter-recipient">
+    <span>الأخ الدكتور/</span>
+    <strong class="recipient-name">\${escapeHtml(traineeName)}</strong>
+    <span class="recipient-honorific">المحترم</span>
+   </p>
+   <p class="letter-greeting">تحية طيبة وبعد،</p>
+   <p class="letter-subject"><strong class="subject-label">الموضوع:</strong> مطالبة بسداد \${escapeHtml(outstandingFeeText)}</p>
+   <p class="letter-body">بالإشارة إلى الموضوع أعلاه، نرجو منكم المبادرة إلى سداد الرسوم المحددة في هذه المطالبة وغير المسددة، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
+   <p class="letter-warning">نأمل منكم سرعة سداد المستحقات المالية التي عليكم. وفي حال عدم السداد، سيتم اتخاذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
+   <p class="letter-thanks">شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير،،،،</p>
+   <footer class="letter-signatures">
+    <div class="signature-block">
+     <span class="signature-role">الصندوق</span>
+     <strong class="signature-name">\${escapeHtml(feeDemandSignatures.department)}</strong>
+     <span class="signature-line"></span>
+    </div>
+    <div class="signature-block">
+     <span class="signature-role">الشؤون المالية</span>
+     <strong class="signature-name">\${escapeHtml(feeDemandSignatures.director)}</strong>
+     <span class="signature-line"></span>
+    </div>
+    <div class="signature-block">
+     <span class="signature-role">رئيس فرع المجلس</span>
+     <strong class="signature-name">\${escapeHtml(feeDemandSignatures.signer)}</strong>
+     <span class="signature-line"></span>
+    </div>
+   </footer>
+  </article>\`;
     
-    const finalCss = `
-   @page { size:A4 portrait; margin:18mm; }
-   #tableContainer .fee-demand-letter { width:100%; min-height:245mm; margin:0 auto; color:#111; font-family:${reportArabicFontStack}; font-size:16px; line-height:2; }
-   #tableContainer .fee-demand-letter h1 { margin:0 0 10mm; padding:0 0 4mm; border-bottom:2px solid #17324d; color:#17324d; text-align:center; font-size:22px; font-weight:900; }
-   #tableContainer .fee-demand-letter p { margin:0 0 5mm; text-align:justify; }
-   #tableContainer .fee-demand-letter .letter-date { text-align:left; }
-   #tableContainer .fee-demand-letter .salutation { margin-top:10mm; }
-   #tableContainer .fee-demand-letter .thanks { margin-top:8mm; }
-   #tableContainer .letter-signatures { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8mm; margin-top:22mm; text-align:center; }
-   #tableContainer .letter-signatures > div { display:flex; min-height:32mm; flex-direction:column; align-items:center; gap:3mm; }
-   #tableContainer .letter-signatures label { font-weight:800; }
-   #tableContainer .letter-signatures strong { min-height:8mm; }
-   #tableContainer .letter-signatures span { width:75%; height:8mm; margin-top:2mm; border-bottom:1px dotted #333; }
-  `;
+    const finalCss = \`
+   @page { size:A4 portrait; margin:10mm; }
+   #tableContainer .fee-demand-letter {
+    position:relative;
+    isolation:isolate;
+    box-sizing:border-box;
+    width:100%;
+    max-width:100%;
+    min-height:277mm;
+    margin:0 auto;
+    padding:15mm 14mm 13mm;
+    border:2px solid #1d3a52;
+    background:#ffffff;
+    color:#151515;
+    direction:rtl;
+    text-align:right;
+    font-family:\${reportArabicFontStack};
+    font-size:15px;
+    line-height:2.05;
+    overflow-wrap:anywhere;
+    print-color-adjust:exact;
+    -webkit-print-color-adjust:exact;
+    break-inside:avoid;
+    page-break-inside:avoid;
+   }
+   #tableContainer .fee-demand-letter::before {
+    content:"";
+    position:absolute;
+    inset:3mm;
+    z-index:0;
+    border:1px solid #b18c4e;
+    pointer-events:none;
+   }
+   #tableContainer .fee-demand-letter > * {
+    position:relative;
+    z-index:1;
+    box-sizing:border-box;
+   }
+   #tableContainer .letter-heading { margin:0; text-align:center; }
+   #tableContainer .letter-title {
+    margin:0;
+    padding:0 0 5mm;
+    border-bottom:3px solid #b18c4e;
+    color:#1d3a52;
+    text-align:center;
+    font-family:\${reportHeadingFontStack};
+    font-size:23px;
+    font-weight:950;
+    line-height:1.55;
+   }
+   #tableContainer .letter-date {
+    display:flex;
+    align-items:center;
+    gap:2mm;
+    margin:6mm 0 11mm;
+    color:#34495a;
+    font-size:13px;
+    line-height:1.7;
+    text-align:left;
+   }
+   #tableContainer .letter-date .date-label { font-weight:800; }
+   #tableContainer .letter-date .date-value { font-weight:700; }
+   #tableContainer .letter-recipient {
+    margin:0 0 5mm;
+    color:#151515;
+    font-size:16px;
+    font-weight:750;
+    line-height:2;
+    text-align:right;
+   }
+   #tableContainer .recipient-name {
+    display:inline-block;
+    margin:0 2mm;
+    padding:0 1mm 1mm;
+    border-bottom:1px dotted #778899;
+    font-weight:950;
+   }
+   #tableContainer .recipient-honorific { margin-inline-start:2mm; }
+   #tableContainer .letter-greeting {
+    margin:3mm 0 7mm;
+    color:#1d3a52;
+    font-size:15px;
+    font-weight:800;
+    line-height:1.9;
+    text-align:center;
+   }
+   #tableContainer .letter-subject {
+    margin:0 0 8mm;
+    padding:3.5mm 5mm;
+    border-top:1px solid #dfd6c5;
+    border-right:4px solid #b18c4e;
+    border-bottom:1px solid #dfd6c5;
+    background:#f8f6f0;
+    color:#1d3042;
+    font-size:15.5px;
+    font-weight:900;
+    line-height:1.9;
+    text-align:right;
+   }
+   #tableContainer .letter-subject .subject-label { color:#775a2c; }
+   #tableContainer .letter-body {
+    margin:0 0 7mm;
+    color:#151515;
+    font-size:15px;
+    font-weight:650;
+    line-height:2.2;
+    text-align:justify;
+    text-justify:inter-word;
+    orphans:3;
+    widows:3;
+   }
+   #tableContainer .letter-warning {
+    margin:0 0 8mm;
+    padding:2mm 4mm;
+    border-right:3px solid #8c7042;
+    background:#fbfaf6;
+    color:#151515;
+    font-size:14.5px;
+    font-weight:800;
+    line-height:2.1;
+    text-align:justify;
+   }
+   #tableContainer .letter-thanks {
+    margin:10mm 0 0;
+    color:#1d3a52;
+    font-size:14.5px;
+    font-weight:850;
+    line-height:2;
+    text-align:center;
+   }
+   #tableContainer .letter-signatures {
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    align-items:stretch;
+    gap:8mm;
+    margin-top:20mm;
+    text-align:center;
+    break-inside:avoid;
+    page-break-inside:avoid;
+   }
+   #tableContainer .letter-signatures .signature-block {
+    display:flex;
+    min-width:0;
+    min-height:31mm;
+    flex-direction:column;
+    align-items:center;
+    gap:2.5mm;
+    break-inside:avoid;
+    page-break-inside:avoid;
+   }
+   #tableContainer .signature-role {
+    display:block;
+    color:#1d3a52;
+    font-size:13.5px;
+    font-weight:900;
+    line-height:1.6;
+   }
+   #tableContainer .signature-name {
+    display:flex;
+    min-height:11mm;
+    align-items:center;
+    justify-content:center;
+    color:#151515;
+    font-size:13px;
+    font-weight:850;
+    line-height:1.65;
+   }
+   #tableContainer .signature-line {
+    display:block;
+    width:78%;
+    height:8mm;
+    margin:auto auto 0;
+    border-bottom:1px solid #263746;
+   }
+   @media print {
+    #tableContainer .fee-demand-letter {
+     color:#000000!important;
+     background:#ffffff!important;
+     -webkit-print-color-adjust:exact!important;
+     print-color-adjust:exact!important;
+    }
+    #tableContainer .fee-demand-letter .letter-title,
+    #tableContainer .fee-demand-letter .letter-greeting,
+    #tableContainer .fee-demand-letter .letter-thanks,
+    #tableContainer .fee-demand-letter .signature-role {
+     color:#1d3a52!important;
+    }
+   }
+  \`;
     const opened = openBrowserPrintPreview({
       title,
       reportDateLabel,
@@ -2654,7 +2842,7 @@ export default function ReportsTab() {
       finalCss,
       defaultOrientation: "portrait",
       defaultPageSize: "A4",
-      defaultMarginMm: 18,
+      defaultMarginMm: 10,
     });
     if (!opened) toast.error("تعذر فتح معاينة المطالبة، تحقق من السماح بالنوافذ المنبثقة");
   };
