@@ -26,10 +26,12 @@ const normalize = (value: unknown) =>
 const parseAmount = (value: unknown) =>
   Number(String(value ?? 0).replace(/[,٬\s]/g, "")) || 0;
 
-const isFirstBatch = (value: unknown) => {
+export const isRegistrationFeeExemptBatch = (value: unknown) => {
   const batch = normalize(value).replace(/^الدفعة\s*/, "").replace(/^دفعة\s*/, "");
   return ["الاولى", "اولى", "الاول", "اول", "1", "١"].includes(batch);
 };
+
+const isFirstBatch = isRegistrationFeeExemptBatch;
 
 const parseLevel = (value: unknown): number | null => {
   const level = normalize(value).replace(/^المستوى\s*/, "");
@@ -89,7 +91,7 @@ export const recalculateTraineeFinancialRecord = (
   );
   next[EXAM_TOTAL] = examTotal;
   next[GRAND_TOTAL] =
-    parseAmount(next[REGISTRATION_FEE]) +
+    (isRegistrationFeeExemptBatch(batch) ? 0 : parseAmount(next[REGISTRATION_FEE])) +
     parseAmount(next[TUITION_FEES]) +
     examTotal;
 
@@ -148,6 +150,9 @@ export const calculateTraineeFeeSchedule = (
   const empty = Object.fromEntries(
     TRAINEE_FEE_SCHEDULE_HEADERS.map((header) => [header, "لم يحدد تاريخ بداية الدراسة"]),
   ) as Record<(typeof TRAINEE_FEE_SCHEDULE_HEADERS)[number], string>;
+  if (isRegistrationFeeExemptBatch(batch)) {
+    empty["موعد استحقاق القيد والتسجيل"] = "معفى من رسوم القيد والتسجيل";
+  }
   const startDate = parseStudyStartDate(String(startDateValue || ""));
   if (!startDate) return empty;
 
@@ -169,7 +174,9 @@ export const calculateTraineeFeeSchedule = (
 
   return {
     "بداية الدراسة": formatStudyDate(startDate),
-    "موعد استحقاق القيد والتسجيل": formatStudyDate(startDate),
+    "موعد استحقاق القيد والتسجيل": isRegistrationFeeExemptBatch(batch)
+      ? "معفى من رسوم القيد والتسجيل"
+      : formatStudyDate(startDate),
     "مواعيد استحقاق الأقساط السنوية": tuitionDates.join("، "),
     "موعد الكتابي الأول المتوقع": formatStudyDate(firstWrittenDate),
     "موعد الكتابي النهائي المتوقع": finalWrittenDate
