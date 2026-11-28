@@ -820,7 +820,7 @@ export default function TraineeFinancialDataTab() {
       h1 { text-align:center; font-size:16px; margin:3mm 0; font-weight:900; }
       .rule-line { text-align:center; font-size:8px; font-weight:800; margin:2mm 0; }
       .record-count { text-align:right; font-size:8px; font-weight:800; margin:2mm 0; }
-      table { width:100%; border-collapse:collapse; table-layout:auto; font-size:7px; }
+      table { width:100%; border-collapse:collapse; table-layout:auto; direction:rtl; font-size:7px; }
       th,td { border:1px solid #000 !important; padding:1mm .6mm; text-align:center; vertical-align:middle; white-space:normal; overflow-wrap:anywhere; line-height:1.25; font-family:"Cairo",sans-serif; font-weight:800; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
       /* اتجاه الجدول RTL: حد المجموعة الفاصل يقع على الحافة اليمنى لأول عمود منها. */
       .trainee-data-print-table .fee-group-start { border-right:4px double #17212b !important; border-inline-start:0 !important; }
@@ -984,6 +984,19 @@ export default function TraineeFinancialDataTab() {
       }
       #paperContainer #tableContainer table.trainee-data-print-table tbody tr.status-active td {
         background:#ecfdf5 !important;
+      }
+      /* ألوان أعمدة الرسوم لها الأولوية داخل الصفوف ذات الحالة الأكاديمية حتى تبقى هوية كل مجموعة ظاهرة. */
+      #paperContainer #tableContainer table.trainee-data-print-table tbody tr:is(.status-withdrawn,.status-dismissed,.status-graduate,.status-paused,.status-postponed,.status-active) td.fee-group-registration-cell {
+        background:#effaf8 !important; border-color:#a9d8d2 !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody tr:is(.status-withdrawn,.status-dismissed,.status-graduate,.status-paused,.status-postponed,.status-active) td.fee-group-first-written-cell {
+        background:#f0f7fc !important; border-color:#b8d9ed !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody tr:is(.status-withdrawn,.status-dismissed,.status-graduate,.status-paused,.status-postponed,.status-active) td.fee-group-final-written-cell {
+        background:#f6f2fb !important; border-color:#d8c9ee !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody tr:is(.status-withdrawn,.status-dismissed,.status-graduate,.status-paused,.status-postponed,.status-active) td.fee-group-clinical-cell {
+        background:#fcf5ef !important; border-color:#edc9ae !important;
       }
       #paperContainer #tableContainer table.trainee-data-print-table tfoot td {
         background:linear-gradient(180deg,#bfdbfe 0%,#60a5fa 48%,#1d4ed8 100%) !important;
