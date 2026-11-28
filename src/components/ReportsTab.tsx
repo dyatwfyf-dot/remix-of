@@ -2611,41 +2611,41 @@ export default function ReportsTab() {
     }
     const outstandingFeeText = outstandingFees.map((fee) => `${fee.label} (${fee.amount.toLocaleString("en-US")} ريال)`).join(" و");
     const title = `مطالبة مالية بسداد الرسوم - ${traineeName}`;
-    const tableHtml = \`<article class="fee-demand-letter" dir="rtl">
+    const tableHtml = `<article class="fee-demand-letter" dir="rtl">
    <header class="letter-heading">
     <h1 class="letter-title">مطالبة مالية بسداد الرسوم</h1>
    </header>
-   <p class="letter-date"><span class="date-label">التاريخ:</span><strong class="date-value">\${escapeHtml(reportDateLabel)}</strong></p>
+   <p class="letter-date"><span class="date-label">التاريخ:</span><strong class="date-value">${escapeHtml(reportDateLabel)}</strong></p>
    <p class="letter-recipient">
     <span>الأخ الدكتور/</span>
-    <strong class="recipient-name">\${escapeHtml(traineeName)}</strong>
+    <strong class="recipient-name">${escapeHtml(traineeName)}</strong>
     <span class="recipient-honorific">المحترم</span>
    </p>
    <p class="letter-greeting">تحية طيبة وبعد،</p>
-   <p class="letter-subject"><strong class="subject-label">الموضوع:</strong> مطالبة بسداد \${escapeHtml(outstandingFeeText)}</p>
+   <p class="letter-subject"><strong class="subject-label">الموضوع:</strong> مطالبة بسداد ${escapeHtml(outstandingFeeText)}</p>
    <p class="letter-body">بالإشارة إلى الموضوع أعلاه، نرجو منكم المبادرة إلى سداد الرسوم المحددة في هذه المطالبة وغير المسددة، ومراجعة الإدارة المالية لإتمام إجراءات السداد وتوثيقه.</p>
    <p class="letter-warning">نأمل منكم سرعة سداد المستحقات المالية التي عليكم. وفي حال عدم السداد، سيتم اتخاذ الإجراءات اللازمة وفق الأنظمة واللوائح المعمول بها.</p>
    <p class="letter-thanks">شاكرين لكم حسن تعاونكم، وتفضلوا بقبول خالص الشكر والتقدير،،،،</p>
    <footer class="letter-signatures">
     <div class="signature-block">
      <span class="signature-role">الصندوق</span>
-     <strong class="signature-name">\${escapeHtml(feeDemandSignatures.department)}</strong>
+     <strong class="signature-name">${escapeHtml(feeDemandSignatures.department)}</strong>
      <span class="signature-line"></span>
     </div>
     <div class="signature-block">
      <span class="signature-role">الشؤون المالية</span>
-     <strong class="signature-name">\${escapeHtml(feeDemandSignatures.director)}</strong>
+     <strong class="signature-name">${escapeHtml(feeDemandSignatures.director)}</strong>
      <span class="signature-line"></span>
     </div>
     <div class="signature-block">
      <span class="signature-role">رئيس فرع المجلس</span>
-     <strong class="signature-name">\${escapeHtml(feeDemandSignatures.signer)}</strong>
+     <strong class="signature-name">${escapeHtml(feeDemandSignatures.signer)}</strong>
      <span class="signature-line"></span>
     </div>
    </footer>
-  </article>\`;
+  </article>`;
     
-    const finalCss = \`
+    const finalCss = `
    @page { size:A4 portrait; margin:10mm; }
    #tableContainer .fee-demand-letter {
     position:relative;
@@ -2661,7 +2661,7 @@ export default function ReportsTab() {
     color:#151515;
     direction:rtl;
     text-align:right;
-    font-family:\${reportArabicFontStack};
+    font-family:${reportArabicFontStack};
     font-size:15px;
     line-height:2.05;
     overflow-wrap:anywhere;
@@ -2690,7 +2690,7 @@ export default function ReportsTab() {
     border-bottom:3px solid #b18c4e;
     color:#1d3a52;
     text-align:center;
-    font-family:\${reportHeadingFontStack};
+    font-family:${reportHeadingFontStack};
     font-size:23px;
     font-weight:950;
     line-height:1.55;
@@ -2833,7 +2833,7 @@ export default function ReportsTab() {
      color:#1d3a52!important;
     }
    }
-  \`;
+  `;
     const opened = openBrowserPrintPreview({
       title,
       reportDateLabel,
