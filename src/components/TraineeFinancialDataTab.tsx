@@ -34,6 +34,9 @@ const TITLE = database.title;
 const RULES = database.rules;
 const PAYMENT_SUMMARY_HEADERS = [
   "المسدد من رسوم القيد والتسجيل",
+  "المسدد من رسوم الامتحان الكتابي الأول",
+  "المسدد من رسوم الامتحان الكتابي النهائي",
+  "المسدد من رسوم الامتحان السريري الشفوي",
   "المسدد من رسوم الامتحانات",
   "حالة سداد رسوم القيد والتسجيل",
   "حالة سداد رسوم الامتحانات",
@@ -42,6 +45,9 @@ const PAYMENT_SUMMARY_HEADERS = [
 ] as const;
 const CURRENCY_COLUMNS = new Set([
   "المسدد من رسوم القيد والتسجيل",
+  "المسدد من رسوم الامتحان الكتابي الأول",
+  "المسدد من رسوم الامتحان الكتابي النهائي",
+  "المسدد من رسوم الامتحان السريري الشفوي",
   "المسدد من رسوم الامتحانات",
   "إجمالي المسدد من رسوم القيد والامتحانات",
   "المتبقي من رسوم القيد والامتحانات",
@@ -126,6 +132,7 @@ const FEE_TABLE_GROUPS = [
       { header: "موعد استحقاق القيد والتسجيل", label: "موعد الاستحقاق" },
       { header: "حالة سداد رسوم القيد والتسجيل", label: "حالة السداد" },
       { header: "رسوم القيد والتسجيل", label: "قيمة الرسم" },
+      { header: "المسدد من رسوم القيد والتسجيل", label: "المسدد" },
     ],
   },
   {
@@ -135,6 +142,7 @@ const FEE_TABLE_GROUPS = [
       { header: "موعد الكتابي الأول المتوقع", label: "موعد الامتحان" },
       { header: "موعد الكتابي الأول", label: "الحالة" },
       { header: "رسم الكتابي الأول", label: "الرسم" },
+      { header: "المسدد من رسوم الامتحان الكتابي الأول", label: "المسدد" },
     ],
   },
   {
@@ -144,6 +152,7 @@ const FEE_TABLE_GROUPS = [
       { header: "موعد الكتابي النهائي المتوقع", label: "موعد الامتحان" },
       { header: "موعد الكتابي النهائي", label: "الحالة" },
       { header: "رسم الكتابي النهائي", label: "الرسم" },
+      { header: "المسدد من رسوم الامتحان الكتابي النهائي", label: "المسدد" },
     ],
   },
   {
@@ -153,12 +162,19 @@ const FEE_TABLE_GROUPS = [
       { header: "موعد السريري الشفوي المتوقع", label: "موعد الامتحان" },
       { header: "موعد السريري الشفوي", label: "الحالة" },
       { header: "رسم السريري الشفوي", label: "الرسم" },
+      { header: "المسدد من رسوم الامتحان السريري الشفوي", label: "المسدد" },
     ],
   },
 ] as const;
 
+const FEE_GROUP_PAYMENT_HEADERS = [
+  "المسدد من رسوم القيد والتسجيل",
+  "المسدد من رسوم الامتحان الكتابي الأول",
+  "المسدد من رسوم الامتحان الكتابي النهائي",
+  "المسدد من رسوم الامتحان السريري الشفوي",
+] as const;
 const TABLE_PAYMENT_SUMMARY_HEADERS = PAYMENT_SUMMARY_HEADERS.filter(
-  (header) => header !== "حالة سداد رسوم القيد والتسجيل",
+  (header) => header !== "حالة سداد رسوم القيد والتسجيل" && !FEE_GROUP_PAYMENT_HEADERS.includes(header as (typeof FEE_GROUP_PAYMENT_HEADERS)[number]),
 );
 const TABLE_TOTAL_HEADERS = [
   "إجمالي رسوم الامتحانات",
@@ -543,6 +559,9 @@ export default function TraineeFinancialDataTab() {
       const summary = getFeePaymentSummary(row);
       const values: Record<(typeof PAYMENT_SUMMARY_HEADERS)[number], string | number> = {
         "المسدد من رسوم القيد والتسجيل": summary.registrationPaid,
+        "المسدد من رسوم الامتحان الكتابي الأول": summary.firstWrittenPaid,
+        "المسدد من رسوم الامتحان الكتابي النهائي": summary.finalWrittenPaid,
+        "المسدد من رسوم الامتحان السريري الشفوي": summary.clinicalPaid,
         "المسدد من رسوم الامتحانات": summary.examsPaid,
         "حالة سداد رسوم القيد والتسجيل": summary.registrationStatus,
         "حالة سداد رسوم الامتحانات": summary.examsStatus,
@@ -556,13 +575,13 @@ export default function TraineeFinancialDataTab() {
 
 
   const feePaymentSummaryByTrainee = useMemo(() => {
-    const summaries = new Map<string, { registrationPaid: number; examsPaid: number }>();
+    const summaries = new Map<string, { registrationPaid: number; firstWrittenPaid: number; finalWrittenPaid: number; clinicalPaid: number; examsPaid: number }>();
 
     // Create one accumulator per normalized trainee name.
     (records || []).forEach((record) => {
       const key = normalizeTraineeName(record[HEADERS[2]]);
       if (key && !summaries.has(key)) {
-        summaries.set(key, { registrationPaid: 0, examsPaid: 0 });
+        summaries.set(key, { registrationPaid: 0, firstWrittenPaid: 0, finalWrittenPaid: 0, clinicalPaid: 0, examsPaid: 0 });
       }
     });
 
@@ -583,8 +602,15 @@ export default function TraineeFinancialDataTab() {
       const isExam = /(امتحان|اختبار)/.test(normalizeDescription(item.description));
       if (!isRegistration && !isExam) return;
 
-      if (isRegistration) summary.registrationPaid += amount;
-      else summary.examsPaid += amount;
+      if (isRegistration) {
+        summary.registrationPaid += amount;
+      } else if (isExam) {
+        summary.examsPaid += amount;
+        const description = normalizeDescription(item.description);
+        if (/كتابي/.test(description) && /(اول|الأول)/.test(description)) summary.firstWrittenPaid += amount;
+        else if (/كتابي/.test(description) && /(نهائي|النهائي)/.test(description)) summary.finalWrittenPaid += amount;
+        else if (/(سريري|شفوي)/.test(description)) summary.clinicalPaid += amount;
+      }
     });
 
     return summaries;
@@ -595,6 +621,9 @@ export default function TraineeFinancialDataTab() {
       TraineeFinancialRecord,
       {
         registrationPaid: number;
+        firstWrittenPaid: number;
+        finalWrittenPaid: number;
+        clinicalPaid: number;
         examsPaid: number;
         totalPaid: number;
         registrationStatus: string;
@@ -607,6 +636,9 @@ export default function TraineeFinancialDataTab() {
     (records || []).forEach((row) => {
       const paid = feePaymentSummaryByTrainee.get(normalizeTraineeName(row[HEADERS[2]])) || {
         registrationPaid: 0,
+        firstWrittenPaid: 0,
+        finalWrittenPaid: 0,
+        clinicalPaid: 0,
         examsPaid: 0,
       };
       const registrationDue = isRegistrationFeeExemptBatch(row[HEADERS[3]]) ? 0 : parseAmount(row["رسوم القيد والتسجيل"]);
@@ -625,6 +657,9 @@ export default function TraineeFinancialDataTab() {
   const getFeePaymentSummary = (row: TraineeFinancialRecord) =>
     feePaymentSummaryByRow.get(row) || {
       registrationPaid: 0,
+      firstWrittenPaid: 0,
+      finalWrittenPaid: 0,
+      clinicalPaid: 0,
       examsPaid: 0,
       totalPaid: 0,
       registrationStatus: "غير مستحق",
