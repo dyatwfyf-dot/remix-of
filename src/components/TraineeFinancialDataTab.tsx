@@ -815,14 +815,15 @@ export default function TraineeFinancialDataTab() {
       const total = visibleRows.reduce((sum, item) => sum + parseAmount(getDisplayValue(item.row, header)), 0);
       return `<td class="amount">${total.toLocaleString("en-US")}</td>`;
     }).join("");
-    const tableHtml = `${reportLetterheadHtml()}<h1>${escapeHtml(TITLE)}</h1><p class="rule-line">${escapeHtml(RULES)}</p><p class="record-count">عدد السجلات المعروضة: ${visibleRows.length}</p><table class="trainee-data-print-table"><thead>${tableHead}</thead><tbody>${tableBody || `<tr><td colspan="${tableColumns.length}">لا توجد سجلات مطابقة</td></tr>`}</tbody><tfoot><tr><td colspan="${firstFinancialIndex}" class="total-label">الإجمالي العام للسجلات المعروضة</td>${footerCells}</tr></tfoot></table><p class="report-date">تاريخ الطباعة: ${new Date().toLocaleDateString("ar-YE")}</p>`;
+    const tableHtml = `${reportLetterheadHtml()}<h1>${escapeHtml(TITLE)}</h1><p class="rule-line">${escapeHtml(RULES)}</p><p class="record-count">عدد السجلات المعروضة: ${visibleRows.length}</p><table dir="rtl" class="trainee-data-print-table"><thead>${tableHead}</thead><tbody>${tableBody || `<tr><td colspan="${tableColumns.length}">لا توجد سجلات مطابقة</td></tr>`}</tbody><tfoot><tr><td colspan="${firstFinancialIndex}" class="total-label">الإجمالي العام للسجلات المعروضة</td>${footerCells}</tr></tfoot></table><p class="report-date">تاريخ الطباعة: ${new Date().toLocaleDateString("ar-YE")}</p>`;
     const contentCss = `
       h1 { text-align:center; font-size:16px; margin:3mm 0; font-weight:900; }
       .rule-line { text-align:center; font-size:8px; font-weight:800; margin:2mm 0; }
       .record-count { text-align:right; font-size:8px; font-weight:800; margin:2mm 0; }
-      table { width:100%; border-collapse:collapse; table-layout:auto; font-size:7px; }
+      table { width:100%; border-collapse:collapse; table-layout:auto; direction:rtl; font-size:7px; }
       th,td { border:1px solid #000 !important; padding:1mm .6mm; text-align:center; vertical-align:middle; white-space:normal; overflow-wrap:anywhere; line-height:1.25; font-family:"Cairo",sans-serif; font-weight:800; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      .fee-group-start { border-inline-start:4px double #17212b !important; }
+      /* اتجاه الجدول RTL: حد المجموعة الفاصل يقع على الحافة اليمنى لأول عمود منها. */
+      .trainee-data-print-table .fee-group-start { border-right:4px double #17212b !important; border-inline-start:0 !important; }
       thead tr:first-child th { background:linear-gradient(180deg,#246b8d 0%,#104968 100%) !important; color:#fff !important; font-weight:900; }
       thead tr:nth-child(2) th { background:#f4e4b5 !important; color:#17212b !important; font-weight:900; }
       thead th.fee-category-group { color:#fff !important; }
@@ -960,10 +961,11 @@ export default function TraineeFinancialDataTab() {
         background:#fcf5ef !important; border-color:#edc9ae !important;
       }
       #paperContainer #tableContainer table.trainee-data-print-table .fee-group-start {
-        border-inline-start:4px double #17212b !important;
+        border-right:4px double #17212b !important;
+        border-inline-start:0 !important;
       }
       #paperContainer #tableContainer table.trainee-data-print-table thead th.fee-category-group.fee-group-start {
-        border-inline-start:5px double rgba(255,255,255,.95) !important;
+        border-right:5px double rgba(255,255,255,.95) !important;
       }
       #paperContainer #tableContainer table.trainee-data-print-table tbody tr.status-withdrawn td {
         background:#fecaca !important;
@@ -982,6 +984,19 @@ export default function TraineeFinancialDataTab() {
       }
       #paperContainer #tableContainer table.trainee-data-print-table tbody tr.status-active td {
         background:#ecfdf5 !important;
+      }
+      /* ألوان أعمدة الرسوم لها الأولوية داخل الصفوف ذات الحالة الأكاديمية حتى تبقى هوية كل مجموعة ظاهرة. */
+      #paperContainer #tableContainer table.trainee-data-print-table tbody tr:is(.status-withdrawn,.status-dismissed,.status-graduate,.status-paused,.status-postponed,.status-active) td.fee-group-registration-cell {
+        background:#effaf8 !important; border-color:#a9d8d2 !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody tr:is(.status-withdrawn,.status-dismissed,.status-graduate,.status-paused,.status-postponed,.status-active) td.fee-group-first-written-cell {
+        background:#f0f7fc !important; border-color:#b8d9ed !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody tr:is(.status-withdrawn,.status-dismissed,.status-graduate,.status-paused,.status-postponed,.status-active) td.fee-group-final-written-cell {
+        background:#f6f2fb !important; border-color:#d8c9ee !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody tr:is(.status-withdrawn,.status-dismissed,.status-graduate,.status-paused,.status-postponed,.status-active) td.fee-group-clinical-cell {
+        background:#fcf5ef !important; border-color:#edc9ae !important;
       }
       #paperContainer #tableContainer table.trainee-data-print-table tfoot td {
         background:linear-gradient(180deg,#bfdbfe 0%,#60a5fa 48%,#1d4ed8 100%) !important;
@@ -1179,7 +1194,7 @@ export default function TraineeFinancialDataTab() {
                 if (["منسحب", "منسحبه", "انسحب", "انسحبت", "منقطع", "منقطعه", "مستقيل", "مستقيله"].includes(status)) counts.withdrawn += 1;
                 else if (["متخرج", "متخرجه", "خريج", "خريجه"].includes(status)) counts.graduates += 1;
                 else if (["مفصول", "مفصوله", "فصل", "راسب", "راسبه"].includes(status)) counts.dismissed += 1;
-                else if (["مستمر", "مستمره", "منتظم", "منتظمه", "على راس العمل"].includes(status)) counts.active += 1;
+                else if (!status || ["مستمر", "مستمره", "منتظم", "منتظمه", "على راس العمل"].includes(status)) counts.active += 1;
               });
               return (
                 <div key={key} className={"trainee-batch-summary-card trainee-batch-summary-card-" + (batchIndex % 6) + " min-w-0 rounded-xl border p-2"}>
