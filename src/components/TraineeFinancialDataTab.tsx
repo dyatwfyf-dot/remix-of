@@ -841,6 +841,11 @@ export default function TraineeFinancialDataTab() {
       tbody td { background:#fff !important; color:#111 !important; }
       tbody tr.row-even td { background:#f0f9ff !important; }
       tbody tr.row-odd td { background:#fff !important; }
+      /* ألوان خفيفة لأعمدة تفاصيل كل رسم، مطابقة لألوان رؤوس مجموعاتها. */
+      .trainee-data-print-table tbody td.fee-group-registration-cell { background:#effaf8 !important; border-color:#a9d8d2 !important; }
+      .trainee-data-print-table tbody td.fee-group-first-written-cell { background:#f0f7fc !important; border-color:#b8d9ed !important; }
+      .trainee-data-print-table tbody td.fee-group-final-written-cell { background:#f6f2fb !important; border-color:#d8c9ee !important; }
+      .trainee-data-print-table tbody td.fee-group-clinical-cell { background:#fcf5ef !important; border-color:#edc9ae !important; }
       tbody tr.status-withdrawn td { background:#fecaca !important; }
       tbody tr.status-dismissed td { background:#fef08a !important; }
       tbody tr.status-graduate td { background:#bbf7d0 !important; }
@@ -940,6 +945,25 @@ export default function TraineeFinancialDataTab() {
       }
       #paperContainer #tableContainer table.trainee-data-print-table tbody tr.row-odd td {
         background:#fff !important;
+      }
+      /* أولوية مرتفعة حتى لا تطغى القواعد العامة لمعاينة المتصفح على تلوين مجموعات الرسوم. */
+      #paperContainer #tableContainer table.trainee-data-print-table tbody td.fee-group-registration-cell {
+        background:#effaf8 !important; border-color:#a9d8d2 !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody td.fee-group-first-written-cell {
+        background:#f0f7fc !important; border-color:#b8d9ed !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody td.fee-group-final-written-cell {
+        background:#f6f2fb !important; border-color:#d8c9ee !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table tbody td.fee-group-clinical-cell {
+        background:#fcf5ef !important; border-color:#edc9ae !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table .fee-group-start {
+        border-inline-start:4px double #17212b !important;
+      }
+      #paperContainer #tableContainer table.trainee-data-print-table thead th.fee-category-group.fee-group-start {
+        border-inline-start:5px double rgba(255,255,255,.95) !important;
       }
       #paperContainer #tableContainer table.trainee-data-print-table tbody tr.status-withdrawn td {
         background:#fecaca !important;
