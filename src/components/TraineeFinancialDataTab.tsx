@@ -184,7 +184,7 @@ export default function TraineeFinancialDataTab() {
       .filter((group) => group.columns.length > 0),
     [hiddenColumns],
   );
-  const visibleSummaryHeaders = useMemo(
+  const visibleSummaryHeaders = useMemo<string[]>(
     () => [...TABLE_PAYMENT_SUMMARY_HEADERS, ...TABLE_TOTAL_HEADERS].filter((header) => !hiddenColumns.includes(header)),
     [hiddenColumns],
   );
@@ -1168,7 +1168,7 @@ export default function TraineeFinancialDataTab() {
             </div>
           </div>
           <p className="mb-2 text-xs font-semibold leading-6 text-slate-600">
-            تُحسب الرسوم الدراسية تلقائيًا بمبلغ 300,000 ريال عن كل سنة دراسة، مع إعفاء الدفعة الأولى من الرسوم الدراسية فقط. وتُحدّث حالات مراحل الامتحانات والإجماليات عند تعديل المستوى.
+            تُحسب الرسوم الدراسية تلقائيًا بمبلغ 300,000 ريال عن كل سنة دراسة، مع إعفاء الدفعة الأولى من رسوم القيد والتسجيل والأقساط الدراسية. وتُحدّث حالات مراحل الامتحانات والإجماليات عند تعديل المستوى.
           </p>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {columns.map((header) => (
